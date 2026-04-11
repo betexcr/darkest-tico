@@ -1,0 +1,104 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcombatslice01"]
+
+[ext_resource type="Script" path="res://scripts/combat/combat_scene.gd" id="1_combat"]
+
+[node name="CombatScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_combat")
+
+[node name="BgTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Darken" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.35)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="PortraitRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="EnemyPortrait" type="TextureRect" parent="VBox/PortraitRow"]
+custom_minimum_size = Vector2(200, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeroPortrait" type="TextureRect" parent="VBox/PortraitRow"]
+custom_minimum_size = Vector2(200, 260)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RoundLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Ronda: 0"
+
+[node name="EnemyLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Enemigo"
+
+[node name="ActorLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Turno: —"
+
+[node name="CombatLog" type="RichTextLabel" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+text = ""
+
+[node name="Actions" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BtnAttack" type="Button" parent="VBox/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Atacar"
+
+[node name="BtnSkill2" type="Button" parent="VBox/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+visible = false
+text = "—"
+
+[node name="HitPlayer" type="AudioStreamPlayer" parent="."]
+bus = "Master"

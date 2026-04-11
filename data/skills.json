@@ -1,0 +1,45 @@
+{
+  "skills": [
+    {
+      "id": "machetazo",
+      "name": "Machetazo",
+      "kind": "attack",
+      "damage_min": 4,
+      "damage_max": 9,
+      "skill_accuracy": 0,
+      "stress_on_hit_target": 3,
+      "stress_on_crit_target": 8
+    },
+    {
+      "id": "trabajo_duro",
+      "name": "Trabajo Duro",
+      "kind": "buff",
+      "self_stress_relief": 5
+    },
+    {
+      "id": "sopa_milagrosa",
+      "name": "Sopa Milagrosa",
+      "kind": "heal",
+      "heal_min": 3,
+      "heal_max": 6
+    },
+    {
+      "id": "dron_casero",
+      "name": "Dron Casero",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 7,
+      "skill_accuracy": 2,
+      "stress_on_hit_target": 2
+    },
+    {
+      "id": "entrada_brava",
+      "name": "Entrada Brava",
+      "kind": "attack",
+      "damage_min": 5,
+      "damage_max": 10,
+      "skill_accuracy": -1,
+      "stress_on_hit_target": 4
+    }
+  ]
+}

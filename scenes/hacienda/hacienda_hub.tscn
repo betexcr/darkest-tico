@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3 uid="uid://bhaciendahub01"]
+
+[ext_resource type="Script" path="res://scripts/hacienda/hacienda_hub.gd" id="1_hub"]
+
+[node name="HaciendaHub" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hub")
+
+[node name="BgTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Darken" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Hacienda del Abuelo"
+horizontal_alignment = 1
+
+[node name="GoldLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Colones: 0"
+
+[node name="WeekLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Semana: 1"
+
+[node name="RegionRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="RegionLabel" type="Label" parent="VBox/RegionRow"]
+layout_mode = 2
+text = "Región:"
+
+[node name="RegionOption" type="OptionButton" parent="VBox/RegionRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrepLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Próxima expedición: sin extras"
+
+[node name="HubRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnRations" type="Button" parent="VBox/HubRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mercado: raciones (+2 comida, 500 ₡)"
+
+[node name="BtnLantern" type="Button" parent="VBox/HubRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Mercado: mechas (+15 luz inicio, 400 ₡)"
+
+[node name="BtnIglesia" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Iglesia Vieja: misa rápida (800 ₡, -10 estrés)"
+
+[node name="HubStatus" type="Label" parent="VBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = ""
+
+[node name="RosterText" type="RichTextLabel" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+text = "Cuadrilla..."
+
+[node name="BtnStart" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Iniciar expedición"
+
+[node name="BtnQuit" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Salir"

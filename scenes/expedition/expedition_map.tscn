@@ -1,0 +1,110 @@
+[gd_scene load_steps=2 format=3 uid="uid://bexpeditionmap1"]
+
+[ext_resource type="Script" path="res://scripts/expedition/expedition_map.gd" id="1_exp"]
+
+[node name="ExpeditionMap" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_exp")
+
+[node name="BgTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Darken" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.4)
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Expedición"
+
+[node name="LightRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LightBar" type="ProgressBar" parent="VBox/LightRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="LightValue" type="Label" parent="VBox/LightRow"]
+layout_mode = 2
+text = "Luz 100/100"
+
+[node name="FoodLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Comida: 0"
+
+[node name="CurrentNodeLabel" type="Label" parent="VBox"]
+layout_mode = 2
+text = "Nodo:"
+
+[node name="Log" type="RichTextLabel" parent="VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_active = true
+text = ""
+
+[node name="MovesBox" type="VBoxContainer" parent="VBox"]
+layout_mode = 2
+
+[node name="Resolver" type="PanelContainer" parent="VBox"]
+visible = false
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="VBox/Resolver"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="VBox/Resolver/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ResolverText" type="Label" parent="VBox/Resolver/Margin/VBox"]
+layout_mode = 2
+autowrap_mode = 3
+text = "..."
+
+[node name="ResolverActions" type="VBoxContainer" parent="VBox/Resolver/Margin/VBox"]
+layout_mode = 2
+
+[node name="BtnFlee" type="Button" parent="VBox"]
+layout_mode = 2
+text = "Abandonar expedición (volver a la hacienda)"

@@ -1,0 +1,52 @@
+{
+  "enemies": {
+    "espanto": {
+      "id": "espanto",
+      "name": "Espanto del Sótano",
+      "hp_max": 45,
+      "speed": 4,
+      "dodge": 5,
+      "accuracy": 8
+    },
+    "sombra_cuadrilla": {
+      "id": "sombra_cuadrilla",
+      "name": "Sombra de cuadrilla",
+      "hp_max": 50,
+      "speed": 5,
+      "dodge": 6,
+      "accuracy": 7
+    },
+    "mayordomo_hundido": {
+      "id": "mayordomo_hundido",
+      "name": "Mayordomo hundido",
+      "hp_max": 55,
+      "speed": 4,
+      "dodge": 5,
+      "accuracy": 9
+    },
+    "nuboso_spectre": {
+      "id": "nuboso_spectre",
+      "name": "Espectro de niebla",
+      "hp_max": 38,
+      "speed": 6,
+      "dodge": 9,
+      "accuracy": 7
+    },
+    "cadejo_negro": {
+      "id": "cadejo_negro",
+      "name": "Cadejo negro",
+      "hp_max": 48,
+      "speed": 7,
+      "dodge": 7,
+      "accuracy": 8
+    },
+    "segua_boss": {
+      "id": "segua_boss",
+      "name": "La Segua de Niebla",
+      "hp_max": 85,
+      "speed": 6,
+      "dodge": 8,
+      "accuracy": 10
+    }
+  }
+}

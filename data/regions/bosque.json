@@ -1,0 +1,32 @@
+{
+  "region_id": "bosque",
+  "name": "Bosque Nuboso Maldito",
+  "start_node": "b0",
+  "objective_node": "b6",
+  "initial_light": 95,
+  "initial_food": 9,
+  "light_decay_per_move": 6,
+  "low_light_threshold": 42,
+  "low_light_stress": 4,
+  "objective_reward_colones": 1100,
+  "nodes": [
+    { "id": "b0", "type": "safe", "label": "Sendero de musgo" },
+    { "id": "b1", "type": "trap", "label": "Raíces traicioneras" },
+    { "id": "b2", "type": "combat", "label": "Claro brumoso", "enemy_id": "nuboso_spectre", "reward_colones": 380, "is_elite": false },
+    { "id": "b3", "type": "curio", "label": "Piedra con petroglifo" },
+    { "id": "b4", "type": "combat", "label": "Barranco oculto", "enemy_id": "cadejo_negro", "reward_colones": 520, "is_elite": true },
+    { "id": "b5", "type": "camp", "label": "Fogata bajo ceiba" },
+    { "id": "b6", "type": "objective", "label": "Salida del sendero (niebla se abre)" },
+    { "id": "b7", "type": "combat", "label": "La Segua acecha", "enemy_id": "segua_boss", "reward_colones": 600, "is_boss": true }
+  ],
+  "edges": [
+    { "from": "b0", "to": "b1" },
+    { "from": "b1", "to": "b2" },
+    { "from": "b1", "to": "b3" },
+    { "from": "b2", "to": "b4" },
+    { "from": "b3", "to": "b4" },
+    { "from": "b4", "to": "b5" },
+    { "from": "b5", "to": "b7" },
+    { "from": "b7", "to": "b6" }
+  ]
+}

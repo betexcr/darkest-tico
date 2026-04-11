@@ -1,0 +1,217 @@
+---
+
+description: Local Stable Diffusion asset generation pipeline (optimized for production + reproducibility)
+alwaysApply: true
+-----------------
+
+# Stable Diffusion — Production Asset Rules
+
+## Core Principle
+
+* Stable Diffusion is an **external generator service**, not part of the game runtime.
+* All generation must be:
+
+  * reproducible
+  * structured
+  * stored with metadata
+* Game code must NEVER directly depend on SD APIs.
+
+---
+
+## Local Generator
+
+* Base URL: `http://127.0.0.1:7860/`
+* API: `POST /sdapi/v1/txt2img`
+* Requires AUTOMATIC1111 with `--api`
+
+---
+
+## Asset Generation Strategy
+
+### 1. Preferred Path (FAST / LOCAL SCRIPT)
+
+Use:
+
+```bash
+python tools/sd_export.py --out <path> --prompt "<subject>"
+```
+
+BUT enforce:
+
+* Always generate:
+
+  * PNG
+  * Metadata JSON (same filename)
+
+Metadata MUST include:
+
+```json
+{
+  "prompt": "...",
+  "negative_prompt": "...",
+  "seed": 123456,
+  "steps": 25,
+  "cfg_scale": 6,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "model": "SDXL",
+  "timestamp": "ISO8601"
+}
+```
+
+If script does not support metadata → extend it.
+
+---
+
+### 2. Fallback Path (MANUAL UI)
+
+If API is unavailable:
+
+* Provide:
+
+  * exact prompt
+  * negative prompt
+  * resolution
+  * seed (if needed)
+  * target file path
+
+User generates manually and saves to:
+
+```
+assets/<category>/<name>.png
+```
+
+---
+
+## Prompt Doctrine (MANDATORY)
+
+### Global Style Suffix
+
+Append to ALL prompts:
+
+```
+dark fantasy, darkest dungeon style, hand-painted texture, high contrast, muted palette, not photorealistic, fog, costa rican cloud forest horror, game asset
+```
+
+---
+
+### Negative Prompt Baseline
+
+```
+photorealistic, 3d render, glossy, watermark, text, logo, lowres, blurry, distorted anatomy, extra limbs
+```
+
+---
+
+## Asset Categories
+
+All assets must be saved as PNG in:
+
+* `assets/portraits/`
+* `assets/enemies/`
+* `assets/ui_bg/`
+* `assets/map_nodes/`
+
+Rules:
+
+* Use power-of-two dimensions when possible (256, 512, 1024)
+* Transparent background when applicable
+* Centered composition
+* Clean silhouette
+
+---
+
+## When to Generate Assets
+
+The agent MUST generate assets when:
+
+1. A feature requires visual elements not present in `/assets`
+2. Placeholder art is detected
+3. UI requires icons or backgrounds
+4. New enemies, characters, or environments are introduced
+
+---
+
+## Automation Priority
+
+Prefer:
+
+1. Script (`sd_export.py`)
+2. Asset Generator API (if available)
+3. Manual instructions (last resort)
+
+---
+
+## Asset Generator API (Advanced Path)
+
+If `http://localhost:8000` is available:
+
+Use:
+
+* `POST /generate/sprite`
+* `POST /generate/texture`
+* `POST /generate/icon`
+
+Advantages:
+
+* batch generation
+* structured outputs
+* consistent presets
+
+---
+
+## Post-Processing Rules
+
+After generation:
+
+* Ensure file exists in correct folder
+* Ensure Godot-compatible path:
+
+  ```
+  res://assets/...
+  ```
+* Validate:
+
+  * no watermark
+  * no text artifacts
+  * clear subject visibility
+
+---
+
+## Performance Rules
+
+* Use low steps (20–30) for iteration
+* Increase steps ONLY for final assets
+* Use fixed seeds when refining assets
+
+---
+
+## Anti-Patterns (FORBIDDEN)
+
+* ❌ Calling SD API from gameplay code
+* ❌ Generating assets without metadata
+* ❌ Mixing art styles across assets
+* ❌ Saving outside `/assets/`
+* ❌ Using photorealistic outputs
+
+---
+
+## Future Extensions (Optional)
+
+* Add LoRA support for style consistency
+* Add ControlNet for pose-based characters
+* Add sprite sheet generator
+* Add automatic background removal
+
+---
+
+## Philosophy
+
+* Assets must be:
+
+  * consistent
+  * reproducible
+  * pipeline-friendly
+
+This is not image generation.
+This is **asset manufacturing**.

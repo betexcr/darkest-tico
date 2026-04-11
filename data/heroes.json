@@ -1,0 +1,56 @@
+{
+  "heroes": [
+    {
+      "id": "campesino",
+      "name": "Campesino Machetero",
+      "class_id": "machetero",
+      "hp_max": 32,
+      "stress_max": 200,
+      "speed": 5,
+      "accuracy": 8,
+      "dodge": 6,
+      "crit": 5,
+      "resolve_level": 0,
+      "skill_ids": ["machetazo", "trabajo_duro"]
+    },
+    {
+      "id": "abuela",
+      "name": "Abuela Sabia",
+      "class_id": "abuela",
+      "hp_max": 26,
+      "stress_max": 200,
+      "speed": 3,
+      "accuracy": 7,
+      "dodge": 4,
+      "crit": 3,
+      "resolve_level": 0,
+      "skill_ids": ["machetazo", "sopa_milagrosa"]
+    },
+    {
+      "id": "tecnologo",
+      "name": "Tecnólogo Errante",
+      "class_id": "tecnologo",
+      "hp_max": 24,
+      "stress_max": 200,
+      "speed": 6,
+      "accuracy": 9,
+      "dodge": 8,
+      "crit": 6,
+      "resolve_level": 0,
+      "skill_ids": ["machetazo", "dron_casero"]
+    },
+    {
+      "id": "montador",
+      "name": "Montador de Toros",
+      "class_id": "montador",
+      "hp_max": 34,
+      "stress_max": 200,
+      "speed": 4,
+      "accuracy": 7,
+      "dodge": 5,
+      "crit": 4,
+      "resolve_level": 0,
+      "skill_ids": ["machetazo", "entrada_brava"]
+    }
+  ]
+}

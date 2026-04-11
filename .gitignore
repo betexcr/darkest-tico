@@ -1,0 +1,25 @@
+# Godot 4
+.godot/
+*.import
+export_presets.cfg
+
+# Exports
+export/
+builds/
+*.exe
+*.pck
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
