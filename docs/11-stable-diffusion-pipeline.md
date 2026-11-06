@@ -23,15 +23,9 @@ The hub scene references `res://assets/ui_bg/hub_bg.png`. Replace that file with
 
 ## 3) Style line (prompt bible)
 
-Use one **global style suffix** on every generation so the game reads as one art direction:
+The style is defined once in [tools/art_manifest.json](../tools/art_manifest.json) (`prompt_template`, `style_suffix`, `negative_prompt`) and used by both generators. Every asset in the game is listed there with its subject and fixed seed, so any image can be regenerated exactly.
 
-> dark fantasy illustration, Darkest Dungeon inspired, high contrast, hand-painted texture, not photorealistic, muted colors, subtle fog, Costa Rican hacienda and cloud-forest horror, game asset, centered composition
-
-**Negative prompt (baseline):**
-
-> photorealistic, 3d render, glossy, anime, watermark, signature, text, logo, modern UI, lowres, blurry
-
-Per asset, prepend a **subject line** (character, creature, environment). Keep tone aligned with [08-content-standards-satire.md](08-content-standards-satire.md): avoid harmful caricature in prompts.
+Look: dark gothic folk-horror oil painting, candlelight, deep shadows, muted earthy colors. Prompts never name existing games or artists. Keep tone aligned with [08-content-standards-satire.md](08-content-standards-satire.md): avoid harmful caricature in prompts.
 
 ## 4) Suggested sizes
 
@@ -42,7 +36,9 @@ Export **PNG**; power-of-two dimensions are convenient for GPUs.
 
 ## 5) Automation
 
-See [tools/sd_export.py](../tools/sd_export.py): optional stdlib-only `urllib` call to `txt2img`, decode base64, write into `assets/`. Requires Python 3 and a running API-enabled UI.
+**Default:** [tools/sd_local.py](../tools/sd_local.py) generates every manifest entry with a local diffusers pipeline (no server; CPU works at ~95 s per 512² image, so a cloud agent can do it). `python tools/sd_local.py` fills in anything missing; `--only <id>` regenerates one asset. Setup is in the script header.
+
+**With A1111 running:** see [tools/sd_export.py](../tools/sd_export.py): optional stdlib-only `urllib` call to `txt2img`, decode base64, write into `assets/`. Requires Python 3 and a running API-enabled UI.
 
 ## 6) Placeholder without SD
 

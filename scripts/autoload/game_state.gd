@@ -21,6 +21,12 @@ const ENEMIES_PATH := "res://data/enemies.json"
 const DEFAULT_REGION_PATH := "res://data/regions/sotanos.json"
 const BOSQUE_REGION_PATH := "res://data/regions/bosque.json"
 
+## Regions offered in the hub picker. Bosque is built but deferred to the Alpha phase (owner decision 2026-11-06).
+## To re-enable it, add {"path": BOSQUE_REGION_PATH, "name": "Bosque nuboso maldito"}.
+const PLAYABLE_REGIONS := [
+	{"path": DEFAULT_REGION_PATH, "name": "Sótanos de la Hacienda"},
+]
+
 
 
 const SAVE_VERSION := 3
@@ -541,6 +547,13 @@ func apply_objective_rewards() -> void:
 
 
 
+func is_region_playable(path: String) -> bool:
+	for r in PLAYABLE_REGIONS:
+		if str(r["path"]) == path:
+			return true
+	return false
+
+
 func apply_save_data(data: Dictionary) -> void:
 
 	colones = int(data.get("colones", colones))
@@ -548,6 +561,10 @@ func apply_save_data(data: Dictionary) -> void:
 	week = int(data.get("week", week))
 
 	selected_mission_region_path = str(data.get("selected_mission_region_path", DEFAULT_REGION_PATH))
+
+	if not is_region_playable(selected_mission_region_path):
+
+		selected_mission_region_path = DEFAULT_REGION_PATH
 
 	hub_pending_food = int(data.get("hub_pending_food", 0))
 

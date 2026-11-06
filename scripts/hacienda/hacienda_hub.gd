@@ -14,8 +14,8 @@ signal start_mission_requested
 func _ready() -> void:
 	_try_optional_hub_ambient()
 	_region_option.clear()
-	_region_option.add_item("Sótanos de la Hacienda")
-	_region_option.add_item("Bosque nuboso maldito")
+	for r in GameState.PLAYABLE_REGIONS:
+		_region_option.add_item(str(r["name"]))
 	_region_option.item_selected.connect(_on_region_selected)
 	$VBox/BtnStart.pressed.connect(_on_start_pressed)
 	$VBox/BtnQuit.pressed.connect(_on_quit_pressed)
@@ -29,15 +29,16 @@ func _ready() -> void:
 
 func _sync_region_option_from_state() -> void:
 	var p: String = GameState.selected_mission_region_path
-	if p == GameState.BOSQUE_REGION_PATH:
-		_region_option.select(1)
-	else:
-		_region_option.select(0)
+	for i in GameState.PLAYABLE_REGIONS.size():
+		if str(GameState.PLAYABLE_REGIONS[i]["path"]) == p:
+			_region_option.select(i)
+			return
+	_region_option.select(0)
 
 
 func _on_region_selected(idx: int) -> void:
-	if idx == 1:
-		GameState.selected_mission_region_path = GameState.BOSQUE_REGION_PATH
+	if idx >= 0 and idx < GameState.PLAYABLE_REGIONS.size():
+		GameState.selected_mission_region_path = str(GameState.PLAYABLE_REGIONS[idx]["path"])
 	else:
 		GameState.selected_mission_region_path = GameState.DEFAULT_REGION_PATH
 	_hub_status.text = ""

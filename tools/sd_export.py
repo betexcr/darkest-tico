@@ -24,16 +24,15 @@ from datetime import datetime
 
 DEFAULT_URL = "http://127.0.0.1:7860/sdapi/v1/txt2img"
 
-STYLE_SUFFIX = (
-    "dark fantasy illustration, Darkest Dungeon inspired, high contrast, "
-    "hand-painted texture, not photorealistic, muted colors, subtle fog, "
-    "Costa Rican hacienda and cloud-forest horror, game asset"
-)
+def _load_style() -> tuple[str, str, str]:
+    """Style comes from tools/art_manifest.json so every tool produces the same look."""
+    manifest = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art_manifest.json")
+    with open(manifest, encoding="utf-8") as f:
+        m = json.load(f)
+    return m["style_suffix"], m["negative_prompt"], m.get("prompt_template", "{subject}, {style}")
 
-NEGATIVE = (
-    "photorealistic, 3d render, glossy, anime, watermark, signature, text, logo, "
-    "modern UI, lowres, blurry"
-)
+
+STYLE_SUFFIX, NEGATIVE, PROMPT_TEMPLATE = _load_style()
 
 
 def _parse_info(body: dict) -> dict:
@@ -84,7 +83,7 @@ def main() -> int:
         request_seed = random.randint(0, 2**32 - 1)
         print(f"Using random seed: {request_seed}", file=sys.stderr)
 
-    full_prompt = f"{args.prompt.strip()}, {STYLE_SUFFIX}"
+    full_prompt = PROMPT_TEMPLATE.format(subject=args.prompt.strip(), style=STYLE_SUFFIX)
     payload = {
         "prompt": full_prompt,
         "negative_prompt": args.negative,

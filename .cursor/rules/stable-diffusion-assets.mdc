@@ -20,7 +20,8 @@ alwaysApply: true
 
 ## Local Generator
 
-* Base URL: `http://127.0.0.1:7860/`
+* Default: `tools/sd_local.py` (diffusers, model from the manifest; currently `Lykon/dreamshaper-8`, CreativeML OpenRAIL-M). Works in cloud containers on CPU (~95 s per 512² image).
+* Optional server path: A1111 at `http://127.0.0.1:7860/`
 * API: `POST /sdapi/v1/txt2img`
 * Requires AUTOMATIC1111 with `--api`
 
@@ -33,6 +34,8 @@ alwaysApply: true
 Use:
 
 ```bash
+python tools/sd_local.py --only <manifest id>
+# or, with A1111 running:
 python tools/sd_export.py --out <path> --prompt "<subject>"
 ```
 
@@ -54,7 +57,7 @@ Metadata MUST include:
   "cfg_scale": 6,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
-  "model": "SDXL",
+  "model": "Lykon/dreamshaper-8",
   "timestamp": "ISO8601"
 }
 ```
@@ -85,21 +88,18 @@ assets/<category>/<name>.png
 
 ## Prompt Doctrine (MANDATORY)
 
-### Global Style Suffix
+### Style source of truth
 
-Append to ALL prompts:
+Style suffix, prompt template, and negative prompt live in **`tools/art_manifest.json`** (`style_suffix`, `prompt_template`, `negative_prompt`). Both `tools/sd_local.py` and `tools/sd_export.py` read them from there. Change the style there only, never per call.
 
-```
-dark fantasy, darkest dungeon style, hand-painted texture, high contrast, muted palette, not photorealistic, fog, costa rican cloud forest horror, game asset
-```
+* Prompts describe the subject first; SD 1.5 CLIP truncates after 77 tokens, so keep subject + style short.
+* Do not name existing games or artists in prompts. The look is our own: dark gothic folk-horror oil painting.
 
----
+### Adding or changing an asset
 
-### Negative Prompt Baseline
-
-```
-photorealistic, 3d render, glossy, watermark, text, logo, lowres, blurry, distorted anatomy, extra limbs
-```
+1. Add or edit an entry in `tools/art_manifest.json` (`id`, `out`, `size`, optional `out_size`, fixed `seed`, short `subject`).
+2. Generate it: `python tools/sd_local.py --only <id>` (local diffusers, CPU or GPU, no server), or `tools/sd_export.py` against A1111.
+3. Look at the result. If it is off, change the seed or subject and regenerate.
 
 ---
 

@@ -109,6 +109,28 @@ This content spec defines launch biomes, enemy factions, and boss escalation tow
   - Forced rank shifts
   - Corruption stacks over time
 
+## 2.6 Sotanos Enemy Roster (approved 2026-11-06)
+
+Vertical slice roster. `id` is the key used in `data/enemies.json` and `assets/enemies/<id>.png`. Ranks follow `03` notation (1 = front).
+
+| id | Name | Family | Ranks | Role and gimmick |
+|---|---|---|---|---|
+| `espanto` | Espanto del Sótano | Espantos Folclóricos | 1–2 | Stress attacks, fear |
+| `sombra_cuadrilla` | Sombra de cuadrilla | Penados de la Hacienda | 1–2 | Elite tank; riposte when marked |
+| `peon_penado` | Peón penado | Penados de la Hacienda | 1–2 | Tank; grudge stacks against whoever heals |
+| `mandador_en_pena` | Mandador en pena | Penados de la Hacienda | 2–3 | Anti-heal: blocks healing on one hero |
+| `rata_de_troje` | Rata de troje | Bestias Malditas | 1–3 | Fast, bleed; spawns in pairs (beastpack) |
+| `murcielago_bodega` | Murciélago de bodega | Bestias Malditas | 3–4 | Pounces on back ranks; each hit drains light |
+| `monaguillo_porton` | Monaguillo del Portón | Culto del Portón | 3–4 | Backline chanter; buffs front ranks |
+| `vigia_porton` | Vigía del Portón | Culto del Portón | 2–3 | Infernal scout: marks a hero, calls reinforcements if alive after 2 rounds |
+| `susurro_aljibe` | Susurro del aljibe | Espantos Folclóricos | 3–4 | Stress damage to back ranks |
+| `duende_sotano` | Duende del sótano | Espantos Folclóricos | 2–4 | Escape/reappear; steals colones if not killed |
+| `sirviente_ahogado` | Sirviente ahogado | Penados de la Hacienda | 1–2 | Summon only (Mayordomo); weak guard |
+| `cadejo_negro` | **Cadejo Negro** | Bestias Malditas | 1–2 | Roaming mini-boss (§3.2); flees if not killed fast |
+| `mayordomo_hundido` | **El Mayordomo Hundido** | Penados de la Hacienda | 1–2 | Sotanos apex boss at the objective node (§3.1) |
+
+Example squad: `peon_penado` + `sombra_cuadrilla` + `monaguillo_porton` + `vigia_porton` (tough front, buffing back line).
+
 ## 3) Boss Ladder
 
 Each region includes:

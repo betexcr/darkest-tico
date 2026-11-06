@@ -7,6 +7,7 @@ Checks that JSON parses and that cross-references resolve:
   - region start/objective nodes, edges, enemy_id -> nodes / data/enemies.json
   - every non-start region node is reachable from start_node
   - assets/**/*.png have a sibling .metadata.json (warning only; see .cursor/rules/stable-diffusion-assets.mdc)
+  - tools/art_manifest.json ids are unique, write under assets/, and have been generated (warning)
 
 Usage (from repo root):
   python3 tools/validate_data.py
@@ -121,6 +122,20 @@ def main() -> int:
         meta = png.with_suffix(".metadata.json")
         if not meta.exists():
             warnings.append(f"{png.relative_to(ROOT)}: no .metadata.json (placeholder?)")
+
+    manifest_path = ROOT / "tools" / "art_manifest.json"
+    manifest = load(manifest_path)
+    if manifest:
+        seen_ids: set = set()
+        for a in manifest.get("assets", []):
+            aid, out = a.get("id"), a.get("out", "")
+            if aid in seen_ids:
+                errors.append(f"art_manifest.json: duplicate id '{aid}'")
+            seen_ids.add(aid)
+            if not out.startswith("assets/"):
+                errors.append(f"art_manifest.json: '{aid}' writes outside assets/ ({out})")
+            elif not (ROOT / out).exists():
+                warnings.append(f"art_manifest.json: '{aid}' not generated yet ({out})")
 
     for w in warnings:
         print(f"WARN  {w}")

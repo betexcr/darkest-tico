@@ -147,14 +147,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `data/heroes.json`, `data/skills.json`, `assets/portraits/`
 - Done when:
   - [ ] 8 heroes, each with 4 skills and rank constraints
-  - [ ] Portraits generated with SD metadata (or manual prompts handed to owner)
+  - [x] Portraits generated with SD metadata (`assets/portraits/{guachiman,medica_josefina,curandero,exorcista}.png`; hero ids should match these names)
 
 ### P2-04 · M · Sótanos enemy roster to ~12 units
 - Status: `todo` · Depends: P1-03, P1-04
 - Spec: `05` §1.1, §2
 - Files: `data/enemies.json`, `data/regions/sotanos.json`, `assets/enemies/`
 - Done when:
-  - [ ] Roster spec written first: `05` defines enemy *families* (§2) and bosses (§3) but no per-region enemy list. Add a Sótanos roster table to `05` (name, family, rank, role), get owner sign-off, then build the data
+  - [x] Roster spec approved by owner 2026-11-06: `05` §2.6 (11 regulars incl. summon, Cadejo mini-boss, Mayordomo boss). Art for all of them already exists in `assets/enemies/`
   - [ ] ≥12 Sótanos enemies with skills, ranks, statuses; 3+ mixed squads used in the map
 
 ### P2-05 · M · Bosses: Mayordomo Hundido (apex) + 1 mini-boss
@@ -174,10 +174,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Scouting/fog per `01` §4.3; hand-authored maps still loadable
 
 ### P2-07 · S · Bosque: decide slice status
-- Status: `todo` · Depends: —
-- Notes: Bosque exists but is an alpha region (roadmap Phase 3). Owner decides: keep it as a debug region, hide it, or keep it as slice region 2.
+- Status: `done`
+- Notes: **Owner decision 2026-11-06: Bosque moves to the Alpha phase.** Hidden from the hub picker via `GameState.PLAYABLE_REGIONS`; data and art kept. Old saves pointing at Bosque fall back to Sótanos. Re-enable in Alpha by adding it back to `PLAYABLE_REGIONS`.
 - Done when:
-  - [ ] Decision recorded in HANDOFF; picker updated accordingly
+  - [x] Decision recorded in HANDOFF; picker updated accordingly
 
 ---
 
@@ -240,8 +240,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 ### P4-02 · M · Tooltips (skills, statuses, stress)
 - Status: `todo` · Depends: P1-04
 
-### P4-03 · L→ split · Production art pass via SD (portraits, enemies, nodes, backgrounds)
-- Status: `todo` · Depends: P2-03, P2-04 · Notes: needs owner's local SD at `127.0.0.1:7860`. Cloud agents must hand over prompts instead (manual path in the SD rule).
+### P4-03 · M · Slice art pass (split)
+- **P4-03a · S · Local generator that runs anywhere** — Status: `done`. `tools/sd_local.py` + `tools/art_manifest.json` (diffusers, DreamShaper 8, CPU ok). Style unified across the manifest, `sd_export.py`, the SD rule, and doc 11.
+- **P4-03b · M · Generate slice art** — Status: `review` (owner to look at the images). 32 images: 8 portraits, 15 enemies (approved roster + Bosque), 6 map icons, 3 backgrounds, each with `.metadata.json`.
+- **P4-03c · S · Art fixes after owner review** — Status: `todo` · Depends: P4-03b. Change subject/seed in the manifest, then `python tools/sd_local.py --only <id>`.
+- **P4-03d · M · Transparent enemy/hero cutouts** — Status: `todo` · Depends: P1-02. Needed once several enemies share the combat screen (rule: transparent background when applicable).
+- **P4-03e · S · Hub building art** — Status: `todo` · Depends: P3-01. Only if the hub becomes visual.
 
 ### P4-04 · M · Audio mood + narrator lines
 - Status: `todo` · Depends: — · Spec: `08`
