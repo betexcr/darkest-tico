@@ -143,7 +143,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ### P2-03 · M · Classes 5–8
 - Status: `todo` · Depends: P1-03, P1-04
-- Spec: `03` (classes 3 Guachimán, 5 Médica Josefina, 6 Curandero Nicoyano, 9 Exorcista; swap if owner prefers. This gives Vanguard/Sustain/Control/Striker coverage)
+- Spec: `03`. **Owner confirmed 2026-11-06:** classes 3 Guachimán Jubilado, 5 Médica Josefina, 6 Curandero Nicoyano, 9 Exorcista de Barrio.
 - Files: `data/heroes.json`, `data/skills.json`, `assets/portraits/`
 - Done when:
   - [ ] 8 heroes, each with 4 skills and rank constraints
@@ -154,6 +154,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `05` §1.1, §2
 - Files: `data/enemies.json`, `data/regions/sotanos.json`, `assets/enemies/`
 - Done when:
+  - [ ] Roster spec written first: `05` defines enemy *families* (§2) and bosses (§3) but no per-region enemy list. Add a Sótanos roster table to `05` (name, family, rank, role), get owner sign-off, then build the data
   - [ ] ≥12 Sótanos enemies with skills, ranks, statuses; 3+ mixed squads used in the map
 
 ### P2-05 · M · Bosses: Mayordomo Hundido (apex) + 1 mini-boss
@@ -161,8 +162,8 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `05` §3.1–3.2 (Mayordomo: summon servants, darkness pulses, anti-guard)
 - Files: `data/enemies.json`, `scripts/domain/boss_scripts.gd` (new) or data-driven phases, `data/regions/sotanos.json`
 - Done when:
-  - [ ] Mayordomo is the Sótanos objective fight (currently a plain node at `n7`) with its 3 mechanics
-  - [ ] One roaming mini-boss with a spawn rule
+  - [ ] **Owner confirmed 2026-11-06:** Mayordomo is the Sótanos final boss. He becomes the objective fight at `n9` (he's currently a plain combat node at `n7`; give `n7` a regular squad) with his 3 mechanics
+  - [ ] One roaming mini-boss with a spawn rule (suggested: Cadejo Negro, listed in `05` §3.2; today it is a plain elite in Bosque `b4`)
 
 ### P2-06 · M · Map generator (seeded) for Sótanos
 - Status: `todo` · Depends: P2-01

@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-06 — P0-01 follow-up — Owner decisions recorded
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** no task status changes
+- **Changed:** `docs/12-phase-plan.md` (P2-03, P2-04, P2-05 notes)
+- **Verified:** `python3 tools/validate_data.py` → 0 errors (docs-only change)
+- **Not verified / risks:** none (no code changed)
+- **Decisions made:**
+  1. Slice classes 5–8 = Guachimán Jubilado, Médica Josefina, Curandero Nicoyano, Exorcista de Barrio. ✅
+  2. El Mayordomo Hundido = Sótanos final boss, fought at objective node `n9`. ✅
+- **Decisions needed:**
+  1. Bosque region: keep in slice, hide, or debug-only? (P2-07, still open)
+  2. Per-region enemy lists don't exist in the docs. Only families (`05` §2) and bosses (§3) do. P2-04 now starts by drafting the Sótanos roster for owner sign-off.
+- **Next step:** Unchanged. Start **P1-02** (multi-enemy squads) in `scripts/combat/combat_scene.gd`, or **P1-01** first if Godot is available.
+
 ## 2026-11-06 — P0-01 — Handoff protocol + agent-sized phase plan
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P0-01: done
