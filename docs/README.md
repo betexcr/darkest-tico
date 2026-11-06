@@ -15,5 +15,7 @@ Index of design documents implementing the Tico Gothic Roguelike plan. Do not ed
 | [09-paper-prototype-playtest.md](09-paper-prototype-playtest.md) | Prep → mission → recover → upgrade paper loop |
 | [10-implementation-notes.md](10-implementation-notes.md) | Runtime tuning (luz / low-light stress) |
 | [11-stable-diffusion-pipeline.md](11-stable-diffusion-pipeline.md) | Local SD workflow, folders, prompts, `tools/sd_export.py` |
+| [12-phase-plan.md](12-phase-plan.md) | **Working backlog**: agent-sized tasks per phase, status, acceptance |
+| [HANDOFF.md](HANDOFF.md) | **Handoff log**: newest entry = current state + next step |
 
-Read order: `01` → `02` → `03` → `04` → `05` → `06`; use `07`–`09` for content and playtesting; `10`–`11` for implementation and art.
+Read order: `01` → `02` → `03` → `04` → `05` → `06`; use `07`–`09` for content and playtesting; `10`–`11` for implementation and art. Agents: start with [../AGENTS.md](../AGENTS.md) → [HANDOFF.md](HANDOFF.md) → [12-phase-plan.md](12-phase-plan.md).

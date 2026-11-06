@@ -2,6 +2,8 @@
 
 Costa Rican gothic roguelike (Darkest Dungeon–style loop). **Design specs** live in [docs/](docs/).
 
+**Picking up work?** Read [AGENTS.md](AGENTS.md), then the top of [docs/HANDOFF.md](docs/HANDOFF.md), then [docs/12-phase-plan.md](docs/12-phase-plan.md).
+
 ## Requirements
 
 - Godot **4.6.x** (or any **4.x** with Forward+). Download: [godotengine.org](https://godotengine.org/download).
@@ -34,6 +36,7 @@ Or double-click **`launch-editor.bat`** in this folder (edit the `GODOT` line in
 | `scenes/combat/combat_scene.tscn` | Combat vertical slice |
 | `scripts/` | Autoloads, `DataLoader`, `CombatResolver`, UI controllers |
 | `docs/` | GDD and specs (not loaded by the game) |
+| `tools/validate_data.py` | Data cross-reference check (no Godot needed) |
 
 ## Vertical slice
 

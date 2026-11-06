@@ -1,0 +1,16 @@
+---
+description: Mandatory session start/end handoff protocol so any agent can take over
+alwaysApply: true
+---
+
+# Agent handoff protocol
+
+Full rules: `AGENTS.md` at the repo root. Summary:
+
+- **Start:** read the top entry of `docs/HANDOFF.md`, then `docs/12-phase-plan.md`. Claim exactly one task by setting it to `in-progress (<agent>, <branch>, <date>)`.
+- **Work:** stay in that task's scope. New work you discover gets added to the plan as a `todo`, not done silently.
+- **End (always, even if you are stopping mid-task):**
+  1. `python3 tools/validate_data.py` exits 0; Godot headless smoke if available. State what you could not verify.
+  2. Update the task status and checkboxes in `docs/12-phase-plan.md`.
+  3. Add a new entry at the top of `docs/HANDOFF.md` using its template, with a concrete **Next step**.
+  4. Commit with the task ID as the message prefix, and push.
