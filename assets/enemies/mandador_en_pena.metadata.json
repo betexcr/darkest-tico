@@ -1,0 +1,14 @@
+{
+  "id": "enemy_mandador_en_pena",
+  "prompt": "dark fantasy painting, ghost of a cruel plantation overseer, long dark coat, whip in one hand and a ledger book in the other, pale glowing skin, sneering, creature, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2104,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-06T23:27:00+00:00"
+}
