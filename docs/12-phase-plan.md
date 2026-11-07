@@ -64,13 +64,14 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [ ] Command added to AGENTS.md §3 verify step
 
 ### P1-02 · M · Multi-enemy squads (1–4 enemies)
-- Status: `todo` · Depends: —
+- Status: `done` (2026-11-07) · Generator gives rooms `enemy_ids` squads (`squad_size` [1,3]; elite + escorts; boss + `boss_escort` 2 Sirvientes ahogados). Squad HP scaled by `SQUAD_HP_SCALE`. Every enemy takes turns; click an enemy to target it (default front). Smoke test fights squads of 3.
 - Spec: `01` §2.1–2.2
 - Files: `scripts/combat/combat_scene.gd`, `scenes/combat/combat_scene.tscn`, `scripts/autoload/game_state.gd` (`build_combat_context_for_node`), `data/regions/*.json`, `tools/validate_data.py`
 - Done when:
-  - [ ] Region nodes accept `enemy_ids: [..]` (keep `enemy_id` as a 1-element fallback)
-  - [ ] Combat shows N enemies, each with HP and initiative; heroes pick a target
-  - [ ] Victory = all enemies dead; validator checks `enemy_ids`
+  - [x] Region nodes accept `enemy_ids: [..]` (keep `enemy_id` as a 1-element fallback)
+  - [x] Combat shows N enemies, each with HP and initiative; heroes pick a target
+  - [x] Victory = all enemies dead
+  - [ ] Validator checks hand-authored `enemy_ids` (generated squads use the pools, which are checked)
 
 ### P1-03 · L→ split · Battlefield ranks 1–4
 - Status: `todo` · Depends: P1-02

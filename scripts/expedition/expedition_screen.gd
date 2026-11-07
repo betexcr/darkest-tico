@@ -98,13 +98,15 @@ func _build_party() -> void:
 		_hero_row.add_child(_hero_units[k])
 
 
-func _spawn_enemy(enemy: Dictionary) -> void:
+## Squad order = ranks 1..4, rank 1 nearest the middle (first child of EnemyRow).
+func _spawn_enemies(squad: Array) -> void:
 	_clear_enemies()
-	var u = BattleUnitScript.new()
-	u.setup(enemy, false, "res://assets/enemies/%s.png" % str(enemy.get("id", "")))
-	u.clicked.connect(_on_unit_clicked)
-	_enemy_units.append(u)
-	_enemy_row.add_child(u)
+	for enemy in squad:
+		var u = BattleUnitScript.new()
+		u.setup(enemy, false, "res://assets/enemies/%s.png" % str(enemy.get("id", "")))
+		u.clicked.connect(_on_unit_clicked)
+		_enemy_units.append(u)
+		_enemy_row.add_child(u)
 
 
 func _clear_enemies() -> void:
@@ -115,6 +117,9 @@ func _clear_enemies() -> void:
 
 func _on_unit_clicked(unit) -> void:
 	if not unit.is_hero:
+		if _mode == Mode.COMBAT and not unit.is_dead():
+			_combat.set_target(unit.data)
+			_update_turn_label()
 		return
 	_view_hero(unit.data)
 	if _mode == Mode.COMBAT and not _combat.active_hero().is_empty() and not unit.is_dead():
@@ -463,16 +468,16 @@ func _damage_random_hero(amt: int) -> Dictionary:
 func _start_combat(node_id: String) -> void:
 	GameState.build_combat_context_for_node(node_id)
 	var ctx: Dictionary = GameState.combat_context
-	var enemy: Dictionary = ctx.get("enemy", {})
-	if enemy.is_empty():
+	var squad: Array = ctx.get("enemies", [])
+	if squad.is_empty():
 		return
 	_mode = Mode.COMBAT
 	_combat_node_id = node_id
 	_set_background(BG_COMBAT)
 	_clear_skills()
 	_turn_label.text = ""
-	_spawn_enemy(enemy)
-	_combat.start(GameState.party, enemy, _hero_units, _enemy_units,
+	_spawn_enemies(squad)
+	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)))
 
 
@@ -480,8 +485,9 @@ func _update_turn_label() -> void:
 	var hero: Dictionary = _combat.active_hero()
 	if hero.is_empty():
 		return
-	_turn_label.text = "Turno de %s · aliado elegido: %s (clic en un héroe para cambiarlo)" % [
-		hero.get("name", "?"), _ally_target.get("name", hero.get("name", "?"))]
+	_turn_label.text = "Turno de %s · objetivo: %s · aliado: %s (clic para cambiar)" % [
+		hero.get("name", "?"), _combat.current_target().get("name", "—"),
+		_ally_target.get("name", hero.get("name", "?"))]
 
 
 func _on_hero_turn(hero: Dictionary) -> void:
@@ -551,7 +557,7 @@ func _on_combat_over(victory: bool) -> void:
 	_log_line("Botín: +%d colones." % pay, "66aa66")
 	if bool(nd.get("is_boss", false)) or _combat_node_id == GameState.objective_node_id:
 		GameState.apply_objective_rewards()
-		_end_expedition("objective", "%s ha caído. La corrupción del sótano retrocede… por ahora." % GameState.combat_context.get("enemy", {}).get("name", "El jefe"))
+		_end_expedition("objective", "%s ha caído. La corrupción del sótano retrocede… por ahora." % GameState.combat_context.get("enemies", [{}])[0].get("name", "El jefe"))
 		return
 	await get_tree().create_timer(0.6).timeout
 	_clear_enemies()

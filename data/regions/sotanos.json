@@ -96,6 +96,14 @@
       "pozo_seco",
       "arbol_amarillo",
       "radio_vieja"
+    ],
+    "squad_size": [
+      1,
+      3
+    ],
+    "boss_escort": [
+      "sirviente_ahogado",
+      "sirviente_ahogado"
     ]
   }
 }

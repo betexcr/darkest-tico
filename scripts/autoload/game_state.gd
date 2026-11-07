@@ -637,7 +637,48 @@ func mark_node_cleared(node_id: String) -> void:
 		cleared_node_ids.append(node_id)
 
 
+## HP multiplier per member for a squad of n (fights stay short when 3-4 enemies show up).
+const SQUAD_HP_SCALE := [1.0, 1.0, 0.75, 0.6, 0.5]
+
+
+## Builds combat_context["enemies"] for a room: fresh copies with scaled HP; duplicate
+## names get A/B/C. combat_context["enemy"] is the leader (kept for older callers).
 func build_combat_context_for_node(node_id: String) -> void:
+	var nd0: Dictionary = mission_nodes_index.get(node_id, {})
+	var ids: Array = nd0.get("enemy_ids", [])
+	if ids.is_empty():
+		ids = [str(nd0.get("enemy_id", "espanto"))]
+	var squad_scale: float = SQUAD_HP_SCALE[mini(ids.size(), SQUAD_HP_SCALE.size() - 1)]
+	var squad: Array = []
+	var seen: Dictionary = {}
+	for k in ids.size():
+		var raw_en = _enemies_by_id.get(str(ids[k]), {})
+		var en: Dictionary = (raw_en as Dictionary).duplicate(true) if raw_en is Dictionary else {}
+		if en.is_empty():
+			en = {"id": "espanto", "name": "Espanto del Sótano", "hp_max": 45, "speed": 4, "dodge": 5, "accuracy": 8}
+		var hp: float = float(en.get("hp_max", 40))
+		if k == 0 and bool(nd0.get("is_boss", false)):
+			hp *= 1.45
+		else:
+			if k == 0 and bool(nd0.get("is_elite", false)):
+				hp *= 1.25
+			hp *= squad_scale
+		en["hp_max"] = maxi(int(ceil(hp)), 1)
+		en["hp"] = en["hp_max"]
+		en["dead"] = false
+		seen[str(en["id"])] = int(seen.get(str(en["id"]), 0)) + 1
+		squad.append(en)
+	var counts: Dictionary = {}
+	for en in squad:
+		if int(seen[str(en["id"])]) > 1:
+			counts[str(en["id"])] = int(counts.get(str(en["id"]), 0)) + 1
+			en["name"] = "%s %s" % [en.get("name", "?"), "ABCD"[int(counts[str(en["id"])]) - 1]]
+	_build_single_context(node_id)
+	combat_context["enemies"] = squad
+	combat_context["enemy"] = squad[0]
+
+
+func _build_single_context(node_id: String) -> void:
 	var nd: Dictionary = mission_nodes_index.get(node_id, {})
 	var en: Dictionary = {}
 	var eid: String = str(nd.get("enemy_id", ""))

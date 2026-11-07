@@ -35,6 +35,7 @@ func _run() -> void:
 		print("Run %d" % (run + 1))
 		gs.reset_party_from_catalog()
 		gs.reset_inventory_to_starter()
+		gs.colones = 5000
 		_check(gs.start_mission(), "start_mission")
 		_check(gs.mission_nodes_index.size() >= 10, "generated %d rooms" % gs.mission_nodes_index.size())
 		var boss: Dictionary = gs.mission_nodes_index.get(gs.objective_node_id, {})
@@ -58,6 +59,7 @@ func _run() -> void:
 		var rooms_moved: int = 0
 		var hero_turns: int = 0
 		var guards: int = 0
+		var max_squad: int = 1
 		while _finished == "" and steps < MAX_STEPS:
 			steps += 1
 			await process_frame
@@ -86,9 +88,15 @@ func _run() -> void:
 								screen._on_unit_clicked(screen._hero_units[1])
 								buttons[buttons.size() - 3].pressed.emit()
 							else:
+								# Target the last living enemy to exercise targeting.
+								var foes = screen._enemy_units.filter(func(u): return not u.is_dead())
+								if foes.size() > 1:
+									screen._on_unit_clicked(foes[foes.size() - 1])
+									max_squad = maxi(max_squad, screen._enemy_units.size())
 								buttons[0].pressed.emit()
 		_check(_finished != "", "expedition ended (%s) after %d moves, %d hero turns, %d guards" % [_finished, rooms_moved, hero_turns, guards])
 		_check(_finished in ["objective", "defeat"], "ended by boss victory or defeat")
+		_check(max_squad > 1, "fought a squad of up to %d enemies" % max_squad)
 		screen.queue_free()
 		await process_frame
 	print("%d failure(s)" % _failures)

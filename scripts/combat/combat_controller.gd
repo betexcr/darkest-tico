@@ -19,7 +19,10 @@ signal enemy_changed
 signal combat_over(victory: bool)
 
 var party: Array = []
-var enemy: Dictionary = {}
+## Enemy squad (1-4), index-aligned with enemy_units; index 0 = front rank.
+var enemies: Array = []
+## Enemy the player's attacks and enemy-target items hit (click an enemy to change).
+var target_enemy: Dictionary = {}
 var hero_units: Array = []
 var enemy_units: Array = []
 var is_elite: bool = false
@@ -44,9 +47,27 @@ func active_hero() -> Dictionary:
 	return {}
 
 
-func start(p_party: Array, p_enemy: Dictionary, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool) -> void:
+## The chosen target if still alive, else the front-most living enemy.
+func current_target() -> Dictionary:
+	if not target_enemy.is_empty() and not target_enemy.get("dead", false):
+		return target_enemy
+	for e in enemies:
+		if not e.get("dead", false):
+			return e
+	return {}
+
+
+func set_target(e: Dictionary) -> void:
+	if e.get("dead", false):
+		return
+	target_enemy = e
+	_refresh_markers()
+
+
+func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool) -> void:
 	party = p_party
-	enemy = p_enemy
+	enemies = p_enemies
+	target_enemy = {}
 	hero_units = p_hero_units
 	enemy_units = p_enemy_units
 	is_elite = elite
@@ -59,9 +80,11 @@ func start(p_party: Array, p_enemy: Dictionary, p_hero_units: Array, p_enemy_uni
 		tier = "¡Jefe! "
 	elif elite:
 		tier = "Enemigo de élite. "
-	_log("%s%s bloquea el paso." % [tier, enemy.get("name", "Algo")], "dd8866")
-	for u in enemy_units:
-		u.set_targeted(true)
+	var names: PackedStringArray = PackedStringArray()
+	for e in enemies:
+		names.append(str(e.get("name", "?")))
+	_log("%s%s bloquean el paso." % [tier, ", ".join(names)] if enemies.size() > 1 else "%s%s bloquea el paso." % [tier, names[0]], "dd8866")
+	_refresh_markers()
 	_start_round()
 
 
@@ -75,14 +98,14 @@ func use_skill(skill: Dictionary, ally: Dictionary = {}) -> void:
 	_busy = true
 	_awaiting_hero = false
 	var kind := str(skill.get("kind", ""))
-	var enemy_hp_before: int = int(enemy.get("hp", 0))
+	var enemy_before: Array = _enemy_snapshot()
 	var party_before: Array = _party_snapshot()
 	await _unit_for_hero(hero).play_action("attack" if kind == "attack" else "cast")
 	if kind == "attack":
-		_resolve_hero_attack(hero, skill)
+		_resolve_hero_attack(hero, skill, current_target())
 	else:
 		_resolve_support(hero, skill, ally)
-	await _after_action(enemy_hp_before, party_before)
+	await _after_action(enemy_before, party_before)
 
 
 ## Item use spends the hero's turn. `ally` is the hero to treat (ally-target items).
@@ -99,16 +122,17 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 	_busy = true
 	_awaiting_hero = false
 	GameState.remove_item(item_id, 1)
-	var enemy_hp_before: int = int(enemy.get("hp", 0))
+	var enemy_before: Array = _enemy_snapshot()
 	var party_before: Array = _party_snapshot()
 	await _unit_for_hero(hero).play_action("cast")
 	_log("%s usa %s." % [hero.get("name", "?"), item.get("name", item_id)], "")
 	match str(item.get("target", "ally")):
 		"enemy":
 			var dmg: int = ItemEffectsScript.damage_roll(item)
-			if dmg > 0:
-				_apply_damage_to_enemy(dmg)
-				_log("%s recibe %d de daño." % [enemy.get("name", "?"), dmg], "ddbb55")
+			var tgt: Dictionary = current_target()
+			if dmg > 0 and not tgt.is_empty():
+				_apply_damage_to_enemy(tgt, dmg)
+				_log("%s recibe %d de daño." % [tgt.get("name", "?"), dmg], "ddbb55")
 		"party":
 			for h in party:
 				if h is Dictionary and not h.get("dead", false):
@@ -119,7 +143,7 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 	var light: int = ItemEffectsScript.light_amount(item)
 	if light != 0:
 		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
-	await _after_action(enemy_hp_before, party_before)
+	await _after_action(enemy_before, party_before)
 
 
 ## Guard: the hero takes half physical damage until their next turn (owner, 2026-11-07).
@@ -149,8 +173,8 @@ func pass_turn() -> void:
 
 # --- Flow ---------------------------------------------------------------------------
 
-func _after_action(enemy_hp_before: int, party_before: Array) -> void:
-	await _animate_enemy_changes(enemy_hp_before)
+func _after_action(enemy_before: Array, party_before: Array) -> void:
+	await _animate_enemy_changes(enemy_before)
 	await _animate_party_changes(party_before)
 	_busy = false
 	_turn_index += 1
@@ -172,9 +196,10 @@ func _roll_initiative_queue() -> void:
 		if h is Dictionary and not h.get("dead", false):
 			var ini: int = CombatResolverScript.roll_initiative(int(h.get("speed", 3)), int(h.get("resolve_level", 0)))
 			entries.append({"kind": "hero", "actor": h, "ini": ini, "spd": int(h.get("speed", 0)), "rl": int(h.get("resolve_level", 0))})
-	if not enemy.get("dead", false):
-		var ein: int = CombatResolverScript.roll_initiative(int(enemy.get("speed", 3)), 0)
-		entries.append({"kind": "enemy", "actor": enemy, "ini": ein, "spd": int(enemy.get("speed", 0)), "rl": 0})
+	for e in enemies:
+		if not e.get("dead", false):
+			var ein: int = CombatResolverScript.roll_initiative(int(e.get("speed", 3)), 0)
+			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": int(e.get("speed", 0)), "rl": 0})
 	entries.sort_custom(_sort_initiative)
 	_turn_queue = entries
 	_log("— Ronda %d —" % _round, "888888")
@@ -197,11 +222,12 @@ func _process_turn() -> void:
 	while _turn_index < _turn_queue.size():
 		var step: Dictionary = _turn_queue[_turn_index]
 		if step["kind"] == "enemy":
-			if not enemy.get("dead", false):
-				actor_changed.emit("Turno: %s" % enemy.get("name", "?"))
-				_set_active(enemy)
+			var foe: Dictionary = step["actor"]
+			if not foe.get("dead", false):
+				actor_changed.emit("Turno: %s" % foe.get("name", "?"))
+				_set_active(foe)
 				await get_tree().create_timer(0.35).timeout
-				await _enemy_turn()
+				await _enemy_turn(foe)
 				_turn_index += 1
 				if _check_end():
 					return
@@ -244,7 +270,7 @@ func _process_turn() -> void:
 func _check_end() -> bool:
 	if _ended:
 		return true
-	if enemy.get("dead", false):
+	if current_target().is_empty():
 		_finish(true)
 		return true
 	if _living_heroes() <= 0:
@@ -260,13 +286,14 @@ func _finish(victory: bool) -> void:
 		if h is Dictionary:
 			h["guarding"] = false
 			StatusEffectsScript.clear(h)
-	StatusEffectsScript.clear(enemy)
+	for e in enemies:
+		StatusEffectsScript.clear(e)
 	for u in hero_units:
 		u.set_active(false)
 		u.refresh()
 	actor_changed.emit("Victoria" if victory else "Derrota")
 	if victory:
-		_log("Victoria. %s cae." % enemy.get("name", "El enemigo"), "66aa66")
+		_log("Victoria. Cae el último enemigo.", "66aa66")
 	else:
 		_log("Derrota. La hacienda guarda silencio.", "aa4444")
 	await get_tree().create_timer(1.0).timeout
@@ -319,7 +346,9 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 			_log("  %s queda en guardia" % t.get("name", "?"), "88aacc")
 
 
-func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
+func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary) -> void:
+	if enemy.is_empty():
+		return
 	var ff: Dictionary = StressSystemScript.ira_ciega_friendly_fire_target(hero, party)
 	if not ff.is_empty():
 		var fdmg: int = StressSystemScript.friendly_fire_damage()
@@ -336,7 +365,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
 	var raw: int = CombatResolverScript.roll_damage(skill)
 	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(raw, crit)
-	_apply_damage_to_enemy(dmg)
+	_apply_damage_to_enemy(enemy, dmg)
 	var ap = skill.get("applies", null)
 	if ap is Dictionary and not enemy.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
 		var msg: String = StatusEffectsScript.apply(enemy, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
@@ -347,13 +376,13 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
 		_log_all(StressSystemScript.add_stress(hero, cost))
 		_log("  %s: estrés +%d (costo)" % [hero.get("name", "?"), cost], "aa88cc")
 	if crit:
-		_log("%s — %s ¡CRÍTICO! %d" % [hero.get("name", "?"), skill.get("name", "?"), dmg], "ddbb55")
+		_log("%s — %s a %s ¡CRÍTICO! %d" % [hero.get("name", "?"), skill.get("name", "?"), enemy.get("name", "?"), dmg], "ddbb55")
 		_log_all(StressSystemScript.add_stress(hero, 5))
 	else:
-		_log("%s — %s: %d" % [hero.get("name", "?"), skill.get("name", "?"), dmg], "")
+		_log("%s — %s a %s: %d" % [hero.get("name", "?"), skill.get("name", "?"), enemy.get("name", "?"), dmg], "")
 
 
-func _apply_damage_to_enemy(dmg: int) -> void:
+func _apply_damage_to_enemy(enemy: Dictionary, dmg: int) -> void:
 	enemy["hp"] = int(enemy["hp"]) - dmg
 	if int(enemy["hp"]) <= 0:
 		enemy["hp"] = 0
@@ -361,7 +390,7 @@ func _apply_damage_to_enemy(dmg: int) -> void:
 
 
 ## Basic attack or a special, chosen by "weight" (data/enemies.json).
-func _pick_enemy_skill() -> Dictionary:
+func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
 	var list: Array = enemy.get("skills", [])
 	if list.is_empty():
 		return {"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}
@@ -376,14 +405,14 @@ func _pick_enemy_skill() -> Dictionary:
 	return list[0]
 
 
-func _enemy_turn() -> void:
+func _enemy_turn(enemy: Dictionary) -> void:
 	# Ailments tick first; a stunned enemy loses its turn.
 	var tk: Dictionary = StatusEffectsScript.tick(enemy)
 	_log_all(tk["logs"])
 	if int(tk["damage"]) > 0:
-		var hp_before: int = int(enemy.get("hp", 0))
-		_apply_damage_to_enemy(int(tk["damage"]))
-		await _animate_enemy_changes(hp_before)
+		var before: Array = _enemy_snapshot()
+		_apply_damage_to_enemy(enemy, int(tk["damage"]))
+		await _animate_enemy_changes(before)
 	if enemy.get("dead", false) or bool(tk["skip"]):
 		return
 	var living: Array = []
@@ -392,12 +421,13 @@ func _enemy_turn() -> void:
 			living.append(h)
 	if living.is_empty():
 		return
-	var skill: Dictionary = _pick_enemy_skill()
+	var skill: Dictionary = _pick_enemy_skill(enemy)
 	var magical: bool = str(skill.get("type", "physical")) == "magical"
 	var targets: Array = living if str(skill.get("target", "single")) == "party" else [living[randi() % living.size()]]
 	var party_before: Array = _party_snapshot()
-	if not enemy_units.is_empty():
-		await enemy_units[0].play_action("cast" if magical else "attack")
+	var eu = _unit_for_enemy(enemy)
+	if eu != null:
+		await eu.play_action("cast" if magical else "attack")
 	_log("%s usa %s%s." % [enemy.get("name", "?"), skill.get("name", "?"), " (mágico)" if magical else ""], "cc6655")
 	var dmg_range: Array = skill.get("damage", [4, 9])
 	var physical: bool = not magical and not bool(skill.get("ignores_guard", false))
@@ -482,14 +512,31 @@ func _refresh_units() -> void:
 		u.refresh()
 
 
+func _unit_for_enemy(e: Dictionary):
+	for k in enemies.size():
+		if is_same(enemies[k], e) and k < enemy_units.size():
+			return enemy_units[k]
+	return null
+
+
+var _active_actor: Dictionary = {}
+
+
 func _set_active(actor: Dictionary) -> void:
+	_active_actor = actor
 	for k in party.size():
 		hero_units[k].set_active(is_same(party[k], actor))
+	_refresh_markers()
+
+
+## Gold marker on the acting enemy, red on the player's target, none on the rest.
+func _refresh_markers() -> void:
+	var tgt: Dictionary = current_target()
 	for u in enemy_units:
-		if is_same(u.data, actor):
+		if is_same(u.data, _active_actor):
 			u.set_active(true)
 		else:
-			u.set_targeted(not u.is_dead())
+			u.set_targeted(not u.is_dead() and is_same(u.data, tgt))
 
 
 func _party_snapshot() -> Array:
@@ -513,14 +560,18 @@ func _animate_party_changes(before: Array) -> void:
 			hero_units[k].refresh()
 
 
-func _animate_enemy_changes(hp_before: int) -> void:
-	if enemy_units.is_empty():
-		return
-	var eu = enemy_units[0]
-	if bool(enemy.get("dead", false)) and hp_before > 0:
-		await eu.play_death()
-	elif int(enemy.get("hp", 0)) < hp_before:
-		await eu.play_hurt()
+func _enemy_snapshot() -> Array:
+	return enemies.map(func(e): return int(e.get("hp", 0)))
+
+
+func _animate_enemy_changes(before: Array) -> void:
+	for k in mini(enemies.size(), enemy_units.size()):
+		var e: Dictionary = enemies[k]
+		if bool(e.get("dead", false)) and int(before[k]) > 0:
+			await enemy_units[k].play_death()
+		elif int(e.get("hp", 0)) < int(before[k]):
+			await enemy_units[k].play_hurt()
+	_refresh_markers()
 	enemy_changed.emit()
 
 

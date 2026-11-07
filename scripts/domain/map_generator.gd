@@ -142,17 +142,20 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 		match t:
 			"combat":
 				nd["enemy_id"] = _pick(gen.get("enemy_pool", ["espanto"]), rng)
+				nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
 				nd["reward_colones"] = _range(gen.get("reward_colones", [300, 450]), rng)
 			"elite":
 				nd["type"] = "combat"
 				nd["is_elite"] = true
 				nd["enemy_id"] = _pick(gen.get("elite_pool", gen.get("enemy_pool", ["espanto"])), rng)
+				nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
 				nd["reward_colones"] = _range(gen.get("elite_reward_colones", [500, 650]), rng)
 			"curio":
 				nd["curio_id"] = _pick(gen.get("curios", []), rng)
 			"boss":
 				nd["is_boss"] = true
 				nd["enemy_id"] = str(gen.get("boss_enemy_id", "espanto"))
+				nd["enemy_ids"] = [nd["enemy_id"]] + Array(gen.get("boss_escort", []))
 				nd["reward_colones"] = int(gen.get("boss_reward_colones", 900))
 		nodes.append(nd)
 	var edges: Array = []
@@ -169,6 +172,16 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 		"seed": seed_value,
 		"boss_distance": max_d,
 	}
+
+
+## Leader first (front rank), then 0..n extra members from the normal pool (P1-02).
+static func _squad(leader: String, gen: Dictionary, rng: RandomNumberGenerator) -> Array:
+	var size_range: Array = gen.get("squad_size", [1, 3])
+	var n: int = rng.randi_range(int(size_range[0]), int(size_range[1]))
+	var out: Array = [leader]
+	for _k in n - 1:
+		out.append(_pick(gen.get("enemy_pool", [leader]), rng))
+	return out
 
 
 ## Mostly extend the newest room (long corridors), sometimes branch from any room with
