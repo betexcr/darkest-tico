@@ -190,6 +190,25 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     for i, sid in enumerate(order):
         x, y = (i % cols) * cw, (i // cols) * ch
         out[sid] = img.crop((x, y, x + cw, y + ch))
+    # Small sheet cells lose detail (e.g. a raised weapon). States listed in sheet.redo_states
+    # are redrawn as one full-size figure, starting from their own cell (keeps the colors),
+    # guided by the same skeleton and the portrait, then put back into the sheet.
+    w, h = cfg["size"]
+    states = {s["id"]: s for s in cfg["states"]}
+    for sid in sheet.get("redo_states", []):
+        st = states[sid]
+        pose_text = st.get("redo_pose", st["pose"]).replace("{weapon}", c.get("weapon", "a weapon"))
+        p = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
+        big = pipes["img_pose"](
+            prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(cfg["skeletons"][sid], (w, h)),
+            strength=float(st.get("redo_strength", 0.75)), controlnet_conditioning_scale=control_scale,
+            negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
+            generator=torch.Generator(device="cpu").manual_seed(int(c["seed"]) + order.index(sid)),
+            **(ref_kw or {}),
+        ).images[0]
+        out[sid] = big.resize((cw, ch), Image.LANCZOS)
+        i = order.index(sid)
+        img.paste(out[sid], ((i % cols) * cw, (i // cols) * ch))
     return out, img, prompt
 
 

@@ -1704,7 +1704,11 @@
         320,
         480
       ],
-      "prompt_template": "character sheet, {look}, six poses, same clothes and {weapon} in each, full body, plain flat grey background, {style}"
+      "prompt_template": "character sheet, {look}, six poses, same clothes and {weapon} in each, full body, plain flat grey background, {style}",
+      "redo_states": [
+        "attack"
+      ],
+      "_redo_doc": "States redrawn as one full-size figure after the sheet (cells are too small for a raised weapon)."
     },
     "states": [
       {
@@ -1718,7 +1722,9 @@
         "strength": 0.8,
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
-        "beast_strength": 0.7
+        "beast_strength": 0.7,
+        "redo_pose": "raising {weapon} high overhead with both hands to strike, blade visible",
+        "redo_strength": 0.8
       },
       {
         "id": "cast",
