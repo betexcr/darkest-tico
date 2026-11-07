@@ -261,7 +261,8 @@ def redo_prompt(cfg: dict, manifest: dict, c: dict, sid: str) -> str:
     st = {s["id"]: s for s in cfg["states"]}[sid]
     pose_text = c.get("redo_poses", {}).get(sid) or st.get("redo_pose", st["pose"])
     pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
-    return cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
+    look = c.get("redo_looks", {}).get(sid) or c["look"]
+    return cfg["prompt_template"].format(look=look, pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
 
 
 def redo_seed(cfg: dict, c: dict, sid: str) -> int:
