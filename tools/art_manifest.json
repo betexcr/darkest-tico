@@ -2303,15 +2303,18 @@
       },
       {
         "id": "medica_josefina",
-        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt, dark leggings, flat boots",
+        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black skirt, black leggings covering the legs, flat boots",
         "seed": 5051,
         "body": "humanoid",
         "weapon": "a syringe",
-        "negative_extra": "miniskirt, stockings, high heels, cleavage",
+        "negative_extra": "shorts, bare legs, bare thighs, high heels",
         "weapon_shape": {
           "kind": "line",
           "angle": 15,
           "length": 0.16
+        },
+        "redo_seeds": {
+          "attack": 5054
         }
       },
       {
