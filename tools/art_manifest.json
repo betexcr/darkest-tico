@@ -2262,6 +2262,9 @@
           "kind": "bowl",
           "angle": 20,
           "length": 0.3
+        },
+        "redo_seeds": {
+          "attack": 5021
         }
       },
       {
