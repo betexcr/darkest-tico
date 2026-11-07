@@ -18,7 +18,7 @@
     },
     "mayordomo_hundido": {
       "id": "mayordomo_hundido",
-      "name": "Mayordomo hundido",
+      "name": "El Mayordomo Hundido",
       "hp_max": 55,
       "speed": 4,
       "dodge": 5,
@@ -47,6 +47,78 @@
       "speed": 6,
       "dodge": 8,
       "accuracy": 10
+    },
+    "peon_penado": {
+      "id": "peon_penado",
+      "name": "Peón penado",
+      "hp_max": 52,
+      "speed": 3,
+      "dodge": 3,
+      "accuracy": 8
+    },
+    "mandador_en_pena": {
+      "id": "mandador_en_pena",
+      "name": "Mandador en pena",
+      "hp_max": 40,
+      "speed": 5,
+      "dodge": 6,
+      "accuracy": 9
+    },
+    "rata_de_troje": {
+      "id": "rata_de_troje",
+      "name": "Ratas de troje",
+      "hp_max": 34,
+      "speed": 8,
+      "dodge": 9,
+      "accuracy": 7
+    },
+    "murcielago_bodega": {
+      "id": "murcielago_bodega",
+      "name": "Murciélago de bodega",
+      "hp_max": 30,
+      "speed": 9,
+      "dodge": 12,
+      "accuracy": 7
+    },
+    "monaguillo_porton": {
+      "id": "monaguillo_porton",
+      "name": "Monaguillo del Portón",
+      "hp_max": 36,
+      "speed": 5,
+      "dodge": 6,
+      "accuracy": 7
+    },
+    "vigia_porton": {
+      "id": "vigia_porton",
+      "name": "Vigía del Portón",
+      "hp_max": 38,
+      "speed": 6,
+      "dodge": 8,
+      "accuracy": 8
+    },
+    "susurro_aljibe": {
+      "id": "susurro_aljibe",
+      "name": "Susurro del aljibe",
+      "hp_max": 36,
+      "speed": 5,
+      "dodge": 10,
+      "accuracy": 8
+    },
+    "duende_sotano": {
+      "id": "duende_sotano",
+      "name": "Duende del sótano",
+      "hp_max": 30,
+      "speed": 8,
+      "dodge": 14,
+      "accuracy": 7
+    },
+    "sirviente_ahogado": {
+      "id": "sirviente_ahogado",
+      "name": "Sirviente ahogado",
+      "hp_max": 28,
+      "speed": 4,
+      "dodge": 3,
+      "accuracy": 6
     }
   }
 }

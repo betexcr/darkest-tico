@@ -5,6 +5,7 @@ Validate game data JSON without needing Godot installed.
 Checks that JSON parses and that cross-references resolve:
   - hero skill_ids -> data/skills.json
   - region start/objective nodes, edges, enemy_id -> nodes / data/enemies.json
+    (regions with a "generator" block: enemy pools and boss -> data/enemies.json)
   - every non-start region node is reachable from start_node
   - assets/**/*.png have a sibling .metadata.json (warning only; see .cursor/rules/stable-diffusion-assets.mdc)
   - tools/art_manifest.json ids are unique, write under assets/, and have been generated (warning)
@@ -79,6 +80,19 @@ def main() -> int:
         rel = region_path.relative_to(ROOT)
         region = load(region_path)
         if region is None:
+            continue
+        gen = region.get("generator")
+        if gen is not None:
+            for key in ("enemy_pool", "elite_pool"):
+                for eid in gen.get(key, []):
+                    if eid not in enemies:
+                        errors.append(f"{rel}: generator.{key} references unknown enemy '{eid}'")
+            boss = gen.get("boss_enemy_id")
+            if boss not in enemies:
+                errors.append(f"{rel}: generator.boss_enemy_id '{boss}' is not an enemy")
+            lo, hi = (gen.get("rooms") or [0, 0])[:2]
+            if not (3 <= lo <= hi):
+                errors.append(f"{rel}: generator.rooms must be [min, max] with 3 <= min <= max")
             continue
         nodes = {}
         for n in region.get("nodes", []):

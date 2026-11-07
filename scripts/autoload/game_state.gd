@@ -10,6 +10,7 @@ const DataLoaderScript := preload("res://scripts/data/data_loader.gd")
 
 const ExpeditionLoaderScript := preload("res://scripts/domain/expedition_loader.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
+const MapGeneratorScript := preload("res://scripts/domain/map_generator.gd")
 
 
 
@@ -296,6 +297,11 @@ func start_mission(region_path: String = "") -> bool:
 
 		return false
 
+	if r.has("generator"):
+		var g: Dictionary = MapGeneratorScript.generate(r, randi())
+		for k in ["nodes", "edges", "start_node", "objective_node", "undirected", "seed"]:
+			r[k] = g[k]
+
 	mission_region_data = r
 
 	mission_nodes_index = ExpeditionLoaderScript.node_by_id(r)
@@ -425,6 +431,33 @@ func _apply_low_light_stress_on_travel() -> void:
 
 
 
+
+
+## Grid position of a room (generated maps only), or Vector2i(-1, -1).
+func node_pos(node_id: String) -> Vector2i:
+	var p = mission_nodes_index.get(node_id, {}).get("pos", null)
+	if p is Array and p.size() >= 2:
+		return Vector2i(int(p[0]), int(p[1]))
+	return Vector2i(-1, -1)
+
+
+## Neighbor of the current room in a grid direction (e.g. Vector2i.UP), or "".
+func neighbor_in_direction(dir: Vector2i) -> String:
+	var here: Vector2i = node_pos(current_node_id)
+	for nid in mission_neighbors():
+		if node_pos(str(nid)) - here == dir:
+			return str(nid)
+	return ""
+
+
+## Fog of war (docs/01 §4.3): a room's type is known once visited or next to a visited room.
+func is_room_revealed(node_id: String) -> bool:
+	if visited_node_ids.has(node_id) or node_id == objective_node_id:
+		return true
+	for v in visited_node_ids:
+		if ExpeditionLoaderScript.neighbors(mission_region_data, str(v)).has(node_id):
+			return true
+	return false
 
 
 func current_node() -> Dictionary:

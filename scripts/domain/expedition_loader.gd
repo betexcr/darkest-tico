@@ -23,7 +23,12 @@ static func node_by_id(region: Dictionary) -> Dictionary:
 static func neighbors(region: Dictionary, node_id: String) -> Array:
 	var edges: Array = region.get("edges", [])
 	var nexts: Array = []
+	var both_ways: bool = bool(region.get("undirected", false))
 	for e in edges:
-		if e is Dictionary and str(e.get("from", "")) == node_id:
+		if not e is Dictionary:
+			continue
+		if str(e.get("from", "")) == node_id:
 			nexts.append(str(e.get("to", "")))
+		elif both_ways and str(e.get("to", "")) == node_id:
+			nexts.append(str(e.get("from", "")))
 	return nexts

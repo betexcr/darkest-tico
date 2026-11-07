@@ -165,13 +165,15 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] **Owner confirmed 2026-11-06:** Mayordomo is the Sótanos final boss. He becomes the objective fight at `n9` (he's currently a plain combat node at `n7`; give `n7` a regular squad) with his 3 mechanics
   - [ ] One roaming mini-boss with a spawn rule (suggested: Cadejo Negro, listed in `05` §3.2; today it is a plain elite in Bosque `b4`)
 
-### P2-06 · M · Map generator (seeded) for Sótanos
-- Status: `todo` · Depends: P2-01
-- Spec: `01` §4.2–4.3, `07`
-- Files: `scripts/domain/map_generator.gd` (new), `data/regions/sotanos.json` (generation params), `scripts/expedition/expedition_map.gd`
+### P2-06 · M · Random grid dungeon generator (owner spec 2026-11-07)
+- Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
+- Spec: owner request + `01` §4.2–4.3, `07`. Rooms sit on a grid and connect up/down/left/right. Branching is random: some rooms have one exit, others several. The **last room is always the region boss** (Sótanos: El Mayordomo Hundido), placed farthest from the entrance.
+- Files: `scripts/domain/map_generator.gd` (new, pure), `data/regions/sotanos.json` (`generator` block), `scripts/autoload/game_state.gd`, `scripts/domain/expedition_loader.gd` (undirected edges)
 - Done when:
-  - [ ] Short/medium missions generate valid graphs from a seed (start → objective always reachable)
-  - [ ] Scouting/fog per `01` §4.3; hand-authored maps still loadable
+  - [ ] Seeded generation; start → boss always reachable; boss room = graph-farthest leaf
+  - [ ] Room types weighted from region data (combat, elite, trap, curio, camp, empty); one camp mid-way
+  - [ ] Fog: layout visible, room type shown only for visited rooms and their neighbors (boss always marked)
+  - [ ] Hand-authored region files (Bosque) still load
 
 ### P2-07 · S · Bosque: decide slice status
 - Status: `done`
@@ -220,6 +222,29 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: P2-01
 - Spec: `02` §9, `01` §4.4
 - Done when: [ ] Camp node uses per-hero camp skills instead of the fixed "feast/skip"
+
+### P3-09 · M · Items, inventory and Pulpería (owner spec 2026-11-07)
+- Status: `todo` · Depends: —
+- Spec: owner request. Tico-themed consumables in `data/items.json`. Using an item **in combat spends the hero's turn**. **Out of combat each item can be used `uses_per_node` times per room (default 1)**. Bought at the hacienda's Pulpería. Food and light become items (gallo pinto, candela) instead of hub counters. Curio-key items (llave, mecate, agua bendita, ruda) prepare `07` curio interactions.
+- Files: `data/items.json` (new), `scripts/autoload/game_state.gd` (inventory, per-room use counts, save v4 + migration of `hub_pending_*`), `scenes/hacienda/hacienda_hub.tscn` + `.gd` (Pulpería replaces rations/lantern buttons), `tools/validate_data.py`
+- Done when:
+  - [ ] Inventory saved; buy at Pulpería; per-room limit enforced outside combat
+  - [ ] Effects: heal, stress, light, damage; validator checks item refs
+
+### P4-09 · L · Unified expedition screen (owner spec 2026-11-07)
+- Status: `todo` · Depends: P2-06, P3-09, P4-07
+- Spec: owner screenshots of the reference layout. **One screen** for exploring and fighting:
+  - **Top:** stage with the party; enemies appear in place when a fight starts. Event panels (trap, curio, camp) open over the stage.
+  - **Bottom left:** hero panel showing the hero whose turn it is. Clicking any hero on the stage shows that hero's data instead.
+  - **Bottom right:** room map, moving room by room with arrows or by clicking a neighbor. A side button flips this panel to the inventory grid (use items there).
+- Files: `scenes/expedition/expedition_screen.tscn` + `scripts/expedition/expedition_screen.gd` (new), `scripts/expedition/map_view.gd` (new), `scripts/combat/combat_controller.gd` (combat rules moved out of `combat_scene.gd`), `scripts/bootstrap/main.gd`. Old `expedition_map` and `combat_scene` are removed once replaced.
+- Done when:
+  - [ ] Explore → fight → explore without changing scenes; boss room ends the mission on victory
+  - [ ] Hero panel follows the turn; clicking a hero shows that hero
+  - [ ] Map and inventory toggle; items usable in and out of combat with the rules above
+
+### P4-10 · S · Item icons
+- Status: `todo` · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01

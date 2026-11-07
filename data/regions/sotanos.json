@@ -1,37 +1,94 @@
 {
   "region_id": "sotanos",
   "name": "Sótanos de la Hacienda",
-  "start_node": "n0",
-  "objective_node": "n9",
   "initial_light": 100,
   "initial_food": 10,
   "light_decay_per_move": 5,
   "low_light_threshold": 40,
   "low_light_stress": 3,
   "objective_reward_colones": 800,
-  "nodes": [
-    { "id": "n0", "type": "safe", "label": "Boca del sótano" },
-    { "id": "n1", "type": "trap", "label": "Escalera resbalosa" },
-    { "id": "n2", "type": "combat", "label": "Pasillo de piedra", "enemy_id": "espanto", "reward_colones": 350 },
-    { "id": "n3", "type": "curio", "label": "Altar roto" },
-    { "id": "n4", "type": "combat", "label": "Cámara húmeda", "enemy_id": "sombra_cuadrilla", "reward_colones": 400, "is_elite": true },
-    { "id": "n5", "type": "camp", "label": "Fogata de trocha" },
-    { "id": "n6", "type": "trap", "label": "Vigas inestables" },
-    { "id": "n7", "type": "combat", "label": "Antesala maldita", "enemy_id": "mayordomo_hundido", "reward_colones": 450 },
-    { "id": "n8", "type": "curio", "label": "Caja del abuelo" },
-    { "id": "n9", "type": "objective", "label": "Foco de corrupción" }
-  ],
-  "edges": [
-    { "from": "n0", "to": "n1" },
-    { "from": "n1", "to": "n2" },
-    { "from": "n1", "to": "n3" },
-    { "from": "n2", "to": "n4" },
-    { "from": "n3", "to": "n4" },
-    { "from": "n4", "to": "n5" },
-    { "from": "n4", "to": "n6" },
-    { "from": "n5", "to": "n7" },
-    { "from": "n6", "to": "n7" },
-    { "from": "n7", "to": "n8" },
-    { "from": "n8", "to": "n9" }
-  ]
+  "generator": {
+    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss.",
+    "rooms": [
+      10,
+      13
+    ],
+    "min_boss_distance": 5,
+    "extra_links": 1,
+    "camps": 1,
+    "elites": 1,
+    "min_combat": 3,
+    "weights": {
+      "combat": 40,
+      "trap": 15,
+      "curio": 25,
+      "empty": 20
+    },
+    "enemy_pool": [
+      "espanto",
+      "peon_penado",
+      "mandador_en_pena",
+      "rata_de_troje",
+      "murcielago_bodega",
+      "monaguillo_porton",
+      "vigia_porton",
+      "susurro_aljibe",
+      "duende_sotano"
+    ],
+    "elite_pool": [
+      "sombra_cuadrilla",
+      "cadejo_negro"
+    ],
+    "boss_enemy_id": "mayordomo_hundido",
+    "reward_colones": [
+      300,
+      450
+    ],
+    "elite_reward_colones": [
+      500,
+      650
+    ],
+    "boss_reward_colones": 900,
+    "labels": {
+      "safe": [
+        "Boca del sótano"
+      ],
+      "combat": [
+        "Pasillo de piedra",
+        "Cámara húmeda",
+        "Bodega de café",
+        "Antesala maldita",
+        "Troje podrida",
+        "Cava de guaro"
+      ],
+      "elite": [
+        "Cámara de la cuadrilla",
+        "Perrera vieja"
+      ],
+      "trap": [
+        "Escalera resbalosa",
+        "Vigas inestables",
+        "Piso hundido",
+        "Alambre de púas"
+      ],
+      "curio": [
+        "Altar roto",
+        "Caja del abuelo",
+        "Pozo seco",
+        "Radio vieja",
+        "Árbol amarillo"
+      ],
+      "camp": [
+        "Fogata de trocha"
+      ],
+      "empty": [
+        "Pasillo vacío",
+        "Bóveda silenciosa",
+        "Túnel de raíces"
+      ],
+      "boss": [
+        "Comedor del Mayordomo"
+      ]
+    }
+  }
 }
