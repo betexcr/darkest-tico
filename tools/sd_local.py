@@ -14,6 +14,9 @@ Usage (from repo root):
   python tools/sd_local.py --force              # regenerate all
   python tools/sd_local.py --only enemy_espanto portrait_abuela
   python tools/sd_local.py --steps 12           # quick draft pass
+  python tools/sd_local.py --only enemy_espanto --try-seeds 3 --preview-dir /tmp/previews
+      # 3 candidates (seed, seed+1, seed+2); copy the best PNG + .metadata.json into
+      # assets/ and set that seed in the manifest so it stays reproducible
 
 Game code never calls this; it only writes files under assets/.
 """
@@ -58,7 +61,17 @@ def main() -> int:
     ap.add_argument("--only", nargs="*", help="asset ids to generate")
     ap.add_argument("--force", action="store_true", help="overwrite existing PNGs that have metadata")
     ap.add_argument("--steps", type=int, default=None, help="override manifest steps")
+    ap.add_argument(
+        "--try-seeds",
+        type=int,
+        default=0,
+        metavar="N",
+        help="write N candidates per asset (manifest seed, seed+1, ...) to --preview-dir instead of assets/",
+    )
+    ap.add_argument("--preview-dir", default=None, help="where --try-seeds writes candidates")
     args = ap.parse_args()
+    if args.try_seeds and not args.preview_dir:
+        ap.error("--try-seeds needs --preview-dir (keep previews out of assets/)")
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     assets = manifest["assets"]
@@ -87,11 +100,19 @@ def main() -> int:
     negative = manifest["negative_prompt"]
     print(f"Generating {len(todo)} asset(s) on {device}, {steps} steps")
 
-    for i, a in enumerate(todo, 1):
+    jobs = []
+    for a in todo:
+        if args.try_seeds:
+            for k in range(args.try_seeds):
+                seed = int(a["seed"]) + k
+                jobs.append((a, seed, Path(args.preview_dir) / f'{a["id"]}_{seed}.png'))
+        else:
+            jobs.append((a, int(a["seed"]), ROOT / a["out"]))
+
+    for i, (a, seed, out) in enumerate(jobs, 1):
         template = manifest.get("prompt_template", "{subject}, {style}")
         prompt = template.format(subject=a["subject"], style=manifest["style_suffix"])
         w, h = a["size"]
-        seed = int(a["seed"])
         t0 = time.time()
         gen = torch.Generator(device="cpu").manual_seed(seed)
         image = pipe(
@@ -103,12 +124,17 @@ def main() -> int:
             guidance_scale=cfg,
             generator=gen,
         ).images[0]
+        from PIL import Image, ImageEnhance
+
         out_size = a.get("out_size")
         if out_size and tuple(out_size) != (w, h):
-            from PIL import Image
-
             image = image.resize(tuple(out_size), Image.LANCZOS)
-        out = ROOT / a["out"]
+        # Optional deterministic post-processing, e.g. "post": {"brightness": 1.4, "contrast": 1.2}
+        post = a.get("post", {})
+        if "brightness" in post:
+            image = ImageEnhance.Brightness(image).enhance(float(post["brightness"]))
+        if "contrast" in post:
+            image = ImageEnhance.Contrast(image).enhance(float(post["contrast"]))
         out.parent.mkdir(parents=True, exist_ok=True)
         image.save(out, format="PNG")
         meta = {
@@ -121,6 +147,7 @@ def main() -> int:
             "sampler": manifest["sampler"],
             "resolution": f"{w}x{h}",
             "output_resolution": f"{image.width}x{image.height}",
+            "post": post or None,
             "model": manifest["model"],
             "generator": "tools/sd_local.py (diffusers)",
             "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -128,7 +155,7 @@ def main() -> int:
         out.with_suffix(".metadata.json").write_text(
             json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
-        print(f"[{i}/{len(todo)}] {a['out']} ({time.time() - t0:.0f}s)", flush=True)
+        print(f"[{i}/{len(jobs)}] {out} ({time.time() - t0:.0f}s)", flush=True)
     return 0
 
 
