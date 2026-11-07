@@ -1726,8 +1726,8 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "attacking with {weapon} in one hand, other arm raised, aggressive stance",
-        "redo_strength": 0.8
+        "redo_pose": "lunging right, arm out, swinging {weapon} at the enemy",
+        "redo_strength": 0.9
       },
       {
         "id": "cast",
@@ -1844,67 +1844,67 @@
           0.17
         ],
         [
-          0.56,
-          0.25
+          0.54,
+          0.26
         ],
         [
           0.45,
-          0.26
+          0.27
         ],
         [
-          0.38,
-          0.36
+          0.37,
+          0.35
         ],
         [
-          0.32,
-          0.45
-        ],
-        [
-          0.63,
-          0.26
-        ],
-        [
-          0.7,
-          0.15
-        ],
-        [
-          0.63,
-          0.06
-        ],
-        [
-          0.46,
-          0.52
-        ],
-        [
-          0.34,
-          0.66
-        ],
-        [
-          0.22,
-          0.84
-        ],
-        [
-          0.57,
-          0.52
-        ],
-        [
-          0.7,
-          0.66
-        ],
-        [
-          0.74,
-          0.85
-        ],
-        [
-          0.58,
-          0.158
+          0.31,
+          0.43
         ],
         [
           0.62,
-          0.158
+          0.27
         ],
         [
-          0.5599999999999999,
+          0.75,
+          0.24
+        ],
+        [
+          0.88,
+          0.21
+        ],
+        [
+          0.47,
+          0.52
+        ],
+        [
+          0.36,
+          0.68
+        ],
+        [
+          0.24,
+          0.86
+        ],
+        [
+          0.58,
+          0.52
+        ],
+        [
+          0.71,
+          0.65
+        ],
+        [
+          0.76,
+          0.86
+        ],
+        [
+          0.58,
+          0.155
+        ],
+        [
+          0.62,
+          0.155
+        ],
+        [
+          0.55,
           0.165
         ],
         [
@@ -2215,86 +2215,7 @@
         "look": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers",
         "seed": 5001,
         "body": "humanoid",
-        "weapon": "a long steel machete",
-        "redo_seeds": {
-          "attack": 5003
-        },
-        "skeletons": {
-          "attack": [
-            [
-              0.6,
-              0.17
-            ],
-            [
-              0.56,
-              0.25
-            ],
-            [
-              0.47,
-              0.26
-            ],
-            [
-              0.43,
-              0.15
-            ],
-            [
-              0.52,
-              0.05
-            ],
-            [
-              0.65,
-              0.26
-            ],
-            [
-              0.67,
-              0.14
-            ],
-            [
-              0.56,
-              0.05
-            ],
-            [
-              0.46,
-              0.52
-            ],
-            [
-              0.34,
-              0.66
-            ],
-            [
-              0.22,
-              0.84
-            ],
-            [
-              0.57,
-              0.52
-            ],
-            [
-              0.7,
-              0.66
-            ],
-            [
-              0.74,
-              0.85
-            ],
-            [
-              0.58,
-              0.158
-            ],
-            [
-              0.62,
-              0.158
-            ],
-            [
-              0.5599999999999999,
-              0.165
-            ],
-            [
-              0.64,
-              0.165
-            ]
-          ]
-        }
+        "weapon": "a long steel machete"
       },
       {
         "id": "montador",
@@ -2304,10 +2225,7 @@
         "weapon": "a coiled lasso rope",
         "negative_extra": "woman, crop top, bare chest, open shirt, vest",
         "redo_poses": {
-          "attack": "swinging {weapon} in a loop overhead with one hand, aggressive stance"
-        },
-        "redo_seeds": {
-          "attack": 5015
+          "attack": "lunging right, arm out, throwing {weapon} at the enemy"
         }
       },
       {
@@ -2333,7 +2251,7 @@
       },
       {
         "id": "medica_josefina",
-        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt to the ankles, flat boots",
+        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt, dark leggings, flat boots",
         "seed": 5051,
         "body": "humanoid",
         "weapon": "a syringe",
@@ -2353,10 +2271,7 @@
         "body": "humanoid",
         "weapon": "a crucifix",
         "redo_poses": {
-          "attack": "holding up a silver crucifix toward the enemy with one hand, other arm raised"
-        },
-        "redo_seeds": {
-          "attack": 5080
+          "attack": "lunging right, arm out, thrusting {weapon} at the enemy"
         }
       },
       {

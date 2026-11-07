@@ -187,6 +187,18 @@ def load_pipelines(model: str, control_model: str, ref: dict | None = None):
     return pipes, device, torch
 
 
+def redo_prompt(cfg: dict, manifest: dict, c: dict, sid: str) -> str:
+    st = {s["id"]: s for s in cfg["states"]}[sid]
+    pose_text = c.get("redo_poses", {}).get(sid) or st.get("redo_pose", st["pose"])
+    pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
+    return cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
+
+
+def redo_seed(cfg: dict, c: dict, sid: str) -> int:
+    order = [s["id"] for s in cfg["states"]]
+    return int(c.get("redo_seeds", {}).get(sid, int(c["seed"]) + order.index(sid)))
+
+
 def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch, ref_kw=None,
                    raw_sheet=None):
     """All states of one humanoid in one image. Returns {state_id: PIL.Image}, sheet."""
@@ -222,15 +234,12 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     states = {s["id"]: s for s in cfg["states"]}
     for sid in sheet.get("redo_states", []):
         st = states[sid]
-        pose_text = c.get("redo_poses", {}).get(sid) or st.get("redo_pose", st["pose"])
-        pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
-        p = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
+        p = redo_prompt(cfg, manifest, c, sid)
         big = pipes["img_pose"](
             prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(skeleton_for(cfg, c, sid), (w, h)),
             strength=float(st.get("redo_strength", 0.75)), controlnet_conditioning_scale=control_scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
-            generator=torch.Generator(device="cpu").manual_seed(
-                int(c.get("redo_seeds", {}).get(sid, int(c["seed"]) + order.index(sid)))),
+            generator=torch.Generator(device="cpu").manual_seed(redo_seed(cfg, c, sid)),
             **(ref_kw or {}),
         ).images[0]
         out[sid] = big.resize((cw, ch), Image.LANCZOS)
@@ -248,6 +257,9 @@ def main() -> int:
     ap.add_argument("--try-seeds", type=int, default=0,
                     help="humanoids only: render N sheets (seed, seed+1, ...) into --preview-dir, write no assets")
     ap.add_argument("--preview-dir", default="", help="where --try-seeds writes its sheets")
+    ap.add_argument("--redo-tries", type=int, default=0,
+                    help="with --states <redo state(s)> and --preview-dir: write N variants (redo seed, +1, ...) "
+                         "into <preview-dir>/<id>/ instead of assets; then set redo_seeds and run --force")
     ap.add_argument("--ref-scales", nargs="*", type=float, help="--try-seeds: portrait strengths to compare")
     args = ap.parse_args()
 
@@ -349,6 +361,22 @@ def main() -> int:
             redo_only = bool(args.states) and set(args.states) <= set(cfg["sheet"].get("redo_states", []))
             raw_sheet = Image.open(raw_path).convert("RGB") if redo_only and raw_path.exists() else None
             neg_c = f'{c["negative_extra"]}, {negative}' if c.get("negative_extra") else negative
+            if args.redo_tries and raw_sheet is not None:
+                prev = Path(args.preview_dir) / cid
+                prev.mkdir(parents=True, exist_ok=True)
+                for k in range(args.redo_tries):
+                    seeds = {sid: redo_seed(cfg, c, sid) + k for sid in args.states}
+                    ck = dict(c, redo_seeds={**c.get("redo_seeds", {}), **seeds})
+                    crops_k, *_ = generate_sheet(
+                        pipes, cfg, manifest, ck, neg_c, steps, guidance, control_scale, torch,
+                        {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
+                    )
+                    for sid in args.states:
+                        im = remover(crops_k[sid]) if remover is not None else crops_k[sid]
+                        im.save(prev / f"{sid}_{seeds[sid]}.png")
+                    print(f"[{k + 1}/{args.redo_tries}] {cid} {'/'.join(args.states)} seeds "
+                          f"{sorted(seeds.values())} ({time.time() - t0:.0f}s)", flush=True)
+                continue
             crops, sheet_img, prompt, raw = generate_sheet(
                 pipes, cfg, manifest, c, neg_c, steps, guidance, control_scale, torch,
                 {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
@@ -383,6 +411,12 @@ def main() -> int:
                     "generator": "tools/sd_sprites.py (diffusers)",
                     "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 }
+                if sid in cfg["sheet"].get("redo_states", []):
+                    meta["redo"] = {
+                        "prompt": redo_prompt(cfg, manifest, c, sid), "seed": redo_seed(cfg, c, sid),
+                        "mode": "img2img + openpose from the sheet cell",
+                        "strength": float(next(x for x in cfg["states"] if x["id"] == sid).get("redo_strength", 0.75)),
+                    }
                 out.with_suffix(".metadata.json").write_text(
                     json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
                 )
