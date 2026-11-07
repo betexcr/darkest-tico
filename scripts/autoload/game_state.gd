@@ -177,8 +177,18 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 		v["hp"] = maxi(int(v["hp"]) - amt, 0)
 		logs.append("%s pierde %d PV." % [v.get("name", "?"), amt])
 	if outcome.has("colones"):
-		colones += int(outcome["colones"])
-		logs.append("+%d colones." % int(outcome["colones"]))
+		var c = outcome["colones"]
+		var amt_c: int = randi_range(int(c[0]), int(c[1])) if c is Array and c.size() >= 2 else int(c)
+		colones += amt_c
+		logs.append("+%d colones." % amt_c)
+	if bool(outcome.get("random_equipment", false)):
+		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)))
+		if not gear.is_empty():
+			var pick: String = str(gear[randi() % gear.size()])
+			if add_item(pick, 1) > 0:
+				logs.append("Encuentran: %s." % get_item(pick).get("name", pick))
+			else:
+				logs.append("Había %s, pero no cabe en la alforja." % get_item(pick).get("name", pick))
 	var add = outcome.get("add_item", null)
 	if add is Dictionary:
 		var got: int = add_item(str(add.get("id", "")), int(add.get("qty", 1)))
@@ -498,6 +508,7 @@ func recompute_stats(hero: Dictionary) -> void:
 	var resist: Dictionary = {}
 	var immune: Array = []
 	var element: String = ""
+	var scout: bool = false
 	var eq = hero.get("equipment", {})
 	if eq is Dictionary:
 		for slot in eq:
@@ -511,6 +522,8 @@ func recompute_stats(hero: Dictionary) -> void:
 					immune.append(st)
 			if str(slot) == "weapon":
 				element = str(item.get("element", ""))
+			if bool(item.get("scout", false)):
+				scout = true
 	for k in ["accuracy", "crit", "dodge", "speed", "hp_max"]:
 		hero[k] = stats[k]
 	hero["hp_max"] = maxi(int(hero["hp_max"]), 1)
@@ -521,6 +534,15 @@ func recompute_stats(hero: Dictionary) -> void:
 	hero["element"] = element
 	hero["resist"] = resist
 	hero["immune"] = immune
+	hero["scout"] = scout
+
+
+## Someone alive in the party wears the Lentes del abuelo: full enemy data is shown.
+func party_can_scout() -> bool:
+	for h in party:
+		if h is Dictionary and not h.get("dead", false) and bool(h.get("scout", false)):
+			return true
+	return false
 
 
 # --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------

@@ -1,5 +1,5 @@
 {
-  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map.",
+  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item). colones may be a number or a [min, max] range.",
   "curios": [
     {
       "id": "altar_roto",
@@ -29,13 +29,13 @@
       "name": "Caja del abuelo",
       "text": "Un baúl de cedro con las iniciales del abuelo, cerrado con candado.",
       "key_item": "llave_abuelo",
-      "key_text": "La llave entra justo. Adentro: ahorros y un recuerdo.",
+      "key_text": "La llave entra justo. Adentro: los ahorros del abuelo y algo de su equipo.",
       "key_outcome": {
-        "colones": 450,
-        "add_item": {
-          "id": "agua_pipa",
-          "qty": 1
-        }
+        "colones": [
+          250,
+          700
+        ],
+        "random_equipment": true
       },
       "blind": [
         {

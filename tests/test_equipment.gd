@@ -58,5 +58,23 @@ func _run() -> void:
 	var saved: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))
 	gs.apply_save_data(saved)
 	_check(str(gs.party[0]["equipment"].get("armor", "")) == "chaleco_de_guachiman" and int(gs.party[0]["prot"]) == 20, "equipment survives save/load")
+	gs.reset_party_from_catalog()
+	gs.inventory.clear()
+	_check(not gs.party_can_scout(), "no scouting without the Lentes")
+	gs.add_item("lentes_del_abuelo", 1)
+	gs.equip(gs.party[2], "lentes_del_abuelo")
+	_check(gs.party_can_scout(), "Lentes del abuelo on any party member enables scouting")
+	var before_c: int = gs.colones
+	var logs: PackedStringArray = gs.apply_curio_outcome(gs.get_curio("caja_abuelo")["key_outcome"])
+	var gained: int = gs.colones - before_c
+	var gear_found: bool = gs.inventory.any(func(sl): return gs.is_equipment(str(sl["id"])))
+	_check(gained >= 250 and gained <= 700, "caja del abuelo: random 250-700 colones (got %d)" % gained)
+	_check(gear_found, "caja del abuelo: a random piece of equipment (%s)" % ", ".join(logs))
+	var c2 = load("res://scripts/combat/combat_controller.gd").new()
+	var foe := {"name": "F", "hp": 50, "hp_max": 50, "dead": false, "elements": {"agua": 0.0}}
+	c2.enemies = [foe]
+	c2.target_enemy = foe
+	_check(c2._elemental(6, "agua", foe) == 0, "water throwable does nothing to a water-immune foe")
+	c2.free()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

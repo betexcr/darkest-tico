@@ -191,6 +191,11 @@ def main() -> int:
                 if st not in ("sangrado", "veneno", "aturdido"):
                     errors.append(f"items.json: '{iid}' immune to unknown ailment '{st}'")
             continue
+        fx = it.get("effects", {})
+        if fx.get("element") and fx["element"] not in elements:
+            errors.append(f"items.json: '{iid}' damage element '{fx['element']}' unknown")
+        if fx.get("applies") and fx["applies"].get("status") not in ("sangrado", "veneno", "aturdido"):
+            errors.append(f"items.json: '{iid}' applies an unknown ailment")
         if it.get("usable") not in ("explore", "combat", "both", "curio"):
             errors.append(f"items.json: '{iid}' has invalid usable '{it.get('usable')}'")
         if it.get("target") not in ("ally", "party", "enemy", "none"):

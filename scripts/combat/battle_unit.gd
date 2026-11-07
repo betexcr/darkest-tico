@@ -86,23 +86,8 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 
 	_load_textures(fallback_path)
 	if not hero:
-		tooltip_text = _element_tooltip()
-
-
-func _element_tooltip() -> String:
-	var parts: PackedStringArray = PackedStringArray()
-	var els = data.get("elements", {})
-	if els is Dictionary:
-		for e in els:
-			var m: float = float(els[e])
-			var n: String = str(GameState.ELEMENT_NAMES.get(str(e), e))
-			if m == 0.0:
-				parts.append("Inmune a %s" % n)
-			elif m > 1.0:
-				parts.append("Débil a %s" % n)
-			elif m < 1.0:
-				parts.append("Resiste %s" % n)
-	return "%s\n%s" % [data.get("name", "?"), " · ".join(parts) if not parts.is_empty() else "Sin afinidades"]
+		# Details live in the enemy info panel (click); full data needs the Lentes del abuelo.
+		tooltip_text = "%s — clic para ver" % data.get("name", "?")
 
 
 func _can_drop_data(_at_position: Vector2, d: Variant) -> bool:

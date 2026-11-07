@@ -133,6 +133,11 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 			if dmg > 0 and not tgt.is_empty():
 				_apply_damage_to_enemy(tgt, dmg)
 				_log("%s recibe %d de daño." % [tgt.get("name", "?"), dmg], "ddbb55")
+			var ap = item.get("effects", {}).get("applies", null)
+			if ap is Dictionary and not tgt.is_empty() and not tgt.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
+				var msg: String = StatusEffectsScript.apply(tgt, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
+				if msg != "":
+					_log(msg, "cc9944")
 		"party":
 			for h in party:
 				if h is Dictionary and not h.get("dead", false):

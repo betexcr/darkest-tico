@@ -1,5 +1,5 @@
 {
-  "_doc": "Items. usable: explore | combat | both | curio (key only) | equip. Consumables: target ally | party | enemy | none; effects heal, stress, light, damage [min,max] (+element), hp_risk, cure. Equipment (usable equip, max_stack 1): slot weapon | armor | accessory; bonus {damage, accuracy, crit, dodge, speed, hp_max, prot (% less physical damage), stress_resist (% less stress)}; weapon element (its attacks deal that element); resist {element: multiplier, <1 resists, 0 immune}; immune [ailments]. Heroes: 1 weapon, 1 armor, 2 accessories. uses_per_node: per hero per room outside combat.",
+  "_doc": "Items. usable: explore | combat | both | curio (key only) | equip. Consumables: target ally | party | enemy | none; effects heal, stress, light, damage [min,max] (+element), hp_risk, cure. Equipment (usable equip, max_stack 1): slot weapon | armor | accessory; bonus {damage, accuracy, crit, dodge, speed, hp_max, prot (% less physical damage), stress_resist (% less stress)}; weapon element (its attacks deal that element); resist {element: multiplier, <1 resists, 0 immune}; immune [ailments]; scout true (accessory): the party sees full enemy data. Consumable effects may include applies {status, chance, turns, value} for enemy-target items. Heroes: 1 weapon, 1 armor, 2 accessories. uses_per_node: per hero per room outside combat.",
   "starter_inventory": [
     {
       "id": "gallo_pinto",
@@ -609,6 +609,452 @@
       "resist": {
         "tierra": 0.5,
         "rayo": 0.75
+      }
+    },
+    {
+      "id": "tamal_de_cerdo",
+      "name": "Tamal de cerdo",
+      "description": "El de diciembre, envuelto en hoja. Llena el alma y la panza.",
+      "price": 350,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "explore",
+      "target": "ally",
+      "effects": {
+        "heal": 10
+      }
+    },
+    {
+      "id": "agua_dulce",
+      "name": "Agua dulce",
+      "description": "Tapa de dulce disuelta en agua caliente. Reconforta.",
+      "price": 250,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "heal": 4,
+        "stress": -4
+      }
+    },
+    {
+      "id": "cajeta_de_coco",
+      "name": "Cajeta de coco",
+      "description": "Dulce de pulpería. Un gustito en la oscuridad.",
+      "price": 220,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "heal": 3,
+        "stress": -6
+      }
+    },
+    {
+      "id": "te_de_tilo",
+      "name": "Té de tilo",
+      "description": "Para los nervios, como dice la abuela.",
+      "price": 350,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -15
+      }
+    },
+    {
+      "id": "rosario_de_semillas",
+      "name": "Rosario de semillas",
+      "description": "Rezan juntos un misterio. Calma a toda la cuadrilla.",
+      "price": 450,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "party",
+      "effects": {
+        "stress": -5
+      }
+    },
+    {
+      "id": "unguento_de_la_abuela",
+      "name": "Ungüento de la abuela",
+      "description": "Frasquito sin etiqueta que lo cura todo, dicen.",
+      "price": 400,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "heal": 6,
+        "cure": [
+          "sangrado",
+          "veneno"
+        ]
+      }
+    },
+    {
+      "id": "caja_de_fosforos",
+      "name": "Caja de fósforos",
+      "description": "Unos cuantos fósforos para avivar las candelas.",
+      "price": 120,
+      "max_stack": 8,
+      "uses_per_node": 1,
+      "usable": "explore",
+      "target": "party",
+      "effects": {
+        "light": 15
+      }
+    },
+    {
+      "id": "sal_de_puntarenas",
+      "name": "Sal de Puntarenas",
+      "description": "Sal de mar tirada a puños. A los espantos no les gusta.",
+      "price": 350,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          5,
+          8
+        ],
+        "element": "sagrado"
+      }
+    },
+    {
+      "id": "balde_agua_de_pila",
+      "name": "Balde de agua de pila",
+      "description": "Agua fría de la pila, directo a la cara.",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          4,
+          7
+        ],
+        "element": "agua"
+      }
+    },
+    {
+      "id": "cable_pelado",
+      "name": "Cable pelado",
+      "description": "Extensión vieja con el cable al aire. Da corriente y puede aturdir.",
+      "price": 400,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          4,
+          7
+        ],
+        "element": "rayo",
+        "applies": {
+          "status": "aturdido",
+          "chance": 0.2,
+          "turns": 1,
+          "value": 0
+        }
+      }
+    },
+    {
+      "id": "tierra_de_camposanto",
+      "name": "Tierra de camposanto",
+      "description": "Un puño de tierra del cementerio del pueblo. Pesa más de lo que parece.",
+      "price": 350,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          5,
+          8
+        ],
+        "element": "oscuridad"
+      }
+    },
+    {
+      "id": "chile_panameno",
+      "name": "Chile panameño",
+      "description": "Al ojo. Duele poco, pero deja al enemigo sin ver.",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          2,
+          4
+        ],
+        "element": "fuego",
+        "applies": {
+          "status": "aturdido",
+          "chance": 0.4,
+          "turns": 1,
+          "value": 0
+        }
+      }
+    },
+    {
+      "id": "punal_del_porton",
+      "name": "Puñal del Portón",
+      "description": "Daga de culto, negra como el sótano. Corta lo que brilla.",
+      "price": 850,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "crit": 2
+      },
+      "element": "oscuridad"
+    },
+    {
+      "id": "peto_de_adobe",
+      "name": "Peto de adobe",
+      "description": "Placas de adobe cosidas a un chaleco. La tierra no le entra.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10,
+        "speed": -1
+      },
+      "resist": {
+        "tierra": 0.5
+      }
+    },
+    {
+      "id": "rompevientos_de_ochomogo",
+      "name": "Rompevientos de Ochomogo",
+      "description": "Para el viento que baja por Ochomogo. Liviano.",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 1
+      },
+      "resist": {
+        "viento": 0.5
+      }
+    },
+    {
+      "id": "manto_de_cofradia",
+      "name": "Manto de cofradía",
+      "description": "Manto de procesión. Lo sagrado lo reconoce y no lo quema.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "stress_resist": 5
+      },
+      "resist": {
+        "sagrado": 0.5
+      }
+    },
+    {
+      "id": "lentes_del_abuelo",
+      "name": "Lentes del abuelo",
+      "description": "Con ellos se ven las cosas como son: vida exacta, mañas y debilidades de cada enemigo.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "scout": true
+    },
+    {
+      "id": "medalla_de_la_romeria",
+      "name": "Medalla de la romería",
+      "description": "Traída a pie desde la romería. Da temple.",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "stress_resist": 10
+      },
+      "resist": {
+        "oscuridad": 0.75
+      }
+    },
+    {
+      "id": "pulsera_de_azabache",
+      "name": "Pulsera de azabache",
+      "description": "Contra el mal de ojo, como la de los chiquitos.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "dodge": 1,
+        "stress_resist": 5
+      }
+    },
+    {
+      "id": "guantes_de_vaquero",
+      "name": "Guantes de vaquero",
+      "description": "Cuero curtido de corral. Agarre firme.",
+      "price": 550,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "accuracy": 1
+      }
+    },
+    {
+      "id": "faja_de_sabanero",
+      "name": "Faja de sabanero",
+      "description": "Faja ancha de jornada larga en el llano.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "hp_max": 4
+      }
+    },
+    {
+      "id": "silbato_de_guachiman",
+      "name": "Silbato de guachimán",
+      "description": "Un pitazo y todos ponen atención.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "accuracy": 2
+      }
+    },
+    {
+      "id": "anillo_de_la_abuela",
+      "name": "Anillo de la abuela",
+      "description": "De oro bajito, pero de buena suerte.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "crit": 2,
+        "hp_max": 2
+      }
+    },
+    {
+      "id": "termo_de_cafe",
+      "name": "Termo de café",
+      "description": "Café chorreado caliente toda la noche.",
+      "price": 550,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "speed": 1,
+        "stress_resist": 5
+      }
+    },
+    {
+      "id": "collar_de_lagarto",
+      "name": "Collar de dientes de lagarto",
+      "description": "Dientes de cocodrilo del Tárcoles. Muerde con ganas.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "crit": 2,
+        "damage": 1
+      }
+    },
+    {
+      "id": "bufanda_de_zarcero",
+      "name": "Bufanda de Zarcero",
+      "description": "Lana de las alturas. El frío no pasa.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "prot": 2
+      },
+      "resist": {
+        "hielo": 0.5
+      }
+    },
+    {
+      "id": "chonete",
+      "name": "Chonete",
+      "description": "Sombrero de paja guanacasteco. Fresco bajo el fuego.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "dodge": 1
+      },
+      "resist": {
+        "fuego": 0.75
       }
     }
   ],

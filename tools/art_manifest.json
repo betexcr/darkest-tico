@@ -1127,6 +1127,546 @@
       "subject": "black rubber boots, isolated object, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
       "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_tamal_de_cerdo",
+      "out": "assets/items/tamal_de_cerdo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6301,
+      "subject": "tamal wrapped in banana leaf tied with string, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_agua_dulce",
+      "out": "assets/items/agua_dulce.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6302,
+      "subject": "clay cup of hot brown sugar drink with steam, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cajeta_de_coco",
+      "out": "assets/items/cajeta_de_coco.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6303,
+      "subject": "square pieces of coconut fudge candy, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_te_de_tilo",
+      "out": "assets/items/te_de_tilo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6304,
+      "subject": "cup of herbal linden tea with leaves, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_rosario_de_semillas",
+      "out": "assets/items/rosario_de_semillas.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6305,
+      "subject": "rosary made of brown seeds, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_unguento_de_la_abuela",
+      "out": "assets/items/unguento_de_la_abuela.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6306,
+      "subject": "small glass jar of green ointment, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_caja_de_fosforos",
+      "out": "assets/items/caja_de_fosforos.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6307,
+      "subject": "small open box of wooden matches, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "table, scenery"
+    },
+    {
+      "id": "item_sal_de_puntarenas",
+      "out": "assets/items/sal_de_puntarenas.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6308,
+      "subject": "handful of coarse white sea salt in a cloth, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_balde_agua_de_pila",
+      "out": "assets/items/balde_agua_de_pila.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6309,
+      "subject": "metal bucket full of water, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cable_pelado",
+      "out": "assets/items/cable_pelado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6310,
+      "subject": "frayed electrical cable sparking, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "table, scenery"
+    },
+    {
+      "id": "item_tierra_de_camposanto",
+      "out": "assets/items/tierra_de_camposanto.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6311,
+      "subject": "handful of dark graveyard soil, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chile_panameno",
+      "out": "assets/items/chile_panameno.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6312,
+      "subject": "small red and yellow hot chili peppers, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_punal_del_porton",
+      "out": "assets/items/punal_del_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6313,
+      "subject": "black cultist dagger with red gem, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_peto_de_adobe",
+      "out": "assets/items/peto_de_adobe.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6314,
+      "subject": "vest covered in clay adobe plates, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_rompevientos_de_ochomogo",
+      "out": "assets/items/rompevientos_de_ochomogo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6315,
+      "subject": "light windbreaker jacket, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_manto_de_cofradia",
+      "out": "assets/items/manto_de_cofradia.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6316,
+      "subject": "purple procession cloak with gold trim, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_lentes_del_abuelo",
+      "out": "assets/items/lentes_del_abuelo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6317,
+      "subject": "old round wire-rimmed spectacles, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_medalla_de_la_romeria",
+      "out": "assets/items/medalla_de_la_romeria.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6318,
+      "subject": "small oval religious medal on a chain, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_pulsera_de_azabache",
+      "out": "assets/items/pulsera_de_azabache.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6319,
+      "subject": "black jet bead bracelet, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_guantes_de_vaquero",
+      "out": "assets/items/guantes_de_vaquero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6320,
+      "subject": "pair of worn leather work gloves, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_faja_de_sabanero",
+      "out": "assets/items/faja_de_sabanero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6321,
+      "subject": "wide leather belt with brass buckle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_silbato_de_guachiman",
+      "out": "assets/items/silbato_de_guachiman.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6322,
+      "subject": "metal whistle on a cord, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_anillo_de_la_abuela",
+      "out": "assets/items/anillo_de_la_abuela.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6323,
+      "subject": "thin gold ring, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_termo_de_cafe",
+      "out": "assets/items/termo_de_cafe.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6324,
+      "subject": "old metal thermos flask, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_collar_de_lagarto",
+      "out": "assets/items/collar_de_lagarto.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6325,
+      "subject": "necklace of crocodile teeth, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_bufanda_de_zarcero",
+      "out": "assets/items/bufanda_de_zarcero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6326,
+      "subject": "thick knitted wool scarf, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chonete",
+      "out": "assets/items/chonete.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6327,
+      "subject": "Guanacaste straw hat with a dark band, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     }
   ],
   "sprites": {

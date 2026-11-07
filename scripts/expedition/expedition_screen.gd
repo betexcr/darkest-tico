@@ -42,6 +42,10 @@ enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
 @onready var _btn_map: Button = $BottomPanel/Row/SidePanel/Tabs/BtnMap
 @onready var _btn_inventory: Button = $BottomPanel/Row/SidePanel/Tabs/BtnInventory
 @onready var _combat = $Combat
+@onready var _enemy_info: PanelContainer = $Stage/EnemyInfo
+@onready var _enemy_info_name: Label = $Stage/EnemyInfo/VBox/Head/Name
+@onready var _enemy_info_health: ProgressBar = $Stage/EnemyInfo/VBox/Health
+@onready var _enemy_info_body: RichTextLabel = $Stage/EnemyInfo/VBox/Body
 
 var _mode: int = Mode.EXPLORE
 var _hero_units: Array = []
@@ -52,6 +56,8 @@ var _combat_node_id: String = ""
 ## "skill": Dictionary} or {"side": ..., "item": String}. Empty when not choosing.
 var _pending: Dictionary = {}
 var _equip_slots: Array = []
+## Enemy shown in the info panel (click an enemy outside target-picking).
+var _inspected: Dictionary = {}
 
 
 func _ready() -> void:
@@ -70,6 +76,7 @@ func _ready() -> void:
 	_combat.enemy_changed.connect(_refresh_all)
 	_combat.combat_over.connect(_on_combat_over)
 	_build_equip_row()
+	$Stage/EnemyInfo/VBox/Head/Close.pressed.connect(_hide_enemy_info)
 	_show_page(false)
 	_view_hero(_first_living_hero())
 	_log_line("La cuadrilla entra a %s." % GameState.mission_region_data.get("name", "la oscuridad"), "dddddd")
@@ -132,6 +139,8 @@ func _on_unit_clicked(unit) -> void:
 		return
 	if unit.is_hero:
 		_view_hero(unit.data)
+	else:
+		_show_enemy_info(unit.data)
 
 
 func _set_background(path: String) -> void:
@@ -150,6 +159,99 @@ func _refresh_all() -> void:
 	_view_hero(_viewed_hero)
 	_refresh_inventory()
 	_map_view.refresh()
+	if _enemy_info.visible:
+		_show_enemy_info(_inspected)
+
+
+# --- Enemy info (click an enemy): health %, or everything with the Lentes del abuelo --
+
+func _hide_enemy_info() -> void:
+	_enemy_info.visible = false
+	_inspected = {}
+
+
+func _show_enemy_info(e: Dictionary) -> void:
+	if e.is_empty():
+		_hide_enemy_info()
+		return
+	_inspected = e
+	_enemy_info.visible = true
+	var hp: int = int(e.get("hp", 0))
+	var hp_max: int = maxi(int(e.get("hp_max", 1)), 1)
+	var pct: int = int(round(100.0 * hp / hp_max))
+	_enemy_info_name.text = str(e.get("name", "?"))
+	_enemy_info_health.max_value = 100
+	_enemy_info_health.value = pct
+	var lines: PackedStringArray = PackedStringArray()
+	if bool(e.get("dead", false)):
+		lines.append("Derrotado.")
+	elif not GameState.party_can_scout():
+		lines.append("Salud: [b]%d%%[/b]" % pct)
+		lines.append("[color=#999999]Con los Lentes del abuelo verías su vida exacta, sus ataques y sus debilidades.[/color]")
+	else:
+		lines.append("PV [b]%d/%d[/b] (%d%%) · Vel %d · Esq %d · Prec %d" % [
+			hp, hp_max, pct, int(e.get("speed", 0)), int(e.get("dodge", 0)), int(e.get("accuracy", 0))])
+		var st: PackedStringArray = load("res://scripts/domain/status_effects.gd").labels(e)
+		if not st.is_empty():
+			lines.append("Estado: " + ", ".join(st))
+		lines.append("[color=#e8d7a8]Ataques[/color]")
+		for sk in e.get("skills", []):
+			lines.append("• [b]%s[/b] — %s" % [sk.get("name", "?"), _enemy_skill_summary(sk)])
+		lines.append("[color=#e8d7a8]Afinidades[/color]")
+		lines.append(_affinity_summary(e.get("elements", {})))
+	_enemy_info_body.text = "\n".join(lines)
+
+
+func _enemy_skill_summary(sk: Dictionary) -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	var kind: String = "mágico" if str(sk.get("type", "")) == "magical" else "físico"
+	var el: String = str(sk.get("element", ""))
+	if el != "":
+		kind += " de %s" % GameState.ELEMENT_NAMES.get(el, el)
+	parts.append(kind)
+	var dmg: Array = sk.get("damage", [0, 0])
+	if int(dmg[1]) > 0:
+		parts.append("%d–%d daño" % [int(dmg[0]), int(dmg[1])])
+	if str(sk.get("target", "")) == "party":
+		parts.append("a toda la cuadrilla")
+	if int(sk.get("stress", 0)) > 0:
+		parts.append("+%d estrés" % int(sk["stress"]))
+	var ap = sk.get("applies", null)
+	if ap is Dictionary:
+		parts.append("%d%% %s" % [int(float(ap.get("chance", 0)) * 100), str(ap.get("status", ""))])
+	if bool(sk.get("ignores_guard", false)):
+		parts.append("ignora la guardia")
+	if int(sk.get("light", 0)) != 0:
+		parts.append("luz %+d" % int(sk["light"]))
+	if int(sk.get("steal_colones", 0)) > 0:
+		parts.append("roba colones")
+	if bool(sk.get("basic", false)):
+		parts.append("ataque básico")
+	return ", ".join(parts)
+
+
+func _affinity_summary(els) -> String:
+	var weak: PackedStringArray = PackedStringArray()
+	var res: PackedStringArray = PackedStringArray()
+	var imm: PackedStringArray = PackedStringArray()
+	if els is Dictionary:
+		for k in els:
+			var n: String = str(GameState.ELEMENT_NAMES.get(str(k), k))
+			var m: float = float(els[k])
+			if m == 0.0:
+				imm.append(n)
+			elif m > 1.0:
+				weak.append("%s ×%s" % [n, str(m)])
+			elif m < 1.0:
+				res.append("%s ×%s" % [n, str(m)])
+	var out: PackedStringArray = PackedStringArray()
+	if not weak.is_empty():
+		out.append("[color=#ffcc55]Débil:[/color] " + ", ".join(weak))
+	if not res.is_empty():
+		out.append("[color=#aaaaaa]Resiste:[/color] " + ", ".join(res))
+	if not imm.is_empty():
+		out.append("[color=#88aaff]Inmune:[/color] " + ", ".join(imm))
+	return "\n".join(out) if not out.is_empty() else "Ninguna"
 
 
 # --- Hero card --------------------------------------------------------------------
@@ -611,6 +713,7 @@ func _clear_skills() -> void:
 
 func _on_combat_over(victory: bool) -> void:
 	GameState.equip_locked = false
+	_hide_enemy_info()
 	_pending = {}
 	_clear_selectable()
 	var nd: Dictionary = GameState.mission_nodes_index.get(_combat_node_id, {})

@@ -61,6 +61,7 @@ func _run() -> void:
 		var guards: int = 0
 		var max_squad: int = 1
 		var picks: int = 0
+		var info_opened: bool = false
 		while _finished == "" and steps < MAX_STEPS:
 			steps += 1
 			await process_frame
@@ -80,6 +81,9 @@ func _run() -> void:
 						var buttons = screen._skills.get_children()
 						if not buttons.is_empty():
 							hero_turns += 1
+							if hero_turns == 2 and not screen._enemy_units.is_empty():
+								screen._on_unit_clicked(screen._enemy_units[0])
+								info_opened = info_opened or screen._enemy_info.visible
 							# Buttons: skills..., Guardia, Pasar. Every 7th turn: Guardia; every 3rd:
 							# the last skill (a support skill); otherwise the first attack. Skills that
 							# need a target wait for a click on a highlighted unit.
@@ -100,6 +104,8 @@ func _run() -> void:
 		_check(_finished in ["objective", "defeat"], "ended by boss victory or defeat")
 		_check(max_squad > 1, "fought a squad of up to %d enemies" % max_squad)
 		_check(picks > 0, "chose targets after pressing a skill %d times" % picks)
+		if run == 0:
+			_check(info_opened, "clicking an enemy opens its info panel")
 		screen.queue_free()
 		await process_frame
 	print("%d failure(s)" % _failures)
