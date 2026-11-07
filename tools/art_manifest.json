@@ -2233,6 +2233,9 @@
           "kind": "line",
           "angle": 25,
           "length": 0.36
+        },
+        "redo_seeds": {
+          "attack": 5002
         }
       },
       {
