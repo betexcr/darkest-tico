@@ -2244,7 +2244,7 @@
         "seed": 5013,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "woman, open shirt, cape, leather sheet, hide",
+        "negative_extra": "woman, open shirt, cape, saddle, hide, second hat",
         "redo_poses": {
           "attack": "lunging right, throwing a rope lasso, rope stretched through the air"
         },
@@ -2256,10 +2256,10 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5022
+          "attack": 5024
         },
         "redo_looks": {
-          "attack": "young man, Costa Rican bull rider, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
+          "attack": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
         }
       },
       {
