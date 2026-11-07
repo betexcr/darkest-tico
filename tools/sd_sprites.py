@@ -12,7 +12,10 @@ For each character:
      grid of cells, each guided by that state's OpenPose skeleton), then cut into six
      sprites. Figures generated together keep the same outfit and weapon; only the pose
      changes (owner requirement, 2026-11-07).
-  3. The background is removed (rembg) and the result is saved as a transparent PNG:
+  4. Every call also gets the character's portrait (assets/portraits/<id>.png for heroes,
+     assets/enemies/<id>.png for enemies) as an IP-Adapter image prompt, so the sprite looks
+     like the portrait: same face, clothes, colors (owner requirement, 2026-11-07).
+  5. The background is removed (rembg) and the result is saved as a transparent PNG:
        assets/sprites/<character>/<state>.png  (+ .metadata.json)
 
 Setup: same venv as tools/sd_local.py, plus `pip install "rembg[cpu]"`.
@@ -22,6 +25,8 @@ Usage (from repo root):
   python tools/sd_sprites.py --only campesino espanto # some characters
   python tools/sd_sprites.py --only campesino --states hurt dead --force
   python tools/sd_sprites.py --no-cutout              # keep backgrounds (debug)
+  python tools/sd_sprites.py --only campesino --try-seeds 2 --ref-scales 0.5 0.7 \
+      --preview-dir /tmp/trials                       # compare sheets, write no assets
 
 Game code never calls this; it only writes files under assets/sprites/.
 """
@@ -66,7 +71,33 @@ def draw_skeleton(points, size):
     return im
 
 
-def load_pipelines(model: str, control_model: str):
+def reference_image(cfg: dict, c: dict):
+    """The character's portrait (IP-Adapter image prompt), or None."""
+    from PIL import Image
+
+    ref = cfg.get("reference")
+    if not ref:
+        return None
+    for d in ref.get("dirs", []):
+        p = ROOT / d / f'{c.get("portrait", c["id"])}.png'
+        if p.exists():
+            return Image.open(p).convert("RGB")
+    return None
+
+
+def reference_note(cfg: dict, c: dict):
+    ref = cfg.get("reference")
+    if not ref or reference_image(cfg, c) is None:
+        return None
+    for d in ref.get("dirs", []):
+        p = f'{d}/{c.get("portrait", c["id"])}.png'
+        if (ROOT / p).exists():
+            return {"image": p, "ip_adapter": f'{ref["repo"]}/{ref["subfolder"]}/{ref["weight"]}',
+                    "scale": float(ref.get("scale", 0.6))}
+    return None
+
+
+def load_pipelines(model: str, control_model: str, ref: dict | None = None):
     import torch
     from diffusers import (
         ControlNetModel,
@@ -87,6 +118,9 @@ def load_pipelines(model: str, control_model: str):
     txt.scheduler = DPMSolverMultistepScheduler.from_config(
         txt.scheduler.config, use_karras_sigmas=True, algorithm_type="dpmsolver++"
     )
+    if ref:
+        txt.load_ip_adapter(ref["repo"], subfolder=ref["subfolder"], weight_name=ref["weight"])
+        txt.set_ip_adapter_scale(float(ref.get("scale", 0.6)))
     txt = txt.to(device)
     try:
         cn = ControlNetModel.from_pretrained(control_model, variant="fp16", torch_dtype=dtype)
@@ -105,7 +139,7 @@ def load_pipelines(model: str, control_model: str):
     return pipes, device, torch
 
 
-def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch):
+def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch, ref_kw=None):
     """All states of one humanoid in one image. Returns {state_id: PIL.Image}, sheet."""
     from PIL import Image
 
@@ -125,6 +159,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         controlnet_conditioning_scale=control_scale, negative_prompt=negative,
         num_inference_steps=steps, guidance_scale=guidance,
         generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])),
+        **(ref_kw or {}),
     ).images[0]
     out = {}
     for i, sid in enumerate(order):
@@ -142,6 +177,7 @@ def main() -> int:
     ap.add_argument("--try-seeds", type=int, default=0,
                     help="humanoids only: render N sheets (seed, seed+1, ...) into --preview-dir, write no assets")
     ap.add_argument("--preview-dir", default="", help="where --try-seeds writes its sheets")
+    ap.add_argument("--ref-scales", nargs="*", type=float, help="--try-seeds: portrait strengths to compare")
     args = ap.parse_args()
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -168,21 +204,31 @@ def main() -> int:
             return 2
         prev = Path(args.preview_dir)
         prev.mkdir(parents=True, exist_ok=True)
-        pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"])
+        pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"))
         steps = int(cfg.get("steps", manifest["steps"]))
+        scales = args.ref_scales or [float(cfg.get("reference", {}).get("scale", 0.6))]
         negative = f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
         for c in chars:
             if c.get("body", "humanoid") == "beast":
                 continue
-            for k in range(args.try_seeds):
-                seed = int(c["seed"]) + k
-                t0 = time.time()
-                _, sheet_img, _ = generate_sheet(
-                    pipes, cfg, manifest, dict(c, seed=seed), negative, steps,
-                    float(manifest["cfg_scale"]), float(cfg.get("control_scale", 1.0)), torch,
-                )
-                sheet_img.save(prev / f"{c['id']}_seed{seed}.png")
-                print(f"[{k + 1}/{args.try_seeds}] {c['id']} seed {seed} ({time.time() - t0:.0f}s)", flush=True)
+            ref_img = reference_image(cfg, c)
+            n = 0
+            for scale in scales:
+                for k in range(args.try_seeds):
+                    seed = int(c["seed"]) + k
+                    t0 = time.time()
+                    ref_kw = {}
+                    if ref_img is not None:
+                        pipes["txt"].set_ip_adapter_scale(scale)
+                        ref_kw = {"ip_adapter_image": ref_img}
+                    _, sheet_img, _ = generate_sheet(
+                        pipes, cfg, manifest, dict(c, seed=seed), negative, steps,
+                        float(manifest["cfg_scale"]), float(cfg.get("control_scale", 1.0)), torch, ref_kw,
+                    )
+                    sheet_img.save(prev / f"{c['id']}_seed{seed}_ref{scale:g}.png")
+                    n += 1
+                    print(f"[{n}/{args.try_seeds * len(scales)}] {c['id']} seed {seed} ref {scale:g} "
+                          f"({time.time() - t0:.0f}s)", flush=True)
         return 0
 
     def wanted(cid: str, sid: str) -> bool:
@@ -196,7 +242,7 @@ def main() -> int:
         print("Nothing to generate. Use --force to redo.")
         return 0
 
-    pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"])
+    pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"))
     control_scale = float(cfg.get("control_scale", 1.0))
     skeletons = cfg.get("skeletons", {})
     remover = None
@@ -224,8 +270,10 @@ def main() -> int:
                 continue
             done_sheets.add(cid)
             t0 = time.time()
+            ref_img = reference_image(cfg, c)
             crops, sheet_img, prompt = generate_sheet(
-                pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch
+                pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch,
+                {"ip_adapter_image": ref_img} if ref_img is not None else None,
             )
             CACHE.mkdir(parents=True, exist_ok=True)
             sheet_img.save(CACHE / f"{cid}_sheet.png")
@@ -248,6 +296,7 @@ def main() -> int:
                         sheet_img.width, sheet_img.height, k + 1, len(crops)),
                     "mode": "sheet",
                     "pose_control": cfg["control_model"],
+                    "reference": reference_note(cfg, c),
                     "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
                     "model": manifest["model"],
                     "generator": "tools/sd_sprites.py (diffusers)",
@@ -272,6 +321,9 @@ def main() -> int:
         if not beast and sid in skeletons:
             pose_img = draw_skeleton(skeletons[sid], (w, h))
         common = dict(negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance, generator=gen)
+        ref_img = reference_image(cfg, c)
+        if ref_img is not None:
+            common["ip_adapter_image"] = ref_img
         if s["mode"] == "txt2img":
             if pose_img is not None:
                 image = pipes["txt_pose"](prompt=prompt, image=pose_img, width=w, height=h,
@@ -324,6 +376,7 @@ def main() -> int:
             ),
             "pose_control": None if (c.get("body") == "beast" or sid not in skeletons) else cfg["control_model"],
             "init_image": None if s["mode"] == "txt2img" else "idle (same character, before cutout)",
+            "reference": reference_note(cfg, c),
             "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
             "model": manifest["model"],
             "generator": "tools/sd_sprites.py (diffusers)",

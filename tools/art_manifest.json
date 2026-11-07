@@ -1680,6 +1680,17 @@
     "cutout_model": "isnet-general-use",
     "control_model": "lllyasviel/control_v11p_sd15_openpose",
     "control_scale": 1.0,
+    "reference": {
+      "_doc": "IP-Adapter image prompt: each sprite is conditioned on the character's portrait so it looks like it (owner rule).",
+      "repo": "h94/IP-Adapter",
+      "subfolder": "models",
+      "weight": "ip-adapter-plus_sd15.safetensors",
+      "scale": 0.6,
+      "dirs": [
+        "assets/portraits",
+        "assets/enemies"
+      ]
+    },
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
     "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly brushstrokes, game character art",
     "negative_extra": "candle, candles, fire, shrine, altar, cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd, duplicate",
@@ -2190,7 +2201,7 @@
     "characters": [
       {
         "id": "campesino",
-        "look": "weathered Costa Rican farm worker gripping a steel machete blade, straw hat, sweat-stained work shirt, long faded jeans",
+        "look": "weathered Costa Rican farm worker with long dark hair and a mustache, frayed wide straw hat, dark olive short-sleeved button-up work shirt with chest pocket, long dark work trousers",
         "seed": 5000,
         "body": "humanoid",
         "weapon": "a long steel machete"
