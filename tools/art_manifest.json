@@ -387,6 +387,204 @@
       ],
       "seed": 4103,
       "subject": "wide view of an underground stone cellar chamber, empty floor, crumbling arches, puddles reflecting candle light, broken wine barrels, environment, no people"
+    },
+    {
+      "id": "item_gallo_pinto",
+      "out": "assets/items/gallo_pinto.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6101,
+      "subject": "rice and black beans wrapped in a folded banana leaf parcel, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_candela_sebo",
+      "out": "assets/items/candela_sebo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6102,
+      "subject": "single thick tallow candle burning, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_agua_pipa",
+      "out": "assets/items/agua_pipa.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6103,
+      "subject": "green coconut with a drinking straw, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_cafe_chorreado",
+      "out": "assets/items/cafe_chorreado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6104,
+      "subject": "tin cup of black coffee next to a cloth coffee sock filter, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_guaro_contrabando",
+      "out": "assets/items/guaro_contrabando.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6105,
+      "subject": "small unlabeled glass bottle of clear liquor with a cork, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_venda_manta",
+      "out": "assets/items/venda_manta.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6106,
+      "subject": "rolled coarse cloth bandage, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_bombeta",
+      "out": "assets/items/bombeta.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6107,
+      "subject": "small paper firework rocket with a lit fuse, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_agua_bendita",
+      "out": "assets/items/agua_bendita.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6108,
+      "subject": "small glass vial of holy water with a tiny cross, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_ramo_ruda",
+      "out": "assets/items/ramo_ruda.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6109,
+      "subject": "bundle of green rue herb tied with string, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_llave_abuelo",
+      "out": "assets/items/llave_abuelo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6110,
+      "subject": "old rusty iron skeleton key, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_mecate",
+      "out": "assets/items/mecate.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6111,
+      "subject": "coiled thick hemp rope, isolated object, close-up, plain black background"
     }
   ],
   "sprites": {
