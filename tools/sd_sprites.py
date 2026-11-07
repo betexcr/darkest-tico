@@ -139,6 +139,9 @@ def main() -> int:
     ap.add_argument("--states", nargs="*", help="state ids (default: all)")
     ap.add_argument("--force", action="store_true", help="regenerate even if the PNG exists")
     ap.add_argument("--no-cutout", action="store_true", help="skip background removal")
+    ap.add_argument("--try-seeds", type=int, default=0,
+                    help="humanoids only: render N sheets (seed, seed+1, ...) into --preview-dir, write no assets")
+    ap.add_argument("--preview-dir", default="", help="where --try-seeds writes its sheets")
     args = ap.parse_args()
 
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -158,6 +161,29 @@ def main() -> int:
         if bad:
             print(f"Unknown states: {', '.join(sorted(bad))}", file=sys.stderr)
             return 2
+
+    if args.try_seeds > 0:
+        if not args.preview_dir:
+            print("--try-seeds needs --preview-dir", file=sys.stderr)
+            return 2
+        prev = Path(args.preview_dir)
+        prev.mkdir(parents=True, exist_ok=True)
+        pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"])
+        steps = int(cfg.get("steps", manifest["steps"]))
+        negative = f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
+        for c in chars:
+            if c.get("body", "humanoid") == "beast":
+                continue
+            for k in range(args.try_seeds):
+                seed = int(c["seed"]) + k
+                t0 = time.time()
+                _, sheet_img, _ = generate_sheet(
+                    pipes, cfg, manifest, dict(c, seed=seed), negative, steps,
+                    float(manifest["cfg_scale"]), float(cfg.get("control_scale", 1.0)), torch,
+                )
+                sheet_img.save(prev / f"{c['id']}_seed{seed}.png")
+                print(f"[{k + 1}/{args.try_seeds}] {c['id']} seed {seed} ({time.time() - t0:.0f}s)", flush=True)
+        return 0
 
     def wanted(cid: str, sid: str) -> bool:
         if args.states and sid not in args.states:
