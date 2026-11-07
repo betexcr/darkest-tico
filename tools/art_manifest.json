@@ -1692,7 +1692,9 @@
       ]
     },
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
-    "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly brushstrokes, game character art",
+    "style": "dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "negative": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+    "_negative_doc": "Sprites use this full negative instead of negative_extra + the global negative (keeps it under CLIP's 77 tokens).",
     "negative_extra": "candle, candles, fire, shrine, altar, cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd, duplicate",
     "sheet": {
       "_doc": "Humanoids: all states in one image so outfit and weapon match. Cells in state order, left to right, top to bottom.",
@@ -1702,7 +1704,7 @@
         320,
         480
       ],
-      "prompt_template": "character sheet, the same {look} in six poses, identical clothes and {weapon} in every pose, full body, plain grey background, {style}"
+      "prompt_template": "character sheet, {look}, six poses, same clothes and {weapon} in each, full body, plain flat grey background, {style}"
     },
     "states": [
       {
@@ -1841,11 +1843,11 @@
           0.26
         ],
         [
-          0.4,
+          0.43,
           0.15
         ],
         [
-          0.36,
+          0.52,
           0.05
         ],
         [
@@ -1853,12 +1855,12 @@
           0.26
         ],
         [
-          0.73,
-          0.35
+          0.67,
+          0.14
         ],
         [
-          0.8,
-          0.42
+          0.56,
+          0.05
         ],
         [
           0.46,
@@ -2201,7 +2203,7 @@
     "characters": [
       {
         "id": "campesino",
-        "look": "weathered Costa Rican farm worker with long dark hair and a mustache, frayed wide straw hat, dark olive short-sleeved button-up work shirt with chest pocket, long dark work trousers",
+        "look": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers",
         "seed": 5000,
         "body": "humanoid",
         "weapon": "a long steel machete"

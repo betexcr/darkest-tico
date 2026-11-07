@@ -207,7 +207,7 @@ def main() -> int:
         pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"))
         steps = int(cfg.get("steps", manifest["steps"]))
         scales = args.ref_scales or [float(cfg.get("reference", {}).get("scale", 0.6))]
-        negative = f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
+        negative = cfg.get("negative") or f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
         for c in chars:
             if c.get("body", "humanoid") == "beast":
                 continue
@@ -257,7 +257,7 @@ def main() -> int:
     w, h = cfg["size"]
     steps = int(cfg.get("steps", manifest["steps"]))
     guidance = float(manifest["cfg_scale"])
-    negative = f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
+    negative = cfg.get("negative") or f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
     print(f"Generating {len(todo)} sprite(s) on {device}, {w}x{h}, {steps} steps", flush=True)
 
     raw_cache: dict[str, Image.Image] = {}
