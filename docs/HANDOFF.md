@@ -17,6 +17,18 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-07 (night) — P4-08, P4-10 — Hero sprites that match the portraits; all item icons
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** P4-10 review (all 64 item icons); P4-08 in-progress (8 heroes done, 15 enemies left)
+- **Changed:**
+  - `tools/sd_sprites.py`: portrait → IP-Adapter reference (portrait cut out on grey, cached in `tools/.sprite_cache/<id>_ref.png`); attack cell redrawn full-size (`sheet.redo_states`); per-character `seed`, `redo_seeds`, `redo_poses`, `skeletons`; `--states attack --force` reuses the cached raw sheet (~3 min); dead sprites keep only the main figure; `--try-seeds N --ref-scales ... --preview-dir` for comparisons.
+  - `tools/art_manifest.json`: hero `look`s rewritten from their portraits; sprite prompts/negative kept under CLIP's 77 tokens.
+  - `assets/sprites/<hero>/` for all 8 hero classes. AGENTS.md §4 + doc 11: sprites must look like the portrait (owner rule).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Each hero's sprites reviewed by eye next to the portrait. Godot tests not re-run this session (no code changes in game scripts).
+- **Not verified / risks:** Owner still reviewing heroes one by one. Re-rolls queued at hand-off time: montador (outfit drifted), medica_josefina (long dress), exorcista attack (crucifix) — check `git log` for whether they landed.
+- **Decisions needed:** Owner verdict per hero sprite set.
+- **Next step:** P4-08 — after owner OK on heroes, run enemies one by one: rewrite each enemy `look` in `tools/art_manifest.json` from `assets/enemies/<id>.png`, then `python tools/sd_sprites.py --only <id> --force` (humanoids ~12 min; beasts rata_de_troje, murcielago_bodega, cadejo_negro use img2img), review next to the portrait, re-roll attack with `--states attack --force` if it has a third hand / no weapon.
+
 ## 2026-11-07 (later) — Combat depth, recruiting, equipment, Godot tests
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:**
