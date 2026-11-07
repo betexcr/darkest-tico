@@ -43,3 +43,10 @@ Export **PNG**; power-of-two dimensions are convenient for GPUs.
 ## 6) Placeholder without SD
 
 The hub loads `assets/ui_bg/hub_bg.png` with `Image.load()` if present; otherwise it uses a **procedural** dark texture in code. A stdlib PNG writer in `tools/make_placeholder_png.py` may not match Godot’s importer; prefer exporting PNG from SD or from an image editor, or rely on the built-in procedural fallback.
+
+## Battle sprites (`tools/sd_sprites.py`)
+
+- Six poses per character (idle, attack, cast, hurt, ailment, dead) under `assets/sprites/<id>/`.
+- Humanoids: all six poses are drawn in **one character-sheet image** (OpenPose skeleton per cell), then cut into six sprites, so outfit and weapon stay the same. Beasts: img2img from the idle image.
+- Every call gets the character's **portrait** (`assets/portraits/<id>.png` or `assets/enemies/<id>.png`) as an IP-Adapter image prompt (`h94/IP-Adapter`, `ip-adapter-plus_sd15`, Apache-2.0) so the sprite looks like the portrait. Strength: `sprites.reference.scale` in the manifest.
+- To compare variants before committing: `python tools/sd_sprites.py --only <id> --try-seeds 2 --ref-scales 0.6 0.8 --preview-dir <dir>`, then set the chosen `seed` / `scale` in the manifest and run `--only <id> --force`.
