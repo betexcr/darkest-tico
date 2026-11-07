@@ -2210,9 +2210,12 @@
       {
         "id": "campesino",
         "look": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers",
-        "seed": 5000,
+        "seed": 5001,
         "body": "humanoid",
-        "weapon": "a long steel machete"
+        "weapon": "a long steel machete",
+        "redo_seeds": {
+          "attack": 5003
+        }
       },
       {
         "id": "montador",

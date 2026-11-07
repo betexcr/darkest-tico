@@ -203,7 +203,8 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
             prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(cfg["skeletons"][sid], (w, h)),
             strength=float(st.get("redo_strength", 0.75)), controlnet_conditioning_scale=control_scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
-            generator=torch.Generator(device="cpu").manual_seed(int(c["seed"]) + order.index(sid)),
+            generator=torch.Generator(device="cpu").manual_seed(
+                int(c.get("redo_seeds", {}).get(sid, int(c["seed"]) + order.index(sid)))),
             **(ref_kw or {}),
         ).images[0]
         out[sid] = big.resize((cw, ch), Image.LANCZOS)
