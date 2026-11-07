@@ -1,16 +1,21 @@
 {
   "id": "sprite_campesino_idle",
-  "prompt": "character sheet, the same weathered Costa Rican farm worker gripping a steel machete blade, straw hat, sweat-stained work shirt in six poses, identical clothes and a long steel machete in every pose, full body, plain grey background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly brushstrokes, game character art",
-  "negative_prompt": "candle, candles, fire, shrine, altar, cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd, duplicate, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 5000,
+  "prompt": "character sheet, Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers, six poses, same clothes and a long steel machete in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5001,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "960x960 sheet, cell 1 of 6",
   "mode": "sheet",
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "reference": {
+    "image": "assets/portraits/campesino.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T06:55:17+00:00"
+  "timestamp": "2026-11-07T08:12:54+00:00"
 }

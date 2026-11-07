@@ -328,7 +328,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ### P4-08 · L · Battle sprites for all characters
 - Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
-- 23 characters × 6 states (idle, attack, cast, hurt, ailment, dead) = 138 transparent PNGs in `assets/sprites/<id>/<state>.png`, made by `tools/sd_sprites.py` from the `sprites` section of `tools/art_manifest.json` (idle from text, other states img2img from idle, background cut with rembg). About 4 h on CPU.
+- 23 characters × 6 states (idle, attack, cast, hurt, ailment, dead) = 138 transparent PNGs in `assets/sprites/<id>/<state>.png`, made by `tools/sd_sprites.py` from the `sprites` section of `tools/art_manifest.json`. Humanoids: one character sheet with all 6 poses (OpenPose per cell), attack redrawn full-size; beasts: img2img from idle. Every call uses the character's portrait (cut out on grey) as an IP-Adapter reference so the sprite looks like the portrait (owner rule). Background cut with rembg. ~12 min per humanoid on CPU.
+- Workflow per character: `--only <id> --try-seeds 2 --preview-dir <dir>` → pick a seed (and `redo_seeds.attack` if the attack cell has a third hand / no blade) → set them in the manifest → `--only <id> --force`.
+- Progress: campesino done (seed 5001, attack redo 5003), waiting for owner OK before the other 22.
 - Done when:
   - [ ] All 138 generated with metadata
   - [ ] Reviewed; bad ones re-rolled (`--only <id> --states <state> --force` after changing seed/look)
