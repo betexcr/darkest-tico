@@ -18,7 +18,12 @@ const SKILLS_PATH := "res://data/skills.json"
 const ENEMIES_PATH := "res://data/enemies.json"
 const ITEMS_PATH := "res://data/items.json"
 const CURIOS_PATH := "res://data/curios.json"
-const INVENTORY_SLOTS := 16
+const INVENTORY_SLOTS := 24
+const EQUIP_SLOTS := ["weapon", "armor", "accessory1", "accessory2"]
+const ELEMENT_NAMES := {
+	"fuego": "Fuego", "hielo": "Hielo", "rayo": "Rayo", "agua": "Agua",
+	"tierra": "Tierra", "viento": "Viento", "sagrado": "Sagrado", "oscuridad": "Oscuridad",
+}
 
 const DEFAULT_REGION_PATH := "res://data/regions/sotanos.json"
 const BOSQUE_REGION_PATH := "res://data/regions/bosque.json"
@@ -59,6 +64,8 @@ var party: Array = []
 ## Candidates at the Terminal de Buses, refreshed every week.
 var recruit_pool: Array = []
 var _next_uid: int = 1
+## True while a fight is on: equipment can't be changed (owner rule).
+var equip_locked: bool = false
 ## Short report of what happened at the end of the last expedition (hub status line).
 var last_week_report: String = ""
 
@@ -367,7 +374,153 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"dead": false,
 		"affliction_id": "",
 		"virtud_id": "",
+		"equipment": {},
+		"prot": 0,
+		"dmg_bonus": 0,
+		"stress_resist": 0,
+		"element": "",
+		"resist": {},
+		"immune": [],
 	}
+
+
+## Tooltip text for any item: name, description, and what it does.
+func item_tooltip(item_id: String) -> String:
+	var it: Dictionary = get_item(item_id)
+	if it.is_empty():
+		return item_id
+	var lines: PackedStringArray = PackedStringArray([str(it.get("name", item_id)), str(it.get("description", ""))])
+	var labels := {"damage": "Daño", "accuracy": "Precisión", "crit": "Crítico", "dodge": "Esquiva",
+		"speed": "Velocidad", "hp_max": "PV máx.", "prot": "Protección %", "stress_resist": "Resist. estrés %"}
+	var parts: PackedStringArray = PackedStringArray()
+	var slot_names := {"weapon": "Arma", "armor": "Armadura", "accessory": "Accesorio"}
+	if it.has("slot"):
+		parts.append(str(slot_names.get(str(it["slot"]), it["slot"])))
+	for k in it.get("bonus", {}):
+		parts.append("%s %+d" % [labels.get(k, k), int(it["bonus"][k])])
+	if str(it.get("element", "")) != "":
+		parts.append("Elemento: %s" % ELEMENT_NAMES.get(str(it["element"]), it["element"]))
+	for e in it.get("resist", {}):
+		var m: float = float(it["resist"][e])
+		parts.append("%s %s" % ["Inmune a" if m == 0.0 else "Resiste", ELEMENT_NAMES.get(str(e), e)])
+	for st in it.get("immune", []):
+		parts.append("Inmune: %s" % str(st))
+	if not parts.is_empty():
+		lines.append(" · ".join(parts))
+	var where: String = {
+		"explore": "Fuera de combate", "combat": "Solo en combate", "both": "Dentro y fuera de combate",
+		"curio": "Se usa en lugares extraños", "equip": "Arrástralo a un héroe para equiparlo",
+	}.get(str(it.get("usable", "")), "")
+	if str(it.get("usable", "")) in ["explore", "both"]:
+		where += " · %d uso(s) por héroe en cada lugar" % int(it.get("uses_per_node", 1))
+	lines.append(where)
+	lines.append("%d ₡" % int(it.get("price", 0)))
+	return "\n".join(lines)
+
+
+# --- Equipment (P3-11): 1 weapon, 1 armor, 2 accessories per hero -----------------
+
+func is_equipment(item_id: String) -> bool:
+	return str(get_item(item_id).get("usable", "")) == "equip"
+
+
+## Which hero slots can hold this item.
+func slots_for(item_id: String) -> Array:
+	match str(get_item(item_id).get("slot", "")):
+		"weapon":
+			return ["weapon"]
+		"armor":
+			return ["armor"]
+		"accessory":
+			return ["accessory1", "accessory2"]
+	return []
+
+
+## Equip from the inventory. `slot` "" picks the right (or first free accessory) slot.
+## Whatever was in the slot goes back to the inventory. Returns an error, or "".
+func equip(hero: Dictionary, item_id: String, slot: String = "") -> String:
+	if equip_locked:
+		return "No se cambia el equipo en pleno combate."
+	var allowed: Array = slots_for(item_id)
+	if allowed.is_empty():
+		return "Eso no se puede equipar."
+	if item_count(item_id) <= 0:
+		return "No tienes ese artículo."
+	if bool(hero.get("dead", false)):
+		return "%s ya no puede equiparse." % hero.get("name", "?")
+	if not hero.get("equipment") is Dictionary:
+		hero["equipment"] = {}
+	var eq: Dictionary = hero["equipment"]
+	if slot == "":
+		slot = allowed[0]
+		for s in allowed:
+			if str(eq.get(s, "")) == "":
+				slot = s
+				break
+	if not allowed.has(slot):
+		return "%s no va en ese espacio." % get_item(item_id).get("name", item_id)
+	remove_item(item_id, 1)
+	var old: String = str(eq.get(slot, ""))
+	if old != "" and add_item(old, 1) == 0:
+		add_item(item_id, 1)
+		return "No hay espacio en la alforja para guardar %s." % get_item(old).get("name", old)
+	eq[slot] = item_id
+	recompute_stats(hero)
+	return ""
+
+
+func unequip(hero: Dictionary, slot: String) -> String:
+	if equip_locked:
+		return "No se cambia el equipo en pleno combate."
+	var eq = hero.get("equipment", {})
+	if not eq is Dictionary or str(eq.get(slot, "")) == "":
+		return ""
+	var id: String = str(eq[slot])
+	if add_item(id, 1) == 0:
+		return "La alforja está llena."
+	eq.erase(slot)
+	recompute_stats(hero)
+	return ""
+
+
+## Rebuilds a hero's combat stats from the class template plus equipment.
+## Sets accuracy, crit, dodge, speed, hp_max (HP clamped), prot (%), dmg_bonus,
+## stress_resist (%), element (weapon), resist {element: mult}, immune [ailments].
+func recompute_stats(hero: Dictionary) -> void:
+	var t: Dictionary = get_hero_template(str(hero.get("hero_id", "")))
+	if t.is_empty():
+		return
+	var stats: Dictionary = {
+		"accuracy": int(t.get("accuracy", 5)), "crit": int(t.get("crit", 5)), "dodge": int(t.get("dodge", 5)),
+		"speed": int(t.get("speed", 3)), "hp_max": int(t.get("hp_max", 20)),
+		"prot": 0, "damage": 0, "stress_resist": 0,
+	}
+	var resist: Dictionary = {}
+	var immune: Array = []
+	var element: String = ""
+	var eq = hero.get("equipment", {})
+	if eq is Dictionary:
+		for slot in eq:
+			var item: Dictionary = get_item(str(eq[slot]))
+			for k in item.get("bonus", {}):
+				stats[k] = int(stats.get(k, 0)) + int(item["bonus"][k])
+			for e in item.get("resist", {}):
+				resist[e] = float(resist.get(e, 1.0)) * float(item["resist"][e])
+			for st in item.get("immune", []):
+				if not immune.has(st):
+					immune.append(st)
+			if str(slot) == "weapon":
+				element = str(item.get("element", ""))
+	for k in ["accuracy", "crit", "dodge", "speed", "hp_max"]:
+		hero[k] = stats[k]
+	hero["hp_max"] = maxi(int(hero["hp_max"]), 1)
+	hero["hp"] = mini(int(hero.get("hp", hero["hp_max"])), int(hero["hp_max"]))
+	hero["prot"] = clampi(int(stats["prot"]), 0, 80)
+	hero["dmg_bonus"] = int(stats["damage"])
+	hero["stress_resist"] = clampi(int(stats["stress_resist"]), -50, 80)
+	hero["element"] = element
+	hero["resist"] = resist
+	hero["immune"] = immune
 
 
 # --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------
@@ -802,6 +955,9 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 		out["affliction_id"] = ""
 	if not out.has("virtud_id"):
 		out["virtud_id"] = ""
+	if not out.get("equipment") is Dictionary:
+		out["equipment"] = {}
+	recompute_stats(out)
 	var smax: int = maxi(int(out.get("stress_max", 200)), 200)
 	out["stress_max"] = smax
 	out["stress"] = clampi(int(out.get("stress", 0)), 0, smax)

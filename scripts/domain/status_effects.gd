@@ -12,6 +12,8 @@ const NAMES := {"sangrado": "Sangrado", "veneno": "Envenenado", "aturdido": "Atu
 static func apply(unit: Dictionary, status: String, turns: int, value: int) -> String:
 	if not NAMES.has(status) or bool(unit.get("dead", false)):
 		return ""
+	if unit.get("immune", []).has(status):
+		return "%s es inmune a %s." % [unit.get("name", "?"), NAMES[status].to_lower()]
 	if not unit.get("statuses") is Dictionary:
 		unit["statuses"] = {}
 	var cur: Dictionary = unit["statuses"].get(status, {"turns": 0, "value": 0})

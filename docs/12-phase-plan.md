@@ -237,6 +237,13 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `02` §9, `01` §4.4
 - Done when: [ ] Camp node uses per-hero camp skills instead of the fixed "feast/skip"
 
+### P3-11 · M · Equipment and elements (owner request 2026-11-07)
+- Status: `review`
+- 25 Tico-themed pieces in `data/items.json` (`usable: equip`): 9 weapons (some typed: Machete bendito = sagrado, Tizón de fogón = fuego…), 7 armors, 9 accessories (immunities, element resistances, speed, dodge, stress resistance). 1 weapon + 1 armor + 2 accessories per hero; `GameState.equip/unequip/recompute_stats`. Drag-and-drop from the inventory to equipment slots (hub and expedition hero panel) or onto a hero on the stage; click a slot to unequip; locked in combat.
+- 8 classic elements; every enemy has affinities; enemy magic skills carry elements. Hero attacks use the weapon's element; armor protection reduces physical damage before Guard; resistances scale elemental damage; immunities block ailments; stress resistance lowers stress taken. Enemy tooltips show weaknesses. Bombeta is fuego.
+- Tests: `tests/test_equipment.gd` (17 checks). Icons for the 25 pieces are in the art manifest (P4-10).
+- Follow-ups: class restrictions on weapons? Balance (fights got longer with squads + armor: ~100 hero turns per expedition in the smoke test).
+
 ### P3-10 · S · EBAIS healing in the hub (owner request 2026-11-07)
 - Status: `review` · Each roster row has "EBAIS N ₡": full HP for `HEAL_COST_PER_HP` (15) per missing HP, minimum `HEAL_MIN_COST` (100). Constants in `game_state.gd`.
 

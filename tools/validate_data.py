@@ -83,7 +83,15 @@ def main() -> int:
             errors.append(f"enemies.json: '{eid}' needs 1-3 special abilities (has {len(specials)})")
         if specials and not any(x.get("type") == "magical" or x.get("applies") for x in specials):
             errors.append(f"enemies.json: '{eid}' needs a magical or ailment special")
+        known_el = {"fuego", "hielo", "rayo", "agua", "tierra", "viento", "sagrado", "oscuridad"}
+        if not en.get("elements"):
+            errors.append(f"enemies.json: '{eid}' needs elemental affinities (owner rule)")
+        for e in en.get("elements", {}):
+            if e not in known_el:
+                errors.append(f"enemies.json: '{eid}' has unknown element '{e}'")
         for x in eskills:
+            if x.get("element") and x["element"] not in known_el:
+                errors.append(f"enemies.json: '{eid}.{x.get('id')}' has unknown element")
             if x.get("type") not in ("physical", "magical"):
                 errors.append(f"enemies.json: '{eid}.{x.get('id')}' has invalid type")
             ap = x.get("applies")
@@ -170,6 +178,19 @@ def main() -> int:
     items_raw = load(items_path)
     items = as_id_map(items_raw, "items", items_path)
     for iid, it in items.items():
+        elements = set((items_raw or {}).get("elements", []))
+        if it.get("usable") == "equip":
+            if it.get("slot") not in ("weapon", "armor", "accessory"):
+                errors.append(f"items.json: '{iid}' has invalid slot '{it.get('slot')}'")
+            if it.get("element") and it["element"] not in elements:
+                errors.append(f"items.json: '{iid}' has unknown element '{it['element']}'")
+            for e in it.get("resist", {}):
+                if e not in elements:
+                    errors.append(f"items.json: '{iid}' resists unknown element '{e}'")
+            for st in it.get("immune", []):
+                if st not in ("sangrado", "veneno", "aturdido"):
+                    errors.append(f"items.json: '{iid}' immune to unknown ailment '{st}'")
+            continue
         if it.get("usable") not in ("explore", "combat", "both", "curio"):
             errors.append(f"items.json: '{iid}' has invalid usable '{it.get('usable')}'")
         if it.get("target") not in ("ally", "party", "enemy", "none"):

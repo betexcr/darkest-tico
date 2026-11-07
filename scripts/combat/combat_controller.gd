@@ -128,8 +128,8 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 	_log("%s usa %s." % [hero.get("name", "?"), item.get("name", item_id)], "")
 	match str(item.get("target", "ally")):
 		"enemy":
-			var dmg: int = ItemEffectsScript.damage_roll(item)
 			var tgt: Dictionary = current_target()
+			var dmg: int = _elemental(ItemEffectsScript.damage_roll(item), str(item.get("effects", {}).get("element", "")), tgt)
 			if dmg > 0 and not tgt.is_empty():
 				_apply_damage_to_enemy(tgt, dmg)
 				_log("%s recibe %d de daño." % [tgt.get("name", "?"), dmg], "ddbb55")
@@ -195,11 +195,11 @@ func _roll_initiative_queue() -> void:
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):
 			var ini: int = CombatResolverScript.roll_initiative(int(h.get("speed", 3)), int(h.get("resolve_level", 0)))
-			entries.append({"kind": "hero", "actor": h, "ini": ini, "spd": int(h.get("speed", 0)), "rl": int(h.get("resolve_level", 0))})
+			entries.append({"kind": "hero", "actor": h, "ini": ini, "spd": int(h.get("speed", 0)), "rl": int(h.get("resolve_level", 0)), "tie": randf()})
 	for e in enemies:
 		if not e.get("dead", false):
 			var ein: int = CombatResolverScript.roll_initiative(int(e.get("speed", 3)), 0)
-			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": int(e.get("speed", 0)), "rl": 0})
+			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": int(e.get("speed", 0)), "rl": 0, "tie": randf()})
 	entries.sort_custom(_sort_initiative)
 	_turn_queue = entries
 	_log("— Ronda %d —" % _round, "888888")
@@ -212,7 +212,8 @@ func _sort_initiative(a: Dictionary, b: Dictionary) -> bool:
 		return int(a["spd"]) > int(b["spd"])
 	if int(a["rl"]) != int(b["rl"]):
 		return int(a["rl"]) > int(b["rl"])
-	return randf() < 0.5
+	# Random tie-break rolled once per unit per round (a comparator must be consistent).
+	return float(a["tie"]) > float(b["tie"])
 
 
 func _process_turn() -> void:
@@ -362,9 +363,10 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		_log("%s falla %s." % [hero.get("name", "?"), skill.get("name", "")], "")
 		_log_all(StressSystemScript.add_stress(hero, 3))
 		return
-	var raw: int = CombatResolverScript.roll_damage(skill)
+	var raw: int = CombatResolverScript.roll_damage(skill) + int(hero.get("dmg_bonus", 0))
 	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
-	var dmg: int = CombatResolverScript.resolve_attack_damage(raw, crit)
+	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
+	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
 	_apply_damage_to_enemy(enemy, dmg)
 	var ap = skill.get("applies", null)
 	if ap is Dictionary and not enemy.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
@@ -387,6 +389,22 @@ func _apply_damage_to_enemy(enemy: Dictionary, dmg: int) -> void:
 	if int(enemy["hp"]) <= 0:
 		enemy["hp"] = 0
 		enemy["dead"] = true
+
+
+## Elemental multiplier from the target's "elements" (enemies) or "resist" (heroes).
+func _elemental(dmg: int, element: String, target: Dictionary) -> int:
+	if element == "" or dmg <= 0:
+		return dmg
+	var table = target.get("elements", target.get("resist", {}))
+	var mult: float = float(table.get(element, 1.0)) if table is Dictionary else 1.0
+	var elname: String = str(GameState.ELEMENT_NAMES.get(element, element))
+	if mult == 0.0:
+		_log("  %s es inmune a %s." % [target.get("name", "?"), elname], "999999")
+	elif mult > 1.0:
+		_log("  ¡%s es débil a %s!" % [target.get("name", "?"), elname], "ffcc55")
+	elif mult < 1.0:
+		_log("  %s resiste %s." % [target.get("name", "?"), elname], "999999")
+	return int(round(dmg * mult))
 
 
 ## Basic attack or a special, chosen by "weight" (data/enemies.json).
@@ -437,10 +455,11 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			_log("  %s esquiva." % t.get("name", "?"), "")
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
+		dmg = _elemental(dmg, str(skill.get("element", "")), t)
 		if dmg > 0:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
-		var stress: int = int(skill.get("stress", 0))
+		var stress: int = int(round(int(skill.get("stress", 0)) * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		if stress > 0 and not t.get("dead", false):
 			_log_all(StressSystemScript.add_stress(t, stress))
 			_log("  %s: estrés +%d" % [t.get("name", "?"), stress], "aa88cc")
@@ -465,6 +484,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true) -> void:
 	if hero.get("dead", false):
 		return
+	if physical and int(hero.get("prot", 0)) > 0:
+		dmg = maxi(int(round(dmg * (1.0 - int(hero["prot"]) / 100.0))), 1)
 	if physical and bool(hero.get("guarding", false)):
 		dmg = maxi(int(ceil(dmg / 2.0)), 1)
 		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")

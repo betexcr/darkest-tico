@@ -43,6 +43,8 @@ Do this before you stop for **any** reason: task finished, context running out, 
 - **Names:** every ability has a **Costa Rican (Tico) name that fits that specific monster or class**, written in Spanish, within the tone rules of doc 08 (e.g. Mandador en pena → *Latigazo*, *Libreta de deudas*; Cadejo → *Aullido de medianoche*).
 - **Guard:** halves physical damage until the hero's next turn; magical attacks and `ignores_guard` skills go through it.
 - **Items:** outside combat, each hero can use each item `uses_per_node` times per room (per character, not per team). Using an item in combat spends the hero's turn.
+- **Elements** (classic RPG set): fuego, hielo, rayo, agua, tierra, viento, sagrado, oscuridad. **Every enemy has elemental affinities** (`elements`: >1 weak, <1 resists, 0 immune) that fit the monster; enemy magic skills carry an `element`.
+- **Equipment:** each hero wears **1 weapon, 1 armor, 2 accessories**, all Tico-themed. Bonuses: damage, accuracy, crit, dodge, speed, HP, protection %, stress resistance %; weapons may be typed (`element`), armor/accessories may resist elements or grant ailment immunity. Sold at the Pulpería; equipped by dragging from the inventory onto a hero slot or a hero on the stage; locked during fights.
 - **Battle sprites:** a character looks identical in all poses (same outfit and weapon); only the pose changes. The attack pose uses that character's weapon.
 
 ## 5. Status vocabulary

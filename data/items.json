@@ -1,5 +1,5 @@
 {
-  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per hero per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}, cure [status ids].",
+  "_doc": "Items. usable: explore | combat | both | curio (key only) | equip. Consumables: target ally | party | enemy | none; effects heal, stress, light, damage [min,max] (+element), hp_risk, cure. Equipment (usable equip, max_stack 1): slot weapon | armor | accessory; bonus {damage, accuracy, crit, dodge, speed, hp_max, prot (% less physical damage), stress_resist (% less stress)}; weapon element (its attacks deal that element); resist {element: multiplier, <1 resists, 0 immune}; immune [ailments]. Heroes: 1 weapon, 1 armor, 2 accessories. uses_per_node: per hero per room outside combat.",
   "starter_inventory": [
     {
       "id": "gallo_pinto",
@@ -117,7 +117,8 @@
         "damage": [
           6,
           10
-        ]
+        ],
+        "element": "fuego"
       }
     },
     {
@@ -196,6 +197,429 @@
       "curio_keys": [
         "radio_vieja"
       ]
+    },
+    {
+      "id": "machete_cartago",
+      "name": "Machete de Cartago",
+      "description": "Hoja larga, mango de madera. El de toda la vida.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2
+      }
+    },
+    {
+      "id": "machete_bendito",
+      "name": "Machete bendito",
+      "description": "Lo pasaron por la romería. Corta lo que no debería existir.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1
+      },
+      "element": "sagrado"
+    },
+    {
+      "id": "tizon_de_fogon",
+      "name": "Tizón de fogón",
+      "description": "Leño encendido del fogón de leña. Quema.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1
+      },
+      "element": "fuego"
+    },
+    {
+      "id": "cuchillo_del_irazu",
+      "name": "Cuchillo del Irazú",
+      "description": "Forjado en la cima fría del volcán. Siempre está helado.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "crit": 3
+      },
+      "element": "hielo"
+    },
+    {
+      "id": "varilla_de_tendido",
+      "name": "Varilla de tendido eléctrico",
+      "description": "Arrancada de un poste. Todavía chispea.",
+      "price": 850,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1
+      },
+      "element": "rayo"
+    },
+    {
+      "id": "remo_del_tempisque",
+      "name": "Remo del Tempisque",
+      "description": "Remo de bote de río. Pega como ola.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "dodge": 1
+      },
+      "element": "agua"
+    },
+    {
+      "id": "pala_de_cafetal",
+      "name": "Pala de cafetal",
+      "description": "Para sembrar o para enterrar.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2
+      },
+      "element": "tierra"
+    },
+    {
+      "id": "honda_de_jicaro",
+      "name": "Honda de jícaro",
+      "description": "Tirador de hule y horqueta de jícaro. Silba en el aire.",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "accuracy": 2
+      },
+      "element": "viento"
+    },
+    {
+      "id": "garrote_de_guayabo",
+      "name": "Garrote de guayabo",
+      "description": "Madera dura. Pesado pero contundente.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3,
+        "accuracy": -1
+      }
+    },
+    {
+      "id": "camisa_de_manta",
+      "name": "Camisa de manta",
+      "description": "Tela gruesa y fresca. Algo protege.",
+      "price": 300,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 1
+      }
+    },
+    {
+      "id": "cotona_de_cuero",
+      "name": "Cotona de cuero",
+      "description": "Chaleco de cuero de res curtido.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 15
+      }
+    },
+    {
+      "id": "chaleco_de_guachiman",
+      "name": "Chaleco de guachimán",
+      "description": "Chaleco reforzado de ronda nocturna. Pesa.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 20,
+        "speed": -1
+      }
+    },
+    {
+      "id": "capa_de_hule",
+      "name": "Capa de hule",
+      "description": "Para los aguaceros de octubre. Aísla del agua y la corriente.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5
+      },
+      "resist": {
+        "agua": 0.5,
+        "rayo": 0.5
+      }
+    },
+    {
+      "id": "poncho_de_zarcero",
+      "name": "Poncho de Zarcero",
+      "description": "Lana gruesa de las alturas frías.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10
+      },
+      "resist": {
+        "hielo": 0.5,
+        "viento": 0.75
+      }
+    },
+    {
+      "id": "delantal_de_herreria",
+      "name": "Delantal de herrería",
+      "description": "Cuero chamuscado del taller de carretas.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10
+      },
+      "resist": {
+        "fuego": 0.5
+      }
+    },
+    {
+      "id": "sotana_remendada",
+      "name": "Sotana remendada",
+      "description": "Vieja pero bendita. Las sombras le tienen miedo.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "stress_resist": 10
+      },
+      "resist": {
+        "oscuridad": 0.5
+      }
+    },
+    {
+      "id": "escapulario",
+      "name": "Escapulario",
+      "description": "De la abuela. Calma los nervios.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "stress_resist": 15
+      }
+    },
+    {
+      "id": "cruz_de_caravaca",
+      "name": "Cruz de Caravaca",
+      "description": "Doble cruz contra la oscuridad.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "resist": {
+        "oscuridad": 0.5,
+        "sagrado": 0.75
+      }
+    },
+    {
+      "id": "panuelo_de_la_abuela",
+      "name": "Pañuelo de la abuela",
+      "description": "Bordado y bendecido. Para la sangre.",
+      "price": 550,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "hp_max": 2
+      },
+      "immune": [
+        "sangrado"
+      ]
+    },
+    {
+      "id": "bolsita_de_ruda",
+      "name": "Bolsita de ruda",
+      "description": "Colgada al cuello contra pestes y venenos.",
+      "price": 550,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "immune": [
+        "veneno"
+      ]
+    },
+    {
+      "id": "ojo_de_venado",
+      "name": "Ojo de venado",
+      "description": "Semilla-amuleto contra el mal de ojo. No deja que lo dejen tieso.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "immune": [
+        "aturdido"
+      ]
+    },
+    {
+      "id": "sombrero_de_lona",
+      "name": "Sombrero de lona",
+      "description": "Ala ancha. Más difícil de atinarle.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "dodge": 2
+      }
+    },
+    {
+      "id": "reloj_del_abuelo",
+      "name": "Reloj de bolsillo del abuelo",
+      "description": "Todavía da la hora. Nunca llega tarde.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "speed": 2
+      }
+    },
+    {
+      "id": "colmillo_de_cadejo",
+      "name": "Colmillo de cadejo",
+      "description": "Dicen que es de cadejo. Da coraje… y algo de rabia.",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "stress_resist": -5
+      }
+    },
+    {
+      "id": "botas_de_hule",
+      "name": "Botas de hule",
+      "description": "Para el barreal. Aíslan de la tierra y la corriente.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "dodge": 1
+      },
+      "resist": {
+        "tierra": 0.5,
+        "rayo": 0.75
+      }
     }
+  ],
+  "elements": [
+    "fuego",
+    "hielo",
+    "rayo",
+    "agua",
+    "tierra",
+    "viento",
+    "sagrado",
+    "oscuridad"
   ]
 }

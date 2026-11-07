@@ -603,6 +603,456 @@
       },
       "seed": 6112,
       "subject": "old fat cylindrical radio battery, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_machete_cartago",
+      "out": "assets/items/machete_cartago.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6201,
+      "subject": "long steel machete with wooden handle, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_machete_bendito",
+      "out": "assets/items/machete_bendito.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6202,
+      "subject": "steel machete with a small cross on the blade, faint holy glow, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_tizon_de_fogon",
+      "out": "assets/items/tizon_de_fogon.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6203,
+      "subject": "burning wooden log torch with flames, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_cuchillo_del_irazu",
+      "out": "assets/items/cuchillo_del_irazu.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6204,
+      "subject": "frosty steel knife covered in ice crystals, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_varilla_de_tendido",
+      "out": "assets/items/varilla_de_tendido.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6205,
+      "subject": "metal rod crackling with electric sparks, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_remo_del_tempisque",
+      "out": "assets/items/remo_del_tempisque.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6206,
+      "subject": "wooden boat oar dripping water, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_pala_de_cafetal",
+      "out": "assets/items/pala_de_cafetal.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6207,
+      "subject": "old iron shovel with dirt, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_honda_de_jicaro",
+      "out": "assets/items/honda_de_jicaro.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6208,
+      "subject": "wooden slingshot with rubber band, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_garrote_de_guayabo",
+      "out": "assets/items/garrote_de_guayabo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6209,
+      "subject": "heavy knotted wooden club, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_camisa_de_manta",
+      "out": "assets/items/camisa_de_manta.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6210,
+      "subject": "coarse white cotton peasant shirt, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_cotona_de_cuero",
+      "out": "assets/items/cotona_de_cuero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6211,
+      "subject": "brown leather vest, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_chaleco_de_guachiman",
+      "out": "assets/items/chaleco_de_guachiman.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6212,
+      "subject": "padded night watchman vest, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_capa_de_hule",
+      "out": "assets/items/capa_de_hule.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6213,
+      "subject": "black rubber rain poncho, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_poncho_de_zarcero",
+      "out": "assets/items/poncho_de_zarcero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6214,
+      "subject": "thick wool poncho, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_delantal_de_herreria",
+      "out": "assets/items/delantal_de_herreria.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6215,
+      "subject": "scorched leather blacksmith apron, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_sotana_remendada",
+      "out": "assets/items/sotana_remendada.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6216,
+      "subject": "patched black priest cassock, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_escapulario",
+      "out": "assets/items/escapulario.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6217,
+      "subject": "small cloth scapular necklace, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_cruz_de_caravaca",
+      "out": "assets/items/cruz_de_caravaca.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6218,
+      "subject": "double-armed cross pendant, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_panuelo_de_la_abuela",
+      "out": "assets/items/panuelo_de_la_abuela.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6219,
+      "subject": "embroidered red handkerchief, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_bolsita_de_ruda",
+      "out": "assets/items/bolsita_de_ruda.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6220,
+      "subject": "small cloth pouch of green herbs, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_ojo_de_venado",
+      "out": "assets/items/ojo_de_venado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6221,
+      "subject": "red seed amulet on a string, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_sombrero_de_lona",
+      "out": "assets/items/sombrero_de_lona.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6222,
+      "subject": "wide brimmed canvas hat, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_reloj_del_abuelo",
+      "out": "assets/items/reloj_del_abuelo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6223,
+      "subject": "old brass pocket watch, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_colmillo_de_cadejo",
+      "out": "assets/items/colmillo_de_cadejo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6224,
+      "subject": "large black canine fang on a cord, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_botas_de_hule",
+      "out": "assets/items/botas_de_hule.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6225,
+      "subject": "black rubber boots, isolated object, close-up, plain black background"
     }
   ],
   "sprites": {

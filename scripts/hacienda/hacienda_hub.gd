@@ -5,17 +5,26 @@ extends Control
 
 signal start_mission_requested
 
+const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
+const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
+
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
 @onready var _week: Label = $Columns/Left/VBox/InfoRow/WeekLabel
 @onready var _region_option: OptionButton = $Columns/Left/VBox/RegionRow/RegionOption
-@onready var _shop_grid: GridContainer = $Columns/Left/VBox/ShopGrid
-@onready var _pack_label: Label = $Columns/Left/VBox/PackLabel
+@onready var _shop_grid: GridContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
+@onready var _equip_title: Label = $Columns/Right/VBox/EquipTitle
+@onready var _equip_row: HBoxContainer = $Columns/Right/VBox/EquipRow
+@onready var _pack_grid: GridContainer = $Columns/Right/VBox/PackGrid
 @onready var _recruit_box: VBoxContainer = $Columns/Left/VBox/RecruitBox
 @onready var _hub_status: Label = $Columns/Left/VBox/HubStatus
 @onready var _roster_title: Label = $Columns/Right/VBox/RosterTitle
 @onready var _roster_list: VBoxContainer = $Columns/Right/VBox/Scroll/RosterList
 @onready var _btn_start: Button = $Columns/Right/VBox/BtnStart
+
+## Hero whose equipment is shown (click a name in the roster).
+var _selected: Dictionary = {}
+var _equip_slots: Array = []
 
 
 func _ready() -> void:
@@ -30,6 +39,15 @@ func _ready() -> void:
 	_sync_region_option_from_state()
 	_try_load_hub_background()
 	_build_shop()
+	for slot in GameState.EQUIP_SLOTS:
+		var es = EquipSlotScript.new()
+		es.setup(slot)
+		es.custom_minimum_size = Vector2(60, 48)
+		es.changed.connect(func(msg: String): _say(msg))
+		_equip_row.add_child(es)
+		_equip_slots.append(es)
+	if not GameState.roster.is_empty():
+		_selected = GameState.roster[0]
 	_hub_status.text = GameState.last_week_report
 	_refresh()
 
@@ -85,15 +103,7 @@ func _say(msg: String) -> void:
 func _refresh() -> void:
 	_gold.text = "Colones: %d" % GameState.colones
 	_week.text = "Semana: %d" % GameState.week
-	var pack: PackedStringArray = PackedStringArray()
-	for id in GameState.all_item_ids():
-		var n: int = GameState.item_count(str(id))
-		if n > 0:
-			pack.append("%s ×%d" % [GameState.get_item(str(id)).get("name", id), n])
-	_pack_label.text = "Alforja (%d/%d espacios): %s" % [
-		GameState.inventory.size(), GameState.INVENTORY_SLOTS,
-		", ".join(pack) if not pack.is_empty() else "vacía",
-	]
+	_refresh_equipment()
 	for b in _shop_grid.get_children():
 		var item: Dictionary = GameState.get_item(str(b.get_meta("item_id", "")))
 		b.disabled = GameState.colones < int(item.get("price", 0))
@@ -110,7 +120,7 @@ func _build_shop() -> void:
 		var item: Dictionary = GameState.get_item(str(id))
 		var b := Button.new()
 		b.text = "%s — %d ₡" % [item.get("name", id), int(item.get("price", 0))]
-		b.tooltip_text = str(item.get("description", ""))
+		b.tooltip_text = GameState.item_tooltip(str(id))
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.clip_text = true
 		b.add_theme_font_size_override("font_size", 13)
@@ -125,6 +135,30 @@ func _build_shop() -> void:
 
 func _on_iglesia_pressed() -> void:
 	_say(GameState.iglesia_misa_rapida())
+
+
+# --- Equipment (drag from the alforja onto a slot; click a slot to unequip) ---------
+
+func _refresh_equipment() -> void:
+	if _selected.is_empty() or not GameState.roster.has(_selected):
+		_selected = GameState.roster[0] if not GameState.roster.is_empty() else {}
+	_equip_title.text = "Equipo de %s — arrastra desde la alforja (%d/%d espacios)" % [
+		_selected.get("name", "—"), GameState.inventory.size(), GameState.INVENTORY_SLOTS]
+	for es in _equip_slots:
+		es.show_hero(_selected)
+	for c in _pack_grid.get_children():
+		c.queue_free()
+	for k in GameState.INVENTORY_SLOTS:
+		var b = InventorySlotScript.new()
+		if k < GameState.inventory.size():
+			b.setup(str(GameState.inventory[k]["id"]), int(GameState.inventory[k]["qty"]))
+			b.used.connect(func(id: String):
+				if GameState.is_equipment(id) and not _selected.is_empty():
+					_say(GameState.equip(_selected, id))
+			)
+		else:
+			b.setup("", 0)
+		_pack_grid.add_child(b)
 
 
 # --- Terminal de Buses ------------------------------------------------------------
@@ -176,9 +210,18 @@ func _roster_row(h: Dictionary) -> Control:
 	if ResourceLoader.exists(p):
 		pic.texture = load(p) as Texture2D
 	row.add_child(pic)
-	var info := Label.new()
+	var info := Button.new()
+	info.flat = true
+	info.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	info.tooltip_text = "Clic para ver y cambiar su equipo."
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_font_size_override("font_size", 13)
+	if is_same(h, _selected):
+		info.add_theme_color_override("font_color", Color(1, 0.9, 0.55))
+	info.pressed.connect(func():
+		_selected = h
+		_refresh()
+	)
 	var extra: String = ""
 	var aff: String = str(h.get("affliction_id", ""))
 	if aff != "":
@@ -187,9 +230,9 @@ func _roster_row(h: Dictionary) -> Control:
 	var rank: String = ""
 	if in_party:
 		rank = "%d. " % (GameState.party.find(h) + 1)
-	info.text = "%s%s — %s\nPV %d/%d · Estrés %d/200%s" % [
+	info.text = "%s%s — %s\nPV %d/%d · Estrés %d · Prot %d%% · Daño %+d%s" % [
 		rank, h.get("name", "?"), h.get("class_name", ""), int(h.get("hp", 0)), int(h.get("hp_max", 0)),
-		int(h.get("stress", 0)), extra]
+		int(h.get("stress", 0)), int(h.get("prot", 0)), int(h.get("dmg_bonus", 0)), extra]
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if cost > 0:

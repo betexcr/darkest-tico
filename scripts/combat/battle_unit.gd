@@ -6,6 +6,8 @@ extends VBoxContainer
 ## "Animations" are pose swaps plus tweens (lunge, glow, shake, collapse, breathing).
 
 signal clicked(unit)
+## Equipment dropped on this hero from the inventory (message "" = ok).
+signal equipment_dropped(message: String)
 
 const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 const SPRITE_SIZE := Vector2(140, 210)
@@ -83,6 +85,34 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	add_child(_name_label)
 
 	_load_textures(fallback_path)
+	if not hero:
+		tooltip_text = _element_tooltip()
+
+
+func _element_tooltip() -> String:
+	var parts: PackedStringArray = PackedStringArray()
+	var els = data.get("elements", {})
+	if els is Dictionary:
+		for e in els:
+			var m: float = float(els[e])
+			var n: String = str(GameState.ELEMENT_NAMES.get(str(e), e))
+			if m == 0.0:
+				parts.append("Inmune a %s" % n)
+			elif m > 1.0:
+				parts.append("Débil a %s" % n)
+			elif m < 1.0:
+				parts.append("Resiste %s" % n)
+	return "%s\n%s" % [data.get("name", "?"), " · ".join(parts) if not parts.is_empty() else "Sin afinidades"]
+
+
+func _can_drop_data(_at_position: Vector2, d: Variant) -> bool:
+	return is_hero and d is Dictionary and str(d.get("kind", "")) == "item" \
+		and GameState.is_equipment(str(d.get("id", ""))) and not GameState.equip_locked and not is_dead()
+
+
+func _drop_data(_at_position: Vector2, d: Variant) -> void:
+	equipment_dropped.emit(GameState.equip(data, str(d.get("id", ""))))
+	refresh()
 
 
 func _ready() -> void:

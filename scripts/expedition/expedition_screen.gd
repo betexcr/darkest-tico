@@ -10,6 +10,8 @@ signal expedition_finished(reason: String)
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
+const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -48,6 +50,7 @@ var _viewed_hero: Dictionary = {}
 var _combat_node_id: String = ""
 ## In combat: the hero that ally-target skills and items will affect (click a hero to change).
 var _ally_target: Dictionary = {}
+var _equip_slots: Array = []
 
 
 func _ready() -> void:
@@ -65,6 +68,7 @@ func _ready() -> void:
 	_combat.logged.connect(_log_line)
 	_combat.enemy_changed.connect(_refresh_all)
 	_combat.combat_over.connect(_on_combat_over)
+	_build_equip_row()
 	_show_page(false)
 	_view_hero(_first_living_hero())
 	_log_line("La cuadrilla entra a %s." % GameState.mission_region_data.get("name", "la oscuridad"), "dddddd")
@@ -93,6 +97,7 @@ func _build_party() -> void:
 		var u = BattleUnitScript.new()
 		u.setup(h, true, "res://assets/portraits/%s.png" % str(h.get("hero_id", "")))
 		u.clicked.connect(_on_unit_clicked)
+		u.equipment_dropped.connect(_on_equipment_changed)
 		_hero_units.append(u)
 	for k in range(_hero_units.size() - 1, -1, -1):
 		_hero_row.add_child(_hero_units[k])
@@ -147,6 +152,24 @@ func _refresh_all() -> void:
 
 # --- Hero card --------------------------------------------------------------------
 
+func _build_equip_row() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 2)
+	for slot in GameState.EQUIP_SLOTS:
+		var es = EquipSlotScript.new()
+		es.setup(slot)
+		es.changed.connect(_on_equipment_changed)
+		row.add_child(es)
+		_equip_slots.append(es)
+	$BottomPanel/Row/HeroInfo.add_child(row)
+
+
+func _on_equipment_changed(message: String) -> void:
+	if message != "":
+		_log_line(message, "aaaaaa")
+	_refresh_all()
+
+
 func _first_living_hero() -> Dictionary:
 	for h in GameState.party:
 		if h is Dictionary and not h.get("dead", false):
@@ -166,12 +189,11 @@ func _view_hero(hero: Dictionary) -> void:
 	_hero_portrait.texture = load(p) as Texture2D if ResourceLoader.exists(p) else null
 	_hero_name.text = "%s\n%s" % [hero.get("name", "?"), hero.get("class_name", "")]
 	var lines: PackedStringArray = PackedStringArray()
-	lines.append("PV %d/%d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0))])
-	lines.append("Estrés %d/200" % int(hero.get("stress", 0)))
-	lines.append("Precisión %d" % int(hero.get("accuracy", 0)))
-	lines.append("Crítico %d%%" % int(hero.get("crit", 0)))
-	lines.append("Esquiva %d" % int(hero.get("dodge", 0)))
-	lines.append("Velocidad %d" % int(hero.get("speed", 0)))
+	lines.append("PV %d/%d · Estrés %d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0)), int(hero.get("stress", 0))])
+	lines.append("Prec %d · Crít %d%% · Esq %d" % [int(hero.get("accuracy", 0)), int(hero.get("crit", 0)), int(hero.get("dodge", 0))])
+	lines.append("Vel %d · Prot %d%% · Daño %+d" % [int(hero.get("speed", 0)), int(hero.get("prot", 0)), int(hero.get("dmg_bonus", 0))])
+	if str(hero.get("element", "")) != "":
+		lines.append("Arma de %s" % GameState.ELEMENT_NAMES.get(str(hero["element"]), hero["element"]))
 	if bool(hero.get("dead", false)):
 		lines.append("Caído")
 	elif bool(hero.get("al_borde", false)):
@@ -183,6 +205,8 @@ func _view_hero(hero: Dictionary) -> void:
 	if vir != "":
 		lines.append("Virtud: %s" % vir.capitalize())
 	_hero_stats.text = "\n".join(lines)
+	for es in _equip_slots:
+		es.show_hero(hero)
 
 
 # --- Side panel: map / inventory ----------------------------------------------------
@@ -202,47 +226,22 @@ func _refresh_inventory() -> void:
 	for c in _inventory.get_children():
 		c.queue_free()
 	for k in GameState.INVENTORY_SLOTS:
-		var b := Button.new()
-		b.custom_minimum_size = Vector2(44, 52)
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 11)
+		var b = InventorySlotScript.new()
 		if k < GameState.inventory.size():
 			var slot: Dictionary = GameState.inventory[k]
-			var id: String = str(slot["id"])
-			var item: Dictionary = GameState.get_item(id)
-			var icon_path: String = "res://assets/items/%s.png" % id
-			if ResourceLoader.exists(icon_path):
-				b.icon = load(icon_path) as Texture2D
-				b.expand_icon = true
-				b.text = "%d" % int(slot["qty"])
-				b.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
-			else:
-				b.text = "%s\n×%d" % [_short_name(str(item.get("name", id))), int(slot["qty"])]
-			b.tooltip_text = "%s ×%d\n%s\n%s" % [item.get("name", id), int(slot["qty"]), item.get("description", ""), _usage_hint(item)]
-			b.pressed.connect(_on_item_pressed.bind(id))
+			b.setup(str(slot["id"]), int(slot["qty"]))
+			b.used.connect(_on_item_pressed)
 		else:
-			b.disabled = true
+			b.setup("", 0)
 		_inventory.add_child(b)
 
 
-func _short_name(n: String) -> String:
-	var first: String = n.split(" ")[0]
-	return first.substr(0, 7)
-
-
-func _usage_hint(item: Dictionary) -> String:
-	var where: String = {
-		"explore": "Fuera de combate", "combat": "Solo en combate",
-		"both": "Dentro y fuera de combate", "curio": "Se usa en lugares extraños",
-	}.get(str(item.get("usable", "")), "")
-	if str(item.get("usable", "")) in ["explore", "both"]:
-		where += " · %d uso(s) por héroe en cada lugar" % int(item.get("uses_per_node", 1))
-	if str(item.get("target", "")) == "ally":
-		where += " · se aplica al héroe seleccionado"
-	return where
-
-
 func _on_item_pressed(item_id: String) -> void:
+	if GameState.is_equipment(item_id):
+		# Click = equip on the selected hero (or drag it onto a slot / a hero).
+		var target: Dictionary = _viewed_hero if not _viewed_hero.is_empty() else _first_living_hero()
+		_on_equipment_changed(GameState.equip(target, item_id))
+		return
 	match _mode:
 		Mode.COMBAT:
 			if _combat.active_hero().is_empty():
@@ -477,6 +476,7 @@ func _start_combat(node_id: String) -> void:
 	_clear_skills()
 	_turn_label.text = ""
 	_spawn_enemies(squad)
+	GameState.equip_locked = true
 	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)))
 
@@ -547,6 +547,7 @@ func _clear_skills() -> void:
 
 
 func _on_combat_over(victory: bool) -> void:
+	GameState.equip_locked = false
 	var nd: Dictionary = GameState.mission_nodes_index.get(_combat_node_id, {})
 	if not victory:
 		_end_expedition("defeat", "La cuadrilla ha caído. La hacienda guarda silencio.")
