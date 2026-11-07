@@ -46,6 +46,8 @@ var _hero_units: Array = []
 var _enemy_units: Array = []
 var _viewed_hero: Dictionary = {}
 var _combat_node_id: String = ""
+## In combat: the hero that ally-target skills and items will affect (click a hero to change).
+var _ally_target: Dictionary = {}
 
 
 func _ready() -> void:
@@ -112,8 +114,12 @@ func _clear_enemies() -> void:
 
 
 func _on_unit_clicked(unit) -> void:
-	if unit.is_hero:
-		_view_hero(unit.data)
+	if not unit.is_hero:
+		return
+	_view_hero(unit.data)
+	if _mode == Mode.COMBAT and not _combat.active_hero().is_empty() and not unit.is_dead():
+		_ally_target = unit.data
+		_update_turn_label()
 
 
 func _set_background(path: String) -> void:
@@ -237,7 +243,7 @@ func _on_item_pressed(item_id: String) -> void:
 			if _combat.active_hero().is_empty():
 				return
 			_clear_skills()
-			_combat.use_item(item_id, _viewed_hero)
+			_combat.use_item(item_id, _ally_target)
 		Mode.EXPLORE:
 			var target: Dictionary = _viewed_hero
 			if target.is_empty() or target.get("dead", false):
@@ -451,10 +457,19 @@ func _start_combat(node_id: String) -> void:
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)))
 
 
+func _update_turn_label() -> void:
+	var hero: Dictionary = _combat.active_hero()
+	if hero.is_empty():
+		return
+	_turn_label.text = "Turno de %s · aliado elegido: %s (clic en un héroe para cambiarlo)" % [
+		hero.get("name", "?"), _ally_target.get("name", hero.get("name", "?"))]
+
+
 func _on_hero_turn(hero: Dictionary) -> void:
 	_view_hero(hero)
+	_ally_target = hero
 	_clear_skills()
-	_turn_label.text = "Turno de %s — elige una acción, o un artículo de la alforja." % hero.get("name", "?")
+	_update_turn_label()
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = GameState.get_skill(str(sid))
 		if sk.is_empty():
@@ -464,9 +479,17 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		b.tooltip_text = _skill_tooltip(sk)
 		b.pressed.connect(func():
 			_clear_skills()
-			_combat.use_skill(sk)
+			_combat.use_skill(sk, _ally_target)
 		)
 		_skills.add_child(b)
+	var guard_btn := Button.new()
+	guard_btn.text = "Guardia"
+	guard_btn.tooltip_text = "Se cubre: recibe la mitad del daño físico hasta su próximo turno."
+	guard_btn.pressed.connect(func():
+		_clear_skills()
+		_combat.guard()
+	)
+	_skills.add_child(guard_btn)
 	var pass_btn := Button.new()
 	pass_btn.text = "Pasar"
 	pass_btn.pressed.connect(func():
@@ -478,14 +501,19 @@ func _on_hero_turn(hero: Dictionary) -> void:
 
 
 func _skill_tooltip(sk: Dictionary) -> String:
-	match str(sk.get("kind", "")):
-		"attack":
-			return "Ataque: %d–%d de daño" % [int(sk.get("damage_min", 0)), int(sk.get("damage_max", 0))]
-		"heal":
-			return "Curación: %d–%d PV" % [int(sk.get("heal_min", 0)), int(sk.get("heal_max", 0))]
-		"buff":
-			return "Alivia %d de estrés" % int(sk.get("self_stress_relief", 0))
-	return ""
+	var parts: PackedStringArray = PackedStringArray()
+	if str(sk.get("kind", "")) == "attack":
+		parts.append("Ataque: %d–%d de daño" % [int(sk.get("damage_min", 0)), int(sk.get("damage_max", 0))])
+	if sk.has("heal_min"):
+		parts.append("Cura %d–%d PV" % [int(sk.get("heal_min", 0)), int(sk.get("heal_max", 0))])
+	var rel: int = int(sk.get("stress_relief", sk.get("self_stress_relief", 0)))
+	if rel > 0:
+		parts.append("Alivia %d de estrés" % rel)
+	var who: String = {"self": "a sí mismo", "ally": "al aliado elegido", "party": "a toda la cuadrilla"}.get(str(sk.get("target", "")), "")
+	if who != "":
+		parts.append("Objetivo: " + who)
+	var desc: String = str(sk.get("description", ""))
+	return "%s\n%s" % [desc, " · ".join(parts)] if desc != "" else " · ".join(parts)
 
 
 func _clear_skills() -> void:

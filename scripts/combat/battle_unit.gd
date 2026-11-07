@@ -145,6 +145,8 @@ func _status_text() -> String:
 		parts.append(VIRTUE_NAMES.get(vir, vir))
 	if bool(data.get("stunned", false)):
 		parts.append("Aturdido")
+	if bool(data.get("guarding", false)):
+		parts.append("En guardia")
 	return " · ".join(parts)
 
 

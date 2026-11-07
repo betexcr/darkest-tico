@@ -1,4 +1,5 @@
 {
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress. Every class needs at least one ally or party skill (owner, 2026-11-07).",
   "skills": [
     {
       "id": "machetazo",
@@ -8,20 +9,26 @@
       "damage_max": 9,
       "skill_accuracy": 0,
       "stress_on_hit_target": 3,
-      "stress_on_crit_target": 8
+      "stress_on_crit_target": 8,
+      "target": "enemy",
+      "description": "Golpe de machete al enemigo."
     },
     {
       "id": "trabajo_duro",
       "name": "Trabajo Duro",
       "kind": "buff",
-      "self_stress_relief": 5
+      "target": "self",
+      "stress_relief": 5,
+      "description": "Se aguanta el cansancio: alivia su propio estrés."
     },
     {
       "id": "sopa_milagrosa",
       "name": "Sopa Milagrosa",
       "kind": "heal",
-      "heal_min": 3,
-      "heal_max": 6
+      "heal_min": 2,
+      "heal_max": 4,
+      "target": "party",
+      "description": "Una olla para todos: cura a toda la cuadrilla."
     },
     {
       "id": "dron_casero",
@@ -30,7 +37,9 @@
       "damage_min": 3,
       "damage_max": 7,
       "skill_accuracy": 2,
-      "stress_on_hit_target": 2
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "description": "El dron zumba y pica al enemigo. Preciso."
     },
     {
       "id": "entrada_brava",
@@ -39,7 +48,87 @@
       "damage_min": 5,
       "damage_max": 10,
       "skill_accuracy": -1,
-      "stress_on_hit_target": 4
+      "stress_on_hit_target": 4,
+      "target": "enemy",
+      "description": "Embestida de montador: fuerte pero imprecisa."
+    },
+    {
+      "id": "golpe_de_faena",
+      "name": "Golpe de Faena",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 6,
+      "damage_max": 11,
+      "skill_accuracy": -2,
+      "stress_on_hit_target": 4,
+      "description": "Golpe pesado de jornada larga. Más daño, menos precisión."
+    },
+    {
+      "id": "aguante_de_campo",
+      "name": "Aguante de Campo",
+      "kind": "heal",
+      "target": "ally",
+      "heal_min": 3,
+      "heal_max": 5,
+      "stress_relief": 4,
+      "description": "Cubre a un compañero y le da ánimo: cura y alivia estrés al aliado elegido."
+    },
+    {
+      "id": "regano_santo",
+      "name": "Regaño Santo",
+      "kind": "buff",
+      "target": "ally",
+      "stress_relief": 12,
+      "description": "Un regaño de abuela que endereza a cualquiera: alivia mucho estrés al aliado elegido."
+    },
+    {
+      "id": "cataplasma_casero",
+      "name": "Cataplasma Casero",
+      "kind": "heal",
+      "target": "ally",
+      "heal_min": 5,
+      "heal_max": 8,
+      "description": "Hojas machacadas y fe: cura bien al aliado elegido."
+    },
+    {
+      "id": "exploit_zero_day",
+      "name": "Exploit Zero-Day",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 6,
+      "damage_max": 12,
+      "skill_accuracy": -3,
+      "stress_on_hit_target": 3,
+      "description": "Una falla que nadie parchó. Mucho daño si acierta."
+    },
+    {
+      "id": "firewall_humano",
+      "name": "Firewall Humano",
+      "kind": "buff",
+      "target": "ally",
+      "stress_relief": 8,
+      "heal_min": 2,
+      "heal_max": 3,
+      "description": "Se pone en medio y calma al aliado elegido: alivia estrés y cura un poco."
+    },
+    {
+      "id": "patada_de_corral",
+      "name": "Patada de Corral",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 4,
+      "damage_max": 8,
+      "skill_accuracy": 2,
+      "stress_on_hit_target": 3,
+      "description": "Patada rápida y certera de corral."
+    },
+    {
+      "id": "no_me_tumban",
+      "name": "No Me Tumban",
+      "kind": "buff",
+      "target": "party",
+      "stress_relief": 5,
+      "description": "Grito de toro que levanta a todos: alivia estrés a toda la cuadrilla."
     }
   ]
 }

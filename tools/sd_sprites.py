@@ -165,6 +165,7 @@ def main() -> int:
         raw_path = CACHE / cid / "idle_raw.png"
         seed = int(c["seed"]) + state_ids.index(sid)
         pose_text = s.get("beast_pose", s["pose"]) if c.get("body") == "beast" else s["pose"]
+        pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
         prompt = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
         gen = torch.Generator(device="cpu").manual_seed(seed)
         t0 = time.time()

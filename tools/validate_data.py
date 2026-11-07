@@ -72,10 +72,18 @@ def main() -> int:
     heroes = as_id_map(load(heroes_path), "heroes", heroes_path)
     enemies = as_id_map(load(enemies_path), "enemies", enemies_path)
 
+    for sid, sk in skills.items():
+        if sk.get("kind") not in ("attack", "heal", "buff"):
+            errors.append(f"skills.json: '{sid}' has invalid kind '{sk.get('kind')}'")
+        if sk.get("target", "self") not in ("enemy", "self", "ally", "party"):
+            errors.append(f"skills.json: '{sid}' has invalid target '{sk.get('target')}'")
     for hid, hero in heroes.items():
         for sid in hero.get("skill_ids", []):
             if sid not in skills:
                 errors.append(f"heroes.json: hero '{hid}' references unknown skill '{sid}'")
+        # Owner rule (2026-11-07): every class has a skill that helps an ally or the party.
+        if not any(skills.get(s, {}).get("target") in ("ally", "party") for s in hero.get("skill_ids", [])):
+            errors.append(f"heroes.json: hero '{hid}' has no ally or party skill")
 
     for region_path in sorted((DATA / "regions").glob("*.json")):
         rel = region_path.relative_to(ROOT)

@@ -611,8 +611,8 @@
         "id": "attack",
         "mode": "img2img",
         "strength": 0.8,
-        "pose": "lunging forward and striking with a weapon, dynamic attack",
-        "beast_pose": "lunging forward to bite, jaws open, dynamic attack",
+        "pose": "lunging forward and striking with {weapon}, dynamic attack",
+        "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7
       },
       {
@@ -1100,139 +1100,162 @@
         "id": "campesino",
         "look": "weathered Costa Rican farm worker gripping a steel machete blade, straw hat, sweat-stained work shirt",
         "seed": 5000,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a long steel machete"
       },
       {
         "id": "montador",
         "look": "Costa Rican bull rider, cowboy hat, coiled rope, dusty denim shirt and boots",
         "seed": 5010,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a coiled lasso rope"
       },
       {
         "id": "abuela",
         "look": "elderly grandmother healer, knitted shawl, long skirt, clay bowl of herbs",
         "seed": 5020,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a wooden ladle and clay bowl"
       },
       {
         "id": "tecnologo",
         "look": "young tinkerer, brass goggles, patched jacket, homemade drone and cables",
         "seed": 5030,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a homemade buzzing drone"
       },
       {
         "id": "guachiman",
         "look": "old retired night watchman, faded guard uniform and cap, flashlight and baton",
         "seed": 5040,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a wooden baton"
       },
       {
         "id": "medica_josefina",
         "look": "stern rural doctor woman, white doctor's coat, stethoscope, leather medical bag",
         "seed": 5050,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a syringe"
       },
       {
         "id": "curandero",
         "look": "elderly folk healer, wide straw hat, poncho, bundle of smoking herbs",
         "seed": 5060,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a smoking bundle of herbs"
       },
       {
         "id": "exorcista",
         "look": "neighborhood exorcist, long black coat, rosary, bottle of holy water",
         "seed": 5070,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a crucifix and holy water bottle"
       },
       {
         "id": "espanto",
         "look": "gaunt pale ghost in tattered old-fashioned clothes, hollow glowing eyes",
         "seed": 5080,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "clawed ghostly hands"
       },
       {
         "id": "sombra_cuadrilla",
         "look": "shadow farm laborer made of smoke and darkness, rusted hoe, ember eyes",
         "seed": 5090,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a rusted hoe"
       },
       {
         "id": "peon_penado",
         "look": "hulking undead laborer in rotten rags and rusty chains, grey skin",
         "seed": 5100,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "heavy rusty chains"
       },
       {
         "id": "mandador_en_pena",
         "look": "ghost of a cruel plantation overseer, long coat, whip and ledger",
         "seed": 5110,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a leather whip"
       },
       {
         "id": "rata_de_troje",
         "look": "two feral giant rats on all fours, matted fur, red eyes, bloody teeth",
         "seed": 5120,
-        "body": "beast"
+        "body": "beast",
+        "weapon": "bared fangs"
       },
       {
         "id": "murcielago_bodega",
         "look": "huge cave bat with tattered leathery wings, glowing eyes, fangs",
         "seed": 5130,
-        "body": "beast"
+        "body": "beast",
+        "weapon": "bared fangs"
       },
       {
         "id": "monaguillo_porton",
         "look": "cult acolyte in a dark red hooded robe, candle and smoking censer",
         "seed": 5140,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a smoking censer"
       },
       {
         "id": "vigia_porton",
         "look": "hooded cult scout with a lantern and brass spyglass, red sash",
         "seed": 5150,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a curved dagger"
       },
       {
         "id": "susurro_aljibe",
         "look": "translucent drowned spirit woman, long dripping hair covering the face",
         "seed": 5160,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "long dripping hands"
       },
       {
         "id": "duende_sotano",
         "look": "small sinister old gnome duende, wrinkled grey face, wide-brimmed hat, gold coins",
         "seed": 5170,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a small sickle"
       },
       {
         "id": "sirviente_ahogado",
         "look": "drowned servant zombie in waterlogged butler uniform, bloated pale skin",
         "seed": 5180,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a broken silver tray"
       },
       {
         "id": "cadejo_negro",
         "look": "enormous shaggy black dog with glowing red eyes, broken chains",
         "seed": 5190,
-        "body": "beast"
+        "body": "beast",
+        "weapon": "bared fangs"
       },
       {
         "id": "mayordomo_hundido",
         "look": "towering drowned butler, rotting tailcoat, silver tray, long fingers, seaweed",
         "seed": 5200,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "a silver tray and long claws"
       },
       {
         "id": "nuboso_spectre",
         "look": "tall mist specter of fog and hanging moss, long thin arms, glowing face",
         "seed": 5210,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "long misty claws"
       },
       {
         "id": "segua_boss",
         "look": "monster with a horse skull head, long black hair, tattered pale dress",
         "seed": 5220,
-        "body": "humanoid"
+        "body": "humanoid",
+        "weapon": "sharp hooves and claws"
       }
     ]
   }

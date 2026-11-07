@@ -11,7 +11,12 @@
       "dodge": 6,
       "crit": 5,
       "resolve_level": 0,
-      "skill_ids": ["machetazo", "trabajo_duro"]
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro",
+        "golpe_de_faena",
+        "aguante_de_campo"
+      ]
     },
     {
       "id": "abuela",
@@ -24,7 +29,12 @@
       "dodge": 4,
       "crit": 3,
       "resolve_level": 0,
-      "skill_ids": ["machetazo", "sopa_milagrosa"]
+      "skill_ids": [
+        "machetazo",
+        "sopa_milagrosa",
+        "regano_santo",
+        "cataplasma_casero"
+      ]
     },
     {
       "id": "tecnologo",
@@ -37,7 +47,12 @@
       "dodge": 8,
       "crit": 6,
       "resolve_level": 0,
-      "skill_ids": ["machetazo", "dron_casero"]
+      "skill_ids": [
+        "machetazo",
+        "dron_casero",
+        "exploit_zero_day",
+        "firewall_humano"
+      ]
     },
     {
       "id": "montador",
@@ -50,7 +65,12 @@
       "dodge": 5,
       "crit": 4,
       "resolve_level": 0,
-      "skill_ids": ["machetazo", "entrada_brava"]
+      "skill_ids": [
+        "machetazo",
+        "entrada_brava",
+        "patada_de_corral",
+        "no_me_tumban"
+      ]
     }
   ]
 }

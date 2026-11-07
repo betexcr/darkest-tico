@@ -42,8 +42,16 @@ Against the roadmap: **Phase 1 (preproduction)** has its docs done but its exit 
 
 Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the rank system, the stress breakpoints, and short-mission pacing.
 
+### P1-10 · S · Guard action (owner request 2026-11-07)
+- Status: `done`
+- Every hero turn offers **Guardia**: half physical damage (rounded up, min 1) until that hero's next turn; shown as "En guardia". All current enemy attacks are physical. `combat_controller.gd` (`guard()`, `_apply_damage_to_hero(..., physical)`), test `tests/test_guard.gd`.
+
+### P1-11 · S · Four skills per class, with ally/party support (owner request 2026-11-07)
+- Status: `done`
+- +2 skills per existing class (doc 03 names). Skill `target`: enemy | self | ally | party. **Rule: every class has at least one ally or party skill** (checked by `tools/validate_data.py`). Ally target = hero clicked on the stage during the turn (default the acting hero). Stun/guard/block effects from doc 03 wait for P1-04.
+
 ### P1-01 · M · Headless test harness
-- Status: `todo` · Depends: —
+- Status: `in-progress` · Depends: — · Started: `tests/smoke_expedition.gd` (full expedition runs) and `tests/test_guard.gd` exist; still missing a single runner + resolver/stress unit tests.
 - Spec: `01` §2–3
 - Files: `tests/run_tests.gd` (new, `extends SceneTree`), `tests/test_*.gd`, `AGENTS.md` (add command)
 - Done when:
@@ -243,7 +251,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Explore → fight → explore without changing scenes; boss room ends the mission on victory
   - [x] Hero panel follows the turn; clicking a hero shows that hero
   - [x] Map and inventory toggle (tabs or M / I keys); arrows, arrow keys or clicking a neighbor room to move; items usable in and out of combat with the rules above
-  - [ ] Verified running in Godot
+  - [x] Verified running in Godot 4.6.2 headless (`tests/smoke_expedition.gd`: 3 expeditions to boss victory, 0 failures)
 
 ### P4-10 · S · Item icons
 - Status: `todo` · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.

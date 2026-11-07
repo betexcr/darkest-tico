@@ -66,7 +66,8 @@ func start(p_party: Array, p_enemy: Dictionary, p_hero_units: Array, p_enemy_uni
 
 # --- Player actions -------------------------------------------------------------
 
-func use_skill(skill: Dictionary) -> void:
+## `ally` is the hero picked on the stage, used by ally-target skills (default: the actor).
+func use_skill(skill: Dictionary, ally: Dictionary = {}) -> void:
 	var hero: Dictionary = active_hero()
 	if hero.is_empty():
 		return
@@ -76,15 +77,10 @@ func use_skill(skill: Dictionary) -> void:
 	var enemy_hp_before: int = int(enemy.get("hp", 0))
 	var party_before: Array = _party_snapshot()
 	await _unit_for_hero(hero).play_action("attack" if kind == "attack" else "cast")
-	match kind:
-		"attack":
-			_resolve_hero_attack(hero, skill)
-		"heal":
-			_resolve_heal(hero, skill)
-		"buff":
-			_resolve_buff(hero, skill)
-		_:
-			_resolve_hero_attack(hero, _first_skill_of_kind(hero, "attack"))
+	if kind == "attack":
+		_resolve_hero_attack(hero, skill)
+	else:
+		_resolve_support(hero, skill, ally)
 	await _after_action(enemy_hp_before, party_before)
 
 
@@ -123,6 +119,21 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 	if light != 0:
 		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
 	await _after_action(enemy_hp_before, party_before)
+
+
+## Guard: the hero takes half physical damage until their next turn (owner, 2026-11-07).
+func guard() -> void:
+	var hero: Dictionary = active_hero()
+	if hero.is_empty():
+		return
+	_awaiting_hero = false
+	hero["guarding"] = true
+	_log("%s se pone en guardia (mitad de daño físico hasta su próximo turno)." % hero.get("name", "?"), "88aacc")
+	var u = _unit_for_hero(hero)
+	if u != null:
+		u.refresh()
+	_turn_index += 1
+	_process_turn()
 
 
 func pass_turn() -> void:
@@ -201,6 +212,7 @@ func _process_turn() -> void:
 			_turn_index += 1
 			continue
 		_set_active(hero)
+		hero["guarding"] = false
 		if StressSystemScript.hero_turn_blocked(hero):
 			_log("%s no actúa (quebranto)." % hero.get("name", "?"), "cc7744")
 			await get_tree().create_timer(0.6).timeout
@@ -230,8 +242,12 @@ func _check_end() -> bool:
 func _finish(victory: bool) -> void:
 	_ended = true
 	_awaiting_hero = false
+	for h in party:
+		if h is Dictionary:
+			h["guarding"] = false
 	for u in hero_units:
 		u.set_active(false)
+		u.refresh()
 	actor_changed.emit("Victoria" if victory else "Derrota")
 	if victory:
 		_log("Victoria. %s cae." % enemy.get("name", "El enemigo"), "66aa66")
@@ -251,20 +267,33 @@ func _first_skill_of_kind(hero: Dictionary, kind: String) -> Dictionary:
 	return {}
 
 
-func _resolve_heal(hero: Dictionary, skill: Dictionary) -> void:
-	var mn: int = int(skill.get("heal_min", 2))
-	var mx: int = int(skill.get("heal_max", mn))
-	var amt: int = randi_range(mn, mx)
-	hero["hp"] = mini(int(hero["hp"]) + amt, int(hero["hp_max"]))
-	if int(hero["hp"]) > 0:
-		hero["al_borde"] = false
-	_log("%s usa %s (+%d PV)" % [hero.get("name", "?"), skill.get("name", "?"), amt], "")
-
-
-func _resolve_buff(hero: Dictionary, skill: Dictionary) -> void:
-	var rel: int = int(skill.get("self_stress_relief", 5))
-	_log_all(StressSystemScript.add_stress(hero, -rel))
-	_log("%s usa %s (estrés -%d)" % [hero.get("name", "?"), skill.get("name", "?"), rel], "")
+## Heal and/or stress relief on self, the chosen ally, or the whole party (skill "target").
+func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> void:
+	var targets: Array = []
+	match str(skill.get("target", "self")):
+		"party":
+			for h in party:
+				if h is Dictionary and not h.get("dead", false):
+					targets.append(h)
+		"ally":
+			targets.append(ally if (not ally.is_empty() and not ally.get("dead", false)) else hero)
+		_:
+			targets.append(hero)
+	var who: PackedStringArray = PackedStringArray()
+	for t in targets:
+		who.append(str(t.get("name", "?")))
+	_log("%s usa %s → %s" % [hero.get("name", "?"), skill.get("name", "?"), ", ".join(who)], "88bb88")
+	for t in targets:
+		if skill.has("heal_min"):
+			var amt: int = randi_range(int(skill["heal_min"]), int(skill.get("heal_max", skill["heal_min"])))
+			t["hp"] = mini(int(t["hp"]) + amt, int(t["hp_max"]))
+			if int(t["hp"]) > 0:
+				t["al_borde"] = false
+			_log("  %s +%d PV" % [t.get("name", "?"), amt], "88bb88")
+		var rel: int = int(skill.get("stress_relief", skill.get("self_stress_relief", 0)))
+		if rel > 0:
+			_log_all(StressSystemScript.add_stress(t, -rel))
+			_log("  %s estrés -%d" % [t.get("name", "?"), rel], "88bb88")
 
 
 func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
@@ -316,15 +345,19 @@ func _enemy_turn() -> void:
 		_log("%s falla el zarpazo." % enemy.get("name", "?"), "")
 		return
 	var dmg: int = CombatResolverScript.roll_damage(skill)
+	_log("%s golpea a %s (%d)" % [enemy.get("name", "?"), target.get("name", "?"), dmg], "cc6655")
 	_apply_damage_to_hero(target, dmg)
-	_log("%s golpea a %s por %d" % [enemy.get("name", "?"), target.get("name", "?"), dmg], "cc6655")
 	_log_all(StressSystemScript.add_stress(target, 5))
 	await _animate_party_changes(party_before)
 
 
-func _apply_damage_to_hero(hero: Dictionary, dmg: int) -> void:
+## All current attacks are physical; `physical` is there for future magic/stress damage.
+func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true) -> void:
 	if hero.get("dead", false):
 		return
+	if physical and bool(hero.get("guarding", false)):
+		dmg = maxi(int(ceil(dmg / 2.0)), 1)
+		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")
 	var nh: int = int(hero["hp"]) - dmg
 	if nh > 0:
 		hero["hp"] = nh
@@ -382,7 +415,7 @@ func _set_active(actor: Dictionary) -> void:
 func _party_snapshot() -> Array:
 	var out: Array = []
 	for h in party:
-		out.append({"hp": int(h.get("hp", 0)), "dead": bool(h.get("dead", false)), "borde": bool(h.get("al_borde", false))})
+		out.append({"hp": int(h.get("hp", 0)), "stress": int(h.get("stress", 0)), "dead": bool(h.get("dead", false)), "borde": bool(h.get("al_borde", false))})
 	return out
 
 
@@ -394,7 +427,7 @@ func _animate_party_changes(before: Array) -> void:
 			await hero_units[k].play_death()
 		elif int(h.get("hp", 0)) < int(b["hp"]) or (bool(h.get("al_borde", false)) and not bool(b["borde"])):
 			await hero_units[k].play_hurt()
-		elif int(h.get("hp", 0)) > int(b["hp"]):
+		elif int(h.get("hp", 0)) > int(b["hp"]) or int(h.get("stress", 0)) < int(b["stress"]):
 			await hero_units[k].play_heal()
 		else:
 			hero_units[k].refresh()
