@@ -1,14 +1,16 @@
 {
   "id": "sprite_guachiman_attack",
-  "prompt": "character sheet, old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, six poses, same clothes and a wooden baton in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5040,
+  "prompt": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, lunging right, both hands thrusting a wooden baton forward at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5042,
+  "sheet_seed": 5040,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
-  "resolution": "960x960 sheet, cell 2 of 6",
-  "mode": "sheet",
+  "resolution": "512x768, scaled into a 320x480 cell",
+  "mode": "txt2img",
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "weapon_control": "lllyasviel/control_v11p_sd15_scribble",
   "reference": {
     "image": "assets/portraits/guachiman.png",
     "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
@@ -17,5 +19,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T17:14:53+00:00"
+  "timestamp": "2026-11-07T22:45:28+00:00"
 }
