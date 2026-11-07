@@ -2253,7 +2253,7 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5015
+          "attack": 5016
         }
       },
       {
@@ -2345,6 +2345,9 @@
           "kind": "cross",
           "angle": 70,
           "length": 0.3
+        },
+        "redo_seeds": {
+          "attack": 5071
         }
       },
       {
