@@ -40,10 +40,10 @@ func _log_line_color(hex_no_hash: String, s: String) -> void:
 
 func _try_load_expedition_bg() -> void:
 	var p := "res://assets/ui_bg/expedition_bg.png"
-	if FileAccess.file_exists(p):
-		var img := Image.new()
-		if img.load(p) == OK:
-			_bg.texture = ImageTexture.create_from_image(img)
+	if ResourceLoader.exists(p):
+		var tex := load(p) as Texture2D
+		if tex != null:
+			_bg.texture = tex
 			_bg.visible = true
 			return
 	var img2 := Image.create(512, 512, false, Image.FORMAT_RGB8)
@@ -128,15 +128,15 @@ func _add_travel_row(node: Dictionary, tstr: String, tag: String) -> void:
 	row.add_theme_constant_override("separation", 8)
 	var typ: String = str(node.get("type", "safe"))
 	var icon_path: String = "res://assets/map_nodes/%s.png" % typ
-	if FileAccess.file_exists(icon_path):
-		var img := Image.new()
-		if img.load(icon_path) == OK:
-			var tr := TextureRect.new()
-			tr.custom_minimum_size = Vector2(40, 40)
-			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tr.texture = ImageTexture.create_from_image(img)
-			row.add_child(tr)
+	if ResourceLoader.exists(icon_path):
+		var icon_tex := load(icon_path) as Texture2D
+		if icon_tex != null:
+			var icon_rect := TextureRect.new()
+			icon_rect.custom_minimum_size = Vector2(40, 40)
+			icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon_rect.texture = icon_tex
+			row.add_child(icon_rect)
 	var b := Button.new()
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.text = "Ir → %s (%s)%s" % [node.get("label", tstr), typ, tag]
@@ -277,7 +277,7 @@ func _show_combat_prompt(nid: String) -> void:
 	)
 
 
-func _show_objective_resolver(cn: Dictionary) -> void:
+func _show_objective_resolver(_cn: Dictionary) -> void:
 	_busy = true
 	_resolver.visible = true
 	_resolver_text.text = "Foco de corrupción: puedes purgar la misión y volver a la hacienda."

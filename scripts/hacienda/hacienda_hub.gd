@@ -60,11 +60,10 @@ func _try_optional_hub_ambient() -> void:
 
 func _try_load_hub_background() -> void:
 	var p := "res://assets/ui_bg/hub_bg.png"
-	if FileAccess.file_exists(p):
-		var img := Image.new()
-		var err := img.load(p)
-		if err == OK:
-			_bg.texture = ImageTexture.create_from_image(img)
+	if ResourceLoader.exists(p):
+		var tex := load(p) as Texture2D
+		if tex != null:
+			_bg.texture = tex
 			_bg.visible = true
 			return
 	var img2 := Image.create(512, 512, false, Image.FORMAT_RGB8)

@@ -62,10 +62,10 @@ func _ready() -> void:
 
 func _try_load_combat_bg() -> void:
 	var p := "res://assets/ui_bg/combat_bg.png"
-	if FileAccess.file_exists(p):
-		var img := Image.new()
-		if img.load(p) == OK:
-			_bg.texture = ImageTexture.create_from_image(img)
+	if ResourceLoader.exists(p):
+		var tex := load(p) as Texture2D
+		if tex != null:
+			_bg.texture = tex
 			_bg.visible = true
 			return
 	var img2 := Image.create(512, 512, false, Image.FORMAT_RGB8)
@@ -75,12 +75,9 @@ func _try_load_combat_bg() -> void:
 
 
 func _texture_from_res_path(res_path: String) -> Texture2D:
-	if not FileAccess.file_exists(res_path):
+	if not ResourceLoader.exists(res_path):
 		return null
-	var img := Image.new()
-	if img.load(res_path) != OK:
-		return null
-	return ImageTexture.create_from_image(img)
+	return load(res_path) as Texture2D
 
 
 func _set_rect_texture(rect: TextureRect, res_path: String) -> void:
@@ -228,7 +225,7 @@ func _first_skill_of_kind(hero: Dictionary, kind: String) -> Dictionary:
 	return {}
 
 
-func _second_skill(hero: Dictionary, first: Dictionary) -> Dictionary:
+func _second_skill(hero: Dictionary, _first: Dictionary) -> Dictionary:
 	var seen_first := false
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = GameState.get_skill(str(sid))

@@ -9,7 +9,7 @@ const HIT_MAX := 0.95
 const DEATH_SAVE_BASE := 0.67
 
 
-static func roll_initiative(speed: int, resolve_level: int = 0) -> int:
+static func roll_initiative(speed: int, _resolve_level: int = 0) -> int:
 	var jitter: int = randi_range(-INITIATIVE_JITTER, INITIATIVE_JITTER)
 	return speed + jitter
 
