@@ -71,8 +71,18 @@ def draw_skeleton(points, size):
     return im
 
 
+_REF_MEMO: dict = {}
+
+
 def reference_image(cfg: dict, c: dict):
     """The character's portrait (IP-Adapter image prompt), or None."""
+    if c["id"] in _REF_MEMO:
+        return _REF_MEMO[c["id"]]
+    _REF_MEMO[c["id"]] = img = _reference_image(cfg, c)
+    return img
+
+
+def _reference_image(cfg: dict, c: dict):
     from PIL import Image
 
     ref = cfg.get("reference")
@@ -80,8 +90,23 @@ def reference_image(cfg: dict, c: dict):
         return None
     for d in ref.get("dirs", []):
         p = ROOT / d / f'{c.get("portrait", c["id"])}.png'
-        if p.exists():
+        if not p.exists():
+            continue
+        if not ref.get("cutout", True):
             return Image.open(p).convert("RGB")
+        # The portrait's own background (jungle, rooms) would leak into the sprite, so the
+        # reference is the portrait cut out and placed on flat grey. Cached per character.
+        cached = CACHE / f'{c["id"]}_ref.png'
+        if cached.exists() and cached.stat().st_mtime >= p.stat().st_mtime:
+            return Image.open(cached).convert("RGB")
+        from rembg import new_session, remove
+
+        cut = remove(Image.open(p).convert("RGB"), session=new_session(cfg.get("cutout_model", "isnet-general-use")))
+        grey = Image.new("RGBA", cut.size, (128, 128, 128, 255))
+        grey.alpha_composite(cut)
+        CACHE.mkdir(parents=True, exist_ok=True)
+        grey.convert("RGB").save(cached)
+        return grey.convert("RGB")
     return None
 
 
