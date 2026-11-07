@@ -1,8 +1,8 @@
 {
   "id": "sprite_medica_josefina_dead",
-  "prompt": "character sheet, woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black dress, silver pendant, six poses, same clothes and a syringe in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5050,
+  "prompt": "character sheet, stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt to the ankles, flat boots, six poses, same clothes and a syringe in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "miniskirt, stockings, high heels, cleavage, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5051,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T17:26:52+00:00"
+  "timestamp": "2026-11-07T18:28:51+00:00"
 }
