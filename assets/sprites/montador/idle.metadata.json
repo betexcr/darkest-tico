@@ -1,8 +1,8 @@
 {
   "id": "sprite_montador_idle",
-  "prompt": "character sheet, young Costa Rican bull rider, curly dark hair, battered leather cowboy hat, worn denim shirt, jeans, boots, six poses, same clothes and a coiled lasso rope in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5010,
+  "prompt": "character sheet, young man, Costa Rican bull rider, thin mustache, curly dark hair, wide battered leather hat, buttoned denim shirt, ripped jeans, boots, six poses, same clothes and a coiled lasso rope in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "woman, crop top, bare chest, open shirt, vest, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5013,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T17:02:46+00:00"
+  "timestamp": "2026-11-07T18:53:34+00:00"
 }
