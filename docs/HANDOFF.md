@@ -17,6 +17,30 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-07 (later) — Combat depth, recruiting, equipment, Godot tests
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:**
+  - done: P1-02, P1-10, P1-11, P1-12
+  - review: P2-03, P3-01, P3-02, P3-09, P3-10, P3-11, P4-09
+  - in-progress: P1-01, P1-04, P2-01, P4-08 (sprites), P4-10 (icons)
+- **Changed (owner requests, in order):**
+  - Per-hero item limit per room
+  - Godot 4.6.2 now runs headless in the container, plus tests under `tests/`
+  - Guard action; 4 skills per class with ally/party support
+  - Enemy abilities (basic + 1–3 specials, Tico names) and ailments (sangrado/veneno/aturdido)
+  - Curios with key items (`data/curios.json`)
+  - Recruiting at the Terminal de Buses with a roster of 8 and a party of 4; 4 new hireable classes; weekly turnover with permadeath; EBAIS healing; save v5
+  - Multi-enemy squads with click-to-target
+  - Equipment (25 pieces, 1 weapon / 1 armor / 2 accessories, drag-and-drop) and 8 elements with enemy affinities
+  - Content rules in AGENTS.md §4, enforced by `validate_data.py`
+- **Verified:** `validate_data.py` 0 errors. Godot 4.6.2 headless: `tests/smoke_expedition.gd` (3 full expeditions with squads, guard, support skills, targeting; 0 failures, no script errors), `test_guard`, `test_status`, `test_hub` (19), `test_equipment` (17) all pass.
+- **Not verified / risks:** Visual layout was not seen by a human (headless only), especially the new hub columns, the hero-panel equipment row and drag-and-drop feel. Fights are long (~100 hero turns per expedition in the smoke test), so balance is needed (P5-02).
+- **Art in progress:** item icons (37), then the campesino sprite **sheet** (all 6 poses in one image so outfit and weapon match). Then run `python tools/sd_sprites.py` for the other 22 characters (~10 min each on CPU; resumable).
+- **Decisions needed:** none open
+- **Next step:** Review the campesino sheet. If consistent, run the full sprite batch in ≤2 h chunks. Owner: play in Godot and report layout issues.
+
+---
+
 ## 2026-11-07 — P4-05, P2-06, P3-09, P4-07/09, P4-08 — Expedition overhaul + battle sprites
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P4-05 review · P2-06 review · P3-09 review · P4-07 done (folded into P4-09) · P4-09 review · P4-08 in-progress (sprite batch running)

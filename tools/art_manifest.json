@@ -1,5 +1,5 @@
 {
-  "_doc": "Single source of truth for generated art. Used by tools/sd_local.py (diffusers, no server) and mirrors the style used by tools/sd_export.py (A1111 API). Edit a subject or seed, then regenerate that id with --only.",
+  "_doc": "Single source of truth for generated art. Used by tools/sd_local.py (diffusers, no server) and mirrors the style used by tools/sd_export.py (A1111 API). Edit a subject or seed, then regenerate that id with --only. Per asset: optional 'style' (replaces style_suffix) and 'negative_extra'.",
   "model": "Lykon/dreamshaper-8",
   "sampler": "DPM++ 2M Karras",
   "steps": 25,
@@ -404,7 +404,9 @@
         "contrast": 1.15
       },
       "seed": 6101,
-      "subject": "rice and black beans wrapped in a folded banana leaf parcel, isolated object, close-up, plain black background"
+      "subject": "rice and black beans wrapped in a folded banana leaf parcel, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_candela_sebo",
@@ -422,7 +424,9 @@
         "contrast": 1.15
       },
       "seed": 6102,
-      "subject": "single thick tallow candle burning, isolated object, close-up, plain black background"
+      "subject": "single thick tallow candle burning, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "table, scenery"
     },
     {
       "id": "item_agua_pipa",
@@ -440,7 +444,9 @@
         "contrast": 1.15
       },
       "seed": 6103,
-      "subject": "green coconut with a drinking straw, isolated object, close-up, plain black background"
+      "subject": "green coconut with a drinking straw, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cafe_chorreado",
@@ -458,7 +464,9 @@
         "contrast": 1.15
       },
       "seed": 6104,
-      "subject": "tin cup of black coffee next to a cloth coffee sock filter, isolated object, close-up, plain black background"
+      "subject": "tin cup of black coffee next to a cloth coffee sock filter, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_guaro_contrabando",
@@ -476,7 +484,9 @@
         "contrast": 1.15
       },
       "seed": 6105,
-      "subject": "small unlabeled glass bottle of clear liquor with a cork, isolated object, close-up, plain black background"
+      "subject": "small unlabeled glass bottle of clear liquor with a cork, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_venda_manta",
@@ -494,7 +504,9 @@
         "contrast": 1.15
       },
       "seed": 6106,
-      "subject": "rolled coarse cloth bandage, isolated object, close-up, plain black background"
+      "subject": "rolled coarse cloth bandage, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_bombeta",
@@ -512,7 +524,9 @@
         "contrast": 1.15
       },
       "seed": 6107,
-      "subject": "small paper firework rocket with a lit fuse, isolated object, close-up, plain black background"
+      "subject": "small paper firework rocket with a lit fuse, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "table, scenery"
     },
     {
       "id": "item_agua_bendita",
@@ -530,7 +544,9 @@
         "contrast": 1.15
       },
       "seed": 6108,
-      "subject": "small glass vial of holy water with a tiny cross, isolated object, close-up, plain black background"
+      "subject": "small glass vial of holy water with a tiny cross, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_ramo_ruda",
@@ -548,7 +564,9 @@
         "contrast": 1.15
       },
       "seed": 6109,
-      "subject": "bundle of green rue herb tied with string, isolated object, close-up, plain black background"
+      "subject": "bundle of green rue herb tied with string, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_llave_abuelo",
@@ -566,7 +584,9 @@
         "contrast": 1.15
       },
       "seed": 6110,
-      "subject": "old rusty iron skeleton key, isolated object, close-up, plain black background"
+      "subject": "old rusty iron skeleton key, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_mecate",
@@ -584,7 +604,9 @@
         "contrast": 1.15
       },
       "seed": 6111,
-      "subject": "coiled thick hemp rope, isolated object, close-up, plain black background"
+      "subject": "coiled thick hemp rope, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_bateria_radio",
@@ -602,7 +624,9 @@
         "contrast": 1.15
       },
       "seed": 6112,
-      "subject": "old fat cylindrical radio battery, isolated object, close-up, plain black background"
+      "subject": "old fat cylindrical radio battery, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_machete_cartago",
@@ -620,7 +644,9 @@
         "contrast": 1.15
       },
       "seed": 6201,
-      "subject": "long steel machete with wooden handle, isolated object, close-up, plain black background"
+      "subject": "long steel machete with wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_machete_bendito",
@@ -638,7 +664,9 @@
         "contrast": 1.15
       },
       "seed": 6202,
-      "subject": "steel machete with a small cross on the blade, faint holy glow, isolated object, close-up, plain black background"
+      "subject": "steel machete with a small cross on the blade, faint holy glow, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_tizon_de_fogon",
@@ -656,7 +684,9 @@
         "contrast": 1.15
       },
       "seed": 6203,
-      "subject": "burning wooden log torch with flames, isolated object, close-up, plain black background"
+      "subject": "burning wooden log torch with flames, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "table, scenery"
     },
     {
       "id": "item_cuchillo_del_irazu",
@@ -674,7 +704,9 @@
         "contrast": 1.15
       },
       "seed": 6204,
-      "subject": "frosty steel knife covered in ice crystals, isolated object, close-up, plain black background"
+      "subject": "frosty steel knife covered in ice crystals, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_varilla_de_tendido",
@@ -692,7 +724,9 @@
         "contrast": 1.15
       },
       "seed": 6205,
-      "subject": "metal rod crackling with electric sparks, isolated object, close-up, plain black background"
+      "subject": "metal rod crackling with electric sparks, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_remo_del_tempisque",
@@ -710,7 +744,9 @@
         "contrast": 1.15
       },
       "seed": 6206,
-      "subject": "wooden boat oar dripping water, isolated object, close-up, plain black background"
+      "subject": "wooden boat oar dripping water, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_pala_de_cafetal",
@@ -728,7 +764,9 @@
         "contrast": 1.15
       },
       "seed": 6207,
-      "subject": "old iron shovel with dirt, isolated object, close-up, plain black background"
+      "subject": "old iron shovel with dirt, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_honda_de_jicaro",
@@ -746,7 +784,9 @@
         "contrast": 1.15
       },
       "seed": 6208,
-      "subject": "wooden slingshot with rubber band, isolated object, close-up, plain black background"
+      "subject": "wooden slingshot with rubber band, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_garrote_de_guayabo",
@@ -764,7 +804,9 @@
         "contrast": 1.15
       },
       "seed": 6209,
-      "subject": "heavy knotted wooden club, isolated object, close-up, plain black background"
+      "subject": "heavy knotted wooden club, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_camisa_de_manta",
@@ -782,7 +824,9 @@
         "contrast": 1.15
       },
       "seed": 6210,
-      "subject": "coarse white cotton peasant shirt, isolated object, close-up, plain black background"
+      "subject": "coarse white cotton peasant shirt, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cotona_de_cuero",
@@ -800,7 +844,9 @@
         "contrast": 1.15
       },
       "seed": 6211,
-      "subject": "brown leather vest, isolated object, close-up, plain black background"
+      "subject": "brown leather vest, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_chaleco_de_guachiman",
@@ -818,7 +864,9 @@
         "contrast": 1.15
       },
       "seed": 6212,
-      "subject": "padded night watchman vest, isolated object, close-up, plain black background"
+      "subject": "padded night watchman vest, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_capa_de_hule",
@@ -836,7 +884,9 @@
         "contrast": 1.15
       },
       "seed": 6213,
-      "subject": "black rubber rain poncho, isolated object, close-up, plain black background"
+      "subject": "black rubber rain poncho, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_poncho_de_zarcero",
@@ -854,7 +904,9 @@
         "contrast": 1.15
       },
       "seed": 6214,
-      "subject": "thick wool poncho, isolated object, close-up, plain black background"
+      "subject": "thick wool poncho, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_delantal_de_herreria",
@@ -872,7 +924,9 @@
         "contrast": 1.15
       },
       "seed": 6215,
-      "subject": "scorched leather blacksmith apron, isolated object, close-up, plain black background"
+      "subject": "scorched leather blacksmith apron, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_sotana_remendada",
@@ -890,7 +944,9 @@
         "contrast": 1.15
       },
       "seed": 6216,
-      "subject": "patched black priest cassock, isolated object, close-up, plain black background"
+      "subject": "patched black priest cassock, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_escapulario",
@@ -908,7 +964,9 @@
         "contrast": 1.15
       },
       "seed": 6217,
-      "subject": "small cloth scapular necklace, isolated object, close-up, plain black background"
+      "subject": "small cloth scapular necklace, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cruz_de_caravaca",
@@ -926,7 +984,9 @@
         "contrast": 1.15
       },
       "seed": 6218,
-      "subject": "double-armed cross pendant, isolated object, close-up, plain black background"
+      "subject": "double-armed cross pendant, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_panuelo_de_la_abuela",
@@ -944,7 +1004,9 @@
         "contrast": 1.15
       },
       "seed": 6219,
-      "subject": "embroidered red handkerchief, isolated object, close-up, plain black background"
+      "subject": "embroidered red handkerchief, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_bolsita_de_ruda",
@@ -962,7 +1024,9 @@
         "contrast": 1.15
       },
       "seed": 6220,
-      "subject": "small cloth pouch of green herbs, isolated object, close-up, plain black background"
+      "subject": "small cloth pouch of green herbs, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_ojo_de_venado",
@@ -980,7 +1044,9 @@
         "contrast": 1.15
       },
       "seed": 6221,
-      "subject": "red seed amulet on a string, isolated object, close-up, plain black background"
+      "subject": "red seed amulet on a string, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_sombrero_de_lona",
@@ -998,7 +1064,9 @@
         "contrast": 1.15
       },
       "seed": 6222,
-      "subject": "wide brimmed canvas hat, isolated object, close-up, plain black background"
+      "subject": "wide brimmed canvas hat, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_reloj_del_abuelo",
@@ -1016,7 +1084,9 @@
         "contrast": 1.15
       },
       "seed": 6223,
-      "subject": "old brass pocket watch, isolated object, close-up, plain black background"
+      "subject": "old brass pocket watch, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_colmillo_de_cadejo",
@@ -1034,7 +1104,9 @@
         "contrast": 1.15
       },
       "seed": 6224,
-      "subject": "large black canine fang on a cord, isolated object, close-up, plain black background"
+      "subject": "large black canine fang on a cord, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_botas_de_hule",
@@ -1052,7 +1124,9 @@
         "contrast": 1.15
       },
       "seed": 6225,
-      "subject": "black rubber boots, isolated object, close-up, plain black background"
+      "subject": "black rubber boots, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     }
   ],
   "sprites": {

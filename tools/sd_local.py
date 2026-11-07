@@ -97,7 +97,7 @@ def main() -> int:
     pipe, device, torch = load_pipeline(manifest["model"])
     steps = args.steps or int(manifest["steps"])
     cfg = float(manifest["cfg_scale"])
-    negative = manifest["negative_prompt"]
+    base_negative = manifest["negative_prompt"]
     print(f"Generating {len(todo)} asset(s) on {device}, {steps} steps")
 
     jobs = []
@@ -111,7 +111,8 @@ def main() -> int:
 
     for i, (a, seed, out) in enumerate(jobs, 1):
         template = manifest.get("prompt_template", "{subject}, {style}")
-        prompt = template.format(subject=a["subject"], style=manifest["style_suffix"])
+        prompt = template.format(subject=a["subject"], style=a.get("style", manifest["style_suffix"]))
+        negative = (a["negative_extra"] + ", " + base_negative) if a.get("negative_extra") else base_negative
         w, h = a["size"]
         t0 = time.time()
         gen = torch.Generator(device="cpu").manual_seed(seed)
