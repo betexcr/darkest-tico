@@ -2298,8 +2298,8 @@
       },
       {
         "id": "montador",
-        "look": "young Costa Rican bull rider, curly dark hair, battered leather cowboy hat, worn denim shirt, jeans, boots",
-        "seed": 5010,
+        "look": "young Costa Rican bull rider, curly dark hair, wide battered leather hat, worn denim shirt, ripped jeans, boots",
+        "seed": 5011,
         "body": "humanoid",
         "weapon": "a coiled lasso rope"
       },
@@ -2326,7 +2326,7 @@
       },
       {
         "id": "medica_josefina",
-        "look": "woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black dress, silver pendant",
+        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over long black dress, flat boots",
         "seed": 5050,
         "body": "humanoid",
         "weapon": "a syringe"
@@ -2340,10 +2340,16 @@
       },
       {
         "id": "exorcista",
-        "look": "pale woman exorcist, black hooded robe over her head, long black habit, silver cross necklace",
+        "look": "pale woman exorcist, black hooded robe over her head, long black habit to the floor, silver cross necklace",
         "seed": 5070,
         "body": "humanoid",
-        "weapon": "a crucifix"
+        "weapon": "a crucifix",
+        "redo_poses": {
+          "attack": "holding up a silver crucifix toward the enemy with one hand, other arm raised"
+        },
+        "redo_seeds": {
+          "attack": 5080
+        }
       },
       {
         "id": "espanto",

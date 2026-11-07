@@ -222,7 +222,8 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     states = {s["id"]: s for s in cfg["states"]}
     for sid in sheet.get("redo_states", []):
         st = states[sid]
-        pose_text = st.get("redo_pose", st["pose"]).replace("{weapon}", c.get("weapon", "a weapon"))
+        pose_text = c.get("redo_poses", {}).get(sid) or st.get("redo_pose", st["pose"])
+        pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
         p = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
         big = pipes["img_pose"](
             prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(skeleton_for(cfg, c, sid), (w, h)),
