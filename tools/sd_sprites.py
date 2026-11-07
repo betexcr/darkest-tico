@@ -84,11 +84,17 @@ def draw_skeleton(points, size):
     w, h = size
     im = Image.new("RGB", (w, h), (0, 0, 0))
     d = ImageDraw.Draw(im)
-    px = [(x * w, y * h) for x, y in points]
+    # A keypoint may be null (hidden, e.g. the far ear of a turned head): it and its limbs are skipped.
+    px = [None if p is None else (p[0] * w, p[1] * h) for p in points]
     for k, (a, b) in enumerate(LIMBS):
+        if px[a] is None or px[b] is None:
+            continue
         c = tuple(int(v * 0.6) for v in COLORS[k])
         d.line([px[a], px[b]], fill=c, width=max(4, w // 64))
-    for k, (x, y) in enumerate(px):
+    for k, p in enumerate(px):
+        if p is None:
+            continue
+        x, y = p
         r = max(3, w // 128)
         d.ellipse([x - r, y - r, x + r, y + r], fill=COLORS[k])
     return im
