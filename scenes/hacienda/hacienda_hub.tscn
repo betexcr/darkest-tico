@@ -1,6 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://bhaciendahub01"]
+[gd_scene load_steps=3 format=3 uid="uid://bhaciendahub01"]
 
 [ext_resource type="Script" path="res://scripts/hacienda/hacienda_hub.gd" id="1_hub"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_col"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.05, 0.035, 0.03, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.38, 0.27, 0.16, 1)
 
 [node name="HaciendaHub" type="Control"]
 layout_mode = 3
@@ -20,7 +32,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 expand_mode = 1
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="Darken" type="ColorRect" parent="."]
 layout_mode = 1
@@ -30,81 +42,125 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.45)
+color = Color(0, 0, 0, 0.3)
 
-[node name="VBox" type="VBoxContainer" parent="."]
+[node name="Columns" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = -24.0
-offset_bottom = -24.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="VBox"]
+[node name="Left" type="PanelContainer" parent="Columns"]
 layout_mode = 2
-text = "Hacienda del Abuelo"
-horizontal_alignment = 1
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_col")
 
-[node name="GoldLabel" type="Label" parent="VBox"]
+[node name="VBox" type="VBoxContainer" parent="Columns/Left"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Columns/Left/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 22
+text = "Hacienda del Abuelo"
+
+[node name="InfoRow" type="HBoxContainer" parent="Columns/Left/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="GoldLabel" type="Label" parent="Columns/Left/VBox/InfoRow"]
 layout_mode = 2
 text = "Colones: 0"
 
-[node name="WeekLabel" type="Label" parent="VBox"]
+[node name="WeekLabel" type="Label" parent="Columns/Left/VBox/InfoRow"]
 layout_mode = 2
 text = "Semana: 1"
 
-[node name="RegionRow" type="HBoxContainer" parent="VBox"]
+[node name="RegionRow" type="HBoxContainer" parent="Columns/Left/VBox"]
 layout_mode = 2
 
-[node name="RegionLabel" type="Label" parent="VBox/RegionRow"]
+[node name="RegionLabel" type="Label" parent="Columns/Left/VBox/RegionRow"]
 layout_mode = 2
 text = "Región:"
 
-[node name="RegionOption" type="OptionButton" parent="VBox/RegionRow"]
+[node name="RegionOption" type="OptionButton" parent="Columns/Left/VBox/RegionRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ShopTitle" type="Label" parent="VBox"]
+[node name="ShopTitle" type="Label" parent="Columns/Left/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Pulpería La Hacienda — provisiones para la expedición"
+text = "Pulpería La Hacienda"
 
-[node name="ShopGrid" type="GridContainer" parent="VBox"]
+[node name="ShopGrid" type="GridContainer" parent="Columns/Left/VBox"]
 layout_mode = 2
-theme_override_constants/h_separation = 6
+theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 3
 
-[node name="PackLabel" type="Label" parent="VBox"]
+[node name="PackLabel" type="Label" parent="Columns/Left/VBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 13
 autowrap_mode = 3
 text = "Alforja: —"
 
-[node name="BtnIglesia" type="Button" parent="VBox"]
+[node name="BtnIglesia" type="Button" parent="Columns/Left/VBox"]
 layout_mode = 2
-text = "Iglesia Vieja: misa rápida (800 ₡, -10 estrés)"
+text = "Iglesia Vieja: misa rápida (800 ₡, -10 estrés a todos)"
 
-[node name="HubStatus" type="Label" parent="VBox"]
+[node name="TerminalTitle" type="Label" parent="Columns/Left/VBox"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+text = "Terminal de Buses de Sarchí — candidatos de la semana"
+
+[node name="RecruitBox" type="VBoxContainer" parent="Columns/Left/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HubStatus" type="Label" parent="Columns/Left/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.9, 0.8, 0.6, 1)
 autowrap_mode = 3
 text = ""
 
-[node name="RosterText" type="RichTextLabel" parent="VBox"]
+[node name="Right" type="PanelContainer" parent="Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_col")
+
+[node name="VBox" type="VBoxContainer" parent="Columns/Right"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RosterTitle" type="Label" parent="Columns/Right/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+text = "Héroes"
+
+[node name="Scroll" type="ScrollContainer" parent="Columns/Right/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
-bbcode_enabled = true
-scroll_active = true
-text = "Cuadrilla..."
+horizontal_scroll_mode = 0
 
-[node name="BtnStart" type="Button" parent="VBox"]
+[node name="RosterList" type="VBoxContainer" parent="Columns/Right/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BtnStart" type="Button" parent="Columns/Right/VBox"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Iniciar expedición"
 
-[node name="BtnQuit" type="Button" parent="VBox"]
+[node name="BtnQuit" type="Button" parent="Columns/Right/VBox"]
 layout_mode = 2
 text = "Salir"

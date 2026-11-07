@@ -159,7 +159,7 @@ func _view_hero(hero: Dictionary) -> void:
 		return
 	var p: String = "res://assets/portraits/%s.png" % str(hero.get("hero_id", ""))
 	_hero_portrait.texture = load(p) as Texture2D if ResourceLoader.exists(p) else null
-	_hero_name.text = str(hero.get("name", "?"))
+	_hero_name.text = "%s\n%s" % [hero.get("name", "?"), hero.get("class_name", "")]
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("PV %d/%d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0))])
 	lines.append("Estrés %d/200" % int(hero.get("stress", 0)))
@@ -378,20 +378,39 @@ func _open_trap() -> void:
 
 
 func _open_curio() -> void:
-	_open_event("Lugar extraño", "%s. Algo te llama." % GameState.current_node().get("label", ""))
+	var curio: Dictionary = GameState.get_curio(str(GameState.current_node().get("curio_id", "")))
+	if curio.is_empty():
+		_open_event("Lugar extraño", "%s. Algo te llama." % GameState.current_node().get("label", ""))
+		_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
+		return
+	_open_event(str(curio.get("name", "Lugar extraño")), str(curio.get("text", "")))
+	var key: String = str(curio.get("key_item", ""))
+	if key != "" and GameState.item_count(key) > 0:
+		_event_button("Usar %s" % GameState.get_item(key).get("name", key), func():
+			GameState.remove_item(key, 1)
+			_curio_result(str(curio.get("key_text", "")), curio.get("key_outcome", {}))
+		)
 	_event_button("Examinar", func():
-		var roll: float = randf()
-		if roll < 0.35:
-			_heal_party(3)
-			_resolve_event("Un calor extraño. +3 PV a todos.")
-		elif roll < 0.65:
-			_party_stress(6)
-			_resolve_event("Visiones. +6 estrés a la cuadrilla.")
-		else:
-			GameState.colones += 120
-			_resolve_event("Monedas viejas. +120 colones.")
+		var table: Array = curio.get("blind", [])
+		var total: float = 0.0
+		for o in table:
+			total += float(o.get("weight", 1))
+		var roll: float = randf() * total
+		for o in table:
+			roll -= float(o.get("weight", 1))
+			if roll <= 0.0:
+				_curio_result(str(o.get("text", "")), o)
+				return
+		_resolve_event("No pasa nada.")
 	)
 	_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
+
+
+func _curio_result(text: String, outcome: Dictionary) -> void:
+	var logs: PackedStringArray = GameState.apply_curio_outcome(outcome)
+	for l in logs:
+		_log_line(l, "cc9944")
+	_resolve_event(text)
 
 
 func _open_camp() -> void:

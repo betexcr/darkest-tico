@@ -1,5 +1,5 @@
 {
-  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress. Every class needs at least one ally or party skill (owner, 2026-11-07).",
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). Every class needs at least one ally or party skill.",
   "skills": [
     {
       "id": "machetazo",
@@ -129,6 +129,175 @@
       "target": "party",
       "stress_relief": 5,
       "description": "Grito de toro que levanta a todos: alivia estrés a toda la cuadrilla."
+    },
+    {
+      "id": "silbatazo",
+      "name": "Silbatazo",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 2,
+      "damage_max": 4,
+      "skill_accuracy": 3,
+      "description": "Pitazo y bastonazo: poco daño, casi nunca falla."
+    },
+    {
+      "id": "reten",
+      "name": "Retén",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 4,
+      "damage_max": 7,
+      "skill_accuracy": 1,
+      "description": "Le cierra el paso al enemigo a punta de bastón."
+    },
+    {
+      "id": "ronda_nocturna",
+      "name": "Ronda Nocturna",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 2,
+      "applies": {
+        "status": "aturdido",
+        "chance": 0.2,
+        "turns": 1,
+        "value": 0
+      },
+      "description": "Linterna a la cara y golpe certero; puede aturdir."
+    },
+    {
+      "id": "escudo_de_barrio",
+      "name": "Escudo de Barrio",
+      "kind": "buff",
+      "target": "ally",
+      "grant_guard": true,
+      "description": "Se planta delante de un compañero: el aliado elegido queda en guardia."
+    },
+    {
+      "id": "bisturi",
+      "name": "Bisturí",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 2,
+      "damage_max": 5,
+      "skill_accuracy": 2,
+      "description": "Un corte limpio y preciso."
+    },
+    {
+      "id": "triage_urbano",
+      "name": "Triage Urbano",
+      "kind": "heal",
+      "target": "ally",
+      "heal_min": 6,
+      "heal_max": 9,
+      "description": "Atención de emergencia: cura mucho al aliado elegido."
+    },
+    {
+      "id": "antibiotico_de_guardia",
+      "name": "Antibiótico de Guardia",
+      "kind": "heal",
+      "target": "ally",
+      "heal_min": 2,
+      "heal_max": 3,
+      "cure": [
+        "sangrado",
+        "veneno"
+      ],
+      "description": "Para infecciones y heridas: quita sangrado y veneno al aliado elegido."
+    },
+    {
+      "id": "desfibrilar",
+      "name": "Desfibrilar",
+      "kind": "heal",
+      "target": "ally",
+      "heal_min": 4,
+      "heal_max": 6,
+      "stress_relief": 4,
+      "description": "Devuelve a la vida al que está Al Borde: cura y le quita el susto."
+    },
+    {
+      "id": "deuda_espiritual",
+      "name": "Deuda Espiritual",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 5,
+      "damage_max": 9,
+      "skill_accuracy": 0,
+      "self_stress": 4,
+      "description": "Cobra una deuda del más allá. Al curandero le cuesta estrés."
+    },
+    {
+      "id": "rezo_de_nicoya",
+      "name": "Rezo de Nicoya",
+      "kind": "heal",
+      "target": "party",
+      "heal_min": 1,
+      "heal_max": 5,
+      "stress_relief": 3,
+      "description": "Un rezo largo: cura un poco a toda la cuadrilla y calma."
+    },
+    {
+      "id": "humo_de_hierbas",
+      "name": "Humo de Hierbas",
+      "kind": "buff",
+      "target": "party",
+      "stress_relief": 6,
+      "description": "Humo de copal y hierbas: alivia el estrés de todos."
+    },
+    {
+      "id": "limpia_de_mal_de_ojo",
+      "name": "Limpia de Mal de Ojo",
+      "kind": "buff",
+      "target": "ally",
+      "stress_relief": 6,
+      "cure": [
+        "veneno"
+      ],
+      "description": "Una limpia que saca lo malo: quita veneno y alivia estrés al aliado elegido."
+    },
+    {
+      "id": "expulsion",
+      "name": "Expulsión",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 6,
+      "damage_max": 10,
+      "skill_accuracy": 0,
+      "applies": {
+        "status": "aturdido",
+        "chance": 0.25,
+        "turns": 1,
+        "value": 0
+      },
+      "description": "¡Fuera de aquí! Golpe santo que puede aturdir."
+    },
+    {
+      "id": "liturgia_de_hierro",
+      "name": "Liturgia de Hierro",
+      "kind": "attack",
+      "target": "enemy",
+      "damage_min": 4,
+      "damage_max": 7,
+      "skill_accuracy": 2,
+      "description": "Rosario de hierro en la mano, rezo en la boca."
+    },
+    {
+      "id": "sal_de_proteccion",
+      "name": "Sal de Protección",
+      "kind": "buff",
+      "target": "ally",
+      "grant_guard": true,
+      "stress_relief": 3,
+      "description": "Un círculo de sal alrededor del aliado elegido: queda en guardia y más tranquilo."
+    },
+    {
+      "id": "circulo_de_tiza",
+      "name": "Círculo de Tiza",
+      "kind": "buff",
+      "target": "party",
+      "stress_relief": 6,
+      "description": "Tiza bendita en el piso: alivia el estrés de toda la cuadrilla."
     }
   ]
 }

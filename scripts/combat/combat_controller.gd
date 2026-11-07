@@ -310,6 +310,13 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 		if rel > 0:
 			_log_all(StressSystemScript.add_stress(t, -rel))
 			_log("  %s estrés -%d" % [t.get("name", "?"), rel], "88bb88")
+		for st in skill.get("cure", []):
+			if StatusEffectsScript.has(t, str(st)):
+				t["statuses"].erase(str(st))
+				_log("  %s ya no está %s" % [t.get("name", "?"), StatusEffectsScript.NAMES.get(str(st), st).to_lower()], "88bb88")
+		if bool(skill.get("grant_guard", false)):
+			t["guarding"] = true
+			_log("  %s queda en guardia" % t.get("name", "?"), "88aacc")
 
 
 func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
@@ -330,6 +337,15 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
 	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(raw, crit)
 	_apply_damage_to_enemy(dmg)
+	var ap = skill.get("applies", null)
+	if ap is Dictionary and not enemy.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
+		var msg: String = StatusEffectsScript.apply(enemy, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
+		if msg != "":
+			_log(msg, "cc9944")
+	var cost: int = int(skill.get("self_stress", 0))
+	if cost > 0:
+		_log_all(StressSystemScript.add_stress(hero, cost))
+		_log("  %s: estrés +%d (costo)" % [hero.get("name", "?"), cost], "aa88cc")
 	if crit:
 		_log("%s — %s ¡CRÍTICO! %d" % [hero.get("name", "?"), skill.get("name", "?"), dmg], "ddbb55")
 		_log_all(StressSystemScript.add_stress(hero, 5))

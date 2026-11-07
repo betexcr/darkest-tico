@@ -585,6 +585,24 @@
       },
       "seed": 6111,
       "subject": "coiled thick hemp rope, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "item_bateria_radio",
+      "out": "assets/items/bateria_radio.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6112,
+      "subject": "old fat cylindrical radio battery, isolated object, close-up, plain black background"
     }
   ],
   "sprites": {

@@ -17,6 +17,7 @@ const HEROES_PATH := "res://data/heroes.json"
 const SKILLS_PATH := "res://data/skills.json"
 const ENEMIES_PATH := "res://data/enemies.json"
 const ITEMS_PATH := "res://data/items.json"
+const CURIOS_PATH := "res://data/curios.json"
 const INVENTORY_SLOTS := 16
 
 const DEFAULT_REGION_PATH := "res://data/regions/sotanos.json"
@@ -29,7 +30,13 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 4
+const SAVE_VERSION := 5
+const ROSTER_CAP := 8
+const PARTY_SIZE := 4
+const RECRUIT_POOL_SIZE := 3
+## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
+const HEAL_COST_PER_HP := 15
+const HEAL_MIN_COST := 100
 
 
 var colones: int = 5000
@@ -44,9 +51,16 @@ var _skills_by_id: Dictionary = {}
 var _enemies_by_id: Dictionary = {}
 
 
-## Runtime party (max 4) — dictionaries mutated in combat.
-
+## Every hero the player owns (max ROSTER_CAP).
+var roster: Array = []
+## Heroes going on the next/current expedition, in rank order (max PARTY_SIZE).
+## Same dictionaries as in `roster`, so combat changes show up in both.
 var party: Array = []
+## Candidates at the Terminal de Buses, refreshed every week.
+var recruit_pool: Array = []
+var _next_uid: int = 1
+## Short report of what happened at the end of the last expedition (hub status line).
+var last_week_report: String = ""
 
 
 ## Expedition: not persisted mid-mission (cleared on load).
@@ -96,6 +110,9 @@ var node_item_uses: Dictionary = {}
 var _items_by_id: Dictionary = {}
 var _item_order: Array = []
 var _starter_inventory: Array = []
+var _curios_by_id: Dictionary = {}
+## Rooms revealed by curios (map scouting) this mission.
+var scouted_node_ids: Array = []
 
 
 func _ready() -> void:
@@ -120,6 +137,58 @@ func _load_registries() -> void:
 				_items_by_id[str(it["id"])] = it
 				_item_order.append(str(it["id"]))
 		_starter_inventory = i_data.get("starter_inventory", [])
+	var c_data = DataLoaderScript.load_json(CURIOS_PATH)
+	if c_data is Dictionary:
+		for c in c_data.get("curios", []):
+			if c is Dictionary and c.has("id"):
+				_curios_by_id[str(c["id"])] = c
+
+
+func get_curio(curio_id: String) -> Dictionary:
+	return _curios_by_id.get(curio_id, {})
+
+
+## Applies a curio outcome (data/curios.json) to the party/mission. Returns log lines.
+func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
+	var logs: PackedStringArray = PackedStringArray()
+	var living: Array = []
+	for h in party:
+		if h is Dictionary and not h.get("dead", false):
+			living.append(h)
+	if outcome.has("heal_party"):
+		for h in living:
+			h["hp"] = mini(int(h["hp"]) + int(outcome["heal_party"]), int(h["hp_max"]))
+			h["al_borde"] = false
+		logs.append("+%d PV a la cuadrilla." % int(outcome["heal_party"]))
+	if outcome.has("stress_party"):
+		for h in living:
+			logs.append_array(StressSystemScript.add_stress(h, int(outcome["stress_party"])))
+		logs.append("Estrés %+d a la cuadrilla." % int(outcome["stress_party"]))
+	if outcome.has("damage_random") and not living.is_empty():
+		var v: Dictionary = living[randi() % living.size()]
+		var amt: int = int(outcome["damage_random"])
+		v["hp"] = maxi(int(v["hp"]) - amt, 0)
+		logs.append("%s pierde %d PV." % [v.get("name", "?"), amt])
+	if outcome.has("colones"):
+		colones += int(outcome["colones"])
+		logs.append("+%d colones." % int(outcome["colones"]))
+	var add = outcome.get("add_item", null)
+	if add is Dictionary:
+		var got: int = add_item(str(add.get("id", "")), int(add.get("qty", 1)))
+		if got > 0:
+			logs.append("Encuentran: %s." % get_item(str(add.get("id", ""))).get("name", ""))
+	if bool(outcome.get("reveal_neighbors", false)):
+		for n in mission_neighbors():
+			for m in ExpeditionLoaderScript.neighbors(mission_region_data, str(n)):
+				if not scouted_node_ids.has(str(m)):
+					scouted_node_ids.append(str(m))
+		logs.append("Se revelan las salas cercanas.")
+	if bool(outcome.get("reveal_map", false)):
+		for nid in mission_nodes_index.keys():
+			if not scouted_node_ids.has(str(nid)):
+				scouted_node_ids.append(str(nid))
+		logs.append("Se revela todo el mapa.")
+	return logs
 
 
 # --- Items and inventory (P3-09) ---------------------------------------------
@@ -202,7 +271,7 @@ func buy_item(item_id: String) -> String:
 
 
 func _item_use_key(hero: Dictionary, item_id: String) -> String:
-	return "%s|%s" % [str(hero.get("hero_id", hero.get("name", "?"))), item_id]
+	return "%s|%s" % [str(hero.get("uid", hero.get("name", "?"))), item_id]
 
 
 ## Why `hero` can't use an item right now outside combat, or "" if they can.
@@ -255,42 +324,37 @@ func get_hero_template(hero_id: String) -> Dictionary:
 	return _heroes_by_id.get(hero_id, {})
 
 
+## New game: the four starter classes, all in the party, plus a fresh recruit pool.
 func reset_party_from_catalog() -> void:
+	roster.clear()
 	party.clear()
-	for h in _get_default_hero_order():
-		var t: Dictionary = _heroes_by_id.get(h, {})
+	for id in ["campesino", "abuela", "tecnologo", "montador"]:
+		var t: Dictionary = _heroes_by_id.get(id, {})
 		if not t.is_empty():
-			party.append(_instantiate_hero(t))
+			var h: Dictionary = _instantiate_hero(t)
+			h["uid"] = _take_uid()
+			roster.append(h)
+			party.append(h)
+	refresh_recruits()
 
 
-func _get_default_hero_order() -> Array:
-	var keys: Array = []
-	for id in _heroes_by_id.keys():
-		keys.append(str(id))
-	keys.sort()
-	var preferred: Array = ["campesino", "abuela", "tecnologo", "montador"]
-	var out: Array = []
-	for p in preferred:
-		if _heroes_by_id.has(p):
-			out.append(p)
-	for k in keys:
-		if not out.has(k):
-			out.append(k)
-		if out.size() >= 4:
-			break
-	return out
+func _take_uid() -> int:
+	_next_uid += 1
+	return _next_uid - 1
 
 
 func _instantiate_hero(template: Dictionary) -> Dictionary:
 	var hp_max: int = int(template.get("hp_max", 20))
-	var stress_max: int = int(template.get("stress_max", 100))
+	var names: Array = template.get("names", [])
 	return {
+		"uid": 0,
 		"hero_id": template.get("id", ""),
-		"name": template.get("name", "???"),
+		"name": str(names[randi() % names.size()]) if not names.is_empty() else str(template.get("name", "???")),
+		"class_name": template.get("name", ""),
 		"class_id": template.get("class_id", ""),
 		"hp_max": hp_max,
 		"hp": hp_max,
-		"stress_max": stress_max,
+		"stress_max": 200,
 		"stress": 0,
 		"speed": int(template.get("speed", 3)),
 		"accuracy": int(template.get("accuracy", 5)),
@@ -306,18 +370,141 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 	}
 
 
+# --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------
+
+func hire_cost(hero: Dictionary) -> int:
+	return int(get_hero_template(str(hero.get("hero_id", ""))).get("hire_cost", 800))
+
+
+func refresh_recruits() -> void:
+	recruit_pool.clear()
+	var ids: Array = _heroes_by_id.keys()
+	for _k in RECRUIT_POOL_SIZE:
+		if ids.is_empty():
+			break
+		recruit_pool.append(_instantiate_hero(_heroes_by_id[ids[randi() % ids.size()]]))
+
+
+## Terminal de Buses de Sarchí. Returns a message for the hub.
+func hire_recruit(index: int) -> String:
+	if index < 0 or index >= recruit_pool.size():
+		return "Ese candidato ya se fue en el bus."
+	if roster.size() >= ROSTER_CAP:
+		return "La hacienda no tiene más camas (máximo %d héroes)." % ROSTER_CAP
+	var h: Dictionary = recruit_pool[index]
+	var cost: int = hire_cost(h)
+	if colones < cost:
+		return "No alcanza: contratar a %s cuesta %d ₡." % [h.get("name", "?"), cost]
+	colones -= cost
+	h["uid"] = _take_uid()
+	roster.append(h)
+	recruit_pool.remove_at(index)
+	if party.size() < PARTY_SIZE:
+		party.append(h)
+	return "%s (%s) se baja del bus y se une a la hacienda (-%d ₡)." % [h.get("name", "?"), h.get("class_name", ""), cost]
+
+
+func is_in_party(hero: Dictionary) -> bool:
+	for p in party:
+		if is_same(p, hero):
+			return true
+	return false
+
+
+func set_in_party(hero: Dictionary, on: bool) -> String:
+	if on:
+		if is_in_party(hero):
+			return ""
+		if party.size() >= PARTY_SIZE:
+			return "La cuadrilla ya tiene %d héroes." % PARTY_SIZE
+		if bool(hero.get("dead", false)):
+			return "%s ya no puede salir." % hero.get("name", "?")
+		party.append(hero)
+		return ""
+	for k in party.size():
+		if is_same(party[k], hero):
+			party.remove_at(k)
+			break
+	return ""
+
+
+## Moves a party member one rank forward (-1) or back (+1).
+func move_in_party(hero: Dictionary, delta: int) -> void:
+	for k in party.size():
+		if is_same(party[k], hero):
+			var j: int = clampi(k + delta, 0, party.size() - 1)
+			if j != k:
+				party[k] = party[j]
+				party[j] = hero
+			return
+
+
+func living_party_count() -> int:
+	var n: int = 0
+	for h in party:
+		if h is Dictionary and not h.get("dead", false):
+			n += 1
+	return n
+
+
+## EBAIS: price to bring a hero back to full HP (0 if already full).
+func heal_cost(hero: Dictionary) -> int:
+	var missing: int = int(hero.get("hp_max", 0)) - int(hero.get("hp", 0))
+	if missing <= 0 or bool(hero.get("dead", false)):
+		return 0
+	return maxi(missing * HEAL_COST_PER_HP, HEAL_MIN_COST)
+
+
+func heal_hero(hero: Dictionary) -> String:
+	var cost: int = heal_cost(hero)
+	if cost <= 0:
+		return "%s no necesita el EBAIS." % hero.get("name", "?")
+	if colones < cost:
+		return "No alcanza: curar a %s cuesta %d ₡." % [hero.get("name", "?"), cost]
+	colones -= cost
+	hero["hp"] = int(hero["hp_max"])
+	hero["al_borde"] = false
+	return "En el EBAIS atienden a %s: PV al máximo (-%d ₡)." % [hero.get("name", "?"), cost]
+
+
+## One week passes after every expedition (doc 02 §1): the fallen leave the roster,
+## survivors leave Al Borde, recruits rotate.
+func end_of_expedition_week() -> void:
+	week += 1
+	var fallen: PackedStringArray = PackedStringArray()
+	for k in range(roster.size() - 1, -1, -1):
+		var h: Dictionary = roster[k]
+		if bool(h.get("dead", false)):
+			fallen.append(str(h.get("name", "?")))
+			roster.remove_at(k)
+		else:
+			h["al_borde"] = false
+			h["borde_checks"] = 0
+			h["hp"] = maxi(int(h.get("hp", 0)), 1)
+			h.erase("guarding")
+			h.erase("statuses")
+	for k in range(party.size() - 1, -1, -1):
+		if bool(party[k].get("dead", false)):
+			party.remove_at(k)
+	refresh_recruits()
+	last_week_report = "Semana %d." % week
+	if not fallen.is_empty():
+		last_week_report += " Descansen en paz: %s." % ", ".join(fallen)
+	last_week_report += " Llegaron candidatos nuevos a la terminal."
+
+
 ## Iglesia Vieja stub: group prayer, small risk of bad mood.
 func iglesia_misa_rapida() -> String:
 	if colones < 800:
 		return "No alcanza para la colecta (800 colones)."
 	colones -= 800
-	for h in party:
+	for h in roster:
 		if h is Dictionary and not h.get("dead", false):
 			for _x in StressSystemScript.add_stress(h, -10):
 				pass
 	if randf() < 0.12:
 		var living: Array = []
-		for h in party:
+		for h in roster:
 			if h is Dictionary and not h.get("dead", false):
 				living.append(h)
 		if not living.is_empty():
@@ -325,11 +512,13 @@ func iglesia_misa_rapida() -> String:
 			for _x in StressSystemScript.add_stress(v, 8):
 				pass
 			return "La misa ayuda, pero %s sigue inquieto (+8 estrés)." % v.get("name", "?")
-	return "La Iglesia Vieja devuelve un poco de calma (-10 estrés, cuadrilla)."
+	return "La Iglesia Vieja devuelve un poco de calma (-10 estrés a todos los héroes)."
 
 
 func start_mission(region_path: String = "") -> bool:
 	var path: String = region_path if region_path != "" else selected_mission_region_path
+	if living_party_count() <= 0:
+		return false
 	var r: Dictionary = ExpeditionLoaderScript.load_region(path)
 	if r.is_empty():
 		return false
@@ -338,6 +527,10 @@ func start_mission(region_path: String = "") -> bool:
 		for k in ["nodes", "edges", "start_node", "objective_node", "undirected", "seed"]:
 			r[k] = g[k]
 	mission_region_data = r
+	scouted_node_ids = []
+	for n in r.get("nodes", []):
+		if n is Dictionary and n.has("curio_id"):
+			n["label"] = str(get_curio(str(n["curio_id"])).get("name", n.get("label", "")))
 	mission_nodes_index = ExpeditionLoaderScript.node_by_id(r)
 	current_region_id = str(r.get("region_id", ""))
 	mission_light = mini(100, int(r.get("initial_light", 100)))
@@ -423,7 +616,7 @@ func neighbor_in_direction(dir: Vector2i) -> String:
 
 ## Fog of war (docs/01 §4.3): a room's type is known once visited or next to a visited room.
 func is_room_revealed(node_id: String) -> bool:
-	if visited_node_ids.has(node_id) or node_id == objective_node_id:
+	if visited_node_ids.has(node_id) or node_id == objective_node_id or scouted_node_ids.has(node_id):
 		return true
 	for v in visited_node_ids:
 		if ExpeditionLoaderScript.neighbors(mission_region_data, str(v)).has(node_id):
@@ -488,7 +681,6 @@ func clear_combat_return_flags() -> void:
 func apply_objective_rewards() -> void:
 	var rew: int = int(mission_params.get("objective_reward", 0))
 	colones += rew
-	week += 1
 
 
 func is_region_playable(path: String) -> bool:
@@ -514,18 +706,51 @@ func apply_save_data(data: Dictionary) -> void:
 	else:
 		add_item("gallo_pinto", int(data.get("hub_pending_food", 0)))
 		add_item("candela_sebo", int(ceil(int(data.get("hub_pending_light_bonus", 0)) / 15.0)))
-	var raw_party = data.get("party", [])
+	# v5: roster + party by uid + recruit pool. v4 and older only had `party`.
+	roster.clear()
 	party.clear()
-	if raw_party is Array:
-		for e in raw_party:
+	_next_uid = maxi(int(data.get("next_uid", 1)), 1)
+	var raw_roster = data.get("roster", data.get("party", []))
+	if raw_roster is Array:
+		for e in raw_roster:
 			if e is Dictionary:
-				party.append(_sanitize_runtime_hero(e))
+				var h: Dictionary = _sanitize_runtime_hero(e)
+				if int(h.get("uid", 0)) <= 0:
+					h["uid"] = _next_uid
+				_next_uid = maxi(_next_uid, int(h["uid"]) + 1)
+				roster.append(h)
+	# JSON numbers load as floats: compare uids as ints.
+	var raw_uids = data.get("party_uids", null)
+	var uids: Array = []
+	if raw_uids is Array:
+		for u in raw_uids:
+			uids.append(int(u))
+	for uid in uids:
+		for h in roster:
+			if int(h["uid"]) == uid and party.size() < PARTY_SIZE:
+				party.append(h)
+	if not raw_uids is Array:
+		for h in roster:
+			if party.size() < PARTY_SIZE:
+				party.append(h)
+	recruit_pool.clear()
+	var raw_pool = data.get("recruit_pool", null)
+	if raw_pool is Array and not raw_pool.is_empty():
+		for e in raw_pool:
+			if e is Dictionary:
+				recruit_pool.append(_sanitize_runtime_hero(e))
+	else:
+		refresh_recruits()
 	# Never resume mid-expedition in this slice.
 	end_mission_abandon()
 
 
 func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	var out := e.duplicate(true)
+	var t: Dictionary = get_hero_template(str(out.get("hero_id", "")))
+	if not out.has("class_name"):
+		out["class_name"] = t.get("name", "")
+	out["uid"] = int(out.get("uid", 0))
 	out["hp"] = clampi(int(out.get("hp", 1)), 0, int(out.get("hp_max", 1)))
 	out["dead"] = bool(out.get("dead", false))
 	out["al_borde"] = bool(out.get("al_borde", false))
@@ -547,7 +772,10 @@ func to_save_dict() -> Dictionary:
 		"version": SAVE_VERSION,
 		"colones": colones,
 		"week": week,
-		"party": party.duplicate(true),
+		"roster": roster.duplicate(true),
+		"party_uids": party.map(func(h): return int(h["uid"])),
+		"recruit_pool": recruit_pool.duplicate(true),
+		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
 		"inventory": inventory.duplicate(true),
 	}

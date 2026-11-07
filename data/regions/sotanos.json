@@ -89,6 +89,13 @@
       "boss": [
         "Comedor del Mayordomo"
       ]
-    }
+    },
+    "curios": [
+      "altar_roto",
+      "caja_abuelo",
+      "pozo_seco",
+      "arbol_amarillo",
+      "radio_vieja"
+    ]
   }
 }

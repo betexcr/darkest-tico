@@ -34,5 +34,6 @@ func _on_start_expedition() -> void:
 
 
 func _on_expedition_finished(_reason: String) -> void:
+	GameState.end_of_expedition_week()
 	SaveService.save_game()
 	await _open_hub()

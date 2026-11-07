@@ -182,6 +182,20 @@
       "curio_keys": [
         "pozo_seco"
       ]
+    },
+    {
+      "id": "bateria_radio",
+      "name": "Batería de radio",
+      "description": "Una batería gorda de las de antes. Alguna radio vieja la necesita.",
+      "price": 200,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "curio",
+      "target": "none",
+      "effects": {},
+      "curio_keys": [
+        "radio_vieja"
+      ]
     }
   ]
 }

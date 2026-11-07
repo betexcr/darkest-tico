@@ -138,7 +138,7 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
 Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30–40 events.
 
 ### P2-01 · M · Data-driven events (traps/curios/camp)
-- Status: `todo` · Depends: P1-06
+- Status: `in-progress` · Depends: P1-06 · Curios are data-driven now (`data/curios.json`, key items, blind outcome tables). Traps and camp are still hard-coded in `expedition_screen.gd`.
 - Spec: `07`, `01` §4
 - Files: `data/events.json` (new), `scripts/domain/event_resolver.gd` (new), `scripts/expedition/expedition_map.gd`
 - Done when:
@@ -154,11 +154,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] ≥30 events tagged for `sotanos`, Spanish text, tone-reviewed against `08`
 
 ### P2-03 · M · Classes 5–8
-- Status: `todo` · Depends: P1-03, P1-04
+- Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints wait for P1-03) · Depends: P1-03, P1-04
 - Spec: `03`. **Owner confirmed 2026-11-06:** classes 3 Guachimán Jubilado, 5 Médica Josefina, 6 Curandero Nicoyano, 9 Exorcista de Barrio.
 - Files: `data/heroes.json`, `data/skills.json`, `assets/portraits/`
 - Done when:
-  - [ ] 8 heroes, each with 4 skills and rank constraints
+  - [x] 8 heroes, each with 4 skills
+  - [ ] Rank constraints (P1-03)
   - [x] Portraits generated with SD metadata (`assets/portraits/{guachiman,medica_josefina,curandero,exorcista}.png`; hero ids should match these names)
 
 ### P2-04 · M · Sótanos enemy roster to ~12 units
@@ -198,7 +199,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 ## P3 — Hacienda baseline (campaign loop)
 
 ### P3-01 · M · Weekly tick + roster lifecycle
-- Status: `todo` · Depends: —
+- Status: `review` (done 2026-11-07: `GameState.end_of_expedition_week()` — +1 week after every expedition, fallen heroes removed for good, Al Borde cleared, recruits rotate; roster up to 8, party of 4 chosen and ordered in the hub; save v5 with v4 migration; `tests/test_hub.gd`) · Depends: —
 - Spec: `02` §1, §12
 - Files: `scripts/autoload/game_state.gd`, `scripts/hacienda/hacienda_hub.gd`
 - Done when:
@@ -206,7 +207,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Roster > 4 heroes; choose 4 for a mission; dead heroes leave the roster
 
 ### P3-02 · M · Terminal de Buses (recruitment)
-- Status: `todo` · Depends: P3-01, P2-03
+- Status: `review` (done 2026-11-07: 3 weekly candidates from all 8 classes with Tico names per class, `hire_cost` per class, roster cap 8) · Depends: P3-01, P2-03
 - Spec: `02` §3
 - Done when: [ ] Weekly recruit pool, hire cost, roster cap
 
@@ -235,6 +236,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `02` §9, `01` §4.4
 - Done when: [ ] Camp node uses per-hero camp skills instead of the fixed "feast/skip"
 
+### P3-10 · S · EBAIS healing in the hub (owner request 2026-11-07)
+- Status: `review` · Each roster row has "EBAIS N ₡": full HP for `HEAL_COST_PER_HP` (15) per missing HP, minimum `HEAL_MIN_COST` (100). Constants in `game_state.gd`.
+
 ### P3-09 · M · Items, inventory and Pulpería (owner spec 2026-11-07)
 - Status: `review` (owner: try the Pulpería in Godot) · Depends: —
 - Spec: owner request. Tico-themed consumables in `data/items.json`. Using an item **in combat spends the hero's turn**. **Out of combat each hero can use each item `uses_per_node` times per room (default 1); the limit is per character, not per team (owner, 2026-11-07)**. Bought at the hacienda's Pulpería. Food and light become items (gallo pinto, candela) instead of hub counters. Curio-key items (llave, mecate, agua bendita, ruda) prepare `07` curio interactions.
@@ -242,7 +246,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when:
   - [x] Inventory saved (save v4, migrates old hub purchases); buy at Pulpería; per-room limit enforced outside combat
   - [x] Effects: heal, stress, light, damage, hp_risk; validator checks item data
-  - [ ] Curio-key items do something at curios (needs P2-01 data-driven events)
+  - [x] Curio-key items do something at curios: `data/curios.json` (altar roto ← agua bendita, caja del abuelo ← llave, pozo seco ← mecate, árbol amarillo ← ruda, radio vieja ← new batería de radio, which reveals the map). Generator assigns a curio to each curio room.
 
 ### P4-09 · L · Unified expedition screen (owner spec 2026-11-07)
 - Status: `review` (owner: play-test in Godot; written without running Godot) · Depends: P2-06, P3-09, P4-07

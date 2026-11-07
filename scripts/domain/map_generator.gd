@@ -148,6 +148,8 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 				nd["is_elite"] = true
 				nd["enemy_id"] = _pick(gen.get("elite_pool", gen.get("enemy_pool", ["espanto"])), rng)
 				nd["reward_colones"] = _range(gen.get("elite_reward_colones", [500, 650]), rng)
+			"curio":
+				nd["curio_id"] = _pick(gen.get("curios", []), rng)
 			"boss":
 				nd["is_boss"] = true
 				nd["enemy_id"] = str(gen.get("boss_enemy_id", "espanto"))

@@ -1,0 +1,122 @@
+{
+  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map.",
+  "curios": [
+    {
+      "id": "altar_roto",
+      "name": "Altar roto",
+      "text": "Un altar partido con velas negras. Huele a cera vieja y a algo peor.",
+      "key_item": "agua_bendita",
+      "key_text": "Rocían agua bendita sobre la piedra. El altar suspira y se aquieta.",
+      "key_outcome": {
+        "stress_party": -15,
+        "reveal_neighbors": true
+      },
+      "blind": [
+        {
+          "weight": 50,
+          "text": "Rezan sin fe. Algo responde desde abajo.",
+          "stress_party": 8
+        },
+        {
+          "weight": 50,
+          "text": "Entre las velas ven el camino que sigue.",
+          "reveal_neighbors": true
+        }
+      ]
+    },
+    {
+      "id": "caja_abuelo",
+      "name": "Caja del abuelo",
+      "text": "Un baúl de cedro con las iniciales del abuelo, cerrado con candado.",
+      "key_item": "llave_abuelo",
+      "key_text": "La llave entra justo. Adentro: ahorros y un recuerdo.",
+      "key_outcome": {
+        "colones": 450,
+        "add_item": {
+          "id": "agua_pipa",
+          "qty": 1
+        }
+      },
+      "blind": [
+        {
+          "weight": 50,
+          "text": "Fuerzan la tapa: unos colones viejos.",
+          "colones": 120
+        },
+        {
+          "weight": 50,
+          "text": "El candado tenía una trampa de clavos.",
+          "damage_random": 5
+        }
+      ]
+    },
+    {
+      "id": "pozo_seco",
+      "name": "Pozo seco",
+      "text": "Un pozo sin agua. Algo brilla allá abajo.",
+      "key_item": "mecate",
+      "key_text": "Bajan con el mecate y suben un frasco de agua de manantial.",
+      "key_outcome": {
+        "heal_party": 8
+      },
+      "blind": [
+        {
+          "weight": 40,
+          "text": "No se ve nada. Mejor no meter la mano.",
+          "stress_party": 2
+        },
+        {
+          "weight": 60,
+          "text": "Alguien se asoma de más y cae al fondo.",
+          "damage_random": 6,
+          "stress_party": 4
+        }
+      ]
+    },
+    {
+      "id": "arbol_amarillo",
+      "name": "Árbol amarillo",
+      "text": "Una corteza amarilla florece aquí abajo, sin una gota de sol. No debería.",
+      "key_item": "ramo_ruda",
+      "key_text": "Una limpia con ruda bajo el árbol. El aire se vuelve dulce.",
+      "key_outcome": {
+        "stress_party": -10,
+        "heal_party": 3
+      },
+      "blind": [
+        {
+          "weight": 60,
+          "text": "Las flores calman a la cuadrilla.",
+          "stress_party": -5
+        },
+        {
+          "weight": 40,
+          "text": "El polen marea y enferma.",
+          "damage_random": 4
+        }
+      ]
+    },
+    {
+      "id": "radio_vieja",
+      "name": "Radio vieja",
+      "text": "Una radio de tubos sintoniza sola una novela de los años 50.",
+      "key_item": "bateria_radio",
+      "key_text": "Con la batería, la radio dicta el plano completo del sótano.",
+      "key_outcome": {
+        "reveal_map": true
+      },
+      "blind": [
+        {
+          "weight": 50,
+          "text": "Entre la estática, la voz del abuelo da una pista.",
+          "reveal_neighbors": true
+        },
+        {
+          "weight": 50,
+          "text": "El ruido despierta algo. Todos se tensan.",
+          "stress_party": 6
+        }
+      ]
+    }
+  ]
+}
