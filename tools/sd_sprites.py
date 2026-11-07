@@ -7,9 +7,11 @@ For each character:
   1. `idle` is generated from text (txt2img), full body on a plain background.
   2. Every other state (attack, cast, hurt, ailment, dead) is generated with img2img
      starting from that idle image, so the character keeps the same look.
-     Humanoid characters are also guided by an OpenPose skeleton per state (ControlNet,
-     skeletons in the manifest) so the body pose actually changes. Beasts skip the
-     skeleton and use their own pose text and strength.
+     Beasts work this way.
+  3. Humanoids instead get a *character sheet*: all six poses are drawn in ONE image (a
+     grid of cells, each guided by that state's OpenPose skeleton), then cut into six
+     sprites. Figures generated together keep the same outfit and weapon; only the pose
+     changes (owner requirement, 2026-11-07).
   3. The background is removed (rembg) and the result is saved as a transparent PNG:
        assets/sprites/<character>/<state>.png  (+ .metadata.json)
 
@@ -103,6 +105,34 @@ def load_pipelines(model: str, control_model: str):
     return pipes, device, torch
 
 
+def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch):
+    """All states of one humanoid in one image. Returns {state_id: PIL.Image}, sheet."""
+    from PIL import Image
+
+    sheet = cfg["sheet"]
+    cols, rows = int(sheet["cols"]), int(sheet["rows"])
+    cw, ch = sheet["cell"]
+    order = [s["id"] for s in cfg["states"]]
+    pose = Image.new("RGB", (cols * cw, rows * ch), (0, 0, 0))
+    for i, sid in enumerate(order):
+        cell = draw_skeleton(cfg["skeletons"][sid], (cw, ch))
+        pose.paste(cell, ((i % cols) * cw, (i // cols) * ch))
+    prompt = sheet["prompt_template"].format(
+        look=c["look"], weapon=c.get("weapon", "a weapon"), style=cfg.get("style", manifest["style_suffix"])
+    )
+    img = pipes["txt_pose"](
+        prompt=prompt, image=pose, width=cols * cw, height=rows * ch,
+        controlnet_conditioning_scale=control_scale, negative_prompt=negative,
+        num_inference_steps=steps, guidance_scale=guidance,
+        generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])),
+    ).images[0]
+    out = {}
+    for i, sid in enumerate(order):
+        x, y = (i % cols) * cw, (i // cols) * ch
+        out[sid] = img.crop((x, y, x + cw, y + ch))
+    return out, img, prompt
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", nargs="*", help="character ids")
@@ -159,7 +189,49 @@ def main() -> int:
     print(f"Generating {len(todo)} sprite(s) on {device}, {w}x{h}, {steps} steps", flush=True)
 
     raw_cache: dict[str, Image.Image] = {}
+    done_sheets: set = set()
+    use_sheet = "sheet" in cfg
     for i, (c, s) in enumerate(todo, 1):
+        if use_sheet and c.get("body", "humanoid") != "beast":
+            cid = c["id"]
+            if cid in done_sheets:
+                continue
+            done_sheets.add(cid)
+            t0 = time.time()
+            crops, sheet_img, prompt = generate_sheet(
+                pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch
+            )
+            CACHE.mkdir(parents=True, exist_ok=True)
+            sheet_img.save(CACHE / f"{cid}_sheet.png")
+            for k, (sid, crop) in enumerate(crops.items()):
+                if args.states and sid not in args.states:
+                    continue
+                image = remover(crop) if remover is not None else crop
+                out = ROOT / cfg["out_dir"] / cid / f"{sid}.png"
+                out.parent.mkdir(parents=True, exist_ok=True)
+                image.save(out, format="PNG")
+                meta = {
+                    "id": f"sprite_{cid}_{sid}",
+                    "prompt": prompt,
+                    "negative_prompt": negative,
+                    "seed": int(c["seed"]),
+                    "steps": steps,
+                    "cfg_scale": guidance,
+                    "sampler": manifest["sampler"],
+                    "resolution": "%dx%d sheet, cell %d of %d" % (
+                        sheet_img.width, sheet_img.height, k + 1, len(crops)),
+                    "mode": "sheet",
+                    "pose_control": cfg["control_model"],
+                    "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
+                    "model": manifest["model"],
+                    "generator": "tools/sd_sprites.py (diffusers)",
+                    "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                }
+                out.with_suffix(".metadata.json").write_text(
+                    json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+                )
+            print(f"[{i}/{len(todo)}] {cid}: sheet of {len(crops)} poses ({time.time() - t0:.0f}s)", flush=True)
+            continue
         cid, sid = c["id"], s["id"]
         out = ROOT / cfg["out_dir"] / cid / f"{sid}.png"
         raw_path = CACHE / cid / "idle_raw.png"

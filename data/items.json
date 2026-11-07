@@ -1,5 +1,5 @@
 {
-  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per hero per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}.",
+  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per hero per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}, cure [status ids].",
   "starter_inventory": [
     {
       "id": "gallo_pinto",
@@ -91,14 +91,17 @@
     {
       "id": "venda_manta",
       "name": "Venda de manta",
-      "description": "Tela de saco hervida. Tapa heridas y sangrados.",
+      "description": "Tela de saco hervida. Cura y para el sangrado.",
       "price": 200,
       "max_stack": 6,
       "uses_per_node": 1,
       "usable": "both",
       "target": "ally",
       "effects": {
-        "heal": 5
+        "heal": 5,
+        "cure": [
+          "sangrado"
+        ]
       }
     },
     {
@@ -136,14 +139,17 @@
     {
       "id": "ramo_ruda",
       "name": "Ramo de ruda",
-      "description": "Para la limpia y el mal de ojo. Algunos árboles la piden.",
+      "description": "Para la limpia y el mal de ojo: calma y saca el veneno. Algunos árboles la piden.",
       "price": 200,
       "max_stack": 6,
       "uses_per_node": 1,
       "usable": "both",
       "target": "ally",
       "effects": {
-        "stress": -6
+        "stress": -6,
+        "cure": [
+          "veneno"
+        ]
       },
       "curio_keys": [
         "arbol_amarillo"

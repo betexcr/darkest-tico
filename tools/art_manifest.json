@@ -601,6 +601,16 @@
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
     "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly brushstrokes, game character art",
     "negative_extra": "candle, candles, fire, shrine, altar, cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd, duplicate",
+    "sheet": {
+      "_doc": "Humanoids: all states in one image so outfit and weapon match. Cells in state order, left to right, top to bottom.",
+      "cols": 3,
+      "rows": 2,
+      "cell": [
+        320,
+        480
+      ],
+      "prompt_template": "character sheet, the same {look} in six poses, identical clothes and {weapon} in every pose, full body, plain grey background, {style}"
+    },
     "states": [
       {
         "id": "idle",

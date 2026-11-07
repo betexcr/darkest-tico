@@ -1,4 +1,5 @@
 {
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight.",
   "enemies": {
     "espanto": {
       "id": "espanto",
@@ -6,7 +7,58 @@
       "hp_max": 45,
       "speed": 4,
       "dodge": 5,
-      "accuracy": 8
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "aranazo_frio",
+          "name": "Arañazo frío",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            4,
+            8
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "description": "Uñas heladas que salen de la pared."
+        },
+        {
+          "id": "grito_ultratumba",
+          "name": "Grito de ultratumba",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 8,
+          "target": "party",
+          "weight": 20,
+          "description": "Un alarido que se mete en los huesos de todos."
+        },
+        {
+          "id": "toque_helado",
+          "name": "Toque helado",
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.3,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "La mano del muerto paraliza al que toca."
+        }
+      ]
     },
     "sombra_cuadrilla": {
       "id": "sombra_cuadrilla",
@@ -14,7 +66,64 @@
       "hp_max": 50,
       "speed": 5,
       "dodge": 6,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "azadonazo",
+          "name": "Azadonazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "description": "Golpe de azadón oxidado."
+        },
+        {
+          "id": "jornal_maldito",
+          "name": "Jornal maldito",
+          "type": "physical",
+          "damage": [
+            4,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.5,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Cortadas de una jornada que nunca terminó."
+        },
+        {
+          "id": "sombra_que_pesa",
+          "name": "Sombra que pesa",
+          "type": "magical",
+          "damage": [
+            3,
+            5
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.35,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "La sombra se echa encima y no deja moverse."
+        }
+      ]
     },
     "mayordomo_hundido": {
       "id": "mayordomo_hundido",
@@ -22,7 +131,74 @@
       "hp_max": 55,
       "speed": 4,
       "dodge": 5,
-      "accuracy": 9
+      "accuracy": 9,
+      "skills": [
+        {
+          "id": "bandeja_de_plata",
+          "name": "Bandeja de plata",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            6,
+            10
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "weight": 50,
+          "description": "El servicio de la casa, en la cabeza."
+        },
+        {
+          "id": "pulso_de_oscuridad",
+          "name": "Pulso de oscuridad",
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 20,
+          "light": -10,
+          "description": "La casa se apaga un instante y duele a todos."
+        },
+        {
+          "id": "golpe_al_escudo",
+          "name": "Golpe al escudo",
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "ignores_guard": true,
+          "description": "Conoce cada guardia: esta no la frena."
+        },
+        {
+          "id": "la_cuenta_por_favor",
+          "name": "La cuenta, por favor",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.3,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Presenta la cuenta del abuelo. Paraliza de miedo."
+        }
+      ]
     },
     "nuboso_spectre": {
       "id": "nuboso_spectre",
@@ -30,7 +206,44 @@
       "hp_max": 38,
       "speed": 6,
       "dodge": 9,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "garra_de_niebla",
+          "name": "Garra de niebla",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            4,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "description": "Garras que se hacen niebla al tocar."
+        },
+        {
+          "id": "bruma_que_pierde",
+          "name": "Bruma que pierde",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.3,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "La neblina hace perder el rumbo."
+        }
+      ]
     },
     "cadejo_negro": {
       "id": "cadejo_negro",
@@ -38,7 +251,58 @@
       "hp_max": 48,
       "speed": 7,
       "dodge": 7,
-      "accuracy": 8
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "mordida_de_cadejo",
+          "name": "Mordida de cadejo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            6,
+            10
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "weight": 50,
+          "description": "Colmillos del perro del camino."
+        },
+        {
+          "id": "aullido_de_medianoche",
+          "name": "Aullido de medianoche",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 8,
+          "target": "party",
+          "weight": 20,
+          "description": "El aullido que se oye en los cafetales."
+        },
+        {
+          "id": "zarpazo_con_cadena",
+          "name": "Zarpazo con cadena",
+          "type": "physical",
+          "damage": [
+            5,
+            8
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.45,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "Garra y cadena juntas."
+        }
+      ]
     },
     "segua_boss": {
       "id": "segua_boss",
@@ -46,7 +310,58 @@
       "hp_max": 85,
       "speed": 6,
       "dodge": 8,
-      "accuracy": 10
+      "accuracy": 10,
+      "skills": [
+        {
+          "id": "coz_de_la_segua",
+          "name": "Coz de la Segua",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            7,
+            11
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "weight": 50,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.2,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Patada de yegua que tumba."
+        },
+        {
+          "id": "encanto_de_la_segua",
+          "name": "Encanto de la Segua",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 15,
+          "target": "single",
+          "weight": 20,
+          "description": "Primero bella, luego calavera."
+        },
+        {
+          "id": "relincho",
+          "name": "Relincho",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 7,
+          "target": "party",
+          "weight": 20,
+          "description": "Un relincho que hiela a toda la cuadrilla."
+        }
+      ]
     },
     "peon_penado": {
       "id": "peon_penado",
@@ -54,7 +369,38 @@
       "hp_max": 52,
       "speed": 3,
       "dodge": 3,
-      "accuracy": 8
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "cadenazo",
+          "name": "Cadenazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            6,
+            10
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "description": "Latigazo de cadena herrumbrada."
+        },
+        {
+          "id": "rencor_del_peon",
+          "name": "Rencor del peón",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 10,
+          "target": "single",
+          "weight": 20,
+          "description": "Cien años de deuda en una mirada."
+        }
+      ]
     },
     "mandador_en_pena": {
       "id": "mandador_en_pena",
@@ -62,7 +408,58 @@
       "hp_max": 40,
       "speed": 5,
       "dodge": 6,
-      "accuracy": 9
+      "accuracy": 9,
+      "skills": [
+        {
+          "id": "latigazo",
+          "name": "Latigazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "El fuete del mandador abre la piel."
+        },
+        {
+          "id": "libreta_de_deudas",
+          "name": "Libreta de deudas",
+          "type": "magical",
+          "damage": [
+            1,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "party",
+          "weight": 20,
+          "description": "Lee en voz alta lo que cada uno debe. Nadie lo soporta."
+        },
+        {
+          "id": "rebajo_del_jornal",
+          "name": "Rebajo del jornal",
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 8,
+          "target": "single",
+          "weight": 20,
+          "description": "Le rebaja el alma a uno solo."
+        }
+      ]
     },
     "rata_de_troje": {
       "id": "rata_de_troje",
@@ -70,7 +467,44 @@
       "hp_max": 34,
       "speed": 8,
       "dodge": 9,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "mordisco",
+          "name": "Mordisco",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "description": "Dientes amarillos, rápidos."
+        },
+        {
+          "id": "peste_del_troje",
+          "name": "Peste del troje",
+          "type": "physical",
+          "damage": [
+            2,
+            5
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "veneno",
+            "chance": 0.6,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Mordida sucia de grano podrido."
+        }
+      ]
     },
     "murcielago_bodega": {
       "id": "murcielago_bodega",
@@ -78,7 +512,59 @@
       "hp_max": 30,
       "speed": 9,
       "dodge": 12,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "mordida_rasante",
+          "name": "Mordida rasante",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "description": "Baja en picada y muerde."
+        },
+        {
+          "id": "chupasangre",
+          "name": "Chupasangre",
+          "type": "physical",
+          "damage": [
+            4,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.5,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Se prende del cuello."
+        },
+        {
+          "id": "aleteo_apagavelas",
+          "name": "Aleteo apagavelas",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "weight": 20,
+          "light": -10,
+          "description": "Las alas apagan la luz de la cuadrilla."
+        }
+      ]
     },
     "monaguillo_porton": {
       "id": "monaguillo_porton",
@@ -86,7 +572,58 @@
       "hp_max": 36,
       "speed": 5,
       "dodge": 6,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "incensario",
+          "name": "Incensario",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "description": "Golpe de incensario caliente."
+        },
+        {
+          "id": "letania_del_porton",
+          "name": "Letanía del Portón",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "party",
+          "weight": 20,
+          "description": "Un rezo al revés que hiere a todos."
+        },
+        {
+          "id": "rezo_torcido",
+          "name": "Rezo torcido",
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.25,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Palabras que dejan la mente en blanco."
+        }
+      ]
     },
     "vigia_porton": {
       "id": "vigia_porton",
@@ -94,7 +631,58 @@
       "hp_max": 38,
       "speed": 6,
       "dodge": 8,
-      "accuracy": 8
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "punal_de_vigia",
+          "name": "Puñal de vigía",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            4,
+            8
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "description": "Cuchillada corta del vigía."
+        },
+        {
+          "id": "pedrada_certera",
+          "name": "Pedrada certera",
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 2,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.3,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Una piedra a la sien."
+        },
+        {
+          "id": "pitazo_de_alerta",
+          "name": "Pitazo de alerta",
+          "type": "magical",
+          "damage": [
+            0,
+            1
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 20,
+          "description": "El pitazo avisa al Portón: todos se tensan."
+        }
+      ]
     },
     "susurro_aljibe": {
       "id": "susurro_aljibe",
@@ -102,7 +690,58 @@
       "hp_max": 36,
       "speed": 5,
       "dodge": 10,
-      "accuracy": 8
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "mano_mojada",
+          "name": "Mano mojada",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 50,
+          "description": "Una mano fría sale del agua."
+        },
+        {
+          "id": "susurro_del_pozo",
+          "name": "Susurro del pozo",
+          "type": "magical",
+          "damage": [
+            1,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 12,
+          "target": "single",
+          "weight": 20,
+          "description": "Le dice a uno lo que más teme."
+        },
+        {
+          "id": "agua_estancada",
+          "name": "Agua estancada",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "veneno",
+            "chance": 0.5,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Agua negra que enferma."
+        }
+      ]
     },
     "duende_sotano": {
       "id": "duende_sotano",
@@ -110,7 +749,65 @@
       "hp_max": 30,
       "speed": 8,
       "dodge": 14,
-      "accuracy": 7
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "hoz_chiquita",
+          "name": "Hoz chiquita",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.35,
+            "turns": 2,
+            "value": 2
+          },
+          "description": "Cortadita traicionera en el tobillo."
+        },
+        {
+          "id": "manos_de_duende",
+          "name": "Manos de duende",
+          "type": "magical",
+          "damage": [
+            0,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "weight": 20,
+          "steal_colones": 60,
+          "description": "Se lleva unos colones y se ríe."
+        },
+        {
+          "id": "travesura",
+          "name": "Travesura",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.2,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Esconde las cosas y confunde la cabeza."
+        }
+      ]
     },
     "sirviente_ahogado": {
       "id": "sirviente_ahogado",
@@ -118,7 +815,44 @@
       "hp_max": 28,
       "speed": 4,
       "dodge": 3,
-      "accuracy": 6
+      "accuracy": 6,
+      "skills": [
+        {
+          "id": "bandejazo",
+          "name": "Bandejazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "weight": 50,
+          "description": "Golpe con bandeja abollada."
+        },
+        {
+          "id": "agua_de_pila",
+          "name": "Agua de pila",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 0,
+          "target": "single",
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.2,
+            "turns": 1,
+            "value": 0
+          },
+          "description": "Escupe agua de la pila bautismal podrida."
+        }
+      ]
     }
   }
 }

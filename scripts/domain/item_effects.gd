@@ -3,6 +3,7 @@ extends RefCounted
 ## Pure item rules shared by exploration and combat (data/items.json, P3-09).
 
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
 
 static func is_usable(item: Dictionary, in_combat: bool) -> bool:
@@ -40,6 +41,10 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 		var delta: int = int(fx["stress"])
 		logs.append_array(StressSystemScript.add_stress(hero, delta))
 		logs.append("%s: estrés %+d." % [who, delta])
+	for status in fx.get("cure", []):
+		if StatusEffectsScript.has(hero, str(status)):
+			hero["statuses"].erase(str(status))
+			logs.append("%s ya no está %s." % [who, StatusEffectsScript.NAMES.get(str(status), status).to_lower()])
 	var risk = fx.get("hp_risk", null)
 	if risk is Dictionary and randf() < float(risk.get("chance", 0.0)):
 		var hp: int = int(hero.get("hp", 0))

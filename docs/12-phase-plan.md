@@ -50,6 +50,10 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
 - Status: `done`
 - +2 skills per existing class (doc 03 names). Skill `target`: enemy | self | ally | party. **Rule: every class has at least one ally or party skill** (checked by `tools/validate_data.py`). Ally target = hero clicked on the stage during the turn (default the acting hero). Stun/guard/block effects from doc 03 wait for P1-04.
 
+### P1-12 · M · Enemy abilities + ailments (owner request 2026-11-07)
+- Status: `done`
+- Every enemy: 1 basic attack + 1–3 specials with Tico names (42 abilities across 15 enemies, `data/enemies.json`), chosen by weight. Magical attacks ignore Guard; the Mayordomo's *Golpe al escudo* ignores Guard too. Ailments `sangrado`, `veneno`, `aturdido` (`scripts/domain/status_effects.gd`) tick at the start of the unit's turn and clear after the fight; the venda cures bleeding, the ruda cures poison. Some specials drain light or steal colones. Rules in AGENTS.md §4 + doc 05 §2.7, enforced by the validator. Tests: `tests/test_status.gd`.
+
 ### P1-01 · M · Headless test harness
 - Status: `in-progress` · Depends: — · Started: `tests/smoke_expedition.gd` (full expedition runs) and `tests/test_guard.gd` exist; still missing a single runner + resolver/stress unit tests.
 - Spec: `01` §2–3
@@ -79,7 +83,7 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [ ] Unit tests for rank_rules (if P1-01 done)
 
 ### P1-04 · M · Status effect engine
-- Status: `todo` · Depends: P1-02
+- Status: `in-progress` · Depends: P1-02 · Partly done in P1-12 (sangrado, veneno, aturdido on heroes and enemies). Still to do: mark, guard-as-status, heroes applying ailments, initiative modifiers, resistances.
 - Spec: `01` §2.5
 - Files: `scripts/domain/status_effects.gd` (new), `data/skills.json` (`applies: [{status, chance, duration, value}]`), `scripts/combat/combat_scene.gd`
 - Done when:

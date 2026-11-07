@@ -12,6 +12,8 @@ const SPRITE_SIZE := Vector2(140, 210)
 const AFFLICTION_NAMES := {"paranoia": "Paranoia", "cobardia": "Cobardía", "ira_ciega": "Ira ciega"}
 const VIRTUE_NAMES := {"serenidad": "Serenidad", "firmeza": "Firmeza"}
 
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+
 var data: Dictionary = {}
 var is_hero: bool = true
 
@@ -143,8 +145,7 @@ func _status_text() -> String:
 	var vir: String = str(data.get("virtud_id", ""))
 	if vir != "":
 		parts.append(VIRTUE_NAMES.get(vir, vir))
-	if bool(data.get("stunned", false)):
-		parts.append("Aturdido")
+	parts.append_array(StatusEffectsScript.labels(data))
 	if bool(data.get("guarding", false)):
 		parts.append("En guardia")
 	return " · ".join(parts)
@@ -153,7 +154,7 @@ func _status_text() -> String:
 func _resting_state() -> String:
 	if is_dead():
 		return "dead"
-	if bool(data.get("al_borde", false)) or str(data.get("affliction_id", "")) != "" or bool(data.get("stunned", false)):
+	if bool(data.get("al_borde", false)) or str(data.get("affliction_id", "")) != "" or StatusEffectsScript.any(data):
 		return "ailment"
 	return "idle"
 

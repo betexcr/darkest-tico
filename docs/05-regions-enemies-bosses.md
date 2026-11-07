@@ -131,6 +131,12 @@ Vertical slice roster. `id` is the key used in `data/enemies.json` and `assets/e
 
 Example squad: `peon_penado` + `sombra_cuadrilla` + `monaguillo_porton` + `vigia_porton` (tough front, buffing back line).
 
+## 2.7 Enemy Ability Rules (owner, 2026-11-07)
+
+- Every enemy: one **basic attack** + **1–3 specials**. At least one special is **magical** (ignores Guard) or **inflicts an ailment** (`sangrado` bleed, `veneno` poison, `aturdido` stun).
+- Ability names are Costa Rican and specific to the monster (folklore, hacienda work, Church, pulpería life), following [08-content-standards-satire.md](08-content-standards-satire.md).
+- Data lives in `data/enemies.json` → `skills`; the AI picks by `weight`.
+
 ## 3) Boss Ladder
 
 Each region includes:

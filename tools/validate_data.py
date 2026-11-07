@@ -72,6 +72,26 @@ def main() -> int:
     heroes = as_id_map(load(heroes_path), "heroes", heroes_path)
     enemies = as_id_map(load(enemies_path), "enemies", enemies_path)
 
+    # Owner rule (2026-11-07): one basic attack + 1-3 specials; one special magical or ailment.
+    for eid, en in enemies.items():
+        eskills = en.get("skills", [])
+        basics = [x for x in eskills if x.get("basic")]
+        specials = [x for x in eskills if not x.get("basic")]
+        if len(basics) != 1:
+            errors.append(f"enemies.json: '{eid}' needs exactly one basic attack (has {len(basics)})")
+        if not 1 <= len(specials) <= 3:
+            errors.append(f"enemies.json: '{eid}' needs 1-3 special abilities (has {len(specials)})")
+        if specials and not any(x.get("type") == "magical" or x.get("applies") for x in specials):
+            errors.append(f"enemies.json: '{eid}' needs a magical or ailment special")
+        for x in eskills:
+            if x.get("type") not in ("physical", "magical"):
+                errors.append(f"enemies.json: '{eid}.{x.get('id')}' has invalid type")
+            ap = x.get("applies")
+            if ap and ap.get("status") not in ("sangrado", "veneno", "aturdido"):
+                errors.append(f"enemies.json: '{eid}.{x.get('id')}' applies unknown status")
+            if not x.get("name"):
+                errors.append(f"enemies.json: '{eid}.{x.get('id')}' has no name")
+
     for sid, sk in skills.items():
         if sk.get("kind") not in ("attack", "heal", "buff"):
             errors.append(f"skills.json: '{sid}' has invalid kind '{sk.get('kind')}'")

@@ -7,6 +7,7 @@ extends Node
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -213,6 +214,19 @@ func _process_turn() -> void:
 			continue
 		_set_active(hero)
 		hero["guarding"] = false
+		var tk: Dictionary = StatusEffectsScript.tick(hero)
+		_log_all(tk["logs"])
+		if int(tk["damage"]) > 0:
+			var before: Array = _party_snapshot()
+			_apply_damage_to_hero(hero, int(tk["damage"]), false)
+			await _animate_party_changes(before)
+			if _check_end():
+				return
+		if hero.get("dead", false) or bool(tk["skip"]):
+			_refresh_units()
+			await get_tree().create_timer(0.5).timeout
+			_turn_index += 1
+			continue
 		if StressSystemScript.hero_turn_blocked(hero):
 			_log("%s no actúa (quebranto)." % hero.get("name", "?"), "cc7744")
 			await get_tree().create_timer(0.6).timeout
@@ -245,6 +259,8 @@ func _finish(victory: bool) -> void:
 	for h in party:
 		if h is Dictionary:
 			h["guarding"] = false
+			StatusEffectsScript.clear(h)
+	StatusEffectsScript.clear(enemy)
 	for u in hero_units:
 		u.set_active(false)
 		u.refresh()
@@ -328,26 +344,74 @@ func _apply_damage_to_enemy(dmg: int) -> void:
 		enemy["dead"] = true
 
 
+## Basic attack or a special, chosen by "weight" (data/enemies.json).
+func _pick_enemy_skill() -> Dictionary:
+	var list: Array = enemy.get("skills", [])
+	if list.is_empty():
+		return {"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}
+	var total: float = 0.0
+	for s in list:
+		total += float(s.get("weight", 20))
+	var roll: float = randf() * total
+	for s in list:
+		roll -= float(s.get("weight", 20))
+		if roll <= 0.0:
+			return s
+	return list[0]
+
+
 func _enemy_turn() -> void:
+	# Ailments tick first; a stunned enemy loses its turn.
+	var tk: Dictionary = StatusEffectsScript.tick(enemy)
+	_log_all(tk["logs"])
+	if int(tk["damage"]) > 0:
+		var hp_before: int = int(enemy.get("hp", 0))
+		_apply_damage_to_enemy(int(tk["damage"]))
+		await _animate_enemy_changes(hp_before)
+	if enemy.get("dead", false) or bool(tk["skip"]):
+		return
 	var living: Array = []
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):
 			living.append(h)
 	if living.is_empty():
 		return
-	var target: Dictionary = living[randi() % living.size()]
-	var skill: Dictionary = {"damage_min": 4, "damage_max": 9, "skill_accuracy": 0}
+	var skill: Dictionary = _pick_enemy_skill()
+	var magical: bool = str(skill.get("type", "physical")) == "magical"
+	var targets: Array = living if str(skill.get("target", "single")) == "party" else [living[randi() % living.size()]]
 	var party_before: Array = _party_snapshot()
 	if not enemy_units.is_empty():
-		await enemy_units[0].play_action("attack")
-	var p: float = CombatResolverScript.hit_chance(int(enemy.get("accuracy", 8)), int(skill.get("skill_accuracy", 0)), int(target.get("dodge", 5)))
-	if randf() > p:
-		_log("%s falla el zarpazo." % enemy.get("name", "?"), "")
-		return
-	var dmg: int = CombatResolverScript.roll_damage(skill)
-	_log("%s golpea a %s (%d)" % [enemy.get("name", "?"), target.get("name", "?"), dmg], "cc6655")
-	_apply_damage_to_hero(target, dmg)
-	_log_all(StressSystemScript.add_stress(target, 5))
+		await enemy_units[0].play_action("cast" if magical else "attack")
+	_log("%s usa %s%s." % [enemy.get("name", "?"), skill.get("name", "?"), " (mágico)" if magical else ""], "cc6655")
+	var dmg_range: Array = skill.get("damage", [4, 9])
+	var physical: bool = not magical and not bool(skill.get("ignores_guard", false))
+	for t in targets:
+		var p: float = CombatResolverScript.hit_chance(int(enemy.get("accuracy", 8)), int(skill.get("accuracy", 0)), int(t.get("dodge", 5)))
+		if randf() > p:
+			_log("  %s esquiva." % t.get("name", "?"), "")
+			continue
+		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
+		if dmg > 0:
+			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
+			_apply_damage_to_hero(t, dmg, physical)
+		var stress: int = int(skill.get("stress", 0))
+		if stress > 0 and not t.get("dead", false):
+			_log_all(StressSystemScript.add_stress(t, stress))
+			_log("  %s: estrés +%d" % [t.get("name", "?"), stress], "aa88cc")
+		var ap = skill.get("applies", null)
+		if ap is Dictionary and not t.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
+			var msg: String = StatusEffectsScript.apply(t, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
+			if msg != "":
+				_log("  " + msg, "cc9944")
+	var light: int = int(skill.get("light", 0))
+	if light != 0:
+		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
+		_log("La luz baja a %d." % GameState.mission_light, "aa8866")
+	var steal: int = int(skill.get("steal_colones", 0))
+	if steal > 0:
+		var taken: int = mini(steal, GameState.colones)
+		GameState.colones -= taken
+		_log("Se llevó %d colones." % taken, "aa8866")
 	await _animate_party_changes(party_before)
 
 

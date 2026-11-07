@@ -36,7 +36,16 @@ Do this before you stop for **any** reason: task finished, context running out, 
 3. **Write the handoff entry**: add it at the **top** of [docs/HANDOFF.md](docs/HANDOFF.md) using the template there. The **Next step** line must be specific enough that a fresh agent can act on it without reading the conversation.
 4. **Commit and push**: one commit (or more) whose message starts with the task ID, for example `P1-02: multi-enemy squads`. Never leave work uncommitted or unpushed. The container or machine may be gone next time.
 
-## 4. Status vocabulary
+## 4. Content rules (owner decisions — `tools/validate_data.py` enforces them)
+
+- **Heroes:** every class has at least one skill that helps **one ally or the whole party** (`target: ally | party`). Skills use doc 03 names.
+- **Enemies:** exactly **one basic attack** (`basic: true`) plus **1–3 special abilities**. At least one special is **magical** (`type: magical`, goes through Guard) or **inflicts an ailment** (`applies`: sangrado, veneno, aturdido).
+- **Names:** every ability has a **Costa Rican (Tico) name that fits that specific monster or class**, written in Spanish, within the tone rules of doc 08 (e.g. Mandador en pena → *Latigazo*, *Libreta de deudas*; Cadejo → *Aullido de medianoche*).
+- **Guard:** halves physical damage until the hero's next turn; magical attacks and `ignores_guard` skills go through it.
+- **Items:** outside combat, each hero can use each item `uses_per_node` times per room (per character, not per team). Using an item in combat spends the hero's turn.
+- **Battle sprites:** a character looks identical in all poses (same outfit and weapon); only the pose changes. The attack pose uses that character's weapon.
+
+## 5. Status vocabulary
 
 | Status | Meaning |
 |---|---|
@@ -47,7 +56,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 | `done` | Acceptance criteria met and verified |
 | `cut — reason` | Deliberately dropped |
 
-## 5. Repo facts agents keep re-discovering
+## 6. Repo facts agents keep re-discovering
 
 - Engine: Godot 4.6, GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`.
 - `GameState` (`scripts/autoload/game_state.gd`) owns all run and campaign state. Save is `user://save.json`, `SAVE_VERSION` in that file. Bump it and add migration in `apply_save_data` when you change the shape.
