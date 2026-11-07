@@ -2277,6 +2277,9 @@
           "kind": "box",
           "angle": 15,
           "length": 0.18
+        },
+        "redo_seeds": {
+          "attack": 5031
         }
       },
       {
