@@ -1693,7 +1693,7 @@
     },
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
     "style": "dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-    "negative": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+    "negative": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
     "_negative_doc": "Sprites use this full negative instead of negative_extra + the global negative (keeps it under CLIP's 77 tokens).",
     "negative_extra": "candle, candles, fire, shrine, altar, cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd, duplicate",
     "sheet": {
@@ -2326,10 +2326,11 @@
       },
       {
         "id": "medica_josefina",
-        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over long black dress, flat boots",
-        "seed": 5050,
+        "look": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt to the ankles, flat boots",
+        "seed": 5051,
         "body": "humanoid",
-        "weapon": "a syringe"
+        "weapon": "a syringe",
+        "negative_extra": "miniskirt, stockings, high heels, cleavage"
       },
       {
         "id": "curandero",

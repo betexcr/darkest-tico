@@ -293,7 +293,8 @@ def main() -> int:
                         pipes["txt"].set_ip_adapter_scale(scale)
                         ref_kw = {"ip_adapter_image": ref_img}
                     _, sheet_img, _, _ = generate_sheet(
-                        pipes, cfg, manifest, dict(c, seed=seed), negative, steps,
+                        pipes, cfg, manifest, dict(c, seed=seed),
+                        f'{c["negative_extra"]}, {negative}' if c.get("negative_extra") else negative, steps,
                         float(manifest["cfg_scale"]), float(cfg.get("control_scale", 1.0)), torch, ref_kw,
                     )
                     sheet_img.save(prev / f"{c['id']}_seed{seed}_ref{scale:g}.png")
@@ -347,8 +348,9 @@ def main() -> int:
             raw_path = CACHE / f"{cid}_sheet_raw.png"
             redo_only = bool(args.states) and set(args.states) <= set(cfg["sheet"].get("redo_states", []))
             raw_sheet = Image.open(raw_path).convert("RGB") if redo_only and raw_path.exists() else None
+            neg_c = f'{c["negative_extra"]}, {negative}' if c.get("negative_extra") else negative
             crops, sheet_img, prompt, raw = generate_sheet(
-                pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch,
+                pipes, cfg, manifest, c, neg_c, steps, guidance, control_scale, torch,
                 {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
             )
             CACHE.mkdir(parents=True, exist_ok=True)
@@ -366,7 +368,7 @@ def main() -> int:
                 meta = {
                     "id": f"sprite_{cid}_{sid}",
                     "prompt": prompt,
-                    "negative_prompt": negative,
+                    "negative_prompt": neg_c,
                     "seed": int(c["seed"]),
                     "steps": steps,
                     "cfg_scale": guidance,
@@ -399,7 +401,8 @@ def main() -> int:
         pose_img = None
         if not beast and sid in skeletons:
             pose_img = draw_skeleton(skeletons[sid], (w, h))
-        common = dict(negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance, generator=gen)
+        neg_c = f'{c["negative_extra"]}, {negative}' if c.get("negative_extra") else negative
+        common = dict(negative_prompt=neg_c, num_inference_steps=steps, guidance_scale=guidance, generator=gen)
         ref_img = reference_image(cfg, c)
         if ref_img is not None:
             common["ip_adapter_image"] = ref_img
@@ -443,7 +446,7 @@ def main() -> int:
         meta = {
             "id": f"sprite_{cid}_{sid}",
             "prompt": prompt,
-            "negative_prompt": negative,
+            "negative_prompt": neg_c,
             "seed": seed,
             "steps": steps,
             "cfg_scale": guidance,
