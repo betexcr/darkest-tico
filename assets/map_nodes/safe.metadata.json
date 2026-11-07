@@ -8,7 +8,11 @@
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "128x128",
+  "post": {
+    "brightness": 1.5,
+    "contrast": 1.2
+  },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-07T00:02:28+00:00"
+  "timestamp": "2026-11-07T01:19:12+00:00"
 }

@@ -1,14 +1,15 @@
 {
   "id": "enemy_duende_sotano",
-  "prompt": "dark fantasy painting, small mischievous gnome-like duende with an oversized pointed hat, clutching stolen gold coins, grinning in the shadows, creature, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "prompt": "dark fantasy painting, sinister small old gnome duende with a wrinkled grey face and glowing eyes, wide-brimmed hat, clutching stolen gold coins, lurking in a cellar corner, creature, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
   "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2110,
+  "seed": 2112,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "512x512",
+  "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-06T23:36:20+00:00"
+  "timestamp": "2026-11-07T01:05:58+00:00"
 }
