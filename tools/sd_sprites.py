@@ -55,6 +55,11 @@ COLORS = [(255, 0, 0), (255, 85, 0), (255, 170, 0), (255, 255, 0), (170, 255, 0)
           (0, 0, 255), (85, 0, 255), (170, 0, 255), (255, 0, 255), (255, 0, 170), (255, 0, 85)]
 
 
+def skeleton_for(cfg: dict, c: dict, sid: str):
+    """Pose keypoints for one state: the character's own override, else the shared one."""
+    return c.get("skeletons", {}).get(sid) or cfg["skeletons"][sid]
+
+
 def draw_skeleton(points, size):
     from PIL import Image, ImageDraw
 
@@ -164,7 +169,8 @@ def load_pipelines(model: str, control_model: str, ref: dict | None = None):
     return pipes, device, torch
 
 
-def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch, ref_kw=None):
+def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch, ref_kw=None,
+                   raw_sheet=None):
     """All states of one humanoid in one image. Returns {state_id: PIL.Image}, sheet."""
     from PIL import Image
 
@@ -174,18 +180,19 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     order = [s["id"] for s in cfg["states"]]
     pose = Image.new("RGB", (cols * cw, rows * ch), (0, 0, 0))
     for i, sid in enumerate(order):
-        cell = draw_skeleton(cfg["skeletons"][sid], (cw, ch))
+        cell = draw_skeleton(skeleton_for(cfg, c, sid), (cw, ch))
         pose.paste(cell, ((i % cols) * cw, (i // cols) * ch))
     prompt = sheet["prompt_template"].format(
         look=c["look"], weapon=c.get("weapon", "a weapon"), style=cfg.get("style", manifest["style_suffix"])
     )
-    img = pipes["txt_pose"](
+    img = raw_sheet.copy() if raw_sheet is not None else pipes["txt_pose"](
         prompt=prompt, image=pose, width=cols * cw, height=rows * ch,
         controlnet_conditioning_scale=control_scale, negative_prompt=negative,
         num_inference_steps=steps, guidance_scale=guidance,
         generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])),
         **(ref_kw or {}),
     ).images[0]
+    raw = img.copy()
     out = {}
     for i, sid in enumerate(order):
         x, y = (i % cols) * cw, (i // cols) * ch
@@ -200,7 +207,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         pose_text = st.get("redo_pose", st["pose"]).replace("{weapon}", c.get("weapon", "a weapon"))
         p = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
         big = pipes["img_pose"](
-            prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(cfg["skeletons"][sid], (w, h)),
+            prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(skeleton_for(cfg, c, sid), (w, h)),
             strength=float(st.get("redo_strength", 0.75)), controlnet_conditioning_scale=control_scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
             generator=torch.Generator(device="cpu").manual_seed(
@@ -210,7 +217,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         out[sid] = big.resize((cw, ch), Image.LANCZOS)
         i = order.index(sid)
         img.paste(out[sid], ((i % cols) * cw, (i // cols) * ch))
-    return out, img, prompt
+    return out, img, prompt, raw
 
 
 def main() -> int:
@@ -266,7 +273,7 @@ def main() -> int:
                     if ref_img is not None:
                         pipes["txt"].set_ip_adapter_scale(scale)
                         ref_kw = {"ip_adapter_image": ref_img}
-                    _, sheet_img, _ = generate_sheet(
+                    _, sheet_img, _, _ = generate_sheet(
                         pipes, cfg, manifest, dict(c, seed=seed), negative, steps,
                         float(manifest["cfg_scale"]), float(cfg.get("control_scale", 1.0)), torch, ref_kw,
                     )
@@ -316,12 +323,18 @@ def main() -> int:
             done_sheets.add(cid)
             t0 = time.time()
             ref_img = reference_image(cfg, c)
-            crops, sheet_img, prompt = generate_sheet(
+            # Only redrawn states asked for (e.g. --states attack) and the raw sheet is cached:
+            # reuse it instead of drawing the whole sheet again.
+            raw_path = CACHE / f"{cid}_sheet_raw.png"
+            redo_only = bool(args.states) and set(args.states) <= set(cfg["sheet"].get("redo_states", []))
+            raw_sheet = Image.open(raw_path).convert("RGB") if redo_only and raw_path.exists() else None
+            crops, sheet_img, prompt, raw = generate_sheet(
                 pipes, cfg, manifest, c, negative, steps, guidance, control_scale, torch,
-                {"ip_adapter_image": ref_img} if ref_img is not None else None,
+                {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
             )
             CACHE.mkdir(parents=True, exist_ok=True)
             sheet_img.save(CACHE / f"{cid}_sheet.png")
+            raw.save(raw_path)
             for k, (sid, crop) in enumerate(crops.items()):
                 if args.states and sid not in args.states:
                     continue

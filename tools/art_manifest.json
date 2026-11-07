@@ -1723,7 +1723,7 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "raising {weapon} high overhead with both hands to strike, blade visible",
+        "redo_pose": "attacking with {weapon} in one hand, other arm raised, aggressive stance",
         "redo_strength": 0.8
       },
       {
@@ -1845,28 +1845,28 @@
           0.25
         ],
         [
-          0.47,
+          0.45,
           0.26
         ],
         [
-          0.43,
+          0.38,
+          0.36
+        ],
+        [
+          0.32,
+          0.45
+        ],
+        [
+          0.63,
+          0.26
+        ],
+        [
+          0.7,
           0.15
         ],
         [
-          0.52,
-          0.05
-        ],
-        [
-          0.65,
-          0.26
-        ],
-        [
-          0.67,
-          0.14
-        ],
-        [
-          0.56,
-          0.05
+          0.63,
+          0.06
         ],
         [
           0.46,
@@ -2215,56 +2215,132 @@
         "weapon": "a long steel machete",
         "redo_seeds": {
           "attack": 5003
+        },
+        "skeletons": {
+          "attack": [
+            [
+              0.6,
+              0.17
+            ],
+            [
+              0.56,
+              0.25
+            ],
+            [
+              0.47,
+              0.26
+            ],
+            [
+              0.43,
+              0.15
+            ],
+            [
+              0.52,
+              0.05
+            ],
+            [
+              0.65,
+              0.26
+            ],
+            [
+              0.67,
+              0.14
+            ],
+            [
+              0.56,
+              0.05
+            ],
+            [
+              0.46,
+              0.52
+            ],
+            [
+              0.34,
+              0.66
+            ],
+            [
+              0.22,
+              0.84
+            ],
+            [
+              0.57,
+              0.52
+            ],
+            [
+              0.7,
+              0.66
+            ],
+            [
+              0.74,
+              0.85
+            ],
+            [
+              0.58,
+              0.158
+            ],
+            [
+              0.62,
+              0.158
+            ],
+            [
+              0.5599999999999999,
+              0.165
+            ],
+            [
+              0.64,
+              0.165
+            ]
+          ]
         }
       },
       {
         "id": "montador",
-        "look": "Costa Rican bull rider, cowboy hat, coiled rope, dusty denim shirt and boots",
+        "look": "young Costa Rican bull rider, curly dark hair, battered leather cowboy hat, worn denim shirt, jeans, boots",
         "seed": 5010,
         "body": "humanoid",
         "weapon": "a coiled lasso rope"
       },
       {
         "id": "abuela",
-        "look": "elderly grandmother healer, knitted shawl, long skirt, clay bowl of herbs",
+        "look": "elderly grandmother, wrinkled face, black hooded shawl over her head, long dark robe, prayer beads",
         "seed": 5020,
         "body": "humanoid",
         "weapon": "a wooden ladle and clay bowl"
       },
       {
         "id": "tecnologo",
-        "look": "young tinkerer, brass goggles, patched jacket, homemade drone and cables",
+        "look": "young man, curly dark hair, brass goggles, dark leather jacket with straps and buckles",
         "seed": 5030,
         "body": "humanoid",
-        "weapon": "a homemade buzzing drone"
+        "weapon": "a small homemade drone"
       },
       {
         "id": "guachiman",
-        "look": "old retired night watchman, faded guard uniform and cap, flashlight and baton",
+        "look": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat",
         "seed": 5040,
         "body": "humanoid",
         "weapon": "a wooden baton"
       },
       {
         "id": "medica_josefina",
-        "look": "stern rural doctor woman, white doctor's coat, stethoscope, leather medical bag",
+        "look": "woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black dress, silver pendant",
         "seed": 5050,
         "body": "humanoid",
         "weapon": "a syringe"
       },
       {
         "id": "curandero",
-        "look": "elderly folk healer, wide straw hat, poncho, bundle of smoking herbs",
+        "look": "elderly folk healer, long grey braids, wide dark hat with leaves, dark brown robes, beaded necklace",
         "seed": 5060,
         "body": "humanoid",
-        "weapon": "a smoking bundle of herbs"
+        "weapon": "a bundle of smoking herbs"
       },
       {
         "id": "exorcista",
-        "look": "neighborhood exorcist, long black coat, rosary, bottle of holy water",
+        "look": "pale woman exorcist, black hooded robe over her head, long black habit, silver cross necklace",
         "seed": 5070,
         "body": "humanoid",
-        "weapon": "a crucifix and holy water bottle"
+        "weapon": "a crucifix"
       },
       {
         "id": "espanto",
