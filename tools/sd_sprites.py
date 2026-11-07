@@ -241,9 +241,17 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     for sid in sheet.get("redo_states", []):
         st = states[sid]
         p = redo_prompt(cfg, manifest, c, sid)
-        big = pipes["img_pose"](
-            prompt=p, image=out[sid].resize((w, h)), control_image=draw_skeleton(skeleton_for(cfg, c, sid), (w, h)),
-            strength=float(st.get("redo_strength", 0.75)), controlnet_conditioning_scale=control_scale,
+        # redo_mode "txt": draw from scratch (pose + portrait only) so the old cell's weapon
+        # placement can't leak in; "img" (default): start from the cell to keep its colors.
+        skel = draw_skeleton(skeleton_for(cfg, c, sid), (w, h))
+        if st.get("redo_mode", "img") == "txt":
+            src = dict(image=skel, width=w, height=h)
+            pipe = pipes["txt_pose"]
+        else:
+            src = dict(image=out[sid].resize((w, h)), control_image=skel, strength=float(st.get("redo_strength", 0.75)))
+            pipe = pipes["img_pose"]
+        big = pipe(
+            prompt=p, **src, controlnet_conditioning_scale=control_scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
             generator=torch.Generator(device="cpu").manual_seed(redo_seed(cfg, c, sid)),
             **(ref_kw or {}),
@@ -420,7 +428,8 @@ def main() -> int:
                 if sid in cfg["sheet"].get("redo_states", []):
                     meta["redo"] = {
                         "prompt": redo_prompt(cfg, manifest, c, sid), "seed": redo_seed(cfg, c, sid),
-                        "mode": "img2img + openpose from the sheet cell",
+                        "mode": ("txt2img" if next(x for x in cfg["states"] if x["id"] == sid).get("redo_mode") == "txt"
+                                 else "img2img from the sheet cell") + " + openpose + portrait",
                         "strength": float(next(x for x in cfg["states"] if x["id"] == sid).get("redo_strength", 0.75)),
                     }
                 out.with_suffix(".metadata.json").write_text(

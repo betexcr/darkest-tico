@@ -1726,8 +1726,9 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "lunging right, arm out, swinging {weapon} at the enemy",
-        "redo_strength": 0.9
+        "redo_pose": "lunging right, {weapon} gripped in the outstretched forward hand, striking the enemy",
+        "redo_strength": 0.9,
+        "redo_mode": "txt"
       },
       {
         "id": "cast",
@@ -2223,7 +2224,7 @@
         "weapon": "a coiled lasso rope",
         "negative_extra": "woman, crop top, bare chest, open shirt, vest",
         "redo_poses": {
-          "attack": "lunging right, arm out, throwing {weapon} at the enemy"
+          "attack": "lunging right, {weapon} thrown from the outstretched forward hand"
         }
       },
       {
@@ -2269,7 +2270,7 @@
         "body": "humanoid",
         "weapon": "a crucifix",
         "redo_poses": {
-          "attack": "lunging right, arm out, thrusting {weapon} at the enemy"
+          "attack": "lunging right, {weapon} held in the outstretched forward hand toward the enemy"
         }
       },
       {
