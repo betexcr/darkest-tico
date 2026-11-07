@@ -446,6 +446,26 @@ def main() -> int:
                     for sid in args.states:
                         im = remover(crops_k[sid]) if remover is not None else crops_k[sid]
                         im.save(prev / f"{sid}_{seeds[sid]}.png")
+                        # Metadata as the final asset would have it: copy both files into
+                        # assets/sprites/<id>/<state>.* and set redo_seeds to keep it reproducible.
+                        st = next(x for x in cfg["states"] if x["id"] == sid)
+                        meta = {
+                            "id": f"sprite_{cid}_{sid}",
+                            "prompt": redo_prompt(cfg, manifest, ck, sid), "negative_prompt": neg_c,
+                            "seed": seeds[sid], "sheet_seed": int(c["seed"]), "steps": steps, "cfg_scale": guidance,
+                            "sampler": manifest["sampler"], "resolution": "%dx%d, scaled into a %dx%d cell" % (
+                                cfg["size"][0], cfg["size"][1], cfg["sheet"]["cell"][0], cfg["sheet"]["cell"][1]),
+                            "mode": "txt2img" if st.get("redo_mode") == "txt" else "img2img from the sheet cell",
+                            "pose_control": cfg["control_model"],
+                            "weapon_control": cfg.get("weapon_guide", {}).get("control_model")
+                            if draw_weapon(cfg, ck, sid, (64, 96)) is not None else None,
+                            "reference": reference_note(cfg, c),
+                            "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
+                            "model": manifest["model"], "generator": "tools/sd_sprites.py (diffusers)",
+                            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                        }
+                        (prev / f"{sid}_{seeds[sid]}.metadata.json").write_text(
+                            json.dumps(meta, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
                     print(f"[{k + 1}/{args.redo_tries}] {cid} {'/'.join(args.states)} seeds "
                           f"{sorted(seeds.values())} ({time.time() - t0:.0f}s)", flush=True)
                 continue
