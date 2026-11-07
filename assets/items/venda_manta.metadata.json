@@ -1,8 +1,8 @@
 {
   "id": "item_venda_manta",
-  "prompt": "dark fantasy painting, rolled white linen cloth bandage, clean and bright, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "prompt": "dark fantasy painting, whole rolled white linen bandage with a loose end unrolling, complete roll fully visible, small in frame, isolated object, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
   "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6120,
+  "seed": 6121,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-07T04:44:58+00:00"
+  "timestamp": "2026-11-07T05:02:33+00:00"
 }
