@@ -247,6 +247,19 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - **P4-03d · M · Transparent enemy/hero cutouts** — Status: `todo` · Depends: P1-02. Needed once several enemies share the combat screen (rule: transparent background when applicable).
 - **P4-03e · S · Hub building art** — Status: `todo` · Depends: P3-01. Only if the hub becomes visual.
 
+### P4-05 · S · Export-safe texture loading
+- Status: `todo` · Depends: —
+- Found by owner 2026-11-07 (Godot debugger warnings). Hub, map and combat load PNGs with `Image.new().load("res://…")`. That works in the editor but **images will be missing in an exported build**.
+- Files: `scripts/hacienda/hacienda_hub.gd:64`, `scripts/expedition/expedition_map.gd:44,132`, `scripts/combat/combat_scene.gd:66,80`
+- Done when:
+  - [ ] All five use `ResourceLoader.exists(path)` + `load(path) as Texture2D` (keep the procedural fallback when missing)
+  - [ ] The 4 "parameter is never used" / shadowing GDScript warnings fixed (`combat_resolver.gd` `resolve_level`, `expedition_map.gd` `tr` and `cn`, `combat_scene.gd` `first`)
+  - [ ] Debugger shows no warnings after a hub → map → combat run
+
+### P4-06 · S · Readable map node icons
+- Status: `todo` · Depends: —
+- Icons render at 40×40 next to route buttons (`expedition_map.gd:136`) and are hard to read in the owner's screenshots. Try 64×64, or a type label color per node type.
+
 ### P4-04 · M · Audio mood + narrator lines
 - Status: `todo` · Depends: — · Spec: `08`
 

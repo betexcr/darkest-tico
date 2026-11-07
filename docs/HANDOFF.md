@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-07 — Owner in-game check (no task change)
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** unchanged. P4-03b/c stay `review` until the owner approves the art.
+- **Verified by owner in Godot 4.7.2** (not 4.6 as the docs say; project still opens fine):
+  - The hub loads, the dropdown shows only Sótanos (P2-07 works), and the new hub background shows
+  - The expedition map shows the new background and icons
+  - Combat shows the Espanto art and hero portraits (Tecnólogo) correctly
+  - Debugger: 0 errors and 13 warnings. They are 4 harmless unused-parameter warnings plus 9 "Loaded resource as image file, this will not work on export".
+- **Changed:** `docs/12-phase-plan.md`: new tasks P4-05 (export-safe texture loading + warning cleanup) and P4-06 (map icons too small at 40 px)
+- **Decisions needed:** none
+- **Next step:** **P4-05** is a quick win (~5 small edits) and prevents a broken export. Then **P1-02** (multi-enemy squads) in `scripts/combat/combat_scene.gd`.
+
+---
+
 ## 2026-11-07 — P4-03c — Art fixes
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P4-03c: review
