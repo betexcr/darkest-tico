@@ -2244,19 +2244,19 @@
         "seed": 5013,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "woman, crop top, open shirt, cape, cloak, hide",
+        "negative_extra": "woman, open shirt, cape, hide, disc, shield",
         "redo_poses": {
-          "attack": "lunging right, throwing a rope lasso loop from the outstretched hand"
+          "attack": "lunging right, throwing a rope lasso, rope stretched through the air"
         },
         "weapon_shape": {
-          "kind": "loop",
-          "angle": 35,
-          "length": 0.16,
-          "loop": 0.13,
+          "kind": "rope",
+          "angle": 60,
+          "length": 0.2,
+          "loop": 0.075,
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5016
+          "attack": 5018
         }
       },
       {

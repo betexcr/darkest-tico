@@ -230,6 +230,20 @@ def draw_weapon(cfg: dict, c: dict, sid: str, size):
         d.line([(x0, y0), (cx - r, cy)], fill=(255, 255, 255), width=max(2, lw // 2))
         return im
     d.line([(x0, y0), (x1, y1)], fill=(255, 255, 255), width=lw)
+    if kind == "rope":  # lasso: wavy rope from the hand to a wide OPEN loop (a closed circle reads as a disc)
+        im = Image.new("RGB", (w, h), (0, 0, 0))
+        d = ImageDraw.Draw(im)
+        n = 24
+        rope = []
+        for k in range(n + 1):
+            t = k / n
+            wob = math.sin(t * math.pi * 3) * 0.025 * w
+            rope.append((x0 + (x1 - x0) * t - math.sin(ang) * wob, y0 + (y1 - y0) * t - math.cos(ang) * wob))
+        d.line(rope, fill=(255, 255, 255), width=lw, joint="curve")
+        rx = float(shape.get("loop", 0.12)) * w
+        ry = rx * 0.6
+        d.arc([x1, y1 - ry, x1 + 2 * rx, y1 + ry], 200, 520, fill=(255, 255, 255), width=lw)
+        return im
     if kind == "loop":  # lasso: rope out to a loop
         r = float(shape.get("loop", 0.12)) * w
         d.ellipse([x1 - r, y1 - r, x1 + r, y1 + r], outline=(255, 255, 255), width=lw)
