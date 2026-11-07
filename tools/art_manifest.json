@@ -2299,10 +2299,16 @@
       {
         "id": "montador",
         "look": "young man, Costa Rican bull rider, thin mustache, curly dark hair, wide battered leather hat, buttoned denim shirt, ripped jeans, boots",
-        "seed": 5014,
+        "seed": 5013,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "woman, crop top, bare chest, open shirt, vest"
+        "negative_extra": "woman, crop top, bare chest, open shirt, vest",
+        "redo_poses": {
+          "attack": "swinging {weapon} in a loop overhead with one hand, aggressive stance"
+        },
+        "redo_seeds": {
+          "attack": 5015
+        }
       },
       {
         "id": "abuela",
