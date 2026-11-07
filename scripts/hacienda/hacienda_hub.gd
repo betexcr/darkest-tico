@@ -14,6 +14,13 @@ const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 @onready var _region_option: OptionButton = $Columns/Left/VBox/RegionRow/RegionOption
 @onready var _shop_grid: GridContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
 @onready var _btn_sell: Button = $Columns/Left/VBox/ShopHead/BtnSell
+@onready var _shop_filters: HBoxContainer = $Columns/Left/VBox/ShopFilters
+
+const SHOP_FILTERS := [
+	["todo", "Todo"], ["consumable", "Consumibles"], ["weapon", "Armas"],
+	["armor", "Armaduras"], ["accessory", "Accesorios"],
+]
+var _shop_filter: String = "todo"
 @onready var _equip_title: Label = $Columns/Right/VBox/EquipTitle
 @onready var _equip_row: HBoxContainer = $Columns/Right/VBox/EquipRow
 @onready var _pack_grid: GridContainer = $Columns/Right/VBox/PackGrid
@@ -39,6 +46,7 @@ func _ready() -> void:
 	$Columns/Left/VBox/BtnIglesia.pressed.connect(_on_iglesia_pressed)
 	_sync_region_option_from_state()
 	_try_load_hub_background()
+	_build_shop_filters()
 	_build_shop()
 	_btn_sell.toggled.connect(func(_on: bool): _refresh())
 	# Drop any inventory item on the shop list to sell one.
@@ -119,9 +127,38 @@ func _refresh() -> void:
 
 # --- Pulpería ----------------------------------------------------------------------
 
+func _build_shop_filters() -> void:
+	var group := ButtonGroup.new()
+	for f in SHOP_FILTERS:
+		var b := Button.new()
+		b.text = f[1]
+		b.toggle_mode = true
+		b.button_group = group
+		b.button_pressed = f[0] == _shop_filter
+		b.add_theme_font_size_override("font_size", 13)
+		b.pressed.connect(func():
+			_shop_filter = f[0]
+			_build_shop()
+			_refresh()
+		)
+		_shop_filters.add_child(b)
+
+
+## Shop category of an item: consumable (incl. curio keys), weapon, armor or accessory.
+func _category(item: Dictionary) -> String:
+	if str(item.get("usable", "")) == "equip":
+		return str(item.get("slot", ""))
+	return "consumable"
+
+
+## One "buy" button per item (data/items.json) in the selected category, in file order.
 func _build_shop() -> void:
+	for c in _shop_grid.get_children():
+		c.queue_free()
 	for id in GameState.all_item_ids():
 		var item: Dictionary = GameState.get_item(str(id))
+		if _shop_filter != "todo" and _category(item) != _shop_filter:
+			continue
 		var b := Button.new()
 		b.text = "%s — %d ₡" % [item.get("name", id), int(item.get("price", 0))]
 		b.tooltip_text = GameState.item_tooltip(str(id))

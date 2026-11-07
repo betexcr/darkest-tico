@@ -110,6 +110,10 @@ tooltip_text = "Modo vender: clic en un artículo de la alforja para venderlo a 
 toggle_mode = true
 text = "Vender"
 
+[node name="ShopFilters" type="HBoxContainer" parent="Columns/Left/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
 [node name="ShopScroll" type="ScrollContainer" parent="Columns/Left/VBox"]
 layout_mode = 2
 size_flags_vertical = 3

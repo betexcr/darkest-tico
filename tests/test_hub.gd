@@ -83,5 +83,15 @@ func _run() -> void:
 	await process_frame
 	_check(hub._roster_list.get_child_count() == 4, "hub lists 4 heroes")
 	_check(hub._recruit_box.get_child_count() == 3, "hub lists 3 candidates")
+	var counts: Dictionary = {}
+	for f in ["todo", "consumable", "weapon", "armor", "accessory"]:
+		hub._shop_filter = f
+		hub._build_shop()
+		await process_frame
+		counts[f] = hub._shop_grid.get_children().filter(func(b): return not b.is_queued_for_deletion()).size()
+	_check(counts["todo"] == gs.all_item_ids().size(), "store 'Todo' lists all %d items" % counts["todo"])
+	_check(counts["consumable"] + counts["weapon"] + counts["armor"] + counts["accessory"] == counts["todo"],
+		"filters split the store: %d consumibles, %d armas, %d armaduras, %d accesorios" % [
+		counts["consumable"], counts["weapon"], counts["armor"], counts["accessory"]])
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
