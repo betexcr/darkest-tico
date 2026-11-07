@@ -8,73 +8,386 @@
   "style_suffix": "dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
   "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
   "assets": [
-    {"id": "portrait_campesino", "out": "assets/portraits/campesino.png", "size": [512, 512], "seed": 1122,
-     "subject": "portrait of a weathered Costa Rican farm worker raising a long steel machete blade, straw hat, sweat-stained work shirt, determined face, dark background"},
-    {"id": "portrait_montador", "out": "assets/portraits/montador.png", "size": [512, 512], "seed": 1102,
-     "subject": "portrait of a fearless Costa Rican bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"},
-    {"id": "portrait_abuela", "out": "assets/portraits/abuela.png", "size": [512, 512], "seed": 1103,
-     "subject": "portrait of a wise elderly grandmother healer, knitted shawl, holding a clay bowl of steaming soup with herbs, kind but stern eyes, candle light, dark background"},
-    {"id": "portrait_tecnologo", "out": "assets/portraits/tecnologo.png", "size": [512, 512], "seed": 1104,
-     "subject": "portrait of a young wandering tinkerer, brass goggles on forehead, homemade drone parts and cables on his shoulders, patched jacket, curious face, lantern light, dark background"},
-    {"id": "portrait_guachiman", "out": "assets/portraits/guachiman.png", "size": [512, 512], "seed": 1105,
-     "subject": "portrait of an old retired night watchman, faded security guard uniform and cap, flashlight and whistle, grey mustache, tired vigilant eyes, lantern light, dark background"},
-    {"id": "portrait_medica_josefina", "out": "assets/portraits/medica_josefina.png", "size": [512, 512], "seed": 1108,
-     "subject": "portrait of a stern middle-aged rural doctor woman wearing a clean white doctor's coat, stethoscope around her neck, leather medical bag, hair in a tight bun, composed expression, lantern light, dark background"},
-    {"id": "portrait_curandero", "out": "assets/portraits/curandero.png", "size": [512, 512], "seed": 1107,
-     "subject": "portrait of a dignified elderly folk healer, wide-brimmed straw hat, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"},
-    {"id": "portrait_exorcista", "out": "assets/portraits/exorcista.png", "size": [512, 512], "seed": 1108,
-     "subject": "portrait of a neighborhood exorcist, worn long black coat, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"},
-
-    {"id": "enemy_espanto", "out": "assets/enemies/espanto.png", "size": [512, 512], "seed": 2101,
-     "subject": "gaunt pale ghost in tattered old-fashioned clothes emerging from a stone cellar wall, hollow glowing eyes, reaching hands, creature, dark background"},
-    {"id": "enemy_sombra_cuadrilla", "out": "assets/enemies/sombra_cuadrilla.png", "size": [512, 512], "seed": 2102,
-     "subject": "shadow silhouette of a cursed farm laborer made of smoke and darkness, holding a rusted hoe, glowing ember eyes, creature, dark background"},
-    {"id": "enemy_peon_penado", "out": "assets/enemies/peon_penado.png", "size": [512, 512], "seed": 2103,
-     "subject": "hulking undead hacienda laborer in rotten rags wrapped in rusty chains, heavy sack on his back, grim grey face, creature, dark background"},
-    {"id": "enemy_mandador_en_pena", "out": "assets/enemies/mandador_en_pena.png", "size": [512, 512], "seed": 2104,
-     "subject": "ghost of a cruel plantation overseer, long dark coat, whip in one hand and a ledger book in the other, pale glowing skin, sneering, creature, dark background"},
-    {"id": "enemy_rata_de_troje", "out": "assets/enemies/rata_de_troje.png", "size": [512, 512], "seed": 2125,
-     "subject": "two feral giant rats on all fours, animals, no clothes, matted fur, red eyes, bloody yellow teeth, crawling over torn grain sacks, beasts, dark background"},
-    {"id": "enemy_murcielago_bodega", "out": "assets/enemies/murcielago_bodega.png", "size": [512, 512], "seed": 2106,
-     "subject": "huge cave bat with tattered leathery wings spread wide, glowing eyes, fangs, diving out of darkness, creature, dark background"},
-    {"id": "enemy_monaguillo_porton", "out": "assets/enemies/monaguillo_porton.png", "size": [512, 512], "seed": 2107,
-     "subject": "cult acolyte in a dark red hooded robe holding a candle and a smoking censer, chanting, eerie blank white eyes, creature, dark background"},
-    {"id": "enemy_vigia_porton", "out": "assets/enemies/vigia_porton.png", "size": [512, 512], "seed": 2108,
-     "subject": "hooded cult scout crouching with a lantern and a brass spyglass, red sash, sinister grin, dark background"},
-    {"id": "enemy_susurro_aljibe", "out": "assets/enemies/susurro_aljibe.png", "size": [512, 512], "seed": 2109,
-     "subject": "translucent whispering spirit rising from an old stone water cistern, long dripping hair covering the face, mouth open, ghost, dark background"},
-    {"id": "enemy_duende_sotano", "out": "assets/enemies/duende_sotano.png", "size": [512, 512], "seed": 2112,
-     "subject": "sinister small old gnome duende with a wrinkled grey face and glowing eyes, wide-brimmed hat, clutching stolen gold coins, lurking in a cellar corner, creature, dark background"},
-    {"id": "enemy_sirviente_ahogado", "out": "assets/enemies/sirviente_ahogado.png", "size": [512, 512], "seed": 2111,
-     "subject": "drowned servant zombie in a waterlogged old butler uniform, bloated pale skin, water dripping, empty eyes, creature, dark background"},
-    {"id": "enemy_cadejo_negro", "out": "assets/enemies/cadejo_negro.png", "size": [512, 512], "seed": 2112,
-     "subject": "enormous shaggy black dog with glowing red eyes dragging broken chains, menacing stance, folklore beast, creature, dark background"},
-    {"id": "enemy_mayordomo_hundido", "out": "assets/enemies/mayordomo_hundido.png", "size": [512, 512], "seed": 2113,
-     "subject": "towering drowned butler, ornate rotting tailcoat, tarnished silver tray, unnaturally long fingers, seaweed and dripping water, commanding sinister presence, boss creature, dark background"},
-    {"id": "enemy_nuboso_spectre", "out": "assets/enemies/nuboso_spectre.png", "size": [512, 512], "seed": 2114,
-     "subject": "close-up of a towering mist specter filling the frame, body of fog and hanging moss, long thin arms reaching forward, faint glowing face, cloud forest, ghost"},
-    {"id": "enemy_segua_boss", "out": "assets/enemies/segua_boss.png", "size": [512, 512], "seed": 2116,
-     "subject": "close-up of a monster with a bleached horse skull instead of a head, long black hair hanging from the skull, glowing eye sockets, tattered pale dress, misty forest, solo, boss creature"},
-
-    {"id": "node_safe", "out": "assets/map_nodes/safe.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3111,
-     "subject": "single old brass oil lantern glowing warmly, isolated object, close-up, plain black background"},
-    {"id": "node_trap", "out": "assets/map_nodes/trap.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3112,
-     "subject": "open rusty steel jaw trap with sharp jagged metal teeth and a chain, hunting trap, isolated object, close-up, plain black background"},
-    {"id": "node_combat", "out": "assets/map_nodes/combat.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3103,
-     "subject": "game icon of a crossed machete and old sword, simple bold shape, dark background"},
-    {"id": "node_curio", "out": "assets/map_nodes/curio.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3104,
-     "subject": "game icon of a small old wooden chest with a glowing keyhole, simple bold shape, dark background"},
-    {"id": "node_camp", "out": "assets/map_nodes/camp.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3105,
-     "subject": "game icon of a small campfire with a cooking pot, simple bold shape, dark background"},
-    {"id": "node_objective", "out": "assets/map_nodes/objective.png", "size": [512, 512], "out_size": [128, 128], "post": {"brightness": 1.5, "contrast": 1.2}, "seed": 3106,
-     "subject": "game icon of a glowing red corrupted eye sigil, simple bold shape, dark background"},
-
-    {"id": "bg_hub", "out": "assets/ui_bg/hub_bg.png", "size": [904, 512], "out_size": [1280, 720], "seed": 4101,
-     "subject": "wide view of a decaying old Costa Rican hacienda at night, adobe walls and clay tile roof, coffee plantation hills behind, warm lanterns in windows, fog, ominous sky, environment, no people"},
-    {"id": "bg_expedition", "out": "assets/ui_bg/expedition_bg.png", "size": [904, 512], "out_size": [1280, 720], "seed": 4102,
-     "subject": "wide view of dark collapsed cellar tunnels beneath a hacienda, crumbling stone arches, tree roots through the ceiling, distant torchlight, fog, environment, no people"},
-    {"id": "bg_combat", "out": "assets/ui_bg/combat_bg.png", "size": [904, 512], "out_size": [1280, 720], "seed": 4103,
-     "subject": "wide view of an underground stone cellar chamber, empty floor, crumbling arches, puddles reflecting candle light, broken wine barrels, environment, no people"}
+    {
+      "id": "portrait_campesino",
+      "out": "assets/portraits/campesino.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1122,
+      "subject": "portrait of a weathered Costa Rican farm worker raising a long steel machete blade, straw hat, sweat-stained work shirt, determined face, dark background"
+    },
+    {
+      "id": "portrait_montador",
+      "out": "assets/portraits/montador.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1102,
+      "subject": "portrait of a fearless Costa Rican bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"
+    },
+    {
+      "id": "portrait_abuela",
+      "out": "assets/portraits/abuela.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1103,
+      "subject": "portrait of a wise elderly grandmother healer, knitted shawl, holding a clay bowl of steaming soup with herbs, kind but stern eyes, candle light, dark background"
+    },
+    {
+      "id": "portrait_tecnologo",
+      "out": "assets/portraits/tecnologo.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1104,
+      "subject": "portrait of a young wandering tinkerer, brass goggles on forehead, homemade drone parts and cables on his shoulders, patched jacket, curious face, lantern light, dark background"
+    },
+    {
+      "id": "portrait_guachiman",
+      "out": "assets/portraits/guachiman.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1105,
+      "subject": "portrait of an old retired night watchman, faded security guard uniform and cap, flashlight and whistle, grey mustache, tired vigilant eyes, lantern light, dark background"
+    },
+    {
+      "id": "portrait_medica_josefina",
+      "out": "assets/portraits/medica_josefina.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1108,
+      "subject": "portrait of a stern middle-aged rural doctor woman wearing a clean white doctor's coat, stethoscope around her neck, leather medical bag, hair in a tight bun, composed expression, lantern light, dark background"
+    },
+    {
+      "id": "portrait_curandero",
+      "out": "assets/portraits/curandero.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1107,
+      "subject": "portrait of a dignified elderly folk healer, wide-brimmed straw hat, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"
+    },
+    {
+      "id": "portrait_exorcista",
+      "out": "assets/portraits/exorcista.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1108,
+      "subject": "portrait of a neighborhood exorcist, worn long black coat, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"
+    },
+    {
+      "id": "enemy_espanto",
+      "out": "assets/enemies/espanto.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2101,
+      "subject": "gaunt pale ghost in tattered old-fashioned clothes emerging from a stone cellar wall, hollow glowing eyes, reaching hands, creature, dark background"
+    },
+    {
+      "id": "enemy_sombra_cuadrilla",
+      "out": "assets/enemies/sombra_cuadrilla.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2102,
+      "subject": "shadow silhouette of a cursed farm laborer made of smoke and darkness, holding a rusted hoe, glowing ember eyes, creature, dark background"
+    },
+    {
+      "id": "enemy_peon_penado",
+      "out": "assets/enemies/peon_penado.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2103,
+      "subject": "hulking undead hacienda laborer in rotten rags wrapped in rusty chains, heavy sack on his back, grim grey face, creature, dark background"
+    },
+    {
+      "id": "enemy_mandador_en_pena",
+      "out": "assets/enemies/mandador_en_pena.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2104,
+      "subject": "ghost of a cruel plantation overseer, long dark coat, whip in one hand and a ledger book in the other, pale glowing skin, sneering, creature, dark background"
+    },
+    {
+      "id": "enemy_rata_de_troje",
+      "out": "assets/enemies/rata_de_troje.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2125,
+      "subject": "two feral giant rats on all fours, animals, no clothes, matted fur, red eyes, bloody yellow teeth, crawling over torn grain sacks, beasts, dark background"
+    },
+    {
+      "id": "enemy_murcielago_bodega",
+      "out": "assets/enemies/murcielago_bodega.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2106,
+      "subject": "huge cave bat with tattered leathery wings spread wide, glowing eyes, fangs, diving out of darkness, creature, dark background"
+    },
+    {
+      "id": "enemy_monaguillo_porton",
+      "out": "assets/enemies/monaguillo_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2107,
+      "subject": "cult acolyte in a dark red hooded robe holding a candle and a smoking censer, chanting, eerie blank white eyes, creature, dark background"
+    },
+    {
+      "id": "enemy_vigia_porton",
+      "out": "assets/enemies/vigia_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2108,
+      "subject": "hooded cult scout crouching with a lantern and a brass spyglass, red sash, sinister grin, dark background"
+    },
+    {
+      "id": "enemy_susurro_aljibe",
+      "out": "assets/enemies/susurro_aljibe.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2109,
+      "subject": "translucent whispering spirit rising from an old stone water cistern, long dripping hair covering the face, mouth open, ghost, dark background"
+    },
+    {
+      "id": "enemy_duende_sotano",
+      "out": "assets/enemies/duende_sotano.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2112,
+      "subject": "sinister small old gnome duende with a wrinkled grey face and glowing eyes, wide-brimmed hat, clutching stolen gold coins, lurking in a cellar corner, creature, dark background"
+    },
+    {
+      "id": "enemy_sirviente_ahogado",
+      "out": "assets/enemies/sirviente_ahogado.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2111,
+      "subject": "drowned servant zombie in a waterlogged old butler uniform, bloated pale skin, water dripping, empty eyes, creature, dark background"
+    },
+    {
+      "id": "enemy_cadejo_negro",
+      "out": "assets/enemies/cadejo_negro.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2112,
+      "subject": "enormous shaggy black dog with glowing red eyes dragging broken chains, menacing stance, folklore beast, creature, dark background"
+    },
+    {
+      "id": "enemy_mayordomo_hundido",
+      "out": "assets/enemies/mayordomo_hundido.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2113,
+      "subject": "towering drowned butler, ornate rotting tailcoat, tarnished silver tray, unnaturally long fingers, seaweed and dripping water, commanding sinister presence, boss creature, dark background"
+    },
+    {
+      "id": "enemy_nuboso_spectre",
+      "out": "assets/enemies/nuboso_spectre.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2114,
+      "subject": "close-up of a towering mist specter filling the frame, body of fog and hanging moss, long thin arms reaching forward, faint glowing face, cloud forest, ghost"
+    },
+    {
+      "id": "enemy_segua_boss",
+      "out": "assets/enemies/segua_boss.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2116,
+      "subject": "close-up of a monster with a bleached horse skull instead of a head, long black hair hanging from the skull, glowing eye sockets, tattered pale dress, misty forest, solo, boss creature"
+    },
+    {
+      "id": "node_safe",
+      "out": "assets/map_nodes/safe.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3111,
+      "subject": "single old brass oil lantern glowing warmly, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "node_trap",
+      "out": "assets/map_nodes/trap.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3112,
+      "subject": "open rusty steel jaw trap with sharp jagged metal teeth and a chain, hunting trap, isolated object, close-up, plain black background"
+    },
+    {
+      "id": "node_combat",
+      "out": "assets/map_nodes/combat.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3103,
+      "subject": "game icon of a crossed machete and old sword, simple bold shape, dark background"
+    },
+    {
+      "id": "node_curio",
+      "out": "assets/map_nodes/curio.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3104,
+      "subject": "game icon of a small old wooden chest with a glowing keyhole, simple bold shape, dark background"
+    },
+    {
+      "id": "node_camp",
+      "out": "assets/map_nodes/camp.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3105,
+      "subject": "game icon of a small campfire with a cooking pot, simple bold shape, dark background"
+    },
+    {
+      "id": "node_objective",
+      "out": "assets/map_nodes/objective.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.5,
+        "contrast": 1.2
+      },
+      "seed": 3106,
+      "subject": "game icon of a glowing red corrupted eye sigil, simple bold shape, dark background"
+    },
+    {
+      "id": "bg_hub",
+      "out": "assets/ui_bg/hub_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4101,
+      "subject": "wide view of a decaying old Costa Rican hacienda at night, adobe walls and clay tile roof, coffee plantation hills behind, warm lanterns in windows, fog, ominous sky, environment, no people"
+    },
+    {
+      "id": "bg_expedition",
+      "out": "assets/ui_bg/expedition_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4102,
+      "subject": "wide view of dark collapsed cellar tunnels beneath a hacienda, crumbling stone arches, tree roots through the ceiling, distant torchlight, fog, environment, no people"
+    },
+    {
+      "id": "bg_combat",
+      "out": "assets/ui_bg/combat_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4103,
+      "subject": "wide view of an underground stone cellar chamber, empty floor, crumbling arches, puddles reflecting candle light, broken wine barrels, environment, no people"
+    }
   ],
   "sprites": {
     "_doc": "Battle-stage sprites, generated by tools/sd_sprites.py into assets/sprites/<id>/<state>.png (transparent). idle comes from text; other states are img2img from idle so the character keeps its look.",
@@ -85,160 +398,642 @@
     ],
     "steps": 20,
     "cutout_model": "isnet-general-use",
+    "control_model": "lllyasviel/control_v11p_sd15_openpose",
+    "control_scale": 1.0,
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
     "negative_extra": "cropped, close-up, portrait, scenery, landscape, room, multiple characters, crowd",
     "states": [
       {
         "id": "idle",
         "mode": "txt2img",
-        "pose": "standing in a ready fighting stance, facing right"
+        "pose": "standing in a ready fighting stance"
       },
       {
         "id": "attack",
         "mode": "img2img",
-        "strength": 0.6,
-        "pose": "lunging forward and striking, attack pose, motion"
+        "strength": 0.8,
+        "pose": "lunging forward and striking with a weapon, dynamic attack",
+        "beast_pose": "lunging forward to bite, jaws open, dynamic attack",
+        "beast_strength": 0.7
       },
       {
         "id": "cast",
         "mode": "img2img",
-        "strength": 0.6,
-        "pose": "casting a spell, one hand raised with glowing light"
+        "strength": 0.8,
+        "pose": "casting a spell, arm raised high with glowing light",
+        "beast_pose": "howling with glowing eyes, eerie light",
+        "beast_strength": 0.6
       },
       {
         "id": "hurt",
         "mode": "img2img",
-        "strength": 0.5,
-        "pose": "recoiling in pain, flinching backward, wounded"
+        "strength": 0.75,
+        "pose": "recoiling in pain, flinching backward, wounded",
+        "beast_pose": "recoiling in pain, wounded, flinching",
+        "beast_strength": 0.6
       },
       {
         "id": "ailment",
         "mode": "img2img",
-        "strength": 0.5,
-        "pose": "hunched and trembling, sickly, dazed and afraid"
+        "strength": 0.75,
+        "pose": "hunched over in pain, trembling, sickly and afraid",
+        "beast_pose": "cowering low, sickly and trembling",
+        "beast_strength": 0.6
       },
       {
         "id": "dead",
         "mode": "img2img",
-        "strength": 0.8,
-        "pose": "lying dead on the ground, collapsed body"
+        "strength": 0.9,
+        "pose": "lying dead on the ground, collapsed body",
+        "beast_pose": "lying dead on its side on the ground",
+        "beast_strength": 0.85
       }
     ],
+    "_skeleton_doc": "OpenPose COCO-18 keypoints as [x, y] fractions of the canvas, order: nose, neck, r_shoulder, r_elbow, r_wrist, l_shoulder, l_elbow, l_wrist, r_hip, r_knee, r_ankle, l_hip, l_knee, l_ankle, r_eye, l_eye, r_ear, l_ear. Humanoid characters follow these poses; beasts use plain img2img.",
+    "skeletons": {
+      "idle": [
+        [
+          0.52,
+          0.14
+        ],
+        [
+          0.5,
+          0.22
+        ],
+        [
+          0.4,
+          0.23
+        ],
+        [
+          0.36,
+          0.36
+        ],
+        [
+          0.38,
+          0.48
+        ],
+        [
+          0.6,
+          0.23
+        ],
+        [
+          0.64,
+          0.36
+        ],
+        [
+          0.66,
+          0.47
+        ],
+        [
+          0.44,
+          0.5
+        ],
+        [
+          0.42,
+          0.68
+        ],
+        [
+          0.4,
+          0.86
+        ],
+        [
+          0.56,
+          0.5
+        ],
+        [
+          0.59,
+          0.68
+        ],
+        [
+          0.62,
+          0.86
+        ],
+        [
+          0.5,
+          0.128
+        ],
+        [
+          0.54,
+          0.128
+        ],
+        [
+          0.48000000000000004,
+          0.135
+        ],
+        [
+          0.56,
+          0.135
+        ]
+      ],
+      "attack": [
+        [
+          0.6,
+          0.17
+        ],
+        [
+          0.56,
+          0.25
+        ],
+        [
+          0.47,
+          0.26
+        ],
+        [
+          0.4,
+          0.36
+        ],
+        [
+          0.36,
+          0.44
+        ],
+        [
+          0.65,
+          0.26
+        ],
+        [
+          0.76,
+          0.21
+        ],
+        [
+          0.88,
+          0.14
+        ],
+        [
+          0.46,
+          0.52
+        ],
+        [
+          0.34,
+          0.66
+        ],
+        [
+          0.22,
+          0.84
+        ],
+        [
+          0.57,
+          0.52
+        ],
+        [
+          0.7,
+          0.66
+        ],
+        [
+          0.74,
+          0.85
+        ],
+        [
+          0.58,
+          0.158
+        ],
+        [
+          0.62,
+          0.158
+        ],
+        [
+          0.5599999999999999,
+          0.165
+        ],
+        [
+          0.64,
+          0.165
+        ]
+      ],
+      "cast": [
+        [
+          0.52,
+          0.14
+        ],
+        [
+          0.5,
+          0.22
+        ],
+        [
+          0.4,
+          0.23
+        ],
+        [
+          0.34,
+          0.33
+        ],
+        [
+          0.36,
+          0.44
+        ],
+        [
+          0.6,
+          0.23
+        ],
+        [
+          0.7,
+          0.14
+        ],
+        [
+          0.74,
+          0.04
+        ],
+        [
+          0.44,
+          0.5
+        ],
+        [
+          0.4,
+          0.68
+        ],
+        [
+          0.36,
+          0.86
+        ],
+        [
+          0.56,
+          0.5
+        ],
+        [
+          0.61,
+          0.68
+        ],
+        [
+          0.65,
+          0.86
+        ],
+        [
+          0.5,
+          0.128
+        ],
+        [
+          0.54,
+          0.128
+        ],
+        [
+          0.48000000000000004,
+          0.135
+        ],
+        [
+          0.56,
+          0.135
+        ]
+      ],
+      "hurt": [
+        [
+          0.4,
+          0.17
+        ],
+        [
+          0.42,
+          0.25
+        ],
+        [
+          0.33,
+          0.27
+        ],
+        [
+          0.3,
+          0.2
+        ],
+        [
+          0.36,
+          0.12
+        ],
+        [
+          0.52,
+          0.25
+        ],
+        [
+          0.58,
+          0.33
+        ],
+        [
+          0.56,
+          0.42
+        ],
+        [
+          0.42,
+          0.52
+        ],
+        [
+          0.36,
+          0.68
+        ],
+        [
+          0.3,
+          0.86
+        ],
+        [
+          0.54,
+          0.52
+        ],
+        [
+          0.56,
+          0.69
+        ],
+        [
+          0.58,
+          0.86
+        ],
+        [
+          0.38,
+          0.158
+        ],
+        [
+          0.42000000000000004,
+          0.158
+        ],
+        [
+          0.36000000000000004,
+          0.165
+        ],
+        [
+          0.44,
+          0.165
+        ]
+      ],
+      "ailment": [
+        [
+          0.54,
+          0.3
+        ],
+        [
+          0.5,
+          0.32
+        ],
+        [
+          0.41,
+          0.33
+        ],
+        [
+          0.42,
+          0.45
+        ],
+        [
+          0.52,
+          0.44
+        ],
+        [
+          0.59,
+          0.33
+        ],
+        [
+          0.6,
+          0.45
+        ],
+        [
+          0.5,
+          0.47
+        ],
+        [
+          0.44,
+          0.56
+        ],
+        [
+          0.4,
+          0.72
+        ],
+        [
+          0.42,
+          0.88
+        ],
+        [
+          0.56,
+          0.56
+        ],
+        [
+          0.6,
+          0.72
+        ],
+        [
+          0.6,
+          0.88
+        ],
+        [
+          0.52,
+          0.288
+        ],
+        [
+          0.56,
+          0.288
+        ],
+        [
+          0.5,
+          0.295
+        ],
+        [
+          0.5800000000000001,
+          0.295
+        ]
+      ],
+      "dead": [
+        [
+          0.15,
+          0.8
+        ],
+        [
+          0.22,
+          0.82
+        ],
+        [
+          0.24,
+          0.78
+        ],
+        [
+          0.33,
+          0.74
+        ],
+        [
+          0.42,
+          0.76
+        ],
+        [
+          0.24,
+          0.86
+        ],
+        [
+          0.32,
+          0.9
+        ],
+        [
+          0.4,
+          0.92
+        ],
+        [
+          0.52,
+          0.8
+        ],
+        [
+          0.68,
+          0.78
+        ],
+        [
+          0.84,
+          0.8
+        ],
+        [
+          0.52,
+          0.86
+        ],
+        [
+          0.66,
+          0.88
+        ],
+        [
+          0.82,
+          0.9
+        ],
+        [
+          0.14,
+          0.79
+        ],
+        [
+          0.14,
+          0.81
+        ],
+        [
+          0.16,
+          0.77
+        ],
+        [
+          0.16,
+          0.83
+        ]
+      ]
+    },
     "characters": [
       {
         "id": "campesino",
-        "look": "weathered Costa Rican farm worker with a long machete, straw hat, sweat-stained work shirt",
-        "seed": 5000
+        "look": "weathered Costa Rican farm worker gripping a steel machete blade, straw hat, sweat-stained work shirt",
+        "seed": 5000,
+        "body": "humanoid"
       },
       {
         "id": "montador",
         "look": "Costa Rican bull rider, cowboy hat, coiled rope, dusty denim shirt and boots",
-        "seed": 5010
+        "seed": 5010,
+        "body": "humanoid"
       },
       {
         "id": "abuela",
         "look": "elderly grandmother healer, knitted shawl, long skirt, clay bowl of herbs",
-        "seed": 5020
+        "seed": 5020,
+        "body": "humanoid"
       },
       {
         "id": "tecnologo",
         "look": "young tinkerer, brass goggles, patched jacket, homemade drone and cables",
-        "seed": 5030
+        "seed": 5030,
+        "body": "humanoid"
       },
       {
         "id": "guachiman",
         "look": "old retired night watchman, faded guard uniform and cap, flashlight and baton",
-        "seed": 5040
+        "seed": 5040,
+        "body": "humanoid"
       },
       {
         "id": "medica_josefina",
         "look": "stern rural doctor woman, white doctor's coat, stethoscope, leather medical bag",
-        "seed": 5050
+        "seed": 5050,
+        "body": "humanoid"
       },
       {
         "id": "curandero",
         "look": "elderly folk healer, wide straw hat, poncho, bundle of smoking herbs",
-        "seed": 5060
+        "seed": 5060,
+        "body": "humanoid"
       },
       {
         "id": "exorcista",
         "look": "neighborhood exorcist, long black coat, rosary, bottle of holy water",
-        "seed": 5070
+        "seed": 5070,
+        "body": "humanoid"
       },
       {
         "id": "espanto",
         "look": "gaunt pale ghost in tattered old-fashioned clothes, hollow glowing eyes",
-        "seed": 5080
+        "seed": 5080,
+        "body": "humanoid"
       },
       {
         "id": "sombra_cuadrilla",
         "look": "shadow farm laborer made of smoke and darkness, rusted hoe, ember eyes",
-        "seed": 5090
+        "seed": 5090,
+        "body": "humanoid"
       },
       {
         "id": "peon_penado",
         "look": "hulking undead laborer in rotten rags and rusty chains, grey skin",
-        "seed": 5100
+        "seed": 5100,
+        "body": "humanoid"
       },
       {
         "id": "mandador_en_pena",
         "look": "ghost of a cruel plantation overseer, long coat, whip and ledger",
-        "seed": 5110
+        "seed": 5110,
+        "body": "humanoid"
       },
       {
         "id": "rata_de_troje",
         "look": "two feral giant rats on all fours, matted fur, red eyes, bloody teeth",
-        "seed": 5120
+        "seed": 5120,
+        "body": "beast"
       },
       {
         "id": "murcielago_bodega",
         "look": "huge cave bat with tattered leathery wings, glowing eyes, fangs",
-        "seed": 5130
+        "seed": 5130,
+        "body": "beast"
       },
       {
         "id": "monaguillo_porton",
         "look": "cult acolyte in a dark red hooded robe, candle and smoking censer",
-        "seed": 5140
+        "seed": 5140,
+        "body": "humanoid"
       },
       {
         "id": "vigia_porton",
         "look": "hooded cult scout with a lantern and brass spyglass, red sash",
-        "seed": 5150
+        "seed": 5150,
+        "body": "humanoid"
       },
       {
         "id": "susurro_aljibe",
         "look": "translucent drowned spirit woman, long dripping hair covering the face",
-        "seed": 5160
+        "seed": 5160,
+        "body": "humanoid"
       },
       {
         "id": "duende_sotano",
         "look": "small sinister old gnome duende, wrinkled grey face, wide-brimmed hat, gold coins",
-        "seed": 5170
+        "seed": 5170,
+        "body": "humanoid"
       },
       {
         "id": "sirviente_ahogado",
         "look": "drowned servant zombie in waterlogged butler uniform, bloated pale skin",
-        "seed": 5180
+        "seed": 5180,
+        "body": "humanoid"
       },
       {
         "id": "cadejo_negro",
         "look": "enormous shaggy black dog with glowing red eyes, broken chains",
-        "seed": 5190
+        "seed": 5190,
+        "body": "beast"
       },
       {
         "id": "mayordomo_hundido",
         "look": "towering drowned butler, rotting tailcoat, silver tray, long fingers, seaweed",
-        "seed": 5200
+        "seed": 5200,
+        "body": "humanoid"
       },
       {
         "id": "nuboso_spectre",
         "look": "tall mist specter of fog and hanging moss, long thin arms, glowing face",
-        "seed": 5210
+        "seed": 5210,
+        "body": "humanoid"
       },
       {
         "id": "segua_boss",
         "look": "monster with a horse skull head, long black hair, tattered pale dress",
-        "seed": 5220
+        "seed": 5220,
+        "body": "humanoid"
       }
     ]
   }

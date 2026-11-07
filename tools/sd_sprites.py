@@ -7,6 +7,9 @@ For each character:
   1. `idle` is generated from text (txt2img), full body on a plain background.
   2. Every other state (attack, cast, hurt, ailment, dead) is generated with img2img
      starting from that idle image, so the character keeps the same look.
+     Humanoid characters are also guided by an OpenPose skeleton per state (ControlNet,
+     skeletons in the manifest) so the body pose actually changes. Beasts skip the
+     skeleton and use their own pose text and strength.
   3. The background is removed (rembg) and the result is saved as a transparent PNG:
        assets/sprites/<character>/<state>.png  (+ .metadata.json)
 
@@ -37,10 +40,37 @@ MANIFEST = ROOT / "tools" / "art_manifest.json"
 CACHE = ROOT / "tools" / ".sprite_cache"
 
 
-def load_pipelines(model: str):
+# OpenPose COCO-18 limb pairs and colors, as the ControlNet openpose model expects.
+LIMBS = [(1, 2), (1, 5), (2, 3), (3, 4), (5, 6), (6, 7), (1, 8), (8, 9), (9, 10), (1, 11),
+         (11, 12), (12, 13), (1, 0), (0, 14), (14, 16), (0, 15), (15, 17)]
+COLORS = [(255, 0, 0), (255, 85, 0), (255, 170, 0), (255, 255, 0), (170, 255, 0), (85, 255, 0),
+          (0, 255, 0), (0, 255, 85), (0, 255, 170), (0, 255, 255), (0, 170, 255), (0, 85, 255),
+          (0, 0, 255), (85, 0, 255), (170, 0, 255), (255, 0, 255), (255, 0, 170), (255, 0, 85)]
+
+
+def draw_skeleton(points, size):
+    from PIL import Image, ImageDraw
+
+    w, h = size
+    im = Image.new("RGB", (w, h), (0, 0, 0))
+    d = ImageDraw.Draw(im)
+    px = [(x * w, y * h) for x, y in points]
+    for k, (a, b) in enumerate(LIMBS):
+        c = tuple(int(v * 0.6) for v in COLORS[k])
+        d.line([px[a], px[b]], fill=c, width=max(4, w // 64))
+    for k, (x, y) in enumerate(px):
+        r = max(3, w // 128)
+        d.ellipse([x - r, y - r, x + r, y + r], fill=COLORS[k])
+    return im
+
+
+def load_pipelines(model: str, control_model: str):
     import torch
     from diffusers import (
+        ControlNetModel,
         DPMSolverMultistepScheduler,
+        StableDiffusionControlNetImg2ImgPipeline,
+        StableDiffusionControlNetPipeline,
         StableDiffusionImg2ImgPipeline,
         StableDiffusionPipeline,
     )
@@ -56,10 +86,21 @@ def load_pipelines(model: str):
         txt.scheduler.config, use_karras_sigmas=True, algorithm_type="dpmsolver++"
     )
     txt = txt.to(device)
-    txt.set_progress_bar_config(disable=True)
-    img = StableDiffusionImg2ImgPipeline(**txt.components)
-    img.set_progress_bar_config(disable=True)
-    return txt, img, device, torch
+    try:
+        cn = ControlNetModel.from_pretrained(control_model, variant="fp16", torch_dtype=dtype)
+    except (OSError, ValueError):
+        cn = ControlNetModel.from_pretrained(control_model, torch_dtype=dtype)
+    cn = cn.to(device)
+    comps = txt.components
+    pipes = {
+        "txt": txt,
+        "img": StableDiffusionImg2ImgPipeline(**comps),
+        "txt_pose": StableDiffusionControlNetPipeline(**comps, controlnet=cn),
+        "img_pose": StableDiffusionControlNetImg2ImgPipeline(**comps, controlnet=cn),
+    }
+    for p in pipes.values():
+        p.set_progress_bar_config(disable=True)
+    return pipes, device, torch
 
 
 def main() -> int:
@@ -99,7 +140,9 @@ def main() -> int:
         print("Nothing to generate. Use --force to redo.")
         return 0
 
-    txt, img2img, device, torch = load_pipelines(manifest["model"])
+    pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"])
+    control_scale = float(cfg.get("control_scale", 1.0))
+    skeletons = cfg.get("skeletons", {})
     remover = None
     if not args.no_cutout:
         from rembg import new_session, remove
@@ -121,16 +164,21 @@ def main() -> int:
         out = ROOT / cfg["out_dir"] / cid / f"{sid}.png"
         raw_path = CACHE / cid / "idle_raw.png"
         seed = int(c["seed"]) + state_ids.index(sid)
-        prompt = cfg["prompt_template"].format(
-            look=c["look"], pose=s["pose"], style=manifest["style_suffix"]
-        )
+        pose_text = s.get("beast_pose", s["pose"]) if c.get("body") == "beast" else s["pose"]
+        prompt = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=manifest["style_suffix"])
         gen = torch.Generator(device="cpu").manual_seed(seed)
         t0 = time.time()
+        beast = c.get("body", "humanoid") == "beast"
+        pose_img = None
+        if not beast and sid in skeletons:
+            pose_img = draw_skeleton(skeletons[sid], (w, h))
+        common = dict(negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance, generator=gen)
         if s["mode"] == "txt2img":
-            image = txt(
-                prompt=prompt, negative_prompt=negative, width=w, height=h,
-                num_inference_steps=steps, guidance_scale=guidance, generator=gen,
-            ).images[0]
+            if pose_img is not None:
+                image = pipes["txt_pose"](prompt=prompt, image=pose_img, width=w, height=h,
+                                          controlnet_conditioning_scale=control_scale, **common).images[0]
+            else:
+                image = pipes["txt"](prompt=prompt, width=w, height=h, **common).images[0]
             if sid == "idle":
                 raw_path.parent.mkdir(parents=True, exist_ok=True)
                 image.save(raw_path)
@@ -141,22 +189,23 @@ def main() -> int:
                 base = Image.open(raw_path).convert("RGB")
             if base is None:
                 idle = states[state_ids.index("idle")]
-                base = txt(
-                    prompt=cfg["prompt_template"].format(
-                        look=c["look"], pose=idle["pose"], style=manifest["style_suffix"]
-                    ),
-                    negative_prompt=negative, width=w, height=h, num_inference_steps=steps,
-                    guidance_scale=guidance,
-                    generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])),
-                ).images[0]
+                idle_prompt = cfg["prompt_template"].format(look=c["look"], pose=idle["pose"], style=manifest["style_suffix"])
+                idle_gen = dict(common, generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])))
+                if not beast and "idle" in skeletons:
+                    base = pipes["txt_pose"](prompt=idle_prompt, image=draw_skeleton(skeletons["idle"], (w, h)),
+                                             width=w, height=h, controlnet_conditioning_scale=control_scale,
+                                             **idle_gen).images[0]
+                else:
+                    base = pipes["txt"](prompt=idle_prompt, width=w, height=h, **idle_gen).images[0]
                 raw_path.parent.mkdir(parents=True, exist_ok=True)
                 base.save(raw_path)
             raw_cache[cid] = base
-            image = img2img(
-                prompt=prompt, negative_prompt=negative, image=base,
-                strength=float(s["strength"]), num_inference_steps=steps,
-                guidance_scale=guidance, generator=gen,
-            ).images[0]
+            strength = float(s.get("beast_strength", s["strength"])) if beast else float(s["strength"])
+            if pose_img is not None:
+                image = pipes["img_pose"](prompt=prompt, image=base, control_image=pose_img, strength=strength,
+                                          controlnet_conditioning_scale=control_scale, **common).images[0]
+            else:
+                image = pipes["img"](prompt=prompt, image=base, strength=strength, **common).images[0]
         if remover is not None:
             image = remover(image)
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -171,7 +220,10 @@ def main() -> int:
             "sampler": manifest["sampler"],
             "resolution": f"{w}x{h}",
             "mode": s["mode"],
-            "strength": s.get("strength"),
+            "strength": None if s["mode"] == "txt2img" else (
+                s.get("beast_strength", s.get("strength")) if c.get("body") == "beast" else s.get("strength")
+            ),
+            "pose_control": None if (c.get("body") == "beast" or sid not in skeletons) else cfg["control_model"],
             "init_image": None if s["mode"] == "txt2img" else "idle (same character, before cutout)",
             "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
             "model": manifest["model"],
