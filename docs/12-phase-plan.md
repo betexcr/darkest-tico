@@ -274,7 +274,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Verified running in Godot 4.6.2 headless (`tests/smoke_expedition.gd`: 3 expeditions to boss victory, 0 failures)
 
 ### P4-10 · S · Item icons
-- Status: `todo` · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
+- Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
