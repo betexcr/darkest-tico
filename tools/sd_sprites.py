@@ -55,6 +55,24 @@ COLORS = [(255, 0, 0), (255, 85, 0), (255, 170, 0), (255, 255, 0), (170, 255, 0)
           (0, 0, 255), (85, 0, 255), (170, 0, 255), (255, 0, 255), (255, 0, 170), (255, 0, 85)]
 
 
+def keep_main_figure(im):
+    """Drop everything but the biggest blob (after cutout). A lying 'dead' figure leaves empty
+    space in its cell, and the model sometimes paints a second character there."""
+    import numpy as np
+    from PIL import Image
+    from scipy import ndimage
+
+    rgba = np.array(im.convert("RGBA"))
+    solid = rgba[:, :, 3] > 40
+    labels, n = ndimage.label(ndimage.binary_dilation(solid, iterations=6))
+    if n <= 1:
+        return im
+    sizes = ndimage.sum(solid, labels, range(1, n + 1))
+    keep = labels == (int(np.argmax(sizes)) + 1)
+    rgba[~keep, 3] = 0
+    return Image.fromarray(rgba)
+
+
 def skeleton_for(cfg: dict, c: dict, sid: str):
     """Pose keypoints for one state: the character's own override, else the shared one."""
     return c.get("skeletons", {}).get(sid) or cfg["skeletons"][sid]
@@ -339,6 +357,8 @@ def main() -> int:
                 if args.states and sid not in args.states:
                     continue
                 image = remover(crop) if remover is not None else crop
+                if remover is not None and sid in cfg["sheet"].get("single_figure_states", []):
+                    image = keep_main_figure(image)
                 out = ROOT / cfg["out_dir"] / cid / f"{sid}.png"
                 out.parent.mkdir(parents=True, exist_ok=True)
                 image.save(out, format="PNG")

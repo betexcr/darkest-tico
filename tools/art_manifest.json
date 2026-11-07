@@ -1708,7 +1708,10 @@
       "redo_states": [
         "attack"
       ],
-      "_redo_doc": "States redrawn as one full-size figure after the sheet (cells are too small for a raised weapon)."
+      "_redo_doc": "States redrawn as one full-size figure after the sheet (cells are too small for a raised weapon).",
+      "single_figure_states": [
+        "dead"
+      ]
     },
     "states": [
       {
