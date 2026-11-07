@@ -7,7 +7,8 @@ signal start_mission_requested
 @onready var _week: Label = $VBox/WeekLabel
 @onready var _bg: TextureRect = $BgTexture
 @onready var _region_option: OptionButton = $VBox/RegionRow/RegionOption
-@onready var _prep_label: Label = $VBox/PrepLabel
+@onready var _shop_grid: GridContainer = $VBox/ShopGrid
+@onready var _pack_label: Label = $VBox/PackLabel
 @onready var _hub_status: Label = $VBox/HubStatus
 
 
@@ -19,11 +20,10 @@ func _ready() -> void:
 	_region_option.item_selected.connect(_on_region_selected)
 	$VBox/BtnStart.pressed.connect(_on_start_pressed)
 	$VBox/BtnQuit.pressed.connect(_on_quit_pressed)
-	$VBox/HubRow/BtnRations.pressed.connect(_on_rations_pressed)
-	$VBox/HubRow/BtnLantern.pressed.connect(_on_lantern_pressed)
 	$VBox/BtnIglesia.pressed.connect(_on_iglesia_pressed)
 	_sync_region_option_from_state()
 	_try_load_hub_background()
+	_build_shop()
 	_refresh()
 
 
@@ -75,10 +75,18 @@ func _try_load_hub_background() -> void:
 func _refresh() -> void:
 	_gold.text = "Colones: %d" % GameState.colones
 	_week.text = "Semana: %d" % GameState.week
-	_prep_label.text = "Próxima expedición: +%d comida al salir, +%d luz inicial acumulada" % [
-		GameState.hub_pending_food,
-		GameState.hub_pending_light_bonus,
+	var pack: PackedStringArray = PackedStringArray()
+	for id in GameState.all_item_ids():
+		var n: int = GameState.item_count(str(id))
+		if n > 0:
+			pack.append("%s ×%d" % [GameState.get_item(str(id)).get("name", id), n])
+	_pack_label.text = "Alforja (%d/%d espacios): %s" % [
+		GameState.inventory.size(), GameState.INVENTORY_SLOTS,
+		", ".join(pack) if not pack.is_empty() else "vacía",
 	]
+	for b in _shop_grid.get_children():
+		var item: Dictionary = GameState.get_item(str(b.get_meta("item_id", "")))
+		b.disabled = GameState.colones < int(item.get("price", 0))
 	var lines: PackedStringArray = PackedStringArray()
 	var i := 1
 	for h in GameState.party:
@@ -107,19 +115,22 @@ func _refresh() -> void:
 	_roster.text = "\n".join(lines)
 
 
-func _on_rations_pressed() -> void:
-	if GameState.buy_rations_for_expedition():
-		_hub_status.text = "Compraste raciones para la próxima salida."
-	else:
-		_hub_status.text = "No tienes 500 colones."
-	_refresh()
+## One "buy" button per item (data/items.json), in file order.
+func _build_shop() -> void:
+	for id in GameState.all_item_ids():
+		var item: Dictionary = GameState.get_item(str(id))
+		var b := Button.new()
+		b.text = "%s — %d ₡" % [item.get("name", id), int(item.get("price", 0))]
+		b.tooltip_text = str(item.get("description", ""))
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.set_meta("item_id", str(id))
+		b.pressed.connect(_on_buy_pressed.bind(str(id)))
+		_shop_grid.add_child(b)
 
 
-func _on_lantern_pressed() -> void:
-	if GameState.buy_lantern_fuel_for_expedition():
-		_hub_status.text = "Compraste mechas (bono de luz al iniciar)."
-	else:
-		_hub_status.text = "No tienes 400 colones."
+func _on_buy_pressed(item_id: String) -> void:
+	_hub_status.text = GameState.buy_item(item_id)
+	SaveService.save_game()
 	_refresh()
 
 

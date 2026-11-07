@@ -8,6 +8,7 @@ Checks that JSON parses and that cross-references resolve:
     (regions with a "generator" block: enemy pools and boss -> data/enemies.json)
   - every non-start region node is reachable from start_node
   - assets/**/*.png have a sibling .metadata.json (warning only; see .cursor/rules/stable-diffusion-assets.mdc)
+  - data/items.json: valid usable/target values, starter inventory refs
   - tools/art_manifest.json ids are unique, write under assets/, and have been generated (warning)
 
 Usage (from repo root):
@@ -137,6 +138,20 @@ def main() -> int:
         if not meta.exists():
             warnings.append(f"{png.relative_to(ROOT)}: no .metadata.json (placeholder?)")
 
+    items_path = DATA / "items.json"
+    items_raw = load(items_path)
+    items = as_id_map(items_raw, "items", items_path)
+    for iid, it in items.items():
+        if it.get("usable") not in ("explore", "combat", "both", "curio"):
+            errors.append(f"items.json: '{iid}' has invalid usable '{it.get('usable')}'")
+        if it.get("target") not in ("ally", "party", "enemy", "none"):
+            errors.append(f"items.json: '{iid}' has invalid target '{it.get('target')}'")
+        if int(it.get("uses_per_node", 1)) < 1 or int(it.get("max_stack", 1)) < 1:
+            errors.append(f"items.json: '{iid}' needs uses_per_node >= 1 and max_stack >= 1")
+    for e in (items_raw or {}).get("starter_inventory", []):
+        if e.get("id") not in items:
+            errors.append(f"items.json: starter_inventory references unknown item '{e.get('id')}'")
+
     manifest_path = ROOT / "tools" / "art_manifest.json"
     manifest = load(manifest_path)
     if manifest:
@@ -156,7 +171,7 @@ def main() -> int:
     for e in errors:
         print(f"ERROR {e}")
     print(
-        f"\n{len(heroes)} heroes, {len(skills)} skills, {len(enemies)} enemies, "
+        f"\n{len(heroes)} heroes, {len(skills)} skills, {len(enemies)} enemies, {len(items)} items, "
         f"{len(list((DATA / 'regions').glob('*.json')))} regions — "
         f"{len(errors)} error(s), {len(warnings)} warning(s)"
     )

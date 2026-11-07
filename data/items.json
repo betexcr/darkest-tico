@@ -1,0 +1,181 @@
+{
+  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}.",
+  "starter_inventory": [
+    {
+      "id": "gallo_pinto",
+      "qty": 4
+    },
+    {
+      "id": "candela_sebo",
+      "qty": 2
+    },
+    {
+      "id": "agua_pipa",
+      "qty": 2
+    },
+    {
+      "id": "cafe_chorreado",
+      "qty": 1
+    }
+  ],
+  "items": [
+    {
+      "id": "gallo_pinto",
+      "name": "Gallo pinto envuelto",
+      "description": "Arroz y frijoles en hoja de plátano. Comida de campamento: la fogata pide 2.",
+      "price": 150,
+      "max_stack": 12,
+      "uses_per_node": 1,
+      "usable": "explore",
+      "target": "ally",
+      "effects": {
+        "heal": 4
+      }
+    },
+    {
+      "id": "candela_sebo",
+      "name": "Candela de sebo",
+      "description": "Huele a cocina de leña. Aviva la luz de la cuadrilla.",
+      "price": 200,
+      "max_stack": 8,
+      "uses_per_node": 1,
+      "usable": "explore",
+      "target": "party",
+      "effects": {
+        "light": 25
+      }
+    },
+    {
+      "id": "agua_pipa",
+      "name": "Agua de pipa",
+      "description": "Fresca, dulce y bendita por el calor del Pacífico.",
+      "price": 300,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "heal": 8
+      }
+    },
+    {
+      "id": "cafe_chorreado",
+      "name": "Café chorreado",
+      "description": "Colado en bolsita de tela. Despeja la cabeza.",
+      "price": 300,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -12
+      }
+    },
+    {
+      "id": "guaro_contrabando",
+      "name": "Guaro de contrabando",
+      "description": "Calma los nervios ya. La goma viene después.",
+      "price": 400,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -25,
+        "hp_risk": {
+          "chance": 0.3,
+          "amount": 4
+        }
+      }
+    },
+    {
+      "id": "venda_manta",
+      "name": "Venda de manta",
+      "description": "Tela de saco hervida. Tapa heridas y sangrados.",
+      "price": 200,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "heal": 5
+      }
+    },
+    {
+      "id": "bombeta",
+      "name": "Bombeta de turno",
+      "description": "Pólvora de fiesta patronal. Hace más ruido que daño, pero hace daño.",
+      "price": 450,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "enemy",
+      "effects": {
+        "damage": [
+          6,
+          10
+        ]
+      }
+    },
+    {
+      "id": "agua_bendita",
+      "name": "Agua bendita",
+      "description": "Traída de la romería. Calma el alma; los altares la reconocen.",
+      "price": 350,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -8
+      },
+      "curio_keys": [
+        "altar_roto"
+      ]
+    },
+    {
+      "id": "ramo_ruda",
+      "name": "Ramo de ruda",
+      "description": "Para la limpia y el mal de ojo. Algunos árboles la piden.",
+      "price": 200,
+      "max_stack": 6,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -6
+      },
+      "curio_keys": [
+        "arbol_amarillo"
+      ]
+    },
+    {
+      "id": "llave_abuelo",
+      "name": "Llave del abuelo",
+      "description": "Abre alguna caja de la hacienda. ¿Cuál? El abuelo no dejó dicho.",
+      "price": 250,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "curio",
+      "target": "none",
+      "effects": {},
+      "curio_keys": [
+        "caja_abuelo"
+      ]
+    },
+    {
+      "id": "mecate",
+      "name": "Mecate",
+      "description": "Cabuya gruesa para bajar a pozos y subir de ellos.",
+      "price": 150,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "curio",
+      "target": "none",
+      "effects": {},
+      "curio_keys": [
+        "pozo_seco"
+      ]
+    }
+  ]
+}
