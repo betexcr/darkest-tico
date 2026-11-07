@@ -25,7 +25,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - `tools/art_manifest.json`: hero `look`s rewritten from their portraits; sprite prompts/negative kept under CLIP's 77 tokens.
   - `assets/sprites/<hero>/` for all 8 hero classes. AGENTS.md §4 + doc 11: sprites must look like the portrait (owner rule).
 - **Verified:** `validate_data.py` 0 errors / 0 warnings. Each hero's sprites reviewed by eye next to the portrait. Godot tests not re-run this session (no code changes in game scripts).
-- **Not verified / risks:** Owner still reviewing heroes one by one. Re-rolls queued at hand-off time: montador (outfit drifted), medica_josefina (long dress), exorcista attack (crucifix) — check `git log` for whether they landed.
+- **Not verified / risks:** Owner still reviewing heroes one by one. Re-rolls landed: montador (seed 5013 + lasso attack redo 5015; leftover: hat in hand on attack, hide behind hurt), medica_josefina (seed 5051, flat boots, knee skirt), exorcista attack (processional cross). Per-character `negative_extra` exists for outfit drift (keep total under 77 CLIP tokens).
 - **Decisions needed:** Owner verdict per hero sprite set.
 - **Next step:** P4-08 — after owner OK on heroes, run enemies one by one: rewrite each enemy `look` in `tools/art_manifest.json` from `assets/enemies/<id>.png`, then `python tools/sd_sprites.py --only <id> --force` (humanoids ~12 min; beasts rata_de_troje, murcielago_bodega, cadejo_negro use img2img), review next to the portrait, re-roll attack with `--states attack --force` if it has a third hand / no weapon.
 
