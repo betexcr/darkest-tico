@@ -30,7 +30,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
    - If Godot is installed (see [.cursor/rules/godot-runtime.mdc](.cursor/rules/godot-runtime.mdc); cloud agents may download the official 4.6.2 Linux build into their scratchpad, owner-approved 2026-11-07):
      - `godot --headless --path . --import` (first run / new files; generates `.uid` files — commit them)
      - `godot --headless --path . -s tests/smoke_expedition.gd` plays 3 full expeditions; must print `0 failure(s)` and no `SCRIPT ERROR`
-     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`
+     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`
    - If you could not verify something (for example, no Godot in a cloud container), **say so explicitly** in the handoff.
 2. **Update the plan**: set your task's status to `done`, `review` (works but needs a human check), `blocked — <why>`, or leave it `in-progress` with a note. Tick any finished acceptance checkboxes.
 3. **Write the handoff entry**: add it at the **top** of [docs/HANDOFF.md](docs/HANDOFF.md) using the template there. The **Next step** line must be specific enough that a fresh agent can act on it without reading the conversation.
