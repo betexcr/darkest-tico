@@ -8,7 +8,7 @@
   "style_suffix": "dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
   "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
   "assets": [
-    {"id": "portrait_campesino", "out": "assets/portraits/campesino.png", "size": [512, 512], "seed": 1121,
+    {"id": "portrait_campesino", "out": "assets/portraits/campesino.png", "size": [512, 512], "seed": 1122,
      "subject": "portrait of a weathered Costa Rican farm worker raising a long steel machete blade, straw hat, sweat-stained work shirt, determined face, dark background"},
     {"id": "portrait_montador", "out": "assets/portraits/montador.png", "size": [512, 512], "seed": 1102,
      "subject": "portrait of a fearless Costa Rican bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"},
