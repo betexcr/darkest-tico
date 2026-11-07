@@ -13,6 +13,7 @@ const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 @onready var _week: Label = $Columns/Left/VBox/InfoRow/WeekLabel
 @onready var _region_option: OptionButton = $Columns/Left/VBox/RegionRow/RegionOption
 @onready var _shop_grid: GridContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
+@onready var _btn_sell: Button = $Columns/Left/VBox/ShopHead/BtnSell
 @onready var _equip_title: Label = $Columns/Right/VBox/EquipTitle
 @onready var _equip_row: HBoxContainer = $Columns/Right/VBox/EquipRow
 @onready var _pack_grid: GridContainer = $Columns/Right/VBox/PackGrid
@@ -39,6 +40,9 @@ func _ready() -> void:
 	_sync_region_option_from_state()
 	_try_load_hub_background()
 	_build_shop()
+	_btn_sell.toggled.connect(func(_on: bool): _refresh())
+	# Drop any inventory item on the shop list to sell one.
+	$Columns/Left/VBox/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 	for slot in GameState.EQUIP_SLOTS:
 		var es = EquipSlotScript.new()
 		es.setup(slot)
@@ -129,6 +133,7 @@ func _build_shop() -> void:
 			b.icon = load(icon_path) as Texture2D
 			b.expand_icon = true
 		b.set_meta("item_id", str(id))
+		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		_shop_grid.add_child(b)
 
@@ -142,8 +147,11 @@ func _on_iglesia_pressed() -> void:
 func _refresh_equipment() -> void:
 	if _selected.is_empty() or not GameState.roster.has(_selected):
 		_selected = GameState.roster[0] if not GameState.roster.is_empty() else {}
-	_equip_title.text = "Equipo de %s — arrastra desde la alforja (%d/%d espacios)" % [
-		_selected.get("name", "—"), GameState.inventory.size(), GameState.INVENTORY_SLOTS]
+	if _btn_sell.button_pressed:
+		_equip_title.text = "MODO VENDER: clic en un artículo de la alforja para venderlo (mitad de precio)"
+	else:
+		_equip_title.text = "Equipo de %s — arrastra desde la alforja (%d/%d espacios)" % [
+			_selected.get("name", "—"), GameState.inventory.size(), GameState.INVENTORY_SLOTS]
 	for es in _equip_slots:
 		es.show_hero(_selected)
 	for c in _pack_grid.get_children():
@@ -153,12 +161,24 @@ func _refresh_equipment() -> void:
 		if k < GameState.inventory.size():
 			b.setup(str(GameState.inventory[k]["id"]), int(GameState.inventory[k]["qty"]))
 			b.used.connect(func(id: String):
-				if GameState.is_equipment(id) and not _selected.is_empty():
+				if _btn_sell.button_pressed:
+					_say(GameState.sell_item(id))
+				elif GameState.is_equipment(id) and not _selected.is_empty():
 					_say(GameState.equip(_selected, id))
 			)
+			if _btn_sell.button_pressed:
+				b.modulate = Color(1, 0.85, 0.6)
 		else:
 			b.setup("", 0)
 		_pack_grid.add_child(b)
+
+
+func _can_drop_sell(_at: Vector2, data: Variant) -> bool:
+	return data is Dictionary and str(data.get("kind", "")) == "item"
+
+
+func _drop_sell(_at: Vector2, data: Variant) -> void:
+	_say(GameState.sell_item(str(data.get("id", ""))))
 
 
 # --- Terminal de Buses ------------------------------------------------------------

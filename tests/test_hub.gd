@@ -59,6 +59,12 @@ func _run() -> void:
 	old_save["party"][0].erase("uid")
 	gs.apply_save_data(old_save)
 	_check(gs.roster.size() == 1 and gs.party.size() == 1 and int(gs.roster[0]["uid"]) > 0, "v4 save migrates to roster")
+	gs.inventory.clear()
+	gs.add_item("cotona_de_cuero", 1)
+	var c0: int = gs.colones
+	gs.sell_item("cotona_de_cuero")
+	_check(gs.colones - c0 == 350 and gs.item_count("cotona_de_cuero") == 0, "selling pays half the price (700 -> 350)")
+	_check(gs.sell_item("cotona_de_cuero") != "" and gs.colones - c0 == 350, "can't sell what you don't have")
 	gs.reset_party_from_catalog()
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)

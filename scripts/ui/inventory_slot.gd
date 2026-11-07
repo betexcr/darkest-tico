@@ -32,7 +32,7 @@ func setup(id: String, amount: int) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if item_id == "" or not GameState.is_equipment(item_id):
+	if item_id == "":
 		return null
 	var preview := Label.new()
 	preview.text = str(GameState.get_item(item_id).get("name", item_id))

@@ -42,6 +42,8 @@ const RECRUIT_POOL_SIZE := 3
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 const HEAL_COST_PER_HP := 15
 const HEAL_MIN_COST := 100
+## Items sell for half their buying price (owner, 2026-11-07).
+const SELL_RATE := 0.5
 
 
 var colones: int = 5000
@@ -291,6 +293,20 @@ func _item_use_key(hero: Dictionary, item_id: String) -> String:
 	return "%s|%s" % [str(hero.get("uid", hero.get("name", "?"))), item_id]
 
 
+func sell_price(item_id: String) -> int:
+	return int(floor(int(get_item(item_id).get("price", 0)) * SELL_RATE))
+
+
+## Pulpería buys back one unit at half price. Returns a message for the hub.
+func sell_item(item_id: String) -> String:
+	if item_count(item_id) <= 0:
+		return "No tienes ese artículo."
+	var price: int = sell_price(item_id)
+	remove_item(item_id, 1)
+	colones += price
+	return "Vendiste %s (+%d ₡)." % [get_item(item_id).get("name", item_id), price]
+
+
 ## Why `hero` can't use an item right now outside combat, or "" if they can.
 func item_block_reason_outside_combat(item_id: String, hero: Dictionary) -> String:
 	var item: Dictionary = get_item(item_id)
@@ -424,7 +440,7 @@ func item_tooltip(item_id: String) -> String:
 	if str(it.get("usable", "")) in ["explore", "both"]:
 		where += " · %d uso(s) por héroe en cada lugar" % int(it.get("uses_per_node", 1))
 	lines.append(where)
-	lines.append("%d ₡" % int(it.get("price", 0)))
+	lines.append("Compra %d ₡ · Venta %d ₡" % [int(it.get("price", 0)), sell_price(item_id)])
 	return "\n".join(lines)
 
 

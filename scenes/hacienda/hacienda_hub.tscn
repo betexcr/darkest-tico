@@ -95,10 +95,20 @@ text = "Región:"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ShopTitle" type="Label" parent="Columns/Left/VBox"]
+[node name="ShopHead" type="HBoxContainer" parent="Columns/Left/VBox"]
 layout_mode = 2
+
+[node name="ShopTitle" type="Label" parent="Columns/Left/VBox/ShopHead"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Pulpería La Hacienda"
+text = "Pulpería La Hacienda — arrastra aquí para vender"
+
+[node name="BtnSell" type="Button" parent="Columns/Left/VBox/ShopHead"]
+layout_mode = 2
+tooltip_text = "Modo vender: clic en un artículo de la alforja para venderlo a la mitad del precio."
+toggle_mode = true
+text = "Vender"
 
 [node name="ShopScroll" type="ScrollContainer" parent="Columns/Left/VBox"]
 layout_mode = 2
