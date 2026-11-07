@@ -1,14 +1,16 @@
 {
   "id": "sprite_medica_josefina_attack",
-  "prompt": "character sheet, stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat over black skirt to the ankles, flat boots, six poses, same clothes and a syringe in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "miniskirt, stockings, high heels, cleavage, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5051,
+  "prompt": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black skirt, black leggings covering the legs, flat boots, lunging right, both hands thrusting a syringe forward at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "shorts, bare legs, bare thighs, high heels, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5055,
+  "sheet_seed": 5051,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
-  "resolution": "960x960 sheet, cell 2 of 6",
-  "mode": "sheet",
+  "resolution": "512x768, scaled into a 320x480 cell",
+  "mode": "txt2img",
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "weapon_control": "lllyasviel/control_v11p_sd15_scribble",
   "reference": {
     "image": "assets/portraits/medica_josefina.png",
     "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
@@ -17,5 +19,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T18:28:48+00:00"
+  "timestamp": "2026-11-07T23:25:13+00:00"
 }
