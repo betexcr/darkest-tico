@@ -90,7 +90,8 @@ var selected_mission_region_path: String = DEFAULT_REGION_PATH
 
 ## Carried items, one entry per inventory slot: {"id": String, "qty": int} (P3-09).
 var inventory: Array = []
-## Uses of each item in the current room, outside combat. Reset on every move.
+## Uses of each item by each hero in the current room, outside combat, keyed
+## "<hero_id>|<item_id>". The limit is per character, not per team. Reset on every move.
 var node_item_uses: Dictionary = {}
 var _items_by_id: Dictionary = {}
 var _item_order: Array = []
@@ -200,8 +201,12 @@ func buy_item(item_id: String) -> String:
 	return "Compraste %s (-%d ₡)." % [item.get("name", item_id), price]
 
 
-## Why an item can't be used right now outside combat, or "" if it can.
-func item_block_reason_outside_combat(item_id: String) -> String:
+func _item_use_key(hero: Dictionary, item_id: String) -> String:
+	return "%s|%s" % [str(hero.get("hero_id", hero.get("name", "?"))), item_id]
+
+
+## Why `hero` can't use an item right now outside combat, or "" if they can.
+func item_block_reason_outside_combat(item_id: String, hero: Dictionary) -> String:
 	var item: Dictionary = get_item(item_id)
 	if item.is_empty() or item_count(item_id) <= 0:
 		return "No tienes ese artículo."
@@ -209,22 +214,26 @@ func item_block_reason_outside_combat(item_id: String) -> String:
 		if str(item.get("usable", "")) == "curio":
 			return "Se usa en un lugar extraño."
 		return "Solo se usa en combate."
+	if hero.is_empty() or bool(hero.get("dead", false)):
+		return "Elige un héroe vivo."
 	var limit: int = int(item.get("uses_per_node", 1))
-	if int(node_item_uses.get(item_id, 0)) >= limit:
-		return "Ya usaste %s en este lugar." % item.get("name", item_id)
+	if int(node_item_uses.get(_item_use_key(hero, item_id), 0)) >= limit:
+		return "%s ya usó %s en este lugar." % [hero.get("name", "?"), item.get("name", item_id)]
 	return ""
 
 
-## Uses an item outside combat on `hero` (party items affect everyone). Returns log lines.
+## `hero` uses an item outside combat: ally items treat that hero, party items affect
+## everyone. Counts toward that hero's per-room limit. Returns log lines.
 func use_item_outside_combat(item_id: String, hero: Dictionary) -> PackedStringArray:
 	var logs: PackedStringArray = PackedStringArray()
-	var why: String = item_block_reason_outside_combat(item_id)
+	var why: String = item_block_reason_outside_combat(item_id, hero)
 	if why != "":
 		logs.append(why)
 		return logs
 	var item: Dictionary = get_item(item_id)
 	remove_item(item_id, 1)
-	node_item_uses[item_id] = int(node_item_uses.get(item_id, 0)) + 1
+	var key: String = _item_use_key(hero, item_id)
+	node_item_uses[key] = int(node_item_uses.get(key, 0)) + 1
 	var light: int = ItemEffectsScript.light_amount(item)
 	if light != 0:
 		mission_light = clampi(mission_light + light, 0, 100)

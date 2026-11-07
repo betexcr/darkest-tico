@@ -225,7 +225,7 @@ func _usage_hint(item: Dictionary) -> String:
 		"both": "Dentro y fuera de combate", "curio": "Se usa en lugares extraños",
 	}.get(str(item.get("usable", "")), "")
 	if str(item.get("usable", "")) in ["explore", "both"]:
-		where += " · %d uso(s) por lugar" % int(item.get("uses_per_node", 1))
+		where += " · %d uso(s) por héroe en cada lugar" % int(item.get("uses_per_node", 1))
 	if str(item.get("target", "")) == "ally":
 		where += " · se aplica al héroe seleccionado"
 	return where

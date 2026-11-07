@@ -225,7 +225,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ### P3-09 · M · Items, inventory and Pulpería (owner spec 2026-11-07)
 - Status: `review` (owner: try the Pulpería in Godot) · Depends: —
-- Spec: owner request. Tico-themed consumables in `data/items.json`. Using an item **in combat spends the hero's turn**. **Out of combat each item can be used `uses_per_node` times per room (default 1)**. Bought at the hacienda's Pulpería. Food and light become items (gallo pinto, candela) instead of hub counters. Curio-key items (llave, mecate, agua bendita, ruda) prepare `07` curio interactions.
+- Spec: owner request. Tico-themed consumables in `data/items.json`. Using an item **in combat spends the hero's turn**. **Out of combat each hero can use each item `uses_per_node` times per room (default 1); the limit is per character, not per team (owner, 2026-11-07)**. Bought at the hacienda's Pulpería. Food and light become items (gallo pinto, candela) instead of hub counters. Curio-key items (llave, mecate, agua bendita, ruda) prepare `07` curio interactions.
 - Files: `data/items.json` (new), `scripts/autoload/game_state.gd` (inventory, per-room use counts, save v4 + migration of `hub_pending_*`), `scenes/hacienda/hacienda_hub.tscn` + `.gd` (Pulpería replaces rations/lantern buttons), `tools/validate_data.py`
 - Done when:
   - [x] Inventory saved (save v4, migrates old hub purchases); buy at Pulpería; per-room limit enforced outside combat

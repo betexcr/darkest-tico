@@ -1,5 +1,5 @@
 {
-  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}.",
+  "_doc": "Consumables. usable: explore | combat | both | curio (key only). target: ally | party | enemy | none. uses_per_node: uses allowed per hero per room outside combat (P3-09). Effects: heal, stress (negative relieves), light, damage [min,max], hp_risk {chance, amount}.",
   "starter_inventory": [
     {
       "id": "gallo_pinto",
