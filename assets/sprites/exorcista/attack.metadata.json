@@ -1,6 +1,6 @@
 {
   "id": "sprite_exorcista_attack",
-  "prompt": "character sheet, pale woman exorcist, black hooded robe over her head, long black habit, silver cross necklace, six poses, same clothes and a crucifix in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "prompt": "character sheet, pale woman exorcist, black hooded robe over her head, long black habit to the floor, silver cross necklace, six poses, same clothes and a crucifix in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
   "negative_prompt": "jungle, plants, foliage, trees, building, house, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, white background, sketch, lineart, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5070,
   "steps": 20,
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T17:50:07+00:00"
+  "timestamp": "2026-11-07T17:53:28+00:00"
 }
