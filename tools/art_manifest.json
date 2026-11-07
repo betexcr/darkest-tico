@@ -2298,10 +2298,11 @@
       },
       {
         "id": "montador",
-        "look": "young Costa Rican bull rider, curly dark hair, wide battered leather hat, worn denim shirt, ripped jeans, boots",
-        "seed": 5011,
+        "look": "young Costa Rican bull rider, curly dark hair, wide battered leather hat, buttoned-up worn denim shirt, ripped jeans, boots",
+        "seed": 5012,
         "body": "humanoid",
-        "weapon": "a coiled lasso rope"
+        "weapon": "a coiled lasso rope",
+        "negative_extra": "bare chest, open shirt, shirtless, vest"
       },
       {
         "id": "abuela",
