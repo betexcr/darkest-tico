@@ -151,7 +151,7 @@ def reference_note(cfg: dict, c: dict):
     return None
 
 
-def load_pipelines(model: str, control_model: str, ref: dict | None = None):
+def load_pipelines(model: str, control_model: str, ref: dict | None = None, weapon_model: str | None = None):
     import torch
     from diffusers import (
         ControlNetModel,
@@ -188,9 +188,59 @@ def load_pipelines(model: str, control_model: str, ref: dict | None = None):
         "txt_pose": StableDiffusionControlNetPipeline(**comps, controlnet=cn),
         "img_pose": StableDiffusionControlNetImg2ImgPipeline(**comps, controlnet=cn),
     }
+    if weapon_model:
+        # Second ControlNet (scribble): a drawn weapon shape, so the weapon goes where we want it.
+        cw = ControlNetModel.from_pretrained(weapon_model, torch_dtype=dtype).to(device)
+        pipes["txt_pose_weapon"] = StableDiffusionControlNetPipeline(**comps, controlnet=[cn, cw])
     for p in pipes.values():
         p.set_progress_bar_config(disable=True)
     return pipes, device, torch
+
+
+def draw_weapon(cfg: dict, c: dict, sid: str, size):
+    """Scribble image (white on black) of the character's weapon for one state, or None.
+    The weapon starts at the hands (mean of both wrists) and points along `angle`
+    (degrees, 0 = toward the enemy on the right, positive = up)."""
+    import math
+
+    from PIL import Image, ImageDraw
+
+    guide = cfg.get("weapon_guide", {})
+    if sid not in guide.get("states", []):
+        return None
+    shape = dict(guide.get("default", {}), **c.get("weapon_shape", {}))
+    kind = shape.get("kind", "line")
+    if kind == "none":
+        return None
+    w, h = size
+    pts = skeleton_for(cfg, c, sid)
+    hands = [pts[i] for i in (4, 7) if pts[i] is not None]
+    x0 = sum(p[0] for p in hands) / len(hands) * w
+    y0 = sum(p[1] for p in hands) / len(hands) * h
+    ang = math.radians(float(shape.get("angle", 20)))
+    length = float(shape.get("length", 0.35)) * w
+    x1, y1 = x0 + math.cos(ang) * length, y0 - math.sin(ang) * length
+    lw = max(3, int(float(shape.get("width", 0.025)) * w))
+    im = Image.new("RGB", (w, h), (0, 0, 0))
+    d = ImageDraw.Draw(im)
+    if kind == "box":  # e.g. a drone held out in front
+        r = length / 2
+        cx, cy = x0 + math.cos(ang) * r * 1.4, y0 - math.sin(ang) * r * 1.4
+        d.rectangle([cx - r, cy - r * 0.45, cx + r, cy + r * 0.45], outline=(255, 255, 255), width=lw)
+        d.line([(x0, y0), (cx - r, cy)], fill=(255, 255, 255), width=max(2, lw // 2))
+        return im
+    d.line([(x0, y0), (x1, y1)], fill=(255, 255, 255), width=lw)
+    if kind == "loop":  # lasso: rope out to a loop
+        r = float(shape.get("loop", 0.12)) * w
+        d.ellipse([x1 - r, y1 - r, x1 + r, y1 + r], outline=(255, 255, 255), width=lw)
+    elif kind == "cross":  # crucifix: crossbar near the far end
+        bx, by = x0 + math.cos(ang) * length * 0.7, y0 - math.sin(ang) * length * 0.7
+        px, py = math.sin(ang) * length * 0.25, math.cos(ang) * length * 0.25
+        d.line([(bx - px, by - py), (bx + px, by + py)], fill=(255, 255, 255), width=lw)
+    elif kind == "bowl":  # ladle line + a bowl near the hands
+        r = length * 0.3
+        d.arc([x0 - r, y0, x0 + r, y0 + r * 1.2], 0, 180, fill=(255, 255, 255), width=lw)
+    return im
 
 
 def redo_prompt(cfg: dict, manifest: dict, c: dict, sid: str) -> str:
@@ -244,14 +294,20 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         # redo_mode "txt": draw from scratch (pose + portrait only) so the old cell's weapon
         # placement can't leak in; "img" (default): start from the cell to keep its colors.
         skel = draw_skeleton(skeleton_for(cfg, c, sid), (w, h))
-        if st.get("redo_mode", "img") == "txt":
+        weapon = draw_weapon(cfg, c, sid, (w, h)) if "txt_pose_weapon" in pipes else None
+        scale = control_scale
+        if weapon is not None:
+            src = dict(image=[skel, weapon], width=w, height=h)
+            pipe = pipes["txt_pose_weapon"]
+            scale = [control_scale, float(cfg["weapon_guide"].get("scale", 0.7))]
+        elif st.get("redo_mode", "img") == "txt":
             src = dict(image=skel, width=w, height=h)
             pipe = pipes["txt_pose"]
         else:
             src = dict(image=out[sid].resize((w, h)), control_image=skel, strength=float(st.get("redo_strength", 0.75)))
             pipe = pipes["img_pose"]
         big = pipe(
-            prompt=p, **src, controlnet_conditioning_scale=control_scale,
+            prompt=p, **src, controlnet_conditioning_scale=scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
             generator=torch.Generator(device="cpu").manual_seed(redo_seed(cfg, c, sid)),
             **(ref_kw or {}),
@@ -301,7 +357,8 @@ def main() -> int:
             return 2
         prev = Path(args.preview_dir)
         prev.mkdir(parents=True, exist_ok=True)
-        pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"))
+        pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"),
+                                           cfg.get("weapon_guide", {}).get("control_model"))
         steps = int(cfg.get("steps", manifest["steps"]))
         scales = args.ref_scales or [float(cfg.get("reference", {}).get("scale", 0.6))]
         negative = cfg.get("negative") or f'{cfg["negative_extra"]}, {manifest["negative_prompt"]}'
@@ -340,7 +397,8 @@ def main() -> int:
         print("Nothing to generate. Use --force to redo.")
         return 0
 
-    pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"))
+    pipes, device, torch = load_pipelines(manifest["model"], cfg["control_model"], cfg.get("reference"),
+                                           cfg.get("weapon_guide", {}).get("control_model"))
     control_scale = float(cfg.get("control_scale", 1.0))
     skeletons = cfg.get("skeletons", {})
     remover = None

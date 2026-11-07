@@ -1691,6 +1691,20 @@
         "assets/enemies"
       ]
     },
+    "weapon_guide": {
+      "_doc": "Scribble ControlNet: the weapon drawn as a simple shape from the hands toward the enemy (right), so the model can't leave it hanging. Per character: weapon_shape {kind: line|loop|cross|box|bowl|none, angle, length, width}.",
+      "control_model": "lllyasviel/control_v11p_sd15_scribble",
+      "scale": 0.7,
+      "states": [
+        "attack"
+      ],
+      "default": {
+        "kind": "line",
+        "angle": 20,
+        "length": 0.38,
+        "width": 0.025
+      }
+    },
     "prompt_template": "{look}, {pose}, full body, plain grey background, {style}",
     "style": "dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
     "negative": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
@@ -1726,7 +1740,7 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "lunging right, {weapon} gripped in the outstretched forward hand, striking the enemy",
+        "redo_pose": "lunging right, both hands thrusting {weapon} forward at the enemy",
         "redo_strength": 0.9,
         "redo_mode": "txt"
       },
@@ -1853,24 +1867,24 @@
           0.27
         ],
         [
-          0.65,
-          0.25
+          0.62,
+          0.33
         ],
         [
-          0.8,
-          0.21
+          0.73,
+          0.31
         ],
         [
           0.59,
           0.27
         ],
         [
-          0.5,
-          0.37
+          0.67,
+          0.35
         ],
         [
-          0.42,
-          0.45
+          0.75,
+          0.32
         ],
         [
           0.51,
@@ -2206,7 +2220,7 @@
           0.83
         ]
       ],
-      "_attack_doc": "Attack: turned toward the enemy (right); the RIGHT hand holds the weapon and swings forward."
+      "_attack_doc": "Attack: turned toward the enemy (right), lunging; both hands forward at chest height on the weapon (the model puts the weapon in whichever hand is lowest, so neither hand is left behind)."
     },
     "characters": [
       {
@@ -2214,7 +2228,12 @@
         "look": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers",
         "seed": 5001,
         "body": "humanoid",
-        "weapon": "a long steel machete"
+        "weapon": "a long steel machete",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 25,
+          "length": 0.36
+        }
       },
       {
         "id": "montador",
@@ -2224,7 +2243,13 @@
         "weapon": "a coiled lasso rope",
         "negative_extra": "woman, crop top, bare chest, open shirt, vest",
         "redo_poses": {
-          "attack": "lunging right, {weapon} thrown from the outstretched forward hand"
+          "attack": "lunging right, both hands throwing {weapon} forward at the enemy"
+        },
+        "weapon_shape": {
+          "kind": "loop",
+          "angle": 30,
+          "length": 0.2,
+          "loop": 0.1
         }
       },
       {
@@ -2232,21 +2257,36 @@
         "look": "elderly grandmother, wrinkled face, black hooded shawl over her head, long dark robe, prayer beads",
         "seed": 5020,
         "body": "humanoid",
-        "weapon": "a wooden ladle and clay bowl"
+        "weapon": "a wooden ladle and clay bowl",
+        "weapon_shape": {
+          "kind": "bowl",
+          "angle": 20,
+          "length": 0.3
+        }
       },
       {
         "id": "tecnologo",
         "look": "young man, curly dark hair, brass goggles, dark leather jacket with straps and buckles",
         "seed": 5030,
         "body": "humanoid",
-        "weapon": "a small homemade drone"
+        "weapon": "a small homemade drone",
+        "weapon_shape": {
+          "kind": "box",
+          "angle": 15,
+          "length": 0.18
+        }
       },
       {
         "id": "guachiman",
         "look": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat",
         "seed": 5040,
         "body": "humanoid",
-        "weapon": "a wooden baton"
+        "weapon": "a wooden baton",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 30,
+          "length": 0.32
+        }
       },
       {
         "id": "medica_josefina",
@@ -2254,14 +2294,24 @@
         "seed": 5051,
         "body": "humanoid",
         "weapon": "a syringe",
-        "negative_extra": "miniskirt, stockings, high heels, cleavage"
+        "negative_extra": "miniskirt, stockings, high heels, cleavage",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 15,
+          "length": 0.16
+        }
       },
       {
         "id": "curandero",
         "look": "elderly folk healer, long grey braids, wide dark hat with leaves, dark brown robes, beaded necklace",
         "seed": 5060,
         "body": "humanoid",
-        "weapon": "a bundle of smoking herbs"
+        "weapon": "a bundle of smoking herbs",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 30,
+          "length": 0.22
+        }
       },
       {
         "id": "exorcista",
@@ -2270,7 +2320,12 @@
         "body": "humanoid",
         "weapon": "a crucifix",
         "redo_poses": {
-          "attack": "lunging right, {weapon} held in the outstretched forward hand toward the enemy"
+          "attack": "lunging right, both hands holding {weapon} forward at the enemy"
+        },
+        "weapon_shape": {
+          "kind": "cross",
+          "angle": 70,
+          "length": 0.3
         }
       },
       {
