@@ -166,14 +166,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] One roaming mini-boss with a spawn rule (suggested: Cadejo Negro, listed in `05` §3.2; today it is a plain elite in Bosque `b4`)
 
 ### P2-06 · M · Random grid dungeon generator (owner spec 2026-11-07)
-- Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
+- Status: `review` (owner: play a few runs) · Depends: —
 - Spec: owner request + `01` §4.2–4.3, `07`. Rooms sit on a grid and connect up/down/left/right. Branching is random: some rooms have one exit, others several. The **last room is always the region boss** (Sótanos: El Mayordomo Hundido), placed farthest from the entrance.
 - Files: `scripts/domain/map_generator.gd` (new, pure), `data/regions/sotanos.json` (`generator` block), `scripts/autoload/game_state.gd`, `scripts/domain/expedition_loader.gd` (undirected edges)
 - Done when:
-  - [ ] Seeded generation; start → boss always reachable; boss room = graph-farthest leaf
-  - [ ] Room types weighted from region data (combat, elite, trap, curio, camp, empty); one camp mid-way
-  - [ ] Fog: layout visible, room type shown only for visited rooms and their neighbors (boss always marked)
-  - [ ] Hand-authored region files (Bosque) still load
+  - [x] Seeded generation; start → boss always reachable; boss room = farthest dead end, ≥5 rooms away (`python3 tools/preview_map.py --check 3000`: 0 problems)
+  - [x] Room types weighted from region data (combat, elite, trap, curio, camp, empty); one camp mid-way
+  - [x] Fog: only visited rooms and their neighbors are drawn; boss room always marked
+  - [x] Hand-authored region files (Bosque) still load (directed edges unchanged)
 
 ### P2-07 · S · Bosque: decide slice status
 - Status: `done`
@@ -233,16 +233,17 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Curio-key items do something at curios (needs P2-01 data-driven events)
 
 ### P4-09 · L · Unified expedition screen (owner spec 2026-11-07)
-- Status: `todo` · Depends: P2-06, P3-09, P4-07
+- Status: `review` (owner: play-test in Godot; written without running Godot) · Depends: P2-06, P3-09, P4-07
 - Spec: owner screenshots of the reference layout. **One screen** for exploring and fighting:
   - **Top:** stage with the party; enemies appear in place when a fight starts. Event panels (trap, curio, camp) open over the stage.
   - **Bottom left:** hero panel showing the hero whose turn it is. Clicking any hero on the stage shows that hero's data instead.
   - **Bottom right:** room map, moving room by room with arrows or by clicking a neighbor. A side button flips this panel to the inventory grid (use items there).
 - Files: `scenes/expedition/expedition_screen.tscn` + `scripts/expedition/expedition_screen.gd` (new), `scripts/expedition/map_view.gd` (new), `scripts/combat/combat_controller.gd` (combat rules moved out of `combat_scene.gd`), `scripts/bootstrap/main.gd`. Old `expedition_map` and `combat_scene` are removed once replaced.
 - Done when:
-  - [ ] Explore → fight → explore without changing scenes; boss room ends the mission on victory
-  - [ ] Hero panel follows the turn; clicking a hero shows that hero
-  - [ ] Map and inventory toggle; items usable in and out of combat with the rules above
+  - [x] Explore → fight → explore without changing scenes; boss room ends the mission on victory
+  - [x] Hero panel follows the turn; clicking a hero shows that hero
+  - [x] Map and inventory toggle (tabs or M / I keys); arrows, arrow keys or clicking a neighbor room to move; items usable in and out of combat with the rules above
+  - [ ] Verified running in Godot
 
 ### P4-10 · S · Item icons
 - Status: `todo` · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
@@ -287,7 +288,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Icons render at 40×40 next to route buttons (`expedition_map.gd:136`) and are hard to read in the owner's screenshots. Try 64×64, or a type label color per node type.
 
 ### P4-07 · M · Side-view battle screen (owner request 2026-11-07)
-- Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
+- Status: `done` — folded into P4-09: the stage, `battle_unit.gd` and the combat rules (now `combat_controller.gd`) live in the expedition screen; `combat_scene` was removed. · Depends: —
 - Spec: owner wants the classic side-view layout: party on the left facing enemies on the right in a stage across the top; portrait, stats and skills in a panel below. Own art and UI style; layout only.
 - Files: `scenes/combat/combat_scene.tscn`, `scripts/combat/combat_scene.gd`, `scripts/combat/battle_unit.gd` (new)
 - Done when:

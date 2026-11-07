@@ -1,0 +1,341 @@
+[gd_scene load_steps=6 format=3 uid="uid://bexpscreen0001"]
+
+[ext_resource type="Script" path="res://scripts/expedition/expedition_screen.gd" id="1_screen"]
+[ext_resource type="Script" path="res://scripts/expedition/map_view.gd" id="2_map"]
+[ext_resource type="Script" path="res://scripts/combat/combat_controller.gd" id="3_combat"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+bg_color = Color(0.06, 0.045, 0.035, 0.96)
+border_width_top = 3
+border_color = Color(0.38, 0.27, 0.16, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.02, 0.015, 0.01, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.33, 0.2, 1)
+
+[node name="ExpeditionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_screen")
+
+[node name="BgTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Darken" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.25)
+
+[node name="Stage" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -250.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopBar" type="HBoxContainer" parent="Stage"]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 10.0
+offset_right = -20.0
+offset_bottom = 38.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="RoomLabel" type="Label" parent="Stage/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+text = "—"
+
+[node name="ActorLabel" type="Label" parent="Stage/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+text = ""
+
+[node name="LightLabel" type="Label" parent="Stage/TopBar"]
+layout_mode = 2
+text = "Luz 100"
+
+[node name="LightBar" type="ProgressBar" parent="Stage/TopBar"]
+custom_minimum_size = Vector2(200, 14)
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+
+[node name="HeroRow" type="HBoxContainer" parent="Stage"]
+layout_mode = 1
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 44.0
+offset_right = -24.0
+offset_bottom = -30.0
+grow_vertical = 2
+theme_override_constants/separation = 6
+alignment = 2
+
+[node name="EnemyRow" type="HBoxContainer" parent="Stage"]
+layout_mode = 1
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 44.0
+offset_right = -16.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="Narration" type="Label" parent="Stage"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = -30.0
+offset_right = -40.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.95, 0.85, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+horizontal_alignment = 1
+text = ""
+
+[node name="EventPanel" type="PanelContainer" parent="Stage"]
+visible = false
+layout_mode = 1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -110.0
+offset_right = 260.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="Stage/EventPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Stage/EventPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="EventTitle" type="Label" parent="Stage/EventPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+text = ""
+
+[node name="EventText" type="Label" parent="Stage/EventPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+autowrap_mode = 3
+text = ""
+
+[node name="EventActions" type="HBoxContainer" parent="Stage/EventPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="BottomPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -250.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Row" type="HBoxContainer" parent="BottomPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeroCard" type="PanelContainer" parent="BottomPanel/Row"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="HeroPortrait" type="TextureRect" parent="BottomPanel/Row/HeroCard"]
+custom_minimum_size = Vector2(140, 210)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="HeroInfo" type="VBoxContainer" parent="BottomPanel/Row"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HeroName" type="Label" parent="BottomPanel/Row/HeroInfo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+autowrap_mode = 3
+text = "—"
+
+[node name="HeroStats" type="Label" parent="BottomPanel/Row/HeroInfo"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = ""
+
+[node name="Actions" type="VBoxContainer" parent="BottomPanel/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TurnLabel" type="Label" parent="BottomPanel/Row/Actions"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.75, 0.7, 0.6, 1)
+text = ""
+
+[node name="Skills" type="HFlowContainer" parent="BottomPanel/Row/Actions"]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+
+[node name="Log" type="RichTextLabel" parent="BottomPanel/Row/Actions"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+scroll_following = true
+text = ""
+
+[node name="SidePanel" type="HBoxContainer" parent="BottomPanel/Row"]
+custom_minimum_size = Vector2(470, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Pages" type="PanelContainer" parent="BottomPanel/Row/SidePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="MapView" type="Control" parent="BottomPanel/Row/SidePanel/Pages"]
+layout_mode = 2
+tooltip_text = "Mapa"
+script = ExtResource("2_map")
+
+[node name="Inventory" type="GridContainer" parent="BottomPanel/Row/SidePanel/Pages"]
+visible = false
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 8
+
+[node name="Tabs" type="VBoxContainer" parent="BottomPanel/Row/SidePanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BtnMap" type="Button" parent="BottomPanel/Row/SidePanel/Tabs"]
+custom_minimum_size = Vector2(48, 40)
+layout_mode = 2
+tooltip_text = "Mapa (M)"
+toggle_mode = true
+button_pressed = true
+text = "Mapa"
+
+[node name="BtnInventory" type="Button" parent="BottomPanel/Row/SidePanel/Tabs"]
+custom_minimum_size = Vector2(48, 40)
+layout_mode = 2
+tooltip_text = "Alforja (I)"
+toggle_mode = true
+text = "Alforja"
+
+[node name="Pad" type="GridContainer" parent="BottomPanel/Row/SidePanel/Tabs"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_constants/h_separation = 2
+theme_override_constants/v_separation = 2
+columns = 3
+
+[node name="P0" type="Control" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+layout_mode = 2
+
+[node name="BtnUp" type="Button" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Avanzar arriba"
+text = "↑"
+
+[node name="P2" type="Control" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+layout_mode = 2
+
+[node name="BtnLeft" type="Button" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Avanzar a la izquierda"
+text = "←"
+
+[node name="P4" type="Control" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+layout_mode = 2
+
+[node name="BtnRight" type="Button" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Avanzar a la derecha"
+text = "→"
+
+[node name="P6" type="Control" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+layout_mode = 2
+
+[node name="BtnDown" type="Button" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+tooltip_text = "Avanzar abajo"
+text = "↓"
+
+[node name="P8" type="Control" parent="BottomPanel/Row/SidePanel/Tabs/Pad"]
+layout_mode = 2
+
+[node name="Combat" type="Node" parent="."]
+script = ExtResource("3_combat")

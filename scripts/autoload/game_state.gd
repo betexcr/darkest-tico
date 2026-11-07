@@ -74,12 +74,12 @@ var objective_node_id: String = ""
 var mission_params: Dictionary = {}
 
 
-## Set before opening combat; read by combat_scene.
+## Set before a fight starts; read by the expedition screen.
 
 var combat_context: Dictionary = {}
 
 
-## Filled by combat_scene when returning to expedition.
+## Legacy (pre-P4-09 scene swap); unused by the expedition screen.
 
 var combat_return_victory: bool = false
 

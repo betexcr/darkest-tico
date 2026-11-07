@@ -165,7 +165,7 @@ def main() -> int:
         raw_path = CACHE / cid / "idle_raw.png"
         seed = int(c["seed"]) + state_ids.index(sid)
         pose_text = s.get("beast_pose", s["pose"]) if c.get("body") == "beast" else s["pose"]
-        prompt = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=manifest["style_suffix"])
+        prompt = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
         gen = torch.Generator(device="cpu").manual_seed(seed)
         t0 = time.time()
         beast = c.get("body", "humanoid") == "beast"
@@ -189,7 +189,7 @@ def main() -> int:
                 base = Image.open(raw_path).convert("RGB")
             if base is None:
                 idle = states[state_ids.index("idle")]
-                idle_prompt = cfg["prompt_template"].format(look=c["look"], pose=idle["pose"], style=manifest["style_suffix"])
+                idle_prompt = cfg["prompt_template"].format(look=c["look"], pose=idle["pose"], style=cfg.get("style", manifest["style_suffix"]))
                 idle_gen = dict(common, generator=torch.Generator(device="cpu").manual_seed(int(c["seed"])))
                 if not beast and "idle" in skeletons:
                     base = pipes["txt_pose"](prompt=idle_prompt, image=draw_skeleton(skeletons["idle"], (w, h)),
