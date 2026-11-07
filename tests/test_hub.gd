@@ -66,6 +66,17 @@ func _run() -> void:
 	_check(gs.colones - c0 == 350 and gs.item_count("cotona_de_cuero") == 0, "selling pays half the price (700 -> 350)")
 	_check(gs.sell_item("cotona_de_cuero") != "" and gs.colones - c0 == 350, "can't sell what you don't have")
 	gs.reset_party_from_catalog()
+	gs.inventory.clear()
+	var leaver: Dictionary = gs.party[1]
+	gs.add_item("cotona_de_cuero", 1)
+	gs.equip(leaver, "cotona_de_cuero")
+	var msg: String = gs.dismiss_hero(leaver)
+	_check(gs.roster.size() == 3 and not gs.is_in_party(leaver), "dismiss removes the hero from roster and party")
+	_check(gs.item_count("cotona_de_cuero") == 1, "dismissed hero's equipment returns to the inventory (%s)" % msg)
+	while gs.roster.size() > 1:
+		gs.dismiss_hero(gs.roster[0])
+	_check(gs.dismiss_hero(gs.roster[0]) != "" and gs.roster.size() == 1, "the last hero can't be dismissed")
+	gs.reset_party_from_catalog()
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame

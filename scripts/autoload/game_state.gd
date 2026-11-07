@@ -595,6 +595,28 @@ func hire_recruit(index: int) -> String:
 	return "%s (%s) se baja del bus y se une a la hacienda (-%d ₡)." % [h.get("name", "?"), h.get("class_name", ""), cost]
 
 
+## Dismiss a hero for good: equipment goes back to the inventory first (refused if it
+## doesn't fit, so nothing is lost). The last hero can't be dismissed.
+func dismiss_hero(hero: Dictionary) -> String:
+	if roster.size() <= 1:
+		return "La hacienda no puede quedarse sin nadie."
+	var eq = hero.get("equipment", {})
+	var gear: Array = eq.values() if eq is Dictionary else []
+	if inventory.size() + gear.size() > INVENTORY_SLOTS:
+		return "No hay espacio en la alforja para guardar el equipo de %s." % hero.get("name", "?")
+	for id in gear:
+		add_item(str(id), 1)
+	set_in_party(hero, false)
+	for k in roster.size():
+		if is_same(roster[k], hero):
+			roster.remove_at(k)
+			break
+	var msg: String = "%s se despide de la hacienda y se va en el bus." % hero.get("name", "?")
+	if not gear.is_empty():
+		msg += " Su equipo quedó en la alforja."
+	return msg
+
+
 func is_in_party(hero: Dictionary) -> bool:
 	for p in party:
 		if is_same(p, hero):

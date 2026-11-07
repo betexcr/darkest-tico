@@ -245,6 +245,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - 2026-11-07 additions (owner): 64 items total. +12 consumables (incl. elemental throwables, two with stun), dark weapon (Puñal del Portón), armors for earth/wind/holy (every element now has a weapon and an armor), +11 accessories incl. **Lentes del abuelo** (`scout`: party sees exact HP, attacks and affinities in the enemy info panel; without it only health %). Caja del abuelo + llave = random 250–700 ₡ + random equipment. Owner note: items may target enemies/situations that don't exist yet; that's intended.
 - Follow-ups: class restrictions on weapons? Balance (fights got longer with squads + armor: ~100 hero turns per expedition in the smoke test).
 
+### P3-12 · S · Dismiss heroes (owner request 2026-11-07)
+- Status: `review` · "Despedir" on each roster row, with confirmation. Equipment goes back to the inventory (refused if it doesn't fit); the last hero can't be dismissed. `GameState.dismiss_hero`, covered in `tests/test_hub.gd`.
+
 ### P3-10 · S · EBAIS healing in the hub (owner request 2026-11-07)
 - Status: `review` · Each roster row has "EBAIS N ₡": full HP for `HEAL_COST_PER_HP` (15) per missing HP, minimum `HEAL_MIN_COST` (100). Constants in `game_state.gd`.
 

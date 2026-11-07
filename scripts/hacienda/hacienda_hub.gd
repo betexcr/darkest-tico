@@ -279,12 +279,39 @@ func _roster_row(h: Dictionary) -> Control:
 			_say("")
 		)
 		row.add_child(down)
+	var fire := Button.new()
+	fire.text = "Despedir"
+	fire.tooltip_text = "Despedir a este héroe para siempre. Su equipo vuelve a la alforja."
+	fire.add_theme_color_override("font_color", Color(0.95, 0.55, 0.5))
+	fire.disabled = GameState.roster.size() <= 1
+	fire.pressed.connect(_confirm_dismiss.bind(h))
+	row.add_child(fire)
 	var cb := CheckBox.new()
 	cb.text = "Cuadrilla"
 	cb.button_pressed = in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))
 	row.add_child(cb)
 	return row
+
+
+func _confirm_dismiss(h: Dictionary) -> void:
+	var dlg := ConfirmationDialog.new()
+	dlg.title = "Despedir"
+	dlg.dialog_text = "¿Despedir a %s (%s)? No vuelve. Su equipo regresa a la alforja." % [
+		h.get("name", "?"), h.get("class_name", "")]
+	dlg.ok_button_text = "Despedir"
+	dlg.cancel_button_text = "Cancelar"
+	dlg.confirmed.connect(func():
+		if is_same(_selected, h):
+			_selected = {}
+		_say(GameState.dismiss_hero(h))
+	)
+	dlg.visibility_changed.connect(func():
+		if not dlg.visible:
+			dlg.queue_free()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
 
 
 func _on_start_pressed() -> void:
