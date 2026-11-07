@@ -225,6 +225,14 @@ func set_active(on: bool) -> void:
 	_name_label.add_theme_color_override("font_color", Color(1, 0.9, 0.55) if on else Color(0.9, 0.9, 0.9))
 
 
+## Highlight as a valid pick while the player chooses a target (green for allies,
+## red for enemies).
+func set_selectable(on: bool) -> void:
+	_marker.visible = on
+	_marker.color = Color(0.35, 0.85, 0.45, 0.95) if is_hero else Color(0.95, 0.25, 0.2, 0.95)
+	_name_label.add_theme_color_override("font_color", Color(0.75, 1, 0.75) if (on and is_hero) else (Color(1, 0.7, 0.65) if on else Color(0.9, 0.9, 0.9)))
+
+
 func set_targeted(on: bool) -> void:
 	_name_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
 	if on:

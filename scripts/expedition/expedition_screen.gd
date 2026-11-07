@@ -48,8 +48,9 @@ var _hero_units: Array = []
 var _enemy_units: Array = []
 var _viewed_hero: Dictionary = {}
 var _combat_node_id: String = ""
-## In combat: the hero that ally-target skills and items will affect (click a hero to change).
-var _ally_target: Dictionary = {}
+## While choosing a target after pressing a skill/item: {"side": "enemy"|"ally",
+## "skill": Dictionary} or {"side": ..., "item": String}. Empty when not choosing.
+var _pending: Dictionary = {}
 var _equip_slots: Array = []
 
 
@@ -83,7 +84,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 	var key := event as InputEventKey
 	if key != null and key.pressed and not key.echo:
-		if key.keycode == KEY_M:
+		if key.keycode == KEY_ESCAPE and not _pending.is_empty():
+			_cancel_pending()
+			get_viewport().set_input_as_handled()
+		elif key.keycode == KEY_M:
 			_show_page(false)
 		elif key.keycode == KEY_I:
 			_show_page(true)
@@ -121,15 +125,13 @@ func _clear_enemies() -> void:
 
 
 func _on_unit_clicked(unit) -> void:
-	if not unit.is_hero:
-		if _mode == Mode.COMBAT and not unit.is_dead():
-			_combat.set_target(unit.data)
-			_update_turn_label()
+	if not _pending.is_empty():
+		var side: String = "ally" if unit.is_hero else "enemy"
+		if side == str(_pending["side"]) and not unit.is_dead():
+			_execute_pending(unit.data)
 		return
-	_view_hero(unit.data)
-	if _mode == Mode.COMBAT and not _combat.active_hero().is_empty() and not unit.is_dead():
-		_ally_target = unit.data
-		_update_turn_label()
+	if unit.is_hero:
+		_view_hero(unit.data)
 
 
 func _set_background(path: String) -> void:
@@ -244,10 +246,14 @@ func _on_item_pressed(item_id: String) -> void:
 		return
 	match _mode:
 		Mode.COMBAT:
-			if _combat.active_hero().is_empty():
+			if _combat.active_hero().is_empty() or not _pending.is_empty():
 				return
-			_clear_skills()
-			_combat.use_item(item_id, _ally_target)
+			var item: Dictionary = GameState.get_item(item_id)
+			if not ItemEffectsScript.is_usable(item, true):
+				_log_line("%s no se usa en combate." % item.get("name", item_id), "aaaaaa")
+				return
+			var t: String = str(item.get("target", "ally"))
+			_begin_pending({"side": "enemy" if t == "enemy" else ("ally" if t == "ally" else ""), "item": item_id})
 		Mode.EXPLORE:
 			var target: Dictionary = _viewed_hero
 			if target.is_empty() or target.get("dead", false):
@@ -485,14 +491,73 @@ func _update_turn_label() -> void:
 	var hero: Dictionary = _combat.active_hero()
 	if hero.is_empty():
 		return
-	_turn_label.text = "Turno de %s · objetivo: %s · aliado: %s (clic para cambiar)" % [
-		hero.get("name", "?"), _combat.current_target().get("name", "—"),
-		_ally_target.get("name", hero.get("name", "?"))]
+	_turn_label.text = "Turno de %s — elige una habilidad o un artículo de la alforja." % hero.get("name", "?")
+
+
+# --- Choosing a target after pressing a skill or item -----------------------------
+
+func _living_units(heroes: bool) -> Array:
+	var src: Array = _hero_units if heroes else _enemy_units
+	return src.filter(func(u): return not u.is_dead())
+
+
+## Single-target skills/items ask for a click on an enemy (or ally); with one valid
+## choice they go straight through. Self/party ones run at once.
+func _begin_pending(action: Dictionary) -> void:
+	var side: String = str(action.get("side", ""))
+	if side == "":
+		_execute_pending({}, action)
+		return
+	var options: Array = _living_units(side == "ally")
+	if options.size() <= 1:
+		_execute_pending(options[0].data if not options.is_empty() else {}, action)
+		return
+	_pending = action
+	_clear_skills()
+	var what: String = str(action["skill"].get("name", "")) if action.has("skill") else str(GameState.get_item(str(action["item"])).get("name", ""))
+	_turn_label.text = "%s: elige a quién %s (clic en %s; Esc o Cancelar para volver)." % [
+		what, "atacar" if side == "enemy" else "ayudar", "un enemigo" if side == "enemy" else "un héroe"]
+	for u in options:
+		u.set_selectable(true)
+	var cancel := Button.new()
+	cancel.text = "Cancelar"
+	cancel.pressed.connect(_cancel_pending)
+	_skills.add_child(cancel)
+
+
+func _clear_selectable() -> void:
+	for u in _hero_units + _enemy_units:
+		u.set_selectable(false)
+
+
+func _cancel_pending() -> void:
+	_pending = {}
+	_clear_selectable()
+	var hero: Dictionary = _combat.active_hero()
+	if not hero.is_empty():
+		_on_hero_turn(hero)
+
+
+func _execute_pending(target: Dictionary, action: Dictionary = {}) -> void:
+	if action.is_empty():
+		action = _pending
+	_pending = {}
+	_clear_selectable()
+	_clear_skills()
+	var side: String = str(action.get("side", ""))
+	if side == "enemy" and not target.is_empty():
+		_combat.set_target(target)
+	var ally: Dictionary = target if side == "ally" else {}
+	if action.has("skill"):
+		_combat.use_skill(action["skill"], ally)
+	else:
+		_combat.use_item(str(action["item"]), ally)
 
 
 func _on_hero_turn(hero: Dictionary) -> void:
 	_view_hero(hero)
-	_ally_target = hero
+	_pending = {}
+	_clear_selectable()
 	_clear_skills()
 	_update_turn_label()
 	for sid in hero.get("skill_ids", []):
@@ -502,10 +567,8 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		var b := Button.new()
 		b.text = str(sk.get("name", sid))
 		b.tooltip_text = _skill_tooltip(sk)
-		b.pressed.connect(func():
-			_clear_skills()
-			_combat.use_skill(sk, _ally_target)
-		)
+		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
+		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
 		_skills.add_child(b)
 	var guard_btn := Button.new()
 	guard_btn.text = "Guardia"
@@ -548,6 +611,8 @@ func _clear_skills() -> void:
 
 func _on_combat_over(victory: bool) -> void:
 	GameState.equip_locked = false
+	_pending = {}
+	_clear_selectable()
 	var nd: Dictionary = GameState.mission_nodes_index.get(_combat_node_id, {})
 	if not victory:
 		_end_expedition("defeat", "La cuadrilla ha caído. La hacienda guarda silencio.")

@@ -60,6 +60,7 @@ func _run() -> void:
 		var hero_turns: int = 0
 		var guards: int = 0
 		var max_squad: int = 1
+		var picks: int = 0
 		while _finished == "" and steps < MAX_STEPS:
 			steps += 1
 			await process_frame
@@ -79,24 +80,26 @@ func _run() -> void:
 						var buttons = screen._skills.get_children()
 						if not buttons.is_empty():
 							hero_turns += 1
-							# Buttons: skills..., Guardia, Pasar. Every 3rd turn: last skill (a support
-							# skill) on hero 2; every 7th: Guardia.
+							# Buttons: skills..., Guardia, Pasar. Every 7th turn: Guardia; every 3rd:
+							# the last skill (a support skill); otherwise the first attack. Skills that
+							# need a target wait for a click on a highlighted unit.
 							if hero_turns % 7 == 0 and buttons.size() >= 2:
 								guards += 1
 								buttons[buttons.size() - 2].pressed.emit()
 							elif hero_turns % 3 == 0 and buttons.size() >= 3:
-								screen._on_unit_clicked(screen._hero_units[1])
 								buttons[buttons.size() - 3].pressed.emit()
 							else:
-								# Target the last living enemy to exercise targeting.
-								var foes = screen._enemy_units.filter(func(u): return not u.is_dead())
-								if foes.size() > 1:
-									screen._on_unit_clicked(foes[foes.size() - 1])
-									max_squad = maxi(max_squad, screen._enemy_units.size())
 								buttons[0].pressed.emit()
+							if not screen._pending.is_empty():
+								picks += 1
+								var heroes: bool = str(screen._pending["side"]) == "ally"
+								var opts: Array = screen._living_units(heroes)
+								max_squad = maxi(max_squad, screen._enemy_units.size())
+								screen._on_unit_clicked(opts[opts.size() - 1])
 		_check(_finished != "", "expedition ended (%s) after %d moves, %d hero turns, %d guards" % [_finished, rooms_moved, hero_turns, guards])
 		_check(_finished in ["objective", "defeat"], "ended by boss victory or defeat")
 		_check(max_squad > 1, "fought a squad of up to %d enemies" % max_squad)
+		_check(picks > 0, "chose targets after pressing a skill %d times" % picks)
 		screen.queue_free()
 		await process_frame
 	print("%d failure(s)" % _failures)
