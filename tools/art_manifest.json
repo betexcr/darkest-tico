@@ -2256,7 +2256,10 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5018
+          "attack": 5020
+        },
+        "redo_ref_scale": {
+          "attack": 0.35
         }
       },
       {

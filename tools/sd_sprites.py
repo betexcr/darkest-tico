@@ -320,12 +320,18 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         else:
             src = dict(image=out[sid].resize((w, h)), control_image=skel, strength=float(st.get("redo_strength", 0.75)))
             pipe = pipes["img_pose"]
+        # Per-character portrait strength for redrawn states (a portrait detail can leak in as an object).
+        ref_scale = c.get("redo_ref_scale", {}).get(sid)
+        if ref_kw and ref_scale is not None:
+            pipes["txt"].set_ip_adapter_scale(float(ref_scale))
         big = pipe(
             prompt=p, **src, controlnet_conditioning_scale=scale,
             negative_prompt=negative, num_inference_steps=steps, guidance_scale=guidance,
             generator=torch.Generator(device="cpu").manual_seed(redo_seed(cfg, c, sid)),
             **(ref_kw or {}),
         ).images[0]
+        if ref_kw and ref_scale is not None:
+            pipes["txt"].set_ip_adapter_scale(float(cfg.get("reference", {}).get("scale", 0.6)))
         out[sid] = big.resize((cw, ch), Image.LANCZOS)
         i = order.index(sid)
         img.paste(out[sid], ((i % cols) * cw, (i // cols) * ch))
