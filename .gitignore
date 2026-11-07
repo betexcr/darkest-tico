@@ -23,3 +23,6 @@ Thumbs.db
 # Python
 __pycache__/
 *.py[cod]
+
+# Sprite generator cache (rebuildable)
+tools/.sprite_cache/

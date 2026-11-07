@@ -260,6 +260,24 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: —
 - Icons render at 40×40 next to route buttons (`expedition_map.gd:136`) and are hard to read in the owner's screenshots. Try 64×64, or a type label color per node type.
 
+### P4-07 · M · Side-view battle screen (owner request 2026-11-07)
+- Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
+- Spec: owner wants the classic side-view layout: party on the left facing enemies on the right in a stage across the top; portrait, stats and skills in a panel below. Own art and UI style; layout only.
+- Files: `scenes/combat/combat_scene.tscn`, `scripts/combat/combat_scene.gd`, `scripts/combat/battle_unit.gd` (new)
+- Done when:
+  - [x] Stage: heroes rank 1 nearest the middle, enemies opposite; HP bar per unit, stress bar per hero, status text (Al Borde, affliction, virtue)
+  - [x] Bottom panel: active hero portrait + stats, one button per skill (+ Pasar), combat log, target portrait + stats
+  - [x] Animations from poses + tweens: idle breathing, attack lunge, cast glow, hurt flash/shake, ailment pose at rest, death collapse; falls back to portrait art when sprites are missing
+  - [ ] Owner checks it in Godot
+  - [ ] Click-to-target once there are several enemies (P1-02)
+
+### P4-08 · L · Battle sprites for all characters
+- Status: `in-progress (Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07)` · Depends: —
+- 23 characters × 6 states (idle, attack, cast, hurt, ailment, dead) = 138 transparent PNGs in `assets/sprites/<id>/<state>.png`, made by `tools/sd_sprites.py` from the `sprites` section of `tools/art_manifest.json` (idle from text, other states img2img from idle, background cut with rembg). About 4 h on CPU.
+- Done when:
+  - [ ] All 138 generated with metadata
+  - [ ] Reviewed; bad ones re-rolled (`--only <id> --states <state> --force` after changing seed/look)
+
 ### P4-04 · M · Audio mood + narrator lines
 - Status: `todo` · Depends: — · Spec: `08`
 
