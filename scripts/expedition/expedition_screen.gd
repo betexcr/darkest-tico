@@ -533,6 +533,9 @@ func _refresh_inventory() -> void:
 			var slot: Dictionary = GameState.inventory[k]
 			b.setup(str(slot["id"]), int(slot["qty"]))
 			b.used.connect(_on_item_pressed)
+			var sid: String = str(slot["id"])
+			if _mode == Mode.COMBAT and not GameState.is_equipment(sid) and not ItemEffectsScript.is_usable(GameState.get_item(sid), true):
+				b.modulate = Color(1, 1, 1, 0.35)
 		else:
 			b.setup("", 0)
 		_inventory.add_child(b)
@@ -1021,6 +1024,10 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
 		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
 		_skills.add_child(b)
+	var bag_btn = SkillButtonScript.new()
+	bag_btn.setup("_items", "item", "Alforja", "Usar un artículo (agua de pipa, venda, café...). Usarlo gasta el turno.")
+	bag_btn.pressed.connect(_show_combat_items.bind(hero))
+	_skills.add_child(bag_btn)
 	var guard_btn = SkillButtonScript.new()
 	guard_btn.setup("_guard", "guard", "Guardia", "Se cubre: recibe la mitad del daño físico hasta su próximo turno.")
 	guard_btn.pressed.connect(func():
@@ -1038,6 +1045,34 @@ func _on_hero_turn(hero: Dictionary) -> void:
 	)
 	_skills.add_child(pass_btn)
 	_refresh_all()
+
+
+## Action bar → Alforja: the consumables usable in combat, as icons with counts.
+## Picking one asks for a target (if it needs one) and spends the hero's turn.
+func _show_combat_items(hero: Dictionary) -> void:
+	if _combat.active_hero().is_empty() or not _pending.is_empty():
+		return
+	_clear_skills()
+	var shown: int = 0
+	for slot in GameState.inventory:
+		var id: String = str(slot["id"])
+		var it: Dictionary = GameState.get_item(id)
+		if GameState.is_equipment(id) or not ItemEffectsScript.is_usable(it, true):
+			continue
+		var b = InventorySlotScript.new()
+		b.setup(id, int(slot["qty"]))
+		b.custom_minimum_size = Vector2(52, 52)
+		b.tooltip_text = GameState.item_tooltip(id) + "\nUsarlo gasta el turno."
+		b.used.connect(_on_item_pressed)
+		_skills.add_child(b)
+		shown += 1
+	if shown == 0:
+		_log_line("La alforja no tiene nada que sirva en combate.", "999999")
+	var back := Button.new()
+	back.text = "Volver"
+	back.pressed.connect(func(): _on_hero_turn(hero))
+	_skills.add_child(back)
+	_turn_label.text = "Alforja de %s: elige un artículo (gasta el turno)." % hero.get("name", "?")
 
 
 func _skill_tooltip(sk: Dictionary) -> String:

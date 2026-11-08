@@ -537,7 +537,7 @@ func item_tooltip(item_id: String) -> String:
 	if not parts.is_empty():
 		lines.append(" · ".join(parts))
 	var where: String = {
-		"explore": "Fuera de combate", "combat": "Solo en combate", "both": "Dentro y fuera de combate",
+		"explore": "Fuera de combate", "combat": "Solo en combate (gasta el turno)", "both": "Dentro y fuera de combate (en combate gasta el turno)",
 		"curio": "Se usa en lugares extraños", "equip": "Arrástralo a un héroe para equiparlo",
 	}.get(str(it.get("usable", "")), "")
 	if str(it.get("usable", "")) in ["explore", "both"]:

@@ -1,8 +1,8 @@
 {
   "id": "item_medallita_de_la_negrita",
-  "prompt": "dark fantasy painting, a small dark oval religious medal of a virgin on a thin chain, isolated object, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-  "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6601,
+  "prompt": "dark fantasy painting, a small dark oval medal pendant on a thin gold chain, object only, plain black background, dark painted game item icon, single object, centered, muted earthy colors, painterly",
+  "negative_prompt": "person, man, woman, girl, face, portrait, figure, body, hands, building, frame, candle, fire, text, letters, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6602,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-08T21:48:16+00:00"
+  "timestamp": "2026-11-08T23:07:54+00:00"
 }

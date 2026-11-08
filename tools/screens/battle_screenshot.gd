@@ -51,5 +51,19 @@ func _run() -> void:
 		await process_frame
 	await RenderingServer.frame_post_draw
 	root.get_viewport().get_texture().get_image().save_png(out_dir.path_join("battle_enemy.png"))
+	# Alforja view on the action bar (first hero turn).
+	gs.add_item("agua_de_la_negrita", 1)
+	gs.add_item("guarapo", 2)
+	gs.add_item("venda_manta", 2)
+	screen._hide_enemy_info()
+	for i in 600:
+		await process_frame
+		if not screen._combat.active_hero().is_empty():
+			break
+	screen._show_combat_items(screen._combat.active_hero())
+	for i in 10:
+		await process_frame
+	await RenderingServer.frame_post_draw
+	root.get_viewport().get_texture().get_image().save_png(out_dir.path_join("battle_items.png"))
 	print("saved to ", out_dir)
 	quit(0)
