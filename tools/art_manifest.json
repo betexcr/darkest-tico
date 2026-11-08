@@ -1864,20 +1864,20 @@
           0.29
         ],
         [
-          0.6,
+          0.56,
           0.31
         ],
         [
-          0.7,
+          0.66,
           0.243
         ],
         [
-          0.8,
+          0.76,
           0.177
         ],
         [
-          0.56,
-          0.31
+          0.61,
+          0.3
         ],
         [
           0.52,
@@ -2221,7 +2221,7 @@
           0.83
         ]
       ],
-      "_attack_doc": "Attack (owner 2026-11-08): violent lunge toward the enemy (right). RIGHT arm (keypoints 2-4) holds the weapon, arm and weapon on one line 45 degrees up and forward; left arm back."
+      "_attack_doc": "Attack (owner 2026-11-08): violent lunge toward the enemy (right). OpenPose sides are the character's own: RIGHT arm (keypoints 2-4, orange/yellow) holds the weapon, arm and weapon on one 45-degree line up-forward; LEFT arm (5-7, green) back. Facing right and slightly toward the viewer, so the right shoulder is left of the left one."
     },
     "characters": [
       {
