@@ -17,6 +17,19 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 — P4-08 — Hero attack poses aimed at the enemy
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** P4-08 in-progress (8 heroes done incl. new attack poses; 15 enemies left)
+- **Changed:**
+  - Attack pose (owner request): turned toward the enemy (right), lunging, weapon held forward. The pose skeleton alone could not place the weapon (SD 1.5 draws blades hanging down), so attack is redrawn from scratch with a 2nd ControlNet (`lllyasviel/control_v11p_sd15_scribble`, `sprites.weapon_guide`) fed a drawn weapon shape per hero (`weapon_shape`: line / rope / cross / box / bowl).
+  - New per-character knobs in `tools/art_manifest.json`: `redo_seeds`, `redo_poses`, `redo_looks`, `redo_ref_scale`, `negative_extra`, `weapon_shape`. Null keypoints allowed in skeletons.
+  - `--redo-tries N --preview-dir D` writes PNG + metadata variants; pick one by copying both into `assets/sprites/<id>/attack.*` and setting `redo_seeds`.
+  - Medica Josefina: black leggings (her negative no longer contains "stockings", which suppressed leg coverings).
+- **Verified:** `validate_data.py` 0 errors. Each attack picked by eye from 2 variants.
+- **Not verified / risks:** montador attack is the older seed-5015 render (lunging, lasso coiling); 5 retries for a thrown lasso all added a big extra hat/saddle/hide behind him — likely from his portrait's huge hat brim. The manifest's montador redo settings describe the last retry, not that asset (its metadata has the real prompt). Guachimán attack has a ponytail he lacks elsewhere.
+- **Decisions needed:** Is the montador attack acceptable as is?
+- **Next step:** P4-08 — if owner wants a better montador attack: crop the hat out of `tools/.sprite_cache/montador_ref.png` (reference) and run `--only montador --states attack --force --redo-tries 2 --preview-dir <dir>`. Otherwise start enemies one by one (see previous entry).
+
 ## 2026-11-07 (night) — P4-08, P4-10 — Hero sprites that match the portraits; all item icons
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P4-10 review (all 64 item icons); P4-08 in-progress (8 heroes done, 15 enemies left)
