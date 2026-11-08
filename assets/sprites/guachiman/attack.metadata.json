@@ -1,8 +1,8 @@
 {
   "id": "sprite_guachiman_attack",
-  "prompt": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, side view, violent lunge, both hands raising a wooden baton forward, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "prompt": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, facing left, violent lunge, right arm raising a wooden baton toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
   "negative_prompt": "dancing, walking, calm, long hair, ponytail, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5311,
+  "seed": 5541,
   "sheet_seed": 5040,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -18,5 +18,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T07:06:13+00:00"
+  "timestamp": "2026-11-08T19:33:39+00:00"
 }
