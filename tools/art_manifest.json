@@ -1667,6 +1667,86 @@
       "subject": "Guanacaste straw hat with a dark band, isolated object, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
       "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "status_sangrado",
+      "out": "assets/status/sangrado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6401,
+      "subject": "a single large glossy drop of dark red blood dripping, isolated symbol, centered, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
+    },
+    {
+      "id": "status_veneno",
+      "out": "assets/status/veneno.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6411,
+      "subject": "a small cracked glass vial leaking glowing sickly green poison, isolated object, centered, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
+    },
+    {
+      "id": "status_aturdido",
+      "out": "assets/status/aturdido.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6421,
+      "subject": "a swirling pale yellow spiral with small dim stars around it, dizziness symbol, centered, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
+    },
+    {
+      "id": "status_guardia",
+      "out": "assets/status/guardia.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6431,
+      "subject": "an old battered wooden round shield with iron rim, front view, isolated object, centered, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
     }
   ],
   "sprites": {

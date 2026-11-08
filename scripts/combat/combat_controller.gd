@@ -4,6 +4,7 @@ extends Node
 ## Works directly on GameState.party dictionaries so HP/stress persist after the fight.
 ## The screen owns the stage units and reacts to the signals below.
 
+const COLOR_MISS := Color(0.85, 0.85, 0.85)
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
@@ -366,12 +367,17 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 	var p: float = CombatResolverScript.hit_chance(int(hero.get("accuracy", 5)), sk_acc, int(enemy.get("dodge", 5)))
 	if randf() > p:
 		_log("%s falla %s." % [hero.get("name", "?"), skill.get("name", "")], "")
+		var mu = _unit_for_enemy(enemy)
+		if mu != null:
+			mu.float_text("Falla", COLOR_MISS)
 		_log_all(StressSystemScript.add_stress(hero, 3))
 		return
 	var raw: int = CombatResolverScript.roll_damage(skill) + int(hero.get("dmg_bonus", 0))
 	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
 	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
+	if crit:
+		enemy["_crit_hit"] = true
 	_apply_damage_to_enemy(enemy, dmg)
 	var ap = skill.get("applies", null)
 	if ap is Dictionary and not enemy.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
@@ -458,6 +464,9 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		var p: float = CombatResolverScript.hit_chance(int(enemy.get("accuracy", 8)), int(skill.get("accuracy", 0)), int(t.get("dodge", 5)))
 		if randf() > p:
 			_log("  %s esquiva." % t.get("name", "?"), "")
+			var du = _unit_for_hero(t)
+			if du != null:
+				du.float_text("Esquiva", COLOR_MISS)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
 		dmg = _elemental(dmg, str(skill.get("element", "")), t)
@@ -576,12 +585,16 @@ func _animate_party_changes(before: Array) -> void:
 	for k in party.size():
 		var h: Dictionary = party[k]
 		var b: Dictionary = before[k]
+		var lost: int = int(b["hp"]) - int(h.get("hp", 0))
+		var stress_up: int = int(h.get("stress", 0)) - int(b["stress"])
+		if stress_up > 0:
+			hero_units[k].float_text("+%d estrés" % stress_up, hero_units[k].COLOR_STRESS)
 		if bool(h.get("dead", false)) and not bool(b["dead"]):
-			await hero_units[k].play_death()
-		elif int(h.get("hp", 0)) < int(b["hp"]) or (bool(h.get("al_borde", false)) and not bool(b["borde"])):
-			await hero_units[k].play_hurt()
-		elif int(h.get("hp", 0)) > int(b["hp"]) or int(h.get("stress", 0)) < int(b["stress"]):
-			await hero_units[k].play_heal()
+			await hero_units[k].play_death(maxi(lost, 0))
+		elif lost > 0 or (bool(h.get("al_borde", false)) and not bool(b["borde"])):
+			await hero_units[k].play_hurt(maxi(lost, 0))
+		elif lost < 0 or stress_up < 0:
+			await hero_units[k].play_heal(maxi(-lost, 0), maxi(-stress_up, 0))
 		else:
 			hero_units[k].refresh()
 
@@ -593,10 +606,13 @@ func _enemy_snapshot() -> Array:
 func _animate_enemy_changes(before: Array) -> void:
 	for k in mini(enemies.size(), enemy_units.size()):
 		var e: Dictionary = enemies[k]
+		var lost: int = int(before[k]) - int(e.get("hp", 0))
+		var crit: bool = bool(e.get("_crit_hit", false))
+		e.erase("_crit_hit")
 		if bool(e.get("dead", false)) and int(before[k]) > 0:
-			await enemy_units[k].play_death()
-		elif int(e.get("hp", 0)) < int(before[k]):
-			await enemy_units[k].play_hurt()
+			await enemy_units[k].play_death(lost, crit)
+		elif lost > 0:
+			await enemy_units[k].play_hurt(lost, crit)
 	_refresh_markers()
 	enemy_changed.emit()
 

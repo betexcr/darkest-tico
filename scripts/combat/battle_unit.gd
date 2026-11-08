@@ -4,6 +4,8 @@ extends VBoxContainer
 ## Sprites: res://assets/sprites/<id>/<state>.png for STATES; missing states fall back
 ## to idle, and a missing idle falls back to the portrait/enemy art passed to setup().
 ## "Animations" are pose swaps plus tweens (lunge, glow, shake, collapse, breathing).
+## Feedback: floating numbers on hits/heals/stress/misses, and status icons above the
+## fighter (res://assets/status/<id>.png; a coloured badge if the icon is missing).
 
 signal clicked(unit)
 ## Equipment dropped on this hero from the inventory (message "" = ok).
@@ -15,6 +17,19 @@ const AFFLICTION_NAMES := {"paranoia": "Paranoia", "cobardia": "Cobardía", "ira
 const VIRTUE_NAMES := {"serenidad": "Serenidad", "firmeza": "Firmeza"}
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+## Status icons shown above a fighter: id -> [label, badge colour, letter].
+const STATUS_ICONS := {
+	"sangrado": ["Sangrado", Color(0.75, 0.1, 0.1), "S"],
+	"veneno": ["Envenenado", Color(0.35, 0.65, 0.2), "V"],
+	"aturdido": ["Aturdido", Color(0.85, 0.75, 0.25), "A"],
+	"guardia": ["En guardia: daño físico a la mitad", Color(0.35, 0.5, 0.8), "G"],
+}
+const ICON_SIZE := Vector2(24, 24)
+const COLOR_DAMAGE := Color(1.0, 0.3, 0.25)
+const COLOR_CRIT := Color(1.0, 0.85, 0.2)
+const COLOR_HEAL := Color(0.45, 1.0, 0.5)
+const COLOR_STRESS := Color(0.8, 0.6, 1.0)
+const COLOR_MISS := Color(0.85, 0.85, 0.85)
 
 var data: Dictionary = {}
 var is_hero: bool = true
@@ -27,6 +42,8 @@ var _hp_bar: ProgressBar
 var _stress_bar: ProgressBar
 var _name_label: Label
 var _status_label: Label
+var _status_row: HBoxContainer
+var _status_tex: Dictionary = {}
 var _idle_tween: Tween
 var _dir: float = 1.0
 
@@ -48,6 +65,16 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_status_label.add_theme_color_override("font_color", Color(0.95, 0.75, 0.45))
 	_status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_status_label)
+
+	_status_row = HBoxContainer.new()
+	_status_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_status_row.custom_minimum_size = Vector2(0, ICON_SIZE.y)
+	_status_row.add_theme_constant_override("separation", 3)
+	add_child(_status_row)
+	for id in STATUS_ICONS:
+		var path := "res://assets/status/%s.png" % id
+		if ResourceLoader.exists(path):
+			_status_tex[id] = load(path)
 
 	_holder = Control.new()
 	_holder.custom_minimum_size = SPRITE_SIZE
@@ -148,6 +175,97 @@ func refresh() -> void:
 		_stress_bar.value = int(data.get("stress", 0))
 	_name_label.text = str(data.get("name", "?"))
 	_status_label.text = _status_text()
+	_refresh_status_icons()
+
+
+## Icons for ailments (with turns left) and Guard.
+func _refresh_status_icons() -> void:
+	for c in _status_row.get_children():
+		c.queue_free()
+	if is_dead():
+		return
+	var st = data.get("statuses", {})
+	if st is Dictionary:
+		for id in st:
+			if STATUS_ICONS.has(id):
+				_status_row.add_child(_make_status_icon(str(id), int(st[id].get("turns", 0)), int(st[id].get("value", 0))))
+	if bool(data.get("guarding", false)):
+		_status_row.add_child(_make_status_icon("guardia", 0, 0))
+
+
+func _make_status_icon(id: String, turns: int, value: int) -> Control:
+	var info: Array = STATUS_ICONS[id]
+	var box := Control.new()
+	box.custom_minimum_size = ICON_SIZE
+	box.mouse_filter = Control.MOUSE_FILTER_PASS
+	var tip: String = str(info[0])
+	if value > 0:
+		tip += " (%d PV por turno)" % value
+	if turns > 0:
+		tip += " — %d turno%s" % [turns, "" if turns == 1 else "s"]
+	box.tooltip_text = tip
+	if _status_tex.has(id):
+		var tr := TextureRect.new()
+		tr.texture = _status_tex[id]
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tr.size = ICON_SIZE
+		tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(tr)
+	else:
+		var badge := ColorRect.new()
+		badge.color = info[1]
+		badge.size = ICON_SIZE
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(badge)
+		var l := Label.new()
+		l.text = str(info[2])
+		l.size = ICON_SIZE
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		l.add_theme_font_size_override("font_size", 14)
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(l)
+	if turns > 0:
+		var n := Label.new()
+		n.text = str(turns)
+		n.position = Vector2(ICON_SIZE.x - 9, ICON_SIZE.y - 14)
+		n.add_theme_font_size_override("font_size", 11)
+		n.add_theme_color_override("font_outline_color", Color.BLACK)
+		n.add_theme_constant_override("outline_size", 4)
+		n.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(n)
+	return box
+
+
+## Floating text over the sprite that rises and fades (does not block the caller).
+func float_text(text: String, color: Color, big: bool = false) -> void:
+	if _holder == null or not is_inside_tree():
+		return
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.add_theme_font_size_override("font_size", 30 if big else 22)
+	l.add_theme_color_override("font_color", color)
+	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	l.add_theme_constant_override("outline_size", 6)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.size = Vector2(SPRITE_SIZE.x, 36)
+	# Stack popups that arrive together so they don't overlap.
+	var stacked: int = 0
+	for c in _holder.get_children():
+		if c.has_meta("popup"):
+			stacked += 1
+	l.set_meta("popup", true)
+	l.position = Vector2(0, SPRITE_SIZE.y * 0.25 - stacked * 26)
+	l.pivot_offset = l.size / 2.0
+	l.scale = Vector2(1.4, 1.4) if big else Vector2.ONE
+	_holder.add_child(l)
+	var t := l.create_tween().set_parallel(true)
+	t.tween_property(l, "position:y", l.position.y - 46.0, 1.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	t.tween_property(l, "scale", Vector2.ONE, 0.25)
+	t.tween_property(l, "modulate:a", 0.0, 0.45).set_delay(0.75)
+	t.chain().tween_callback(l.queue_free)
 
 
 func _status_text() -> String:
@@ -162,9 +280,7 @@ func _status_text() -> String:
 	var vir: String = str(data.get("virtud_id", ""))
 	if vir != "":
 		parts.append(VIRTUE_NAMES.get(vir, vir))
-	parts.append_array(StatusEffectsScript.labels(data))
-	if bool(data.get("guarding", false)):
-		parts.append("En guardia")
+	# Ailments and Guard are shown as icons (_refresh_status_icons).
 	return " · ".join(parts)
 
 
@@ -246,11 +362,15 @@ func play_action(state: String) -> void:
 	rest()
 
 
-func play_hurt() -> void:
+func play_hurt(amount: int = 0, crit: bool = false) -> void:
 	_stop_idle()
 	_show_state("hurt")
-	_sprite.modulate = Color(1.7, 0.45, 0.45)
+	if amount > 0:
+		float_text(("¡-%d!" if crit else "-%d") % amount, COLOR_CRIT if crit else COLOR_DAMAGE, crit)
+	# Impact: a white flash, then red, with a shake.
+	_sprite.modulate = Color(2.2, 2.2, 2.2)
 	var t := create_tween()
+	t.tween_property(_sprite, "modulate", Color(1.7, 0.45, 0.45), 0.06)
 	for i in 3:
 		t.tween_property(_sprite, "position:x", 7.0, 0.04)
 		t.tween_property(_sprite, "position:x", -7.0, 0.04)
@@ -260,7 +380,11 @@ func play_hurt() -> void:
 	rest()
 
 
-func play_heal() -> void:
+func play_heal(hp_gain: int = 0, stress_relief: int = 0) -> void:
+	if hp_gain > 0:
+		float_text("+%d" % hp_gain, COLOR_HEAL)
+	if stress_relief > 0:
+		float_text("-%d estrés" % stress_relief, COLOR_STRESS)
 	var t := create_tween()
 	t.tween_property(_sprite, "modulate", Color(0.7, 1.5, 0.8), 0.15)
 	t.tween_property(_sprite, "modulate", Color.WHITE, 0.35)
@@ -268,9 +392,11 @@ func play_heal() -> void:
 	refresh()
 
 
-func play_death() -> void:
+func play_death(amount: int = 0, crit: bool = false) -> void:
 	_stop_idle()
 	_show_state("hurt")
+	if amount > 0:
+		float_text(("¡-%d!" if crit else "-%d") % amount, COLOR_CRIT if crit else COLOR_DAMAGE, crit)
 	_sprite.modulate = Color(1.7, 0.45, 0.45)
 	var t := create_tween()
 	t.tween_property(_sprite, "modulate", Color.WHITE, 0.2)
