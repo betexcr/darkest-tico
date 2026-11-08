@@ -91,13 +91,27 @@ This document formalizes the gameplay loop and systemic rules for the Tico Gothi
 
 ### 3.3 Affliction Behavior Hooks
 
-- `Paranoia`: chance to refuse buffs/heals.
-- `Cobardia`: chance to move backward and self-debuff.
-- `Ira Ciega`: chance to mis-target attacks.
-- `Bravata`: chance to consume extra resources.
-- `Virtud` examples:
-  - `Serenidad`: incoming stress reduced.
-  - `Firmeza`: death save chance increased.
+Seven `Quebranto` afflictions (one picked at random on a failed resolve check):
+
+- `Paranoia`: 35% chance to refuse a heal/buff skill (turn lost).
+- `Cobardia`: 20% chance to skip the turn and gain +5 stress.
+- `Ira Ciega`: 15% chance per attack to hit a random ally for 2–5 instead.
+- `Bravata`: 20% chance per attack to waste 5 Luz showing off.
+- `Desesperanza`: when hit, 25% chance to give every other living ally +3 stress.
+- `Nervios`: -5 accuracy (~-10% hit) and -5 crit.
+- `Fatalismo`: -15% death save chance (combat and Colapso).
+
+Seven `Virtud` breakthroughs (stress drops to 40):
+
+- `Serenidad`: incoming stress reduced by 25%.
+- `Firmeza`: +8% death save chance (combat and Colapso).
+- `Valentia`: +2 flat damage on attacks.
+- `Punteria`: +5 accuracy (~+10% hit) and +5 crit.
+- `Esperanza`: start of each round, other living allies -2 stress.
+- `Vigor`: start of each round, +1 HP (not while Al Borde).
+- `Abnegacion`: 25% chance to take an enemy attack aimed at an ally (not while Al Borde).
+
+Death save chance is clamped to 5–95%. Tuning constants live in `scripts/domain/stress_system.gd`.
 
 ### 3.4 Heart-Attack Equivalent at 200
 

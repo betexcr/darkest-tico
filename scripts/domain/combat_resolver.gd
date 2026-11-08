@@ -39,5 +39,5 @@ static func resolve_attack_damage(raw: int, crit: bool) -> int:
 	return raw
 
 
-static func roll_death_save() -> bool:
-	return randf() < DEATH_SAVE_BASE
+static func roll_death_save(modifier: float = 0.0) -> bool:
+	return randf() < clampf(DEATH_SAVE_BASE + modifier, 0.05, 0.95)

@@ -124,6 +124,8 @@ func _log_line_color(hex_no_hash: String, s: String) -> void:
 func _start_round() -> void:
 	_round += 1
 	_round_label.text = "Ronda: %d" % _round
+	for x in StressSystemScript.round_start_effects(_party):
+		_log_line(x)
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
@@ -189,7 +191,7 @@ func _process_turn() -> void:
 				_turn_index += 1
 				continue
 			if StressSystemScript.hero_turn_blocked(hero):
-				_log_line("%s no actúa (quebranto)." % hero.get("name", "?"))
+				_log_line("%s no actúa (cobardía)." % hero.get("name", "?"))
 				_refresh_hero_portrait(hero)
 				_turn_index += 1
 				if _check_end():
@@ -263,7 +265,9 @@ func _on_skill2_pressed() -> void:
 	if sk2.is_empty():
 		return
 	var k := str(sk2.get("kind", ""))
-	if k == "attack":
+	if (k == "heal" or k == "buff") and StressSystemScript.refuses_support(hero):
+		_log_line_color("cc7744", "%s (paranoia) desconfía y rechaza %s." % [hero.get("name", "?"), sk2.get("name", "?")])
+	elif k == "attack":
 		_resolve_hero_attack(hero, sk2)
 	elif k == "heal":
 		_resolve_heal(hero, sk2)
@@ -301,15 +305,20 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary) -> void:
 		for x in StressSystemScript.add_stress(hero, 4):
 			_log_line(x)
 		return
+	var light_cost: int = StressSystemScript.bravata_light_cost(hero)
+	if light_cost > 0 and GameState.mission_active:
+		GameState.mission_light = maxi(GameState.mission_light - light_cost, 0)
+		_log_line_color("cc7744", "%s (bravata) agita la antorcha para lucirse: -%d Luz." % [hero.get("name", "?"), light_cost])
 	var sk_acc: int = int(skill.get("skill_accuracy", 0))
-	var p: float = CombatResolverScript.hit_chance(int(hero.get("accuracy", 5)), sk_acc, int(_enemy.get("dodge", 5)))
+	var acc: int = int(hero.get("accuracy", 5)) + StressSystemScript.accuracy_modifier(hero)
+	var p: float = CombatResolverScript.hit_chance(acc, sk_acc, int(_enemy.get("dodge", 5)))
 	if randf() > p:
 		_log_line("%s falla %s." % [hero.get("name", "?"), skill.get("name", "")])
 		for x in StressSystemScript.add_stress(hero, 3):
 			_log_line(x)
 		return
-	var raw: int = CombatResolverScript.roll_damage(skill)
-	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
+	var raw: int = CombatResolverScript.roll_damage(skill) + StressSystemScript.damage_modifier(hero)
+	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)) + StressSystemScript.crit_modifier(hero), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(raw, crit)
 	_apply_damage_to_enemy(dmg, crit)
 	_try_play_hit_sound()
@@ -336,6 +345,10 @@ func _enemy_turn() -> void:
 	if living.is_empty():
 		return
 	var target: Dictionary = living[randi() % living.size()]
+	var protector: Dictionary = StressSystemScript.find_protector(target, _party)
+	if not protector.is_empty():
+		_log_line_color("66aa66", "%s (abnegación) se interpone por %s." % [protector.get("name", "?"), target.get("name", "?")])
+		target = protector
 	var skill: Dictionary = {"damage_min": 4, "damage_max": 9, "skill_accuracy": 0}
 	var p: float = CombatResolverScript.hit_chance(int(_enemy.get("accuracy", 8)), int(skill.get("skill_accuracy", 0)), int(target.get("dodge", 5)))
 	if randf() > p:
@@ -347,6 +360,8 @@ func _enemy_turn() -> void:
 	_try_play_hit_sound()
 	_log_line("%s golpea a %s por %d" % [_enemy["name"], target.get("name", "?"), dmg])
 	for x in StressSystemScript.add_stress(target, 5):
+		_log_line(x)
+	for x in StressSystemScript.spread_despair(target, _party):
 		_log_line(x)
 	if _living_heroes() <= 0:
 		_check_end()
@@ -366,7 +381,7 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int) -> void:
 		_log_line_color("dd8844", "%s está en Al Borde!" % hero.get("name", "?"))
 		return
 	hero["borde_checks"] = int(hero.get("borde_checks", 0)) + 1
-	if CombatResolverScript.roll_death_save():
+	if CombatResolverScript.roll_death_save(StressSystemScript.death_save_modifier(hero)):
 		_log_line("%s resiste en Al Borde." % hero.get("name", "?"))
 		hero["hp"] = 1
 		hero["al_borde"] = false

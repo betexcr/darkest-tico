@@ -1,5 +1,7 @@
 extends Control
 
+const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
+
 signal start_mission_requested
 
 @onready var _roster: RichTextLabel = $VBox/RosterText
@@ -88,9 +90,9 @@ func _refresh() -> void:
 			var vir := str(h.get("virtud_id", ""))
 			var mental := ""
 			if aff != "":
-				mental = " [%s]" % aff
+				mental = " [%s]" % StressSystemScript.affliction_name(aff)
 			elif vir != "":
-				mental = " (%s)" % vir
+				mental = " (%s)" % StressSystemScript.virtud_name(vir)
 			lines.append(
 				"%d. %s %s — HP %d/%d  Estrés %d/%d%s" % [
 					i,
