@@ -2219,7 +2219,75 @@
           0.83
         ]
       ],
-      "_attack_doc": "Attack (owner 2026-11-08): side view facing the enemy (right), violent lunge, BOTH hands on the weapon raised on a 45-degree line up-forward, so their right (near) arm is visibly raised. With only one raised arm the model always raised the far (left) arm and put a 2nd weapon in the low near hand."
+      "_attack_doc": "Attack (owner 2026-11-08): side view facing the enemy (right), violent lunge, BOTH hands on the weapon raised on a 45-degree line up-forward, so their right (near) arm is visibly raised. With only one raised arm the model always raised the far (left) arm and put a 2nd weapon in the low near hand.",
+      "attack_back": [
+        [
+          0.665,
+          0.21
+        ],
+        [
+          0.57,
+          0.29
+        ],
+        [
+          0.63,
+          0.31
+        ],
+        [
+          0.715,
+          0.243
+        ],
+        [
+          0.8,
+          0.177
+        ],
+        [
+          0.5,
+          0.31
+        ],
+        [
+          0.44,
+          0.4
+        ],
+        [
+          0.39,
+          0.48
+        ],
+        [
+          0.58,
+          0.55
+        ],
+        [
+          0.68,
+          0.68
+        ],
+        [
+          0.73,
+          0.89
+        ],
+        [
+          0.5,
+          0.55
+        ],
+        [
+          0.38,
+          0.71
+        ],
+        [
+          0.24,
+          0.89
+        ],
+        [
+          0.65,
+          0.195
+        ],
+        null,
+        null,
+        [
+          0.6,
+          0.2
+        ]
+      ]
     },
     "characters": [
       {
@@ -2297,19 +2365,89 @@
         "weapon_shape": {
           "kind": "box",
           "angle": 45,
-          "length": 0.15
+          "length": 0.15,
+          "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5352
+          "attack": 5400
         },
         "negative_extra": "dancing, walking, calm",
         "redo_ref_scale": {
-          "attack": 0.6
+          "attack": 0.45
         },
-        "redo_init": {
-          "attack": "assets/sprites/guachiman/attack.png"
+        "skeletons": {
+          "attack": [
+            [
+              0.665,
+              0.21
+            ],
+            [
+              0.57,
+              0.29
+            ],
+            [
+              0.63,
+              0.31
+            ],
+            [
+              0.715,
+              0.243
+            ],
+            [
+              0.8,
+              0.177
+            ],
+            [
+              0.5,
+              0.31
+            ],
+            [
+              0.44,
+              0.4
+            ],
+            [
+              0.39,
+              0.48
+            ],
+            [
+              0.58,
+              0.55
+            ],
+            [
+              0.68,
+              0.68
+            ],
+            [
+              0.73,
+              0.89
+            ],
+            [
+              0.5,
+              0.55
+            ],
+            [
+              0.38,
+              0.71
+            ],
+            [
+              0.24,
+              0.89
+            ],
+            [
+              0.65,
+              0.195
+            ],
+            null,
+            null,
+            [
+              0.6,
+              0.2
+            ]
+          ]
         },
-        "redo_init_strength": 0.6
+        "redo_poses": {
+          "attack": "seen from behind, back three-quarter view, violent lunge, right arm raising {weapon}"
+        }
       },
       {
         "id": "guachiman",
