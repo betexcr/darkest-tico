@@ -1683,10 +1683,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6401,
-      "subject": "one huge glossy blood red drop filling the frame, bright crimson, isolated symbol, centered, plain black background",
-      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
+      "seed": 6404,
+      "subject": "one big drop of dark red blood, teardrop shape, glossy, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters"
     },
     {
       "id": "status_veneno",
@@ -1743,10 +1743,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6431,
-      "subject": "a sturdy wooden kite shield with iron rim and boss, front view, filling the frame, isolated object, centered, plain black background",
-      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery, text, letters"
+      "seed": 6434,
+      "subject": "one old wooden shield with iron rim, no person, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters"
     }
   ],
   "sprites": {
