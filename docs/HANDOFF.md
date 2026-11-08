@@ -17,6 +17,19 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 (late night) — P1-04 — Effects list, % resistances, gear with resistances/buffs
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** P1-04 review
+- **Changed:**
+  - Clicking a hero or enemy opens the stage info panel (opposite side of the clicked unit): stats, active effects (icon, turns, stacks, stat changes; hover the name for the description) and resistances as a % table like Darkest Dungeon. Enemy resistances only while someone wears the Lentes del abuelo. `expedition_screen.gd` (`_show_hero_info`, `_effects_bbcode`, `_resist_bbcode`).
+  - Resistances (`data/statuses.json` `resist_categories`): Atarantado, Veneno, Sangrado, Salado, Susto, Golpe de gracia (death blow, cap 87), Trampas. Class bases in `heroes.json`, full tables for all enemies, equipment `status_resist`; immunity shows as 100. Death save and traps use them.
+  - Items: existing gear got thematic resistances (e.g. botas de hule: trampas/veneno; ojo de venado now resists Salado instead of stun immunity); weapons `on_hit` (machete de Cartago bleed, garrote stun, honda mark); accessories `start_status`; 8 new accessories and 4 new buff consumables (`data/items.json`). Tooltips show all of it.
+  - `tools/screens/battle_screenshot.gd`: real screenshots under Xvfb (`xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/battle_screenshot.gd -- <dir>`).
+- **Verified:** validate_data 0 errors; Godot headless test_equipment, test_status, test_feedback, test_hub, smoke all 0 failures; screenshots checked.
+- **Not verified / risks:** Balance (heroes now resist ailments ~30-70%).
+- **Decisions needed:** none
+- **Next step:** commit the queued icons (13 status + 12 item + trampa) when `tools/sd_local.py` finishes; then P4-08 enemy sprites.
+
 ## 2026-11-08 (night) — P1-04 — Every Darkest Dungeon status effect, Tico names
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P1-04 review; P1-13 review; P4-08 in-progress (enemies left)
