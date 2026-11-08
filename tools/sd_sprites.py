@@ -330,11 +330,11 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         # placement can't leak in; "img" (default): start from the cell to keep its colors.
         skel = draw_skeleton(skeleton_for(cfg, c, sid), (w, h))
         weapon = draw_weapon(cfg, c, sid, (w, h)) if "txt_pose_weapon" in pipes else None
-        scale = control_scale
+        scale = float(st.get("redo_pose_scale", control_scale))
         if weapon is not None:
             src = dict(image=[skel, weapon], width=w, height=h)
             pipe = pipes["txt_pose_weapon"]
-            scale = [control_scale, float(cfg["weapon_guide"].get("scale", 0.7))]
+            scale = [scale, float(cfg["weapon_guide"].get("scale", 0.7))]
         elif st.get("redo_mode", "img") == "txt":
             src = dict(image=skel, width=w, height=h)
             pipe = pipes["txt_pose"]

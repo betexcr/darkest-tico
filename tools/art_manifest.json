@@ -1743,7 +1743,8 @@
         "beast_strength": 0.7,
         "redo_pose": "violent attack with {weapon}, leaning forward, deep lunge, snarling face, facing right",
         "redo_strength": 0.9,
-        "redo_mode": "txt"
+        "redo_mode": "txt",
+        "redo_pose_scale": 1.3
       },
       {
         "id": "cast",
@@ -2238,9 +2239,12 @@
           "width": 0.03
         },
         "redo_seeds": {
-          "attack": 5200
+          "attack": 5202
         },
-        "negative_extra": "dancing, walking, calm, second machete"
+        "negative_extra": "dancing, walking, calm, second machete",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "montador",
@@ -2265,6 +2269,9 @@
         },
         "redo_poses": {
           "attack": "violently throwing a rope lasso, leaning forward, deep lunge, snarling face, facing right"
+        },
+        "redo_ref_scale": {
+          "attack": 0.35
         }
       },
       {
@@ -2282,7 +2289,10 @@
         "redo_seeds": {
           "attack": 5210
         },
-        "negative_extra": "dancing, walking, calm"
+        "negative_extra": "dancing, walking, calm",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "tecnologo",
@@ -2299,7 +2309,10 @@
         "redo_seeds": {
           "attack": 5220
         },
-        "negative_extra": "dancing, walking, calm"
+        "negative_extra": "dancing, walking, calm",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "guachiman",
@@ -2316,7 +2329,10 @@
         "redo_seeds": {
           "attack": 5240
         },
-        "negative_extra": "dancing, walking, calm"
+        "negative_extra": "dancing, walking, calm",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "medica_josefina",
@@ -2336,6 +2352,9 @@
         },
         "redo_looks": {
           "attack": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black leggings, flat boots"
+        },
+        "redo_ref_scale": {
+          "attack": 0.35
         }
       },
       {
@@ -2353,7 +2372,10 @@
         "redo_seeds": {
           "attack": 5260
         },
-        "negative_extra": "dancing, walking, calm"
+        "negative_extra": "dancing, walking, calm",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "exorcista",
@@ -2370,7 +2392,10 @@
         "redo_seeds": {
           "attack": 5270
         },
-        "negative_extra": "dancing, walking, calm, bare legs"
+        "negative_extra": "dancing, walking, calm, bare legs",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
       },
       {
         "id": "espanto",
