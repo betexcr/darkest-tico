@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 (night) — P1-04 — Every Darkest Dungeon status effect, Tico names
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** P1-04 review; P1-13 review; P4-08 in-progress (enemies left)
+- **Changed:**
+  - `data/statuses.json` (new): 18 statuses — Sangrado, Envenenado, Atarantado → Espabilado, Salado, Fichado, Susto, Chiva, Encarrerado, Al cuido / Cuidando, Respondón, Sobado, Santiguado, Agazapado, En guardia, Al Borde, Convaleciente — with names, descriptions, colours, letters, stacking, defaults.
+  - `scripts/domain/status_effects.gd` rewritten: per-application stacks, 3-turn default / 5 on crit DoTs, `status_resist` (+50% stun resist per Espabilado stack), stat changes (`stat()`), Al Borde/Convaleciente penalties, aegis, stealth targeting, marked-target AI pick, guardian lookup.
+  - `combat_controller.gd`: initiative/accuracy/dodge/crit/damage/prot/stress use status stats; sobado/susto ticks; Al cuido redirect; ripostes both ways; Santiguado blocks direct hits; stealth breaks on attacking; crit gives Encarrerado; `applies` may be a list; `self_applies`, `guard_ally`, `vs_marked_pct`.
+  - Content: hero skills, enemy specials, enemy `status_resist`, té de tilo cures susto, agua bendita cures salado (`data/*.json`). Validator checks all of it. AGENTS.md §4 updated.
+  - Icons: data-driven badges + tooltips; 13 new `status_*` art entries queued (letter badges until generated).
+- **Verified:** `validate_data.py` 0 errors. Godot headless: test_status (50 checks), smoke (3 expeditions), test_guard, test_hub, test_equipment, test_feedback — all 0 failures, no script errors.
+- **Not verified / risks:** Balance of the new effects untested by a human (marks + bonuses, enemy ripostes). Move/Shuffle not done (no formation ranks yet). Escudo de Barrio changed from "ally gets Guard" to "Al cuido" (guachimán takes the hits).
+- **Decisions needed:** none
+- **Next step:** Check the queued status icons (`assets/status/*.png`), commit them; then P4-08 enemy sprites one by one.
+
 ## 2026-11-08 (later) — P4-08, P1-13 — Right-arm attacks (mirrored stage), combat feedback
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P4-08 in-progress (8 hero attack sprites done; enemies left); P1-13 review
