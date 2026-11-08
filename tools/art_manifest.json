@@ -1725,7 +1725,8 @@
       "_redo_doc": "States redrawn as one full-size figure after the sheet (cells are too small for a raised weapon).",
       "single_figure_states": [
         "dead"
-      ]
+      ],
+      "redo_reference": "idle"
     },
     "states": [
       {
@@ -1740,7 +1741,7 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "lunging right, both hands thrusting {weapon} forward at the enemy",
+        "redo_pose": "violent attack with {weapon}, leaning forward, deep lunge, snarling face, facing right",
         "redo_strength": 0.9,
         "redo_mode": "txt"
       },
@@ -1855,73 +1856,73 @@
       ],
       "attack": [
         [
-          0.63,
-          0.17
-        ],
-        [
-          0.55,
-          0.26
-        ],
-        [
-          0.51,
-          0.27
-        ],
-        [
-          0.62,
-          0.33
-        ],
-        [
-          0.73,
-          0.31
+          0.67,
+          0.22
         ],
         [
           0.59,
-          0.27
+          0.29
         ],
         [
-          0.67,
-          0.35
+          0.55,
+          0.3
         ],
         [
-          0.75,
-          0.32
+          0.66,
+          0.25
         ],
         [
-          0.51,
-          0.52
+          0.76,
+          0.18
         ],
         [
-          0.65,
-          0.66
+          0.63,
+          0.31
         ],
         [
-          0.72,
-          0.86
-        ],
-        [
-          0.57,
-          0.52
+          0.52,
+          0.4
         ],
         [
           0.44,
+          0.47
+        ],
+        [
+          0.5,
+          0.55
+        ],
+        [
+          0.67,
           0.68
         ],
         [
-          0.3,
-          0.86
+          0.72,
+          0.89
         ],
         [
-          0.62,
-          0.155
+          0.55,
+          0.55
         ],
         [
-          0.645,
-          0.155
+          0.38,
+          0.71
+        ],
+        [
+          0.22,
+          0.89
+        ],
+        [
+          0.66,
+          0.205
+        ],
+        [
+          0.685,
+          0.205
         ],
         null,
         [
-          0.58,
-          0.165
+          0.63,
+          0.215
         ]
       ],
       "cast": [
@@ -2220,7 +2221,7 @@
           0.83
         ]
       ],
-      "_attack_doc": "Attack: turned toward the enemy (right), lunging; both hands forward at chest height on the weapon (the model puts the weapon in whichever hand is lowest, so neither hand is left behind)."
+      "_attack_doc": "Attack (owner 2026-11-08): violent lunge toward the enemy (right), body leaning forward, weapon raised up and forward in the right hand, left arm back."
     },
     "characters": [
       {
@@ -2232,91 +2233,14 @@
         "weapon_shape": {
           "kind": "line",
           "hand": "right",
-          "angle": 70,
-          "length": 0.15,
+          "angle": 35,
+          "length": 0.2,
           "width": 0.03
         },
         "redo_seeds": {
-          "attack": 5140
+          "attack": 5200
         },
-        "redo_reference": "idle",
-        "redo_poses": {
-          "attack": "violent overhead machete chop, leaning forward, deep lunge, snarling face, facing right"
-        },
-        "skeletons": {
-          "attack": [
-            [
-              0.67,
-              0.22
-            ],
-            [
-              0.59,
-              0.29
-            ],
-            [
-              0.55,
-              0.3
-            ],
-            [
-              0.57,
-              0.2
-            ],
-            [
-              0.63,
-              0.12
-            ],
-            [
-              0.63,
-              0.31
-            ],
-            [
-              0.52,
-              0.4
-            ],
-            [
-              0.44,
-              0.47
-            ],
-            [
-              0.5,
-              0.55
-            ],
-            [
-              0.67,
-              0.68
-            ],
-            [
-              0.72,
-              0.89
-            ],
-            [
-              0.55,
-              0.55
-            ],
-            [
-              0.38,
-              0.71
-            ],
-            [
-              0.22,
-              0.89
-            ],
-            [
-              0.66,
-              0.205
-            ],
-            [
-              0.685,
-              0.205
-            ],
-            null,
-            [
-              0.63,
-              0.215
-            ]
-          ]
-        },
-        "negative_extra": "dancing, walking, calm, two weapons, second machete"
+        "negative_extra": "dancing, walking, calm, second machete"
       },
       {
         "id": "montador",
@@ -2324,24 +2248,24 @@
         "seed": 5013,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "woman, open shirt, cape, saddle, hide, second hat",
-        "redo_poses": {
-          "attack": "lunging right, head in profile facing right, throwing a rope lasso"
-        },
+        "negative_extra": "dancing, walking, calm, cape, hide, saddle",
         "weapon_shape": {
           "kind": "rope",
-          "angle": 60,
-          "length": 0.2,
-          "loop": 0.075,
+          "hand": "right",
+          "angle": 45,
+          "length": 0.15,
+          "loop": 0.07,
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5110
+          "attack": 5230
         },
         "redo_looks": {
           "attack": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
         },
-        "redo_reference": "idle"
+        "redo_poses": {
+          "attack": "violently throwing a rope lasso, leaning forward, deep lunge, snarling face, facing right"
+        }
       },
       {
         "id": "abuela",
@@ -2351,12 +2275,14 @@
         "weapon": "a wooden ladle and clay bowl",
         "weapon_shape": {
           "kind": "bowl",
-          "angle": 20,
-          "length": 0.3
+          "hand": "right",
+          "angle": 30,
+          "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5021
-        }
+          "attack": 5210
+        },
+        "negative_extra": "dancing, walking, calm"
       },
       {
         "id": "tecnologo",
@@ -2366,12 +2292,14 @@
         "weapon": "a small homemade drone",
         "weapon_shape": {
           "kind": "box",
-          "angle": 15,
-          "length": 0.18
+          "hand": "right",
+          "angle": 20,
+          "length": 0.15
         },
         "redo_seeds": {
-          "attack": 5031
-        }
+          "attack": 5220
+        },
+        "negative_extra": "dancing, walking, calm"
       },
       {
         "id": "guachiman",
@@ -2381,12 +2309,14 @@
         "weapon": "a wooden baton",
         "weapon_shape": {
           "kind": "line",
-          "angle": 30,
-          "length": 0.32
+          "hand": "right",
+          "angle": 35,
+          "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5042
-        }
+          "attack": 5240
+        },
+        "negative_extra": "dancing, walking, calm"
       },
       {
         "id": "medica_josefina",
@@ -2394,18 +2324,18 @@
         "seed": 5051,
         "body": "humanoid",
         "weapon": "a syringe",
-        "negative_extra": "shorts, bare legs, bare thighs, high heels",
+        "negative_extra": "dancing, walking, calm, bare legs, high heels",
         "weapon_shape": {
           "kind": "line",
-          "angle": 15,
-          "length": 0.16
+          "hand": "right",
+          "angle": 30,
+          "length": 0.12
         },
         "redo_seeds": {
-          "attack": 5121
+          "attack": 5250
         },
-        "redo_reference": "idle",
-        "redo_poses": {
-          "attack": "lunging right, head in profile facing right, stabbing {weapon} at the enemy"
+        "redo_looks": {
+          "attack": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black leggings, flat boots"
         }
       },
       {
@@ -2416,12 +2346,14 @@
         "weapon": "a bundle of smoking herbs",
         "weapon_shape": {
           "kind": "line",
-          "angle": 30,
-          "length": 0.22
+          "hand": "right",
+          "angle": 35,
+          "length": 0.14
         },
         "redo_seeds": {
-          "attack": 5061
-        }
+          "attack": 5260
+        },
+        "negative_extra": "dancing, walking, calm"
       },
       {
         "id": "exorcista",
@@ -2429,18 +2361,16 @@
         "seed": 5070,
         "body": "humanoid",
         "weapon": "a crucifix",
-        "redo_poses": {
-          "attack": "lunging right, head in profile facing right, thrusting {weapon} at the enemy"
-        },
         "weapon_shape": {
           "kind": "cross",
-          "angle": 70,
-          "length": 0.3
+          "hand": "right",
+          "angle": 45,
+          "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5130
+          "attack": 5270
         },
-        "redo_reference": "idle"
+        "negative_extra": "dancing, walking, calm, bare legs"
       },
       {
         "id": "espanto",
