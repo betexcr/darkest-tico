@@ -1,8 +1,8 @@
 {
   "id": "sprite_tecnologo_attack",
-  "prompt": "young man, curly dark hair, brass goggles, dark leather jacket with straps and buckles, lunging right, both hands thrusting a small homemade drone forward at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5031,
+  "prompt": "young man, curly dark hair, brass goggles, dark leather jacket with straps and buckles, violent attack with a small homemade drone, leaning forward, deep lunge, snarling face, facing right, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5220,
   "sheet_seed": 5030,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -12,12 +12,11 @@
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
   "weapon_control": "lllyasviel/control_v11p_sd15_scribble",
   "reference": {
-    "image": "assets/portraits/tecnologo.png",
-    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
-    "scale": 0.6
+    "image": "assets/sprites/tecnologo/idle.png (padded square on grey)",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors"
   },
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T22:25:39+00:00"
+  "timestamp": "2026-11-08T06:23:54+00:00"
 }
