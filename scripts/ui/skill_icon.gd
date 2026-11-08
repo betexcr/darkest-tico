@@ -39,6 +39,7 @@ const GLYPHS := {
 	"circulo_de_tiza": "chalk",
 	"_guard": "shield",
 	"_pass": "hourglass",
+	"_items": "bag",
 }
 
 const BG := {
@@ -47,6 +48,7 @@ const BG := {
 	"buff": Color(0.12, 0.22, 0.4),
 	"guard": Color(0.26, 0.29, 0.33),
 	"pass": Color(0.22, 0.21, 0.2),
+	"item": Color(0.36, 0.24, 0.1),
 }
 
 const INK := Color(0.96, 0.9, 0.76)
@@ -128,6 +130,16 @@ func _letter() -> void:
 
 
 # --- Glyphs (unit square, y down) -----------------------------------------------------
+
+func _g_bag() -> void:
+	# Leather saddlebag: body, flap, buckle and strap.
+	_poly([[0.20, 0.38], [0.80, 0.38], [0.84, 0.82], [0.16, 0.82]], Color(0.62, 0.4, 0.2))
+	_poly([[0.18, 0.36], [0.82, 0.36], [0.76, 0.58], [0.24, 0.58]], Color(0.75, 0.5, 0.26))
+	_line([0.34, 0.36], [0.40, 0.18], 0.06, INK)
+	_line([0.40, 0.18], [0.60, 0.18], 0.06, INK)
+	_line([0.60, 0.18], [0.66, 0.36], 0.06, INK)
+	_poly([[0.45, 0.52], [0.55, 0.52], [0.55, 0.64], [0.45, 0.64]], INK)
+
 
 func _g_machete() -> void:
 	_poly([[0.30, 0.62], [0.74, 0.16], [0.88, 0.14], [0.86, 0.28], [0.40, 0.72]])
