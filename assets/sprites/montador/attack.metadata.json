@@ -1,8 +1,8 @@
 {
   "id": "sprite_montador_attack",
-  "prompt": "young man, Costa Rican bull rider, thin mustache, curly dark hair, wide battered leather hat, buttoned denim shirt, ripped jeans, boots, lunging right, both hands throwing a coiled lasso rope forward at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "woman, crop top, bare chest, open shirt, vest, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5015,
+  "prompt": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots, lunging right, head in profile facing right, throwing a rope lasso, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "woman, open shirt, cape, saddle, hide, second hat, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5110,
   "sheet_seed": 5013,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -12,12 +12,11 @@
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
   "weapon_control": "lllyasviel/control_v11p_sd15_scribble",
   "reference": {
-    "image": "assets/portraits/montador.png",
-    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
-    "scale": 0.6
+    "image": "assets/sprites/montador/idle.png (padded square on grey)",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors"
   },
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T22:37:31+00:00"
+  "timestamp": "2026-11-08T02:49:33+00:00"
 }
