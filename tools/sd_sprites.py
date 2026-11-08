@@ -257,6 +257,22 @@ def draw_weapon(cfg: dict, c: dict, sid: str, size):
     return im
 
 
+def sprite_reference(cid: str, sid: str = "idle"):
+    """The character's own finished sprite (e.g. idle), padded to a square on grey, as an
+    IP-Adapter reference. The portrait is a close-up: redrawing a full-body pose from it
+    smears big features (a wide hat brim) across the figure. None if the sprite is missing."""
+    from PIL import Image
+
+    p = ROOT / "assets" / "sprites" / cid / f"{sid}.png"
+    if not p.exists():
+        return None
+    im = Image.open(p).convert("RGBA")
+    side = max(im.size)
+    sq = Image.new("RGBA", (side, side), (128, 128, 128, 255))
+    sq.alpha_composite(im, ((side - im.width) // 2, (side - im.height) // 2))
+    return sq.convert("RGB")
+
+
 def redo_prompt(cfg: dict, manifest: dict, c: dict, sid: str) -> str:
     st = {s["id"]: s for s in cfg["states"]}[sid]
     pose_text = c.get("redo_poses", {}).get(sid) or st.get("redo_pose", st["pose"])
@@ -323,6 +339,11 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
             pipe = pipes["img_pose"]
         # Per-character portrait strength for redrawn states (a portrait detail can leak in as an object).
         ref_scale = c.get("redo_ref_scale", {}).get(sid)
+        ref_from = c.get("redo_reference", cfg["sheet"].get("redo_reference", "portrait"))
+        if ref_kw and ref_from != "portrait":
+            own = sprite_reference(c["id"], ref_from)
+            if own is not None:
+                ref_kw = {"ip_adapter_image": own}
         if ref_kw and ref_scale is not None:
             pipes["txt"].set_ip_adapter_scale(float(ref_scale))
         big = pipe(
@@ -480,7 +501,10 @@ def main() -> int:
                             "pose_control": cfg["control_model"],
                             "weapon_control": cfg.get("weapon_guide", {}).get("control_model")
                             if draw_weapon(cfg, ck, sid, (64, 96)) is not None else None,
-                            "reference": reference_note(cfg, c),
+                            "reference": reference_note(cfg, c)
+                            if c.get("redo_reference", cfg["sheet"].get("redo_reference", "portrait")) == "portrait"
+                            else {"image": f"assets/sprites/{cid}/{c.get('redo_reference', cfg['sheet'].get('redo_reference'))}.png (padded square on grey)",
+                                  "ip_adapter": reference_note(cfg, c)["ip_adapter"] if reference_note(cfg, c) else None},
                             "cutout": None if remover is None else cfg.get("cutout_model", "isnet-general-use"),
                             "model": manifest["model"], "generator": "tools/sd_sprites.py (diffusers)",
                             "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),

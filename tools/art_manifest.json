@@ -2235,7 +2235,11 @@
           "length": 0.36
         },
         "redo_seeds": {
-          "attack": 5002
+          "attack": 5100
+        },
+        "redo_reference": "idle",
+        "redo_poses": {
+          "attack": "lunging right, head in profile facing right, both hands thrusting {weapon} at the enemy"
         }
       },
       {
@@ -2246,7 +2250,7 @@
         "weapon": "a coiled lasso rope",
         "negative_extra": "woman, open shirt, cape, saddle, hide, second hat",
         "redo_poses": {
-          "attack": "lunging right, throwing a rope lasso, rope stretched through the air"
+          "attack": "lunging right, head in profile facing right, throwing a rope lasso"
         },
         "weapon_shape": {
           "kind": "rope",
@@ -2256,11 +2260,12 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5024
+          "attack": 5110
         },
         "redo_looks": {
           "attack": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
-        }
+        },
+        "redo_reference": "idle"
       },
       {
         "id": "abuela",
@@ -2320,7 +2325,11 @@
           "length": 0.16
         },
         "redo_seeds": {
-          "attack": 5055
+          "attack": 5120
+        },
+        "redo_reference": "idle",
+        "redo_poses": {
+          "attack": "lunging right, head in profile facing right, stabbing {weapon} at the enemy"
         }
       },
       {
@@ -2345,7 +2354,7 @@
         "body": "humanoid",
         "weapon": "a crucifix",
         "redo_poses": {
-          "attack": "lunging right, both hands holding {weapon} forward at the enemy"
+          "attack": "lunging right, head in profile facing right, thrusting {weapon} at the enemy"
         },
         "weapon_shape": {
           "kind": "cross",
@@ -2353,8 +2362,9 @@
           "length": 0.3
         },
         "redo_seeds": {
-          "attack": 5071
-        }
+          "attack": 5130
+        },
+        "redo_reference": "idle"
       },
       {
         "id": "espanto",
