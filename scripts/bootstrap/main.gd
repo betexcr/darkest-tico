@@ -48,5 +48,7 @@ func _on_expedition_finished(reason: String) -> void:
 func _back_to_hub() -> void:
 	GameState.last_expedition_summary = {}
 	GameState.end_of_expedition_week()
+	# Town event of the new week (docs/02 §12); the hub shows its card.
+	GameState.draw_town_event()
 	SaveService.save_game()
 	await _open_hub()

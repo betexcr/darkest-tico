@@ -12,6 +12,7 @@ const MapGeneratorScript := preload("res://scripts/domain/map_generator.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
+const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -37,7 +38,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 6
+const SAVE_VERSION := 7
 const ROSTER_CAP := 8
 const PARTY_SIZE := 4
 const RECRUIT_POOL_SIZE := 3
@@ -143,6 +144,25 @@ var mission_start_logs: PackedStringArray = PackedStringArray()
 ## Built by complete_mission(); read by the victory screen.
 var last_expedition_summary: Dictionary = {}
 
+## Modo Pura Vida (Darkest Dungeon's Radiant mode): faster XP, heroes accept easier expeditions.
+var radiant_mode: bool = false
+## Town events (docs/02 §12, data/town_events.json): the event of this week ("" = none),
+## whether the hub already showed it, the shuffled deck, once-only events already seen.
+var active_event_id: String = ""
+var event_seen: bool = true
+var event_deck: Array = []
+var events_done_once: Array = []
+## Per-week flags: first discounted buy used, offer taken, resurrection done.
+var event_flags: Dictionary = {}
+## Fallen heroes (for Día de los Difuntos) and items taken by the Ladrón de gallinas.
+var graveyard: Array = []
+var stolen_items: Array = []
+## Event modifiers for the running expedition (TownEvents.mission_mods).
+var mission_event: Dictionary = {}
+## What the drawn event did right away (shown on the hub's event card).
+var event_report: PackedStringArray = PackedStringArray()
+const GRAVEYARD_CAP := 12
+
 
 func _ready() -> void:
 	_load_registries()
@@ -203,6 +223,7 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 	if outcome.has("colones"):
 		var c = outcome["colones"]
 		var amt_c: int = randi_range(int(c[0]), int(c[1])) if c is Array and c.size() >= 2 else int(c)
+		amt_c = int(round(amt_c * loot_mult()))
 		colones += amt_c
 		ledger_add("loot_colones", amt_c)
 		logs.append("+%d colones." % amt_c)
@@ -210,14 +231,15 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)))
 		if not gear.is_empty():
 			var pick: String = str(gear[randi() % gear.size()])
-			if add_item(pick, 1) > 0:
-				ledger_item(pick, 1)
+			var got_eq: int = add_item(pick, items_mult())
+			if got_eq > 0:
+				ledger_item(pick, got_eq)
 				logs.append("Encuentran: %s." % get_item(pick).get("name", pick))
 			else:
 				logs.append("Había %s, pero no cabe en la alforja." % get_item(pick).get("name", pick))
 	var add = outcome.get("add_item", null)
 	if add is Dictionary:
-		var got: int = add_item(str(add.get("id", "")), int(add.get("qty", 1)))
+		var got: int = add_item(str(add.get("id", "")), int(add.get("qty", 1)) * items_mult())
 		ledger_item(str(add.get("id", "")), got)
 		if got > 0:
 			logs.append("Encuentran: %s." % get_item(str(add.get("id", ""))).get("name", ""))
@@ -300,17 +322,43 @@ func remove_item(item_id: String, qty: int = 1) -> bool:
 	return true
 
 
+## Pulpería price this week (town events: discounts, surcharges, first-buy deal).
+func item_price(item_id: String) -> int:
+	var item: Dictionary = get_item(item_id)
+	var ev: Dictionary = active_event()
+	var pct: int = TownEventsScript.price_pct(ev, item)
+	var fb: int = TownEventsScript.first_buy_pct(ev, item)
+	if fb != 0 and not bool(event_flags.get("first_buy_used", false)):
+		pct += fb
+	return maxi(int(round(int(item.get("price", 0)) * (1.0 + pct / 100.0))), 0)
+
+
+## Why the Pulpería won't sell this now ("" if it will).
+func buy_block_reason(item_id: String) -> String:
+	var ev: Dictionary = active_event()
+	if TownEventsScript.is_closed(ev, "pulperia_compra"):
+		return "La pulpería está cerrada esta semana (%s)." % ev.get("name", "")
+	if TownEventsScript.is_blocked(ev, item_id):
+		return "Esta semana no se vende %s (%s)." % [get_item(item_id).get("name", item_id), ev.get("name", "")]
+	return ""
+
+
 ## Pulpería. Returns a message for the hub status line.
 func buy_item(item_id: String) -> String:
 	var item: Dictionary = get_item(item_id)
 	if item.is_empty():
 		return "Ese artículo no existe."
-	var price: int = int(item.get("price", 0))
+	var why: String = buy_block_reason(item_id)
+	if why != "":
+		return why
+	var price: int = item_price(item_id)
 	if colones < price:
 		return "No alcanza: %s cuesta %d ₡." % [item.get("name", item_id), price]
 	if add_item(item_id, 1) == 0:
 		return "No cabe más en la alforja."
 	colones -= price
+	if TownEventsScript.first_buy_pct(active_event(), item) != 0:
+		event_flags["first_buy_used"] = true
 	return "Compraste %s (-%d ₡)." % [item.get("name", item_id), price]
 
 
@@ -319,13 +367,16 @@ func _item_use_key(hero: Dictionary, item_id: String) -> String:
 
 
 func sell_price(item_id: String) -> int:
-	return int(floor(int(get_item(item_id).get("price", 0)) * SELL_RATE))
+	var rate: float = TownEventsScript.sell_rate(active_event(), get_item(item_id))
+	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else SELL_RATE)))
 
 
 ## Pulpería buys back one unit at half price. Returns a message for the hub.
 func sell_item(item_id: String) -> String:
 	if item_count(item_id) <= 0:
 		return "No tienes ese artículo."
+	if TownEventsScript.is_closed(active_event(), "pulperia_venta"):
+		return "La pulpería no compra nada esta semana (%s)." % active_event().get("name", "")
 	var price: int = sell_price(item_id)
 	remove_item(item_id, 1)
 	colones += price
@@ -645,6 +696,8 @@ func party_can_scout() -> bool:
 # --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------
 
 func hire_cost(hero: Dictionary) -> int:
+	if hero.has("hire_price"):
+		return int(hero["hire_price"])
 	return int(get_hero_template(str(hero.get("hero_id", ""))).get("hire_cost", 800))
 
 
@@ -661,6 +714,8 @@ func refresh_recruits() -> void:
 func hire_recruit(index: int) -> String:
 	if index < 0 or index >= recruit_pool.size():
 		return "Ese candidato ya se fue en el bus."
+	if TownEventsScript.is_closed(active_event(), "terminal"):
+		return "La terminal está cerrada esta semana (%s)." % active_event().get("name", "")
 	if roster.size() >= ROSTER_CAP:
 		return "La hacienda no tiene más camas (máximo %d héroes)." % ROSTER_CAP
 	var h: Dictionary = recruit_pool[index]
@@ -669,6 +724,7 @@ func hire_recruit(index: int) -> String:
 		return "No alcanza: contratar a %s cuesta %d ₡." % [h.get("name", "?"), cost]
 	colones -= cost
 	h["uid"] = _take_uid()
+	h.erase("hire_price")
 	roster.append(h)
 	recruit_pool.remove_at(index)
 	if party.size() < PARTY_SIZE:
@@ -746,12 +802,15 @@ func heal_cost(hero: Dictionary) -> int:
 	var missing: int = int(hero.get("hp_max", 0)) - int(hero.get("hp", 0))
 	if missing <= 0 or bool(hero.get("dead", false)):
 		return 0
-	return maxi(missing * HEAL_COST_PER_HP, HEAL_MIN_COST)
+	var base: int = maxi(missing * HEAL_COST_PER_HP, HEAL_MIN_COST)
+	return int(round(base * TownEventsScript.service_mult(active_event(), "ebais")))
 
 
 func heal_hero(hero: Dictionary) -> String:
+	if TownEventsScript.is_closed(active_event(), "ebais"):
+		return "El EBAIS está cerrado esta semana (%s)." % active_event().get("name", "")
 	var cost: int = heal_cost(hero)
-	if cost <= 0:
+	if cost <= 0 and int(hero.get("hp", 0)) >= int(hero.get("hp_max", 0)):
 		return "%s no necesita el EBAIS." % hero.get("name", "?")
 	if colones < cost:
 		return "No alcanza: curar a %s cuesta %d ₡." % [hero.get("name", "?"), cost]
@@ -770,6 +829,9 @@ func end_of_expedition_week() -> void:
 		var h: Dictionary = roster[k]
 		if bool(h.get("dead", false)):
 			fallen.append(str(h.get("name", "?")))
+			graveyard.append(h)
+			if graveyard.size() > GRAVEYARD_CAP:
+				graveyard.remove_at(0)
 			roster.remove_at(k)
 		else:
 			h["al_borde"] = false
@@ -789,13 +851,30 @@ func end_of_expedition_week() -> void:
 
 
 ## Iglesia Vieja stub: group prayer, small risk of bad mood.
+const IGLESIA_COST := 800
+const IGLESIA_RELIEF := 10
+
+
+func iglesia_cost() -> int:
+	return int(round(IGLESIA_COST * TownEventsScript.service_mult(active_event(), "iglesia")))
+
+
+## Stress the misa removes this week (town events can raise or lower it).
+func iglesia_relief() -> int:
+	return int(floor(IGLESIA_RELIEF * TownEventsScript.relief_mult(active_event())))
+
+
 func iglesia_misa_rapida() -> String:
-	if colones < 800:
-		return "No alcanza para la colecta (800 colones)."
-	colones -= 800
+	if TownEventsScript.is_closed(active_event(), "iglesia"):
+		return "La Iglesia Vieja está cerrada esta semana (%s)." % active_event().get("name", "")
+	var cost: int = iglesia_cost()
+	if colones < cost:
+		return "No alcanza para la colecta (%d colones)." % cost
+	colones -= cost
+	var relief: int = iglesia_relief()
 	for h in roster:
 		if h is Dictionary and not h.get("dead", false):
-			for _x in StressSystemScript.add_stress(h, -10):
+			for _x in StressSystemScript.add_stress(h, -relief):
 				pass
 	if randf() < 0.12:
 		var living: Array = []
@@ -807,7 +886,7 @@ func iglesia_misa_rapida() -> String:
 			for _x in StressSystemScript.add_stress(v, 8):
 				pass
 			return "La misa ayuda, pero %s sigue inquieto (+8 estrés)." % v.get("name", "?")
-	return "La Iglesia Vieja devuelve un poco de calma (-10 estrés a todos los héroes)."
+	return "La Iglesia Vieja devuelve un poco de calma (-%d estrés a todos los héroes)." % relief
 
 
 func start_mission(region_path: String = "") -> bool:
@@ -839,13 +918,15 @@ func start_mission(region_path: String = "") -> bool:
 	cleared_node_ids = []
 	mission_active = true
 	mission_difficulty = ResolveSystemScript.expedition(selected_difficulty_id, int(r.get("region_level", 0)))
-	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1)))
+	mission_event = TownEventsScript.mission_mods(active_event(), current_region_id)
+	_apply_mission_event_to_difficulty()
+	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1))) + int(mission_event.get("firewood", 0))
 	camped_node_ids = []
 	mission_ledger = {"loot_colones": 0, "objective_colones": 0, "items": {}, "fights": 0, "elites": 0,
 		"bosses": 0, "ambushes": 0, "curios": 0, "camps": 0, "rooms": 0}
 	_prepare_party_for_mission()
 	mission_params = {
-		"light_decay": int(r.get("light_decay_per_move", 5)),
+		"light_decay": maxi(int(round(int(r.get("light_decay_per_move", 5)) * (1.0 + int(mission_event.get("light_decay_pct", 0)) / 100.0))), 1),
 		"low_light_threshold": int(r.get("low_light_threshold", 40)),
 		"low_light_stress": int(r.get("low_light_stress", 3)),
 		"objective_reward": int(r.get("objective_reward_colones", 0)),
@@ -872,6 +953,14 @@ func _prepare_party_for_mission() -> void:
 		}
 		if h.get("dead", false):
 			continue
+		# Town event: a mission-long damage buff (e.g. Ventilaron los sótanos), shown like a camp buff.
+		if int(mission_event.get("dmg_pct", 0)) != 0:
+			h["camp_buffs"].append({"source": active_event_id, "from": "evento", "name": str(active_event().get("name", "")),
+				"mods": {"dmg_pct": int(mission_event["dmg_pct"])}, "fights": 999})
+		var qs: int = int(mission_event.get("quebranto_start_stress", 0))
+		if qs > 0 and str(h.get("affliction_id", "")) != "":
+			mission_start_logs.append("%s carga con el chisme: +%d estrés." % [h.get("name", "?"), qs])
+			mission_start_logs.append_array(StressSystemScript.add_stress(h, qs))
 		var short: int = ResolveSystemScript.underlevel(h, mission_difficulty)
 		if short > 0:
 			var st: int = ResolveSystemScript.underlevel_start_stress(short)
@@ -879,6 +968,18 @@ func _prepare_party_for_mission() -> void:
 				h.get("name", "?"), str(mission_difficulty.get("name", "")), st, ResolveSystemScript.underlevel_stress_pct(short)])
 			mission_start_logs.append_array(StressSystemScript.add_stress(h, st))
 			h["underlevel_stress_pct"] = ResolveSystemScript.underlevel_stress_pct(short)
+
+
+## Folds the event's XP / tough-mission / virtue modifiers into this mission.
+func _apply_mission_event_to_difficulty() -> void:
+	StressSystemScript.virtue_bonus = float(mission_event.get("virtue_pct", 0)) / 100.0
+	var xp: float = float(mission_difficulty.get("xp", 2)) * (1.0 + float(mission_event.get("xp_pct", 0)) / 100.0)
+	var tough = mission_event.get("tough", null)
+	if tough is Dictionary:
+		for k in ["enemy_hp", "enemy_dmg", "reward"]:
+			mission_difficulty[k] = float(mission_difficulty.get(k, 1.0)) * float(tough.get(k, 1.0))
+		xp *= float(tough.get("xp", 1.0))
+	mission_difficulty["xp"] = int(round(xp))
 
 
 ## Level of a region (doc 05 §4 order; Sótanos = 0), from its JSON. Cached per path.
@@ -899,6 +1000,9 @@ func selected_expedition(diff_id: String = "") -> Dictionary:
 
 ## Heroes in the party who refuse the selected expedition (too seasoned for it).
 func party_refusals(diff_id: String = "") -> Array:
+	# Mano vuelta (DD Helping Hand): nobody refuses this week.
+	if TownEventsScript.removes_level_limits(active_event()):
+		return []
 	var diff: Dictionary = selected_expedition(diff_id)
 	return party.filter(func(h): return h is Dictionary and not h.get("dead", false) and ResolveSystemScript.refuses(h, diff))
 
@@ -925,7 +1029,16 @@ func ledger_item(item_id: String, qty: int) -> void:
 ## Colones a won fight in this room pays (room reward × difficulty).
 func combat_reward(node_id: String) -> int:
 	var nd: Dictionary = mission_nodes_index.get(node_id, {})
-	return int(round(int(nd.get("reward_colones", 0)) * float(mission_difficulty.get("reward", 1.0))))
+	return int(round(int(nd.get("reward_colones", 0)) * float(mission_difficulty.get("reward", 1.0)) * loot_mult()))
+
+
+## Town events: colones found (fights, curios) and items found this mission.
+func loot_mult() -> float:
+	return 1.0 + float(mission_event.get("loot_pct", 0)) / 100.0
+
+
+func items_mult() -> int:
+	return 1 + int(mission_event.get("items_pct", 0)) / 100
 
 
 func can_camp_at(node_id: String) -> bool:
@@ -934,6 +1047,8 @@ func can_camp_at(node_id: String) -> bool:
 
 func end_mission_abandon() -> void:
 	mission_active = false
+	mission_event = {}
+	StressSystemScript.virtue_bonus = 0.0
 	for h in party:
 		if h is Dictionary:
 			h["camp_buffs"] = []
@@ -1120,6 +1235,16 @@ func apply_objective_rewards() -> void:
 ## Call before end_mission_abandon(); returns last_expedition_summary.
 func complete_mission() -> Dictionary:
 	apply_objective_rewards()
+	# Rumor de botija: the treasure is dug up at the end.
+	var tr = mission_event.get("treasure", null)
+	if tr is Array and tr.size() >= 2:
+		var gold: int = randi_range(int(tr[0]), int(tr[1]))
+		colones += gold
+		ledger_add("treasure_colones", gold)
+	# Ladrón de gallinas: the stolen items turn up in the dungeon.
+	for id in stolen_items:
+		ledger_item(str(id), add_item(str(id), 1))
+	stolen_items.clear()
 	var xp: int = int(mission_difficulty.get("xp", 2))
 	var heroes: Array = []
 	for h in party:
@@ -1190,6 +1315,16 @@ func apply_save_data(data: Dictionary) -> void:
 	selected_mission_region_path = str(data.get("selected_mission_region_path", DEFAULT_REGION_PATH))
 	# v6: expedition difficulty.
 	selected_difficulty_id = str(ResolveSystemScript.difficulty(str(data.get("selected_difficulty_id", "aprendiz"))).get("id", "aprendiz"))
+	# v7: Modo Pura Vida and town events (older saves: off / no event).
+	set_radiant_mode(bool(data.get("radiant_mode", false)))
+	active_event_id = str(data.get("active_event_id", ""))
+	if TownEventsScript.get_event(active_event_id).is_empty():
+		active_event_id = ""
+	event_seen = bool(data.get("event_seen", true))
+	event_deck = (data.get("event_deck", []) as Array).map(func(x): return str(x)) if data.get("event_deck", null) is Array else []
+	events_done_once = (data.get("events_done_once", []) as Array).map(func(x): return str(x)) if data.get("events_done_once", null) is Array else []
+	event_flags = data.get("event_flags", {}) if data.get("event_flags", null) is Dictionary else {}
+	stolen_items = (data.get("stolen_items", []) as Array).map(func(x): return str(x)) if data.get("stolen_items", null) is Array else []
 	if not is_region_playable(selected_mission_region_path):
 		selected_mission_region_path = DEFAULT_REGION_PATH
 	# v4: inventory. Older saves keep the starter pack and convert hub purchases to items.
@@ -1229,6 +1364,12 @@ func apply_save_data(data: Dictionary) -> void:
 		for h in roster:
 			if party.size() < PARTY_SIZE:
 				party.append(h)
+	graveyard.clear()
+	var raw_grave = data.get("graveyard", null)
+	if raw_grave is Array:
+		for e in raw_grave:
+			if e is Dictionary:
+				graveyard.append(_sanitize_runtime_hero(e))
 	recruit_pool.clear()
 	var raw_pool = data.get("recruit_pool", null)
 	if raw_pool is Array and not raw_pool.is_empty():
@@ -1284,6 +1425,206 @@ func to_save_dict() -> Dictionary:
 		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
 		"selected_difficulty_id": selected_difficulty_id,
+		"radiant_mode": radiant_mode,
+		"active_event_id": active_event_id,
+		"event_seen": event_seen,
+		"event_deck": event_deck.duplicate(),
+		"events_done_once": events_done_once.duplicate(),
+		"event_flags": event_flags.duplicate(),
+		"graveyard": graveyard.duplicate(true),
+		"stolen_items": stolen_items.duplicate(),
 		"inventory": inventory.duplicate(true),
 	}
+
+
+# --- Modo Pura Vida + town events (docs/02 §12, data/town_events.json) ---------------
+
+func set_radiant_mode(on: bool) -> void:
+	radiant_mode = on
+	ResolveSystemScript.radiant = on
+
+
+func active_event() -> Dictionary:
+	return TownEventsScript.get_event(active_event_id)
+
+
+## Called when the party is back (main.gd, after end_of_expedition_week). Ends the old
+## event, maybe draws a new one (or `force_id`) and applies its immediate effects.
+## `idle` = roster heroes who did not go. Returns the report lines.
+func draw_town_event(force_id: String = "") -> PackedStringArray:
+	active_event_id = ""
+	event_flags = {}
+	event_report = PackedStringArray()
+	var ctx: Dictionary = {
+		"week": week,
+		"done_once": events_done_once,
+		"graveyard": graveyard.size(),
+		"inventory": inventory.size(),
+		"quebrantos": roster.filter(func(h): return str(h.get("affliction_id", "")) != "").size(),
+		"quebrantos_in_party": party.filter(func(h): return str(h.get("affliction_id", "")) != "").size(),
+	}
+	var id: String = force_id if force_id != "" else TownEventsScript.draw(event_deck, ctx, randi() % 100)
+	if id == "" or TownEventsScript.get_event(id).is_empty():
+		event_seen = true
+		return PackedStringArray()
+	active_event_id = id
+	event_seen = false
+	var ev: Dictionary = active_event()
+	if bool(ev.get("once", false)) and not events_done_once.has(id):
+		events_done_once.append(id)
+	event_report = _apply_event_now(ev)
+	return event_report
+
+
+func _idle_heroes() -> Array:
+	return roster.filter(func(h): return not is_in_party(h) and not h.get("dead", false))
+
+
+func _random_template(class_id: String = "") -> Dictionary:
+	var ids: Array = _heroes_by_id.keys().filter(func(k): return class_id == "" or str(_heroes_by_id[k].get("class_id", "")) == class_id)
+	return _heroes_by_id[ids[randi() % ids.size()]] if not ids.is_empty() else {}
+
+
+## Effects that happen the moment the event is drawn. Returns report lines.
+func _apply_event_now(ev: Dictionary) -> PackedStringArray:
+	var fx: Dictionary = TownEventsScript.effects(ev)
+	var out: PackedStringArray = PackedStringArray()
+	if fx.has("gift_colones"):
+		colones += int(fx["gift_colones"])
+		out.append("+%d ₡ para la hacienda." % int(fx["gift_colones"]))
+	if fx.has("gift_item"):
+		var slot: String = str(fx["gift_item"])
+		var pool: Array = _item_order.filter(func(i): return str(get_item(str(i)).get("slot", "")) == slot)
+		if not pool.is_empty():
+			var pick: String = str(pool[randi() % pool.size()])
+			if add_item(pick, 1) > 0:
+				out.append("Regalo: %s (en la alforja)." % get_item(pick).get("name", pick))
+			else:
+				out.append("Regalaban %s, pero no cabía en la alforja." % get_item(pick).get("name", pick))
+	if fx.has("idle_stress"):
+		for h in _idle_heroes():
+			StressSystemScript.add_stress(h, int(fx["idle_stress"]))
+		out.append("Héroes que se quedaron: %+d estrés." % int(fx["idle_stress"]))
+	if bool(fx.get("idle_cure_quebranto", false)):
+		for h in _idle_heroes():
+			if str(h.get("affliction_id", "")) != "":
+				out.append("%s sale de su quebranto." % h.get("name", "?"))
+				h["affliction_id"] = ""
+	if bool(fx.get("all_cure_quebranto", false)):
+		for h in roster:
+			if str(h.get("affliction_id", "")) != "":
+				out.append("%s sale de su quebranto." % h.get("name", "?"))
+				h["affliction_id"] = ""
+	if fx.has("idle_class_level"):
+		for h in _idle_heroes():
+			if str(h.get("class_id", "")) == str(fx["idle_class_level"]) and int(h.get("resolve_level", 0)) < ResolveSystemScript.MAX_LEVEL:
+				h["resolve_level"] = int(h["resolve_level"]) + 1
+				h["resolve_xp"] = maxi(int(h.get("resolve_xp", 0)), ResolveSystemScript.xp_for_level(int(h["resolve_level"])))
+				recompute_stats(h)
+				out.append("%s sube a Resolución %d." % [h.get("name", "?"), int(h["resolve_level"])])
+	if fx.get("add_recruits", null) is Dictionary:
+		var ar: Dictionary = fx["add_recruits"]
+		for _k in int(ar.get("count", 1)):
+			var t: Dictionary = _random_template(str(ar.get("class", "")))
+			if not t.is_empty():
+				recruit_pool.append(_instantiate_hero(t))
+		out.append("Nuevos candidatos en la terminal.")
+	if fx.has("extra_recruits"):
+		for _k in int(fx["extra_recruits"]):
+			recruit_pool.append(_instantiate_hero(_random_template()))
+		out.append("+%d candidatos en la terminal." % int(fx["extra_recruits"]))
+	if fx.get("hire_veteran", null) is Dictionary:
+		var hv: Dictionary = fx["hire_veteran"]
+		var vet: Dictionary = _instantiate_hero(_random_template())
+		vet["resolve_level"] = clampi(int(hv.get("level", 6)), 0, ResolveSystemScript.MAX_LEVEL)
+		vet["resolve_xp"] = ResolveSystemScript.xp_for_level(int(vet["resolve_level"]))
+		vet["hire_price"] = int(hv.get("price", 6000))
+		recompute_stats(vet)
+		recruit_pool.append(vet)
+		out.append("%s (%s, Resolución %d) espera en la terminal." % [vet.get("name", "?"), vet.get("class_name", ""), int(vet["resolve_level"])])
+	for _k in int(fx.get("add_roster_free", 0)):
+		if roster.size() >= ROSTER_CAP:
+			out.append("No hay camas libres para el forastero.")
+			break
+		var fr: Dictionary = _instantiate_hero(_random_template())
+		fr["uid"] = _take_uid()
+		roster.append(fr)
+		out.append("%s (%s) se une a la hacienda." % [fr.get("name", "?"), fr.get("class_name", "")])
+	var steal: int = int(fx.get("steal_items", 0))
+	for _k in steal:
+		if inventory.is_empty():
+			break
+		var slot_d: Dictionary = inventory[randi() % inventory.size()]
+		var sid: String = str(slot_d["id"])
+		remove_item(sid, 1)
+		stolen_items.append(sid)
+		out.append("Se robaron: %s." % get_item(sid).get("name", sid))
+	return out
+
+
+## Día de los Difuntos: up to N fallen heroes to choose from (stable while the event lasts).
+func resurrect_candidates() -> Array:
+	var n: int = int(TownEventsScript.effects(active_event()).get("resurrect", 0))
+	if n <= 0 or bool(event_flags.get("resurrected", false)):
+		return []
+	# Most recent first, one per hero.
+	var out: Array = []
+	var seen: Dictionary = {}
+	for k in range(graveyard.size() - 1, -1, -1):
+		var uid: int = int(graveyard[k].get("uid", 0))
+		if not seen.has(uid):
+			seen[uid] = true
+			out.append(graveyard[k])
+		if out.size() >= n:
+			break
+	return out
+
+
+func resurrect(uid: int) -> String:
+	if resurrect_candidates().filter(func(h): return int(h.get("uid", 0)) == uid).is_empty():
+		return "Ya no se puede."
+	if roster.size() >= ROSTER_CAP:
+		return "No hay camas libres en la hacienda."
+	for k in graveyard.size():
+		var h: Dictionary = graveyard[k]
+		if int(h.get("uid", 0)) == uid:
+			graveyard.remove_at(k)
+			h["dead"] = false
+			h["al_borde"] = false
+			h.erase("convaleciente")
+			h["equipment"] = {}
+			h["stress"] = 0
+			h["affliction_id"] = ""
+			recompute_stats(h)
+			h["hp"] = int(h["hp_max"])
+			roster.append(h)
+			event_flags["resurrected"] = true
+			return "%s vuelve del más allá (Resolución %d, sin equipo)." % [h.get("name", "?"), int(h.get("resolve_level", 0))]
+	return "No se encontró."
+
+
+## Paid offers (Limpia general, Agua de coco). Returns a message.
+func event_offer() -> Dictionary:
+	var o = TownEventsScript.effects(active_event()).get("offer", null)
+	return o if o is Dictionary and not bool(event_flags.get("offer_taken", false)) else {}
+
+
+func take_event_offer() -> String:
+	var o: Dictionary = event_offer()
+	if o.is_empty():
+		return "Esa oferta ya no está."
+	var cost: int = int(o.get("cost", 0))
+	if colones < cost:
+		return "No alcanza: cuesta %d ₡." % cost
+	colones -= cost
+	event_flags["offer_taken"] = true
+	for h in roster:
+		if h.get("dead", false):
+			continue
+		if o.has("all_stress"):
+			StressSystemScript.add_stress(h, int(o["all_stress"]))
+		if bool(o.get("all_heal", false)):
+			h["hp"] = int(h["hp_max"])
+			h["al_borde"] = false
+	return "%s (-%d ₡)." % [str(o.get("label", "Hecho")), cost]
 

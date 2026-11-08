@@ -9,6 +9,7 @@ const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
+const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -36,6 +37,9 @@ var _shop_filter: String = "todo"
 var _selected: Dictionary = {}
 var _equip_slots: Array = []
 var _difficulty_option: OptionButton
+var _pura_vida: CheckBox
+## "Evento de la semana" button in the info row; opens the event card.
+var _event_btn: Button
 
 
 func _ready() -> void:
@@ -66,7 +70,10 @@ func _ready() -> void:
 	if not GameState.roster.is_empty():
 		_selected = GameState.roster[0]
 	_hub_status.text = GameState.last_week_report
+	_build_event_button()
 	_refresh()
+	if not GameState.event_seen and GameState.active_event_id != "":
+		_show_event_card.call_deferred()
 
 
 func _sync_region_option_from_state() -> void:
@@ -108,6 +115,16 @@ func _build_difficulty_picker() -> void:
 		_say("")
 	)
 	row.add_child(_difficulty_option)
+	_pura_vida = CheckBox.new()
+	_pura_vida.text = "Pura Vida"
+	_pura_vida.tooltip_text = "Modo Pura Vida (como el modo Radiante): suben de resolución más rápido y aceptan expediciones de hasta 2 niveles menos."
+	_pura_vida.button_pressed = GameState.radiant_mode
+	_pura_vida.toggled.connect(func(on: bool):
+		GameState.set_radiant_mode(on)
+		_refresh_difficulty_labels()
+		_say("Modo Pura Vida %s." % ("activado" if on else "desactivado"))
+	)
+	row.add_child(_pura_vida)
 	_refresh_difficulty_labels()
 
 
@@ -161,8 +178,15 @@ func _refresh() -> void:
 	_week.text = "Semana: %d" % GameState.week
 	_refresh_equipment()
 	for b in _shop_grid.get_children():
-		var item: Dictionary = GameState.get_item(str(b.get_meta("item_id", "")))
-		b.disabled = GameState.colones < int(item.get("price", 0))
+		var sid: String = str(b.get_meta("item_id", ""))
+		b.text = _shop_label(sid)
+		b.disabled = GameState.colones < GameState.item_price(sid) or GameState.buy_block_reason(sid) != ""
+	var igl: Button = $Columns/Left/VBox/BtnIglesia
+	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "iglesia")
+	igl.text = "Iglesia Vieja: cerrada esta semana" if closed else "Iglesia Vieja: misa rápida (%s, -%d estrés a todos)" % [
+		"gratis" if GameState.iglesia_cost() == 0 else "%d ₡" % GameState.iglesia_cost(), GameState.iglesia_relief()]
+	igl.disabled = closed or GameState.colones < GameState.iglesia_cost()
+	_refresh_event_button()
 	_refresh_recruits()
 	_refresh_roster()
 	var refusing: Array = GameState.party_refusals()
@@ -207,7 +231,7 @@ func _build_shop() -> void:
 		if _shop_filter != "todo" and _category(item) != _shop_filter:
 			continue
 		var b := Button.new()
-		b.text = "%s — %d ₡" % [item.get("name", id), int(item.get("price", 0))]
+		b.text = _shop_label(str(id))
 		b.tooltip_text = GameState.item_tooltip(str(id))
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.clip_text = true
@@ -220,6 +244,16 @@ func _build_shop() -> void:
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		_shop_grid.add_child(b)
+
+
+## "Gallo pinto envuelto — 75 ₡ (antes 150)" when a town event changes the price.
+func _shop_label(id: String) -> String:
+	var item: Dictionary = GameState.get_item(id)
+	var base: int = int(item.get("price", 0))
+	var now: int = GameState.item_price(id)
+	if now == base:
+		return "%s — %d ₡" % [item.get("name", id), base]
+	return "%s — %s (antes %d)" % [item.get("name", id), "gratis" if now == 0 else "%d ₡" % now, base]
 
 
 func _on_iglesia_pressed() -> void:
@@ -282,7 +316,8 @@ func _refresh_recruits() -> void:
 			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)), GameState.hire_cost(h)]
 		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
 			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
-		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.ROSTER_CAP
+		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.ROSTER_CAP \
+			or TownEventsScript.is_closed(GameState.active_event(), "terminal")
 		b.pressed.connect(func(): _say(GameState.hire_recruit(i)))
 		_recruit_box.add_child(b)
 
@@ -355,11 +390,12 @@ func _roster_row(h: Dictionary) -> Control:
 		info.text, lvl, ResolveSystemScript.level_name(lvl), xp]
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
-	if cost > 0:
+	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):
 		var heal := Button.new()
-		heal.text = "EBAIS %d ₡" % cost
+		var ebais_closed: bool = TownEventsScript.is_closed(GameState.active_event(), "ebais")
+		heal.text = "EBAIS cerrado" if ebais_closed else ("EBAIS gratis" if cost == 0 else "EBAIS %d ₡" % cost)
 		heal.tooltip_text = "Curar todos los PV en el EBAIS del pueblo."
-		heal.disabled = GameState.colones < cost
+		heal.disabled = ebais_closed or GameState.colones < cost
 		heal.pressed.connect(func(): _say(GameState.heal_hero(h)))
 		row.add_child(heal)
 	if in_party:
@@ -426,3 +462,86 @@ func _on_start_pressed() -> void:
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+
+# --- Town event of the week (docs/02 §12) -----------------------------------------------
+
+func _build_event_button() -> void:
+	_event_btn = Button.new()
+	_event_btn.add_theme_font_size_override("font_size", 14)
+	_event_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_event_btn.clip_text = true
+	_event_btn.pressed.connect(_show_event_card)
+	$Columns/Left/VBox/InfoRow.add_child(_event_btn)
+
+
+func _refresh_event_button() -> void:
+	if _event_btn == null:
+		return
+	var ev: Dictionary = GameState.active_event()
+	_event_btn.disabled = ev.is_empty()
+	_event_btn.text = "Sin novedades esta semana" if ev.is_empty() else "Evento: %s" % ev.get("name", "")
+	var col := Color(0.6, 0.85, 0.55) if str(ev.get("kind", "")) == "positive" else (Color(0.95, 0.55, 0.5) if str(ev.get("kind", "")) == "negative" else Color(0.95, 0.82, 0.55))
+	_event_btn.add_theme_color_override("font_color", col)
+	_event_btn.tooltip_text = "" if ev.is_empty() else "\n".join(TownEventsScript.effect_lines(ev))
+
+
+## Event card: name, text, what it changes, what already happened, and any choices.
+func _show_event_card() -> void:
+	var ev: Dictionary = GameState.active_event()
+	if ev.is_empty():
+		return
+	GameState.event_seen = true
+	SaveService.save_game()
+	var dlg := AcceptDialog.new()
+	dlg.title = "%s — %s" % [TownEventsScript.kind_label(ev), ev.get("name", "")]
+	dlg.ok_button_text = "Entendido"
+	var box := VBoxContainer.new()
+	box.custom_minimum_size = Vector2(520, 0)
+	box.add_theme_constant_override("separation", 8)
+	var body := Label.new()
+	body.text = str(ev.get("text", ""))
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.custom_minimum_size = Vector2(520, 0)
+	box.add_child(body)
+	# What happened right away (if we still have the report) + what lasts the week.
+	var lines: PackedStringArray = GameState.event_report.duplicate()
+	lines.append_array(TownEventsScript.effect_lines(ev, GameState.event_report.is_empty()))
+	if not lines.is_empty():
+		var fx := Label.new()
+		fx.text = "• " + "\n• ".join(lines)
+		fx.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		fx.custom_minimum_size = Vector2(520, 0)
+		fx.add_theme_color_override("font_color", Color(0.95, 0.82, 0.55))
+		box.add_child(fx)
+	for h in GameState.resurrect_candidates():
+		var b := Button.new()
+		b.text = "Traer de vuelta a %s — %s, Resolución %d" % [h.get("name", "?"), h.get("class_name", ""), int(h.get("resolve_level", 0))]
+		b.pressed.connect(func():
+			dlg.hide()
+			_say(GameState.resurrect(int(h.get("uid", 0))))
+		)
+		box.add_child(b)
+	var offer: Dictionary = GameState.event_offer()
+	if not offer.is_empty():
+		var ob := Button.new()
+		ob.text = "%s — %d ₡" % [offer.get("label", ""), int(offer.get("cost", 0))]
+		ob.disabled = GameState.colones < int(offer.get("cost", 0))
+		ob.pressed.connect(func():
+			dlg.hide()
+			_say(GameState.take_event_offer())
+		)
+		box.add_child(ob)
+	dlg.add_child(box)
+	dlg.visibility_changed.connect(func():
+		if not dlg.visible:
+			dlg.queue_free()
+	)
+	add_child(dlg)
+	# Autowrapped labels report a huge height on the first pass: size to content after layout.
+	dlg.popup_centered(Vector2i(560, 0))
+	await get_tree().process_frame
+	if is_instance_valid(dlg):
+		dlg.reset_size()
+		dlg.popup_centered()
+

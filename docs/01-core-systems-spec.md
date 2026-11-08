@@ -221,7 +221,9 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
   - Per region level, enemies get +11% PV, +6% damage, +1 accuracy and +5% ailment resist, pay grows 15%, and survivors earn +1 XP (`progression.json` `region_scaling`).
   - The hub shows the combined level on each difficulty and the region's offset in the region list. The validator requires Sótanos to have the lowest `region_level`.
 
-- A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party.
+- A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party (same rule as Darkest Dungeon). Two exceptions, also from DD:
+  - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 7 / 13 / 21 / 29 / 40 XP.
+  - **Mano vuelta** (DD's Helping Hand town event): for that week nobody refuses. Under-leveled heroes still take the penalty.
 - A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.
 - Not built yet: Casa Comunal skill ranks gated by level, and level-tiered treatment prices (doc 02 §4, doc 04 §3.5).
 

@@ -10,6 +10,9 @@ const THRESHOLD_RESOLVE := 100
 const THRESHOLD_COLAPSO := 200
 
 const QUEBRANTO_CHANCE := 0.75
+## Town events shift the Virtud chance for one expedition (+0.15 Fiesta patronal, -0.15 Se viene
+## el temporal). GameState sets it at mission start and clears it at mission end.
+static var virtue_bonus: float = 0.0
 
 const AFFLICTIONS := ["paranoia", "cobardia", "ira_ciega", "bravata", "desesperanza", "nervios", "fatalismo"]
 const VIRTUDES := ["serenidad", "firmeza", "valentia", "punteria", "esperanza", "vigor", "abnegacion"]
@@ -55,7 +58,7 @@ static func _resolve_at_100(hero: Dictionary) -> PackedStringArray:
 	var logs: PackedStringArray = PackedStringArray()
 	if str(hero.get("affliction_id", "")) != "" or str(hero.get("virtud_id", "")) != "":
 		return logs
-	if randf() < QUEBRANTO_CHANCE:
+	if randf() < clampf(QUEBRANTO_CHANCE - virtue_bonus, 0.0, 1.0):
 		var aff: String = AFFLICTIONS[randi() % AFFLICTIONS.size()]
 		hero["affliction_id"] = aff
 		hero["virtud_id"] = ""

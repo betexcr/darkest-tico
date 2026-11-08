@@ -10,6 +10,9 @@ const DATA_PATH := "res://data/progression.json"
 const MAX_LEVEL := 6
 
 static var _data: Dictionary = {}
+## Modo Pura Vida (DD Radiant): faster XP curve, heroes accept easier expeditions.
+## GameState keeps this in sync with its saved radiant_mode.
+static var radiant: bool = false
 
 
 static func data() -> Dictionary:
@@ -27,6 +30,8 @@ static func cfg() -> Dictionary:
 
 
 static func thresholds() -> Array:
+	if radiant:
+		return cfg().get("xp_thresholds_radiant", [0, 2, 7, 13, 21, 29, 40])
 	return cfg().get("xp_thresholds", [0, 2, 8, 14, 24, 36, 48])
 
 
@@ -99,6 +104,8 @@ static func expedition(diff_id: String, region_level: int) -> Dictionary:
 	d["region_level"] = rl
 	for k in ["level", "min_level", "max_level"]:
 		d[k] = mini(int(d.get(k, 0)) + rl, MAX_LEVEL)
+	if radiant:
+		d["max_level"] = mini(int(d["max_level"]) + int(cfg().get("radiant_extra_levels", 2)), MAX_LEVEL)
 	d["enemy_hp"] = float(d.get("enemy_hp", 1.0)) * (1.0 + float(rs.get("enemy_hp", 0.0)) * rl)
 	d["enemy_dmg"] = float(d.get("enemy_dmg", 1.0)) * (1.0 + float(rs.get("enemy_dmg", 0.0)) * rl)
 	d["enemy_accuracy"] = int(d.get("enemy_accuracy", 0)) + int(rs.get("enemy_accuracy", 0)) * rl

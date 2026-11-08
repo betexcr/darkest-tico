@@ -6,6 +6,7 @@ Checks that JSON parses and that cross-references resolve:
   - hero skill_ids -> data/skills.json, camp_skill_ids -> data/camp_skills.json
   - data/camp_skills.json (targets, effects, mods, cures, class lists) and data/progression.json
   - data/statuses.json mental_mods -> Quebranto/Virtud ids in scripts/domain/stress_system.gd
+  - data/town_events.json: effect keys, categories, services, item/class/region references
   - region start/objective nodes, edges, enemy_id -> nodes / data/enemies.json
     (regions with a "generator" block: enemy pools and boss -> data/enemies.json)
   - every non-start region node is reachable from start_node
@@ -151,6 +152,63 @@ def main() -> int:
             region_levels[rp.stem] = rl
     if "sotanos" in region_levels and region_levels["sotanos"] != min(region_levels.values()):
         errors.append("regions: Sótanos must have the lowest region_level")
+
+    # Town events (docs/02 §12): known effect keys, valid references.
+    te_raw = load(DATA / "town_events.json") or {}
+    te_ids = set()
+    item_map = {i.get("id"): i for i in (load(DATA / "items.json") or {}).get("items", [])}
+    class_ids = {h.get("class_id") for h in (load(DATA / "heroes.json") or {}).get("heroes", [])}
+    region_ids = {rp.stem for rp in (DATA / "regions").glob("*.json")}
+    fx_keys = {"price_pct", "first_buy_pct", "sell_rate", "blocked_items", "closed", "service_pct", "relief_pct",
+               "gift_colones", "gift_item", "idle_stress", "idle_cure_quebranto", "all_cure_quebranto",
+               "idle_class_level", "add_recruits", "extra_recruits", "add_roster_free", "hire_veteran",
+               "resurrect", "steal_items", "offer", "mission"}
+    mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
+                    "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
+    cats = {"consumable", "healing", "weapon", "armor", "accessory"}
+    services = {"iglesia", "ebais", "terminal", "pulperia_compra", "pulperia_venta"}
+    for ev in te_raw.get("events", []):
+        eid = ev.get("id")
+        where = f"town_events.json: '{eid}'"
+        if eid in te_ids:
+            errors.append(f"{where} duplicate id")
+        te_ids.add(eid)
+        for f in ("name", "text", "kind", "category", "dd"):
+            if not ev.get(f):
+                errors.append(f"{where} missing '{f}'")
+        if ev.get("kind") not in ("positive", "negative", "special"):
+            errors.append(f"{where} invalid kind")
+        fx = ev.get("effects", {})
+        if not fx:
+            errors.append(f"{where} has no effects")
+        for k in fx:
+            if k not in fx_keys:
+                errors.append(f"{where} unknown effect '{k}'")
+        for grp in ("price_pct", "first_buy_pct", "sell_rate"):
+            for k in fx.get(grp, {}):
+                if k not in cats:
+                    errors.append(f"{where} {grp}: unknown category '{k}'")
+        for c in fx.get("closed", []) + list(fx.get("service_pct", {})):
+            if c not in services:
+                errors.append(f"{where} unknown service '{c}'")
+        for iid in fx.get("blocked_items", []):
+            if iid not in item_map:
+                errors.append(f"{where} blocks unknown item '{iid}'")
+        if fx.get("gift_item") and fx["gift_item"] not in ("weapon", "armor", "accessory"):
+            errors.append(f"{where} gift_item must be weapon/armor/accessory")
+        for k in ("idle_class_level",):
+            if k in fx and fx[k] not in class_ids:
+                errors.append(f"{where} unknown class '{fx[k]}'")
+        if "add_recruits" in fx and fx["add_recruits"].get("class") not in class_ids:
+            errors.append(f"{where} add_recruits: unknown class")
+        m = fx.get("mission", {})
+        for k in m:
+            if k not in mission_keys:
+                errors.append(f"{where} unknown mission key '{k}'")
+        if m.get("region") and m["region"] not in region_ids:
+            errors.append(f"{where} unknown region '{m['region']}'")
+    if not 0 <= int(te_raw.get("chance_pct", -1)) <= 100:
+        errors.append("town_events.json: chance_pct must be 0-100")
 
     stress_src = (ROOT / "scripts/domain/stress_system.gd").read_text(encoding="utf-8")
     mental_ids = set()

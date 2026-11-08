@@ -94,6 +94,9 @@ func _build_rewards() -> void:
 	_body.add_child(_money_row("Foco de corrupción purgado", quest))
 	_body.add_child(_banner("Botín recogido"))
 	_body.add_child(_money_row("Colones de peleas y curiosidades", loot))
+	var treasure: int = int(led.get("treasure_colones", 0))
+	if treasure > 0:
+		_body.add_child(_money_row("Botija desenterrada", treasure))
 	var items: Dictionary = led.get("items", {})
 	if items.is_empty():
 		_body.add_child(_label("Ningún artículo encontrado.", 14, DIM, true))
@@ -116,7 +119,7 @@ func _build_rewards() -> void:
 	if int(led.get("ambushes", 0)) > 0:
 		parts.append("emboscadas: %d" % int(led["ambushes"]))
 	_body.add_child(_label(" · ".join(parts), 14, Color(0.85, 0.82, 0.76), true))
-	var total := _label("Total: %d ₡" % (quest + loot), 22, GOLD, true)
+	var total := _label("Total: %d ₡" % (quest + loot + treasure), 22, GOLD, true)
 	_body.add_child(total)
 
 

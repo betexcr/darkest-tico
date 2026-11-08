@@ -3,6 +3,9 @@
   "resolve": {
     "level_names": ["Novato", "Aprendiz", "Baquiano", "Veterano", "Maestro", "Campeón", "Leyenda"],
     "xp_thresholds": [0, 2, 8, 14, 24, 36, 48],
+    "_radiant_doc": "Modo Pura Vida (DD Radiant mode, picked in the hub): a faster XP curve and heroes accept expeditions up to radiant_extra_levels below their range.",
+    "xp_thresholds_radiant": [0, 2, 7, 13, 21, 29, 40],
+    "radiant_extra_levels": 2,
     "_resist_doc": "Status resistance points (%) gained per resolve level (resist_categories in statuses.json).",
     "resist_per_level": { "aturdido": 10, "veneno": 10, "sangrado": 10, "salado": 10, "trampa": 5 },
     "underlevel_start_stress": 20,

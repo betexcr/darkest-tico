@@ -315,8 +315,10 @@ func _effects_bbcode(u: Dictionary) -> String:
 	if list.is_empty() and camp.is_empty():
 		out.append("[color=#999999]Ninguno.[/color]")
 	for b in camp:
-		out.append("[color=#ffd27a][b]%s[/b][/color] [color=#bbbbbb](fogata, %d pelea%s)[/color] [%s]" % [
-			str(b.get("name", "?")), int(b.get("fights", 0)), "" if int(b.get("fights", 0)) == 1 else "s",
+		var n: int = int(b.get("fights", 0))
+		var when: String = "toda la expedición" if n >= 99 else "%d pelea%s" % [n, "" if n == 1 else "s"]
+		out.append("[color=#ffd27a][b]%s[/b][/color] [color=#bbbbbb](%s, %s)[/color] [%s]" % [
+			str(b.get("name", "?")), str(b.get("from", "fogata")), when,
 			CampingSystemScript.mods_text(b.get("mods", {}))])
 	for e in list:
 		var id: String = str(e["id"])

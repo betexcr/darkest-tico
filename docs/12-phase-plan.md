@@ -245,6 +245,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] Camp node uses per-hero camp skills instead of the fixed "feast/skip"; [x] meal tiers, 12 respite, 4-fight buffs, night ambush with surprise round, Luz back to 100
 - Follow-up: P3-13 (Guardabosques building: learn/swap camp skills).
 
+### P3-15 · M · Town events, Modo Pura Vida (owner request 2026-11-08)
+- Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08) · Depends: P3-04
+- Spec: `02` §12, §12.1; `01` §6.1 (Pura Vida, Mano vuelta); owner: "add the two exceptions, that town event, and something similar to each of the other Darkest Dungeon town events with Tico flavour"
+- Files: `data/town_events.json` (56 events), `scripts/domain/town_events.gd`, `GameState` (event state, prices, services, mission modifiers, graveyard, thief, offers, `radiant_mode`, save v7), `hacienda_hub.gd` (event card, Pura Vida checkbox, live prices), `main.gd`, `tests/test_town_events.gd`, validator
+- Done when: [x] every DD town event has a Tico version; [x] Mano vuelta and Pura Vida lift level limits; [ ] owner reviews the texts (doc 08 tone) and balance
+
 ### P3-13 · S · Guardabosques building: learn and swap camp skills
 - Status: `todo` · Depends: P3-07
 - Spec: `02` §9

@@ -17,6 +17,33 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 (night) — P3-15 — Town events (Tico versions of every DD one), Modo Pura Vida, Mano vuelta
+- **Agent / branch:** Claude Code (cloud) / `betomm/amazing-clarke-lv3whd`
+- **Status after session:** P3-15 review. The open question from the previous entry is answered: the owner asked what DD does (it blocks), then asked for DD's two exceptions.
+- **Changed:**
+  - `data/town_events.json` (56 events) + `scripts/domain/town_events.gd`: deck draw (60%, week windows, once, requirements), price/service/relief/mission modifiers, plain-language effect lines.
+  - `GameState`:
+    - `draw_town_event()`, called from `main.gd` after `end_of_expedition_week`.
+    - `item_price`/`buy_block_reason`, event-aware `sell_price`/`heal_cost`/`iglesia_cost`/`iglesia_relief`/`hire_cost`.
+    - Mission modifiers in `start_mission`/`complete_mission`: XP, damage buff, virtue chance via `StressSystem.virtue_bonus`, light decay, loot/items, firewood, tough, treasure.
+    - Graveyard + `resurrect`, stolen items returned on a completed expedition, paid offers.
+    - `radiant_mode` (Modo Pura Vida). Save v7 migrating v6.
+  - `resolve_system.gd`: `radiant` (faster curve, +2 to max_level).
+  - Hub: event button + card (choices), Pura Vida checkbox, prices "X ₡ (antes Y)", closed services. The EBAIS button now shows whenever PV is missing (free events made the price 0).
+  - Expedition info panel labels event buffs "(evento, toda la expedición)". Victory screen shows the botija.
+  - Docs: 02 §12.1 (mapping table), 01 §6.1.
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: `test_town_events` (119 checks: every event forced and the hub opened with it), `test_progression`, `smoke_expedition`, `test_hub`, `test_status`, `test_equipment`, `test_feedback`, `test_guard`: all 0 failures. Event card and hub checked by screenshot (`tools/screens/progression_screenshot.gd` → hub_event.png).
+- **Not verified / risks:**
+  - Balance of event frequency (60%) and of each effect. The −100% consumables event makes combat items free too (as DD's Bumper Crop does for provisions).
+  - Texts are first drafts against doc 08 (Ley seca, Huelga en la Caja, OIJ…); owner tone review wanted.
+  - Events only draw through `main.gd`; tests call `draw_town_event(id)` directly.
+- **Decisions needed:**
+  - Event frequency: should it be a player option like DD (currently data, 60%)?
+  - Are the adaptations OK where we lack DD systems (upgrades → gifts, tavern → Iglesia/EBAIS/Terminal/Pulpería, special missions → next-expedition modifiers)?
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-08 (later) — P1-14, P3-04, P3-07, P4-11 — 7+7 Quebrantos/Virtudes, resolve levels, camping, victory screen
 - **Agent / branch:** Claude Code (cloud) / `betomm/amazing-clarke-lv3whd` (based on `betomm/sleepy-ramanujan-78dwh9` at 84b2602, owner request)
 - **Status after session:** P1-14 review · P3-04 in-progress (XP/levels/difficulty done; skill ranks todo) · P3-07 review · P4-11 review · new todo: P3-13, P3-14

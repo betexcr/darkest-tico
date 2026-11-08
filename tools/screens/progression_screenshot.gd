@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Renders the camp (respite menu), both victory-screen pages and the hub roster, for review.
 ##   xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/progression_screenshot.gd -- <out_dir>
-## Saves camp.png, victory_rewards.png, victory_heroes.png, hub.png in <out_dir>.
+## Saves camp.png, victory_rewards.png, victory_heroes.png, hub.png, hub_event.png in <out_dir>.
 
 func _initialize() -> void:
 	_run.call_deferred()
@@ -63,5 +63,15 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await _snap(out_dir, "hub.png")
+	# Town event card with choices (Día de los Difuntos).
+	hub.queue_free()
+	var fallen: Dictionary = gs.party[3].duplicate(true)
+	fallen["dead"] = true
+	fallen["resolve_level"] = 2
+	gs.graveyard.append(fallen)
+	gs.draw_town_event("dia_de_difuntos")
+	var hub2 = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
+	root.add_child(hub2)
+	await _snap(out_dir, "hub_event.png")
 	print("saved to ", out_dir)
 	quit(0)
