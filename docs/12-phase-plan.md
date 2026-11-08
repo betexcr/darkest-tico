@@ -54,6 +54,11 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
 - Status: `done`
 - Every enemy: 1 basic attack + 1–3 specials with Tico names (42 abilities across 15 enemies, `data/enemies.json`), chosen by weight. Magical attacks ignore Guard; the Mayordomo's *Golpe al escudo* ignores Guard too. Ailments `sangrado`, `veneno`, `aturdido` (`scripts/domain/status_effects.gd`) tick at the start of the unit's turn and clear after the fight; the venda cures bleeding, the ruda cures poison. Some specials drain light or steal colones. Rules in AGENTS.md §4 + doc 05 §2.7, enforced by the validator. Tests: `tests/test_status.gd`.
 
+### P1-13 · S · Combat feedback (owner request 2026-11-08)
+- Status: `review` (needs a human look in the running game)
+- Floating numbers over the fighter that was hit: red `-N` damage, yellow `¡-N!` crits, green `+N` heals, purple `±N estrés`, grey `Falla` / `Esquiva`; a white-then-red hit flash with a shake. Ailments (sangrado, veneno, aturdido) and Guard are icons above the fighter with turns left and a tooltip (`res://assets/status/<id>.png`, coloured letter badge until the art exists). Code: `scripts/combat/battle_unit.gd` (`float_text`, `_refresh_status_icons`), hooks in `combat_controller.gd`. Test: `tests/test_feedback.gd`.
+- Battle stage mirrored the same day: party on the right facing left, enemies on the left (AGENTS.md §4).
+
 ### P1-01 · M · Headless test harness
 - Status: `in-progress` · Depends: — · Started: `tests/smoke_expedition.gd` (full expedition runs) and `tests/test_guard.gd` exist; still missing a single runner + resolver/stress unit tests.
 - Spec: `01` §2–3
