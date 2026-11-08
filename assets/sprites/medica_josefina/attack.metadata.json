@@ -18,5 +18,6 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T19:38:45+00:00"
+  "timestamp": "2026-11-08T19:38:45+00:00",
+  "post": "by hand after generation: the syringe moved from the low (left) hand into the raised right hand (mirrored, scaled 0.62); leftovers in the low hand erased/cloned over (tools/sprite_edits/medica_attack_left.py)"
 }
