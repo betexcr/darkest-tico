@@ -214,7 +214,9 @@ def draw_weapon(cfg: dict, c: dict, sid: str, size):
         return None
     w, h = size
     pts = skeleton_for(cfg, c, sid)
-    hands = [pts[i] for i in (4, 7) if pts[i] is not None]
+    # "hand": "right" / "left" holds it in one hand; default: between both wrists (two-handed)
+    which = {"right": (4,), "left": (7,)}.get(shape.get("hand", ""), (4, 7))
+    hands = [pts[i] for i in which if pts[i] is not None]
     x0 = sum(p[0] for p in hands) / len(hands) * w
     y0 = sum(p[1] for p in hands) / len(hands) * h
     ang = math.radians(float(shape.get("angle", 20)))
