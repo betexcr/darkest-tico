@@ -1,8 +1,8 @@
 {
   "id": "sprite_guachiman_attack",
-  "prompt": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, violent attack with a wooden baton, leaning forward, deep lunge, snarling face, facing right, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, walking, calm, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5240,
+  "prompt": "old night watchman, grey hair, thick grey mustache, black peaked guard cap with badge, black uniform coat, side view, violent lunge, both hands raising a wooden baton forward, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, long hair, ponytail, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5311,
   "sheet_seed": 5040,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -18,6 +18,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T06:39:48+00:00",
-  "post": "by hand after generation: a second baton in the low (left) hand erased"
+  "timestamp": "2026-11-08T07:06:13+00:00"
 }
