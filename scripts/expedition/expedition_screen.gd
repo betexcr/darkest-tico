@@ -15,6 +15,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
+const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -38,7 +39,7 @@ enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
 @onready var _hero_name: Label = $BottomPanel/Row/HeroInfo/HeroName
 @onready var _hero_stats: Label = $BottomPanel/Row/HeroInfo/HeroStats
 @onready var _turn_label: Label = $BottomPanel/Row/Actions/TurnLabel
-@onready var _skills: HFlowContainer = $BottomPanel/Row/Actions/Skills
+@onready var _skills: HBoxContainer = $BottomPanel/Row/Actions/Skills
 @onready var _log: RichTextLabel = $BottomPanel/Row/Actions/Log
 @onready var _map_view = $BottomPanel/Row/SidePanel/Pages/MapView
 @onready var _inventory: GridContainer = $BottomPanel/Row/SidePanel/Pages/Inventory
@@ -47,6 +48,7 @@ enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
 @onready var _combat = $Combat
 @onready var _enemy_info: PanelContainer = $Stage/EnemyInfo
 @onready var _enemy_info_name: Label = $Stage/EnemyInfo/VBox/Head/Name
+@onready var _enemy_info_portrait: TextureRect = $Stage/EnemyInfo/VBox/Head/Portrait
 @onready var _enemy_info_health: ProgressBar = $Stage/EnemyInfo/VBox/Health
 @onready var _enemy_info_body: RichTextLabel = $Stage/EnemyInfo/VBox/Body
 
@@ -67,6 +69,10 @@ var _camp_respite: int = 0
 var _camp_used: Array = []
 var _camp_watch: bool = false
 var _combat_is_ambush: bool = false
+## Enemy the player clicked during a fight: single-target attacks/items go straight to it.
+var _selected_enemy: Dictionary = {}
+## Active hero's equipment when their turn began; a change spends the turn.
+var _turn_equipment: Dictionary = {}
 
 
 func _ready() -> void:
@@ -157,6 +163,15 @@ func _on_unit_clicked(unit) -> void:
 		_show_hero_info(unit.data)
 	else:
 		_show_enemy_info(unit.data)
+		_select_enemy(unit.data)
+
+
+## In a fight, clicking an enemy makes it the target: attacks skip the target prompt.
+func _select_enemy(e: Dictionary) -> void:
+	if _mode != Mode.COMBAT or e.get("dead", false) or not _combat.targetable_enemies().has(e):
+		return
+	_selected_enemy = e
+	_combat.set_target(e)
 
 
 func _set_background(path: String) -> void:
@@ -191,8 +206,8 @@ func _hide_enemy_info() -> void:
 
 ## The info panel opens on the side away from the clicked unit (party right, enemies left).
 func _place_info_panel(on_left: bool) -> void:
-	_enemy_info.offset_top = 44.0
-	_enemy_info.offset_bottom = 446.0
+	_enemy_info.offset_top = 36.0
+	_enemy_info.offset_bottom = 462.0
 	_enemy_info.anchor_left = 0.0 if on_left else 1.0
 	_enemy_info.anchor_right = 0.0 if on_left else 1.0
 	_enemy_info.offset_left = 12.0 if on_left else -342.0
@@ -212,6 +227,7 @@ func _show_enemy_info(e: Dictionary) -> void:
 	var hp_max: int = maxi(int(e.get("hp_max", 1)), 1)
 	var pct: int = int(round(100.0 * hp / hp_max))
 	_enemy_info_name.text = str(e.get("name", "?"))
+	_set_info_portrait("res://assets/enemies/%s.png" % str(e.get("id", "")))
 	_enemy_info_health.max_value = 100
 	_enemy_info_health.value = pct
 	var lines: PackedStringArray = PackedStringArray()
@@ -249,6 +265,7 @@ func _show_hero_info(h: Dictionary) -> void:
 	var hp: int = int(h.get("hp", 0))
 	var hp_max: int = maxi(int(h.get("hp_max", 1)), 1)
 	_enemy_info_name.text = "%s — %s" % [h.get("name", "?"), h.get("class_name", "")]
+	_set_info_portrait("res://assets/portraits/%s.png" % str(h.get("hero_id", "")))
 	_enemy_info_health.max_value = 100
 	_enemy_info_health.value = int(round(100.0 * hp / hp_max))
 	var lines: PackedStringArray = PackedStringArray()
@@ -265,6 +282,11 @@ func _show_hero_info(h: Dictionary) -> void:
 		lines.append(_effects_bbcode(h))
 		lines.append(_resist_bbcode(h, true))
 	_enemy_info_body.text = "\n".join(lines)
+
+
+func _set_info_portrait(path: String) -> void:
+	_enemy_info_portrait.texture = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	_enemy_info_portrait.visible = _enemy_info_portrait.texture != null
 
 
 ## Icon for a status id as bbcode: the art if it exists, else a coloured letter badge.
@@ -431,7 +453,20 @@ func _build_equip_row() -> void:
 func _on_equipment_changed(message: String) -> void:
 	if message != "":
 		_log_line(message, "aaaaaa")
+	var hero: Dictionary = GameState.equip_turn_hero
+	if _mode == Mode.COMBAT and not hero.is_empty() and _equipment_of(hero) != _turn_equipment:
+		# The swap already happened; it costs the hero's turn.
+		GameState.equip_turn_hero = {}
+		_clear_skills()
+		_refresh_all()
+		_combat.spend_turn_on_equipment()
+		return
 	_refresh_all()
+
+
+func _equipment_of(hero: Dictionary) -> Dictionary:
+	var eq = hero.get("equipment", {})
+	return (eq as Dictionary).duplicate() if eq is Dictionary else {}
 
 
 func _first_living_hero() -> Dictionary:
@@ -503,8 +538,16 @@ func _refresh_inventory() -> void:
 
 func _on_item_pressed(item_id: String) -> void:
 	if GameState.is_equipment(item_id):
-		# Click = equip on the selected hero (or drag it onto a slot / a hero).
+		# Click = equip on the selected hero (or drag it onto a slot / a hero). In a fight
+		# only the hero whose turn it is can change gear, and it spends the turn.
 		var target: Dictionary = _viewed_hero if not _viewed_hero.is_empty() else _first_living_hero()
+		if _mode == Mode.COMBAT:
+			if not _pending.is_empty():
+				return
+			target = GameState.equip_turn_hero
+			if target.is_empty():
+				_log_line("Ahora no: espera el turno del héroe que se va a cambiar.", "888888")
+				return
 		_on_equipment_changed(GameState.equip(target, item_id))
 		return
 	match _mode:
@@ -873,8 +916,10 @@ func _start_combat_from_context(node_id: String) -> void:
 	_clear_skills()
 	_turn_label.text = ""
 	_spawn_enemies(squad)
+	_selected_enemy = {}
 	GameState.equip_locked = true
 	_combat_is_ambush = bool(ctx.get("is_ambush", false))
+	GameState.equip_turn_hero = {}
 	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush)
 
@@ -883,7 +928,7 @@ func _update_turn_label() -> void:
 	var hero: Dictionary = _combat.active_hero()
 	if hero.is_empty():
 		return
-	_turn_label.text = "Turno de %s — elige una habilidad o un artículo de la alforja." % hero.get("name", "?")
+	_turn_label.text = "Turno de %s — habilidad, artículo de la alforja, o cambiar equipo (pierde el turno)." % hero.get("name", "?")
 
 
 # --- Choosing a target after pressing a skill or item -----------------------------
@@ -899,6 +944,7 @@ func _living_units(heroes: bool) -> Array:
 ## Single-target skills/items ask for a click on an enemy (or ally); with one valid
 ## choice they go straight through. Self/party ones run at once.
 func _begin_pending(action: Dictionary) -> void:
+	GameState.equip_turn_hero = {}
 	var side: String = str(action.get("side", ""))
 	if side == "":
 		_execute_pending({}, action)
@@ -907,6 +953,11 @@ func _begin_pending(action: Dictionary) -> void:
 	if options.size() <= 1:
 		_execute_pending(options[0].data if not options.is_empty() else {}, action)
 		return
+	if side == "enemy" and not _selected_enemy.is_empty():
+		for u in options:
+			if is_same(u.data, _selected_enemy):
+				_execute_pending(_selected_enemy, action)
+				return
 	_pending = action
 	_clear_skills()
 	var what: String = str(action["skill"].get("name", "")) if action.has("skill") else str(GameState.get_item(str(action["item"])).get("name", ""))
@@ -941,6 +992,7 @@ func _execute_pending(target: Dictionary, action: Dictionary = {}) -> void:
 	_clear_skills()
 	var side: String = str(action.get("side", ""))
 	if side == "enemy" and not target.is_empty():
+		_selected_enemy = target
 		_combat.set_target(target)
 	var ally: Dictionary = target if side == "ally" else {}
 	if action.has("skill"):
@@ -955,27 +1007,30 @@ func _on_hero_turn(hero: Dictionary) -> void:
 	_clear_selectable()
 	_clear_skills()
 	_update_turn_label()
+	GameState.equip_turn_hero = hero
+	_turn_equipment = _equipment_of(hero)
+	# One row of icons: the hero's skills, then Guardia and Pasar. Hover = name + description.
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = GameState.get_skill(str(sid))
 		if sk.is_empty():
 			continue
-		var b := Button.new()
-		b.text = str(sk.get("name", sid))
-		b.tooltip_text = _skill_tooltip(sk)
+		var b = SkillButtonScript.new()
+		b.setup(str(sid), str(sk.get("kind", "attack")), str(sk.get("name", sid)), _skill_tooltip(sk))
 		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
 		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
 		_skills.add_child(b)
-	var guard_btn := Button.new()
-	guard_btn.text = "Guardia"
-	guard_btn.tooltip_text = "Se cubre: recibe la mitad del daño físico hasta su próximo turno."
+	var guard_btn = SkillButtonScript.new()
+	guard_btn.setup("_guard", "guard", "Guardia", "Se cubre: recibe la mitad del daño físico hasta su próximo turno.")
 	guard_btn.pressed.connect(func():
+		GameState.equip_turn_hero = {}
 		_clear_skills()
 		_combat.guard()
 	)
 	_skills.add_child(guard_btn)
-	var pass_btn := Button.new()
-	pass_btn.text = "Pasar"
+	var pass_btn = SkillButtonScript.new()
+	pass_btn.setup("_pass", "pass", "Pasar", "No hace nada este turno.")
 	pass_btn.pressed.connect(func():
+		GameState.equip_turn_hero = {}
 		_clear_skills()
 		_combat.pass_turn()
 	)
@@ -1006,6 +1061,8 @@ func _clear_skills() -> void:
 
 func _on_combat_over(victory: bool) -> void:
 	GameState.equip_locked = false
+	GameState.equip_turn_hero = {}
+	_selected_enemy = {}
 	_hide_enemy_info()
 	_pending = {}
 	_clear_selectable()

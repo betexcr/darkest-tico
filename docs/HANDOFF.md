@@ -48,6 +48,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Done: `region_level` in region JSONs (Sótanos 0, Bosque 1, more per doc 05 §4), `ResolveSystem.expedition()` combines it with the difficulty, and the hub labels show the combined level.
   - Difficulty enemy multipliers were corrected to doc 05 §4 (Veterano ×1.22 PV / ×1.12 damage / +10% resist; Campeón ×1.46 / ×1.24 / +20%).
   - Bosque stays hidden (P2-07); its level-1 scaling applies once it's back in `PLAYABLE_REGIONS`.
+- **Merged into `betomm/sleepy-ramanujan-78dwh9`** (owner request), on top of aef3787 (action bar P4-09, new icons). One conflict in `expedition_screen.gd` (new vars + combat start), kept both sides. After the merge: validate_data 0 errors / 0 warnings; all 7 Godot tests 0 failures, no script errors; camp screen re-checked by screenshot.
 - **Decisions needed:** should heroes too seasoned for the expedition block the start (as now, like DD) or just warn? (asked 2026-11-08)
 - **Next step:** P3-04 skill ranks: open `scripts/hacienda/hacienda_hub.gd`, add the Casa Comunal (doc 02 §4: rank purchase gated by `resolve_level`, costs in doc 04 §3.3).
 

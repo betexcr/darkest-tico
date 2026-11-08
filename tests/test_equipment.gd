@@ -40,6 +40,12 @@ func _run() -> void:
 	_check(int(h["accuracy"]) == base_acc, "stats return to base")
 	gs.equip_locked = true
 	_check(gs.equip(h, "machete_bendito") != "", "no equipping during a fight")
+	gs.equip_turn_hero = h
+	_check(gs.equip(h, "machete_bendito") == "", "the hero whose turn it is may change gear mid-fight")
+	var other: Dictionary = {"name": "Otro", "equipment": {}}
+	_check(gs.equip(other, "agua_pipa") != "" and not gs.can_change_equipment(other), "other heroes can't change gear mid-fight")
+	gs.unequip(h, "weapon")
+	gs.equip_turn_hero = {}
 	gs.equip_locked = false
 	var se = load("res://scripts/domain/status_effects.gd")
 	h["immune"] = ["aturdido"]

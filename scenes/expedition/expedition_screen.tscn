@@ -204,9 +204,17 @@ layout_mode = 2
 [node name="Head" type="HBoxContainer" parent="Stage/EnemyInfo/VBox"]
 layout_mode = 2
 
+[node name="Portrait" type="TextureRect" parent="Stage/EnemyInfo/VBox/Head"]
+visible = false
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="Name" type="Label" parent="Stage/EnemyInfo/VBox/Head"]
 layout_mode = 2
 size_flags_horizontal = 3
+autowrap_mode = 3
 theme_override_colors/font_color = Color(0.95, 0.5, 0.45, 1)
 theme_override_font_sizes/font_size = 15
 text = ""
@@ -277,15 +285,16 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="TurnLabel" type="Label" parent="BottomPanel/Row/Actions"]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+autowrap_mode = 3
 theme_override_font_sizes/font_size = 13
 theme_override_colors/font_color = Color(0.75, 0.7, 0.6, 1)
 text = ""
 
-[node name="Skills" type="HFlowContainer" parent="BottomPanel/Row/Actions"]
+[node name="Skills" type="HBoxContainer" parent="BottomPanel/Row/Actions"]
 layout_mode = 2
-theme_override_constants/h_separation = 6
-theme_override_constants/v_separation = 6
+theme_override_constants/separation = 6
 
 [node name="Log" type="RichTextLabel" parent="BottomPanel/Row/Actions"]
 layout_mode = 2
