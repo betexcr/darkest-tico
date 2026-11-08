@@ -2235,7 +2235,7 @@
           "width": 0.03
         },
         "redo_seeds": {
-          "attack": 5203
+          "attack": 5320
         },
         "negative_extra": "dancing, walking, calm, second machete",
         "redo_ref_scale": {
@@ -2257,7 +2257,7 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5231
+          "attack": 5350
         },
         "redo_looks": {
           "attack": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
@@ -2281,7 +2281,7 @@
           "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5210
+          "attack": 5330
         },
         "negative_extra": "dancing, walking, calm",
         "redo_ref_scale": {
@@ -2300,7 +2300,7 @@
           "length": 0.15
         },
         "redo_seeds": {
-          "attack": 5220
+          "attack": 5340
         },
         "negative_extra": "dancing, walking, calm",
         "redo_ref_scale": {
@@ -2339,7 +2339,7 @@
           "length": 0.12
         },
         "redo_seeds": {
-          "attack": 5250
+          "attack": 5360
         },
         "redo_looks": {
           "attack": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black leggings, flat boots"
@@ -2360,7 +2360,7 @@
           "length": 0.14
         },
         "redo_seeds": {
-          "attack": 5260
+          "attack": 5370
         },
         "negative_extra": "dancing, walking, calm",
         "redo_ref_scale": {
@@ -2379,7 +2379,7 @@
           "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5270
+          "attack": 5380
         },
         "negative_extra": "dancing, walking, calm, bare legs",
         "redo_ref_scale": {
