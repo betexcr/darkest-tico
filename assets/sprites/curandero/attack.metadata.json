@@ -18,5 +18,6 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T19:48:53+00:00"
+  "timestamp": "2026-11-08T19:48:53+00:00",
+  "post": "by hand after generation: a smoke wisp (from the earlier curandero attack render) added at the tip of the herb bundle"
 }
