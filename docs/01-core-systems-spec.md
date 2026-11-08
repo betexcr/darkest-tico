@@ -208,13 +208,18 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
 - Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 8 / 14 / 24 / 36 / 48.
 - **Resolve XP is earned only by completing an expedition** (killing the boss). Fleeing or a wipe gives none, and the fallen get none.
 - Each level adds **+10% resistance** to Atarantado, Veneno, Sangrado and Salado, and **+5%** to Trampas.
-- **Expedition difficulty** is picked in the hub:
+- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy scaling follows doc 05 §4:
 
-| Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / accuracy | Pay |
+| Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / accuracy / ailment resist | Pay |
 |---|---|---|---|---|---|
-| Aprendiz | 1 | 0–2 | 4 | ×1 / ×1 / +0 | ×1 |
-| Veterano | 3 | 3–4 | 8 | ×1.3 / ×1.25 / +3 | ×1.6 |
-| Campeón | 5 | 5–6 | 16 | ×1.6 / ×1.5 / +6 | ×2.5 |
+| Aprendiz | 1 | 0–2 | 4 | ×1 / ×1 / +0 / +0% | ×1 |
+| Veterano | 3 | 3–4 | 8 | ×1.22 / ×1.12 / +3 / +10% | ×1.6 |
+| Campeón | 5 | 5–6 | 16 | ×1.46 / ×1.24 / +6 / +20% | ×2.5 |
+
+- **Regions have their own level** (owner 2026-11-08: "dungeons should have scaling difficulty, Sótanos the easiest"). Each region JSON has a `region_level` following the doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4. It **adds to the picked difficulty**:
+  - The expedition level and the hero range both move up by the region level, capped at 6. For example, Aprendiz in Bosque is level 2 for heroes 1–3.
+  - Per region level, enemies get +11% PV, +6% damage, +1 accuracy and +5% ailment resist, pay grows 15%, and survivors earn +1 XP (`progression.json` `region_scaling`).
+  - The hub shows the combined level on each difficulty and the region's offset in the region list. The validator requires Sótanos to have the lowest `region_level`.
 
 - A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party.
 - A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.

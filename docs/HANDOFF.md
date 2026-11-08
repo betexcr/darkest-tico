@@ -39,14 +39,16 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
     - `EventActions` is now an `HFlowContainer` (one row per hero in the respite menu).
   - **Victory screen** (`victory_screen.gd`, `main.gd`): page 1 rewards (encargo, loot colones, item tiles, fights/curios/camps), page 2 per-hero cards (XP, level badge + bar, level-up, new Quebranto/Virtud, fallen). Data from `GameState.mission_ledger` + `complete_mission()`.
   - Validator checks `camp_skills.json`, `progression.json`, `camp_skill_ids` and `mental_mods`. Spec doc 01 §3.3, §4.4, §6.1, §6.2.
-- **Verified:** `validate_data.py` 0 errors. Godot 4.6.2 headless: `test_progression` (66 checks), `smoke_expedition` (now camps on the way and checks the victory summary), `test_status`, `test_hub`, `test_equipment`, `test_feedback`, `test_guard`: all 0 failures, no script errors. Screenshots of the camp, both victory pages and the hub checked by eye (`tools/screens/progression_screenshot.gd`).
+- **Verified:** `validate_data.py` 0 errors. Godot 4.6.2 headless: `test_progression` (71 checks), `smoke_expedition` (now camps on the way and checks the victory summary), `test_status`, `test_hub`, `test_equipment`, `test_feedback`, `test_guard`: all 0 failures, no script errors. Screenshots of the camp, both victory pages and the hub checked by eye (`tools/screens/progression_screenshot.gd`).
 - **Not verified / risks:**
   - Balance. 6 of 9 smoke runs won vs 5 of 6 on the base branch (small samples; the smoke now detours to the camp). Veterano/Campeón multipliers are first guesses.
   - The smoke bot always eats the Festín.
   - Esperanza/Vigor only start from round 2.
-- **Decisions needed:**
-  - Should Bosque become a Veterano-level region, rather than difficulty being a global picker?
-  - Should heroes too seasoned for Aprendiz block the start (as now, like DD) or just warn?
+- **Owner decision (same day):** keep the global difficulty picker, and give each dungeon its own scaling level with Sótanos the easiest.
+  - Done: `region_level` in region JSONs (Sótanos 0, Bosque 1, more per doc 05 §4), `ResolveSystem.expedition()` combines it with the difficulty, and the hub labels show the combined level.
+  - Difficulty enemy multipliers were corrected to doc 05 §4 (Veterano ×1.22 PV / ×1.12 damage / +10% resist; Campeón ×1.46 / ×1.24 / +20%).
+  - Bosque stays hidden (P2-07); its level-1 scaling applies once it's back in `PLAYABLE_REGIONS`.
+- **Decisions needed:** should heroes too seasoned for the expedition block the start (as now, like DD) or just warn? (asked 2026-11-08)
 - **Next step:** P3-04 skill ranks: open `scripts/hacienda/hacienda_hub.gd`, add the Casa Comunal (doc 02 §4: rank purchase gated by `resolve_level`, costs in doc 04 §3.3).
 
 ## 2026-11-08 (late night) — P1-04 — Effects list, % resistances, gear with resistances/buffs

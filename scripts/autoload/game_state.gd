@@ -829,7 +829,7 @@ func start_mission(region_path: String = "") -> bool:
 	visited_node_ids = [current_node_id]
 	cleared_node_ids = []
 	mission_active = true
-	mission_difficulty = ResolveSystemScript.difficulty(selected_difficulty_id)
+	mission_difficulty = ResolveSystemScript.expedition(selected_difficulty_id, int(r.get("region_level", 0)))
 	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1)))
 	camped_node_ids = []
 	mission_ledger = {"loot_colones": 0, "objective_colones": 0, "items": {}, "fights": 0, "elites": 0,
@@ -872,15 +872,31 @@ func _prepare_party_for_mission() -> void:
 			h["underlevel_stress_pct"] = ResolveSystemScript.underlevel_stress_pct(short)
 
 
-## Heroes in the party who refuse the selected difficulty (too seasoned for it).
+## Level of a region (doc 05 §4 order; Sótanos = 0), from its JSON. Cached per path.
+var _region_levels: Dictionary = {}
+
+
+func region_level(path: String = "") -> int:
+	var p: String = path if path != "" else selected_mission_region_path
+	if not _region_levels.has(p):
+		_region_levels[p] = int(ExpeditionLoaderScript.load_region(p).get("region_level", 0))
+	return int(_region_levels[p])
+
+
+## The expedition the hub would start: picked difficulty + selected region's level.
+func selected_expedition(diff_id: String = "") -> Dictionary:
+	return ResolveSystemScript.expedition(diff_id if diff_id != "" else selected_difficulty_id, region_level())
+
+
+## Heroes in the party who refuse the selected expedition (too seasoned for it).
 func party_refusals(diff_id: String = "") -> Array:
-	var diff: Dictionary = ResolveSystemScript.difficulty(diff_id if diff_id != "" else selected_difficulty_id)
+	var diff: Dictionary = selected_expedition(diff_id)
 	return party.filter(func(h): return h is Dictionary and not h.get("dead", false) and ResolveSystemScript.refuses(h, diff))
 
 
 ## Heroes in the party below the selected difficulty's level (they go, with a stress penalty).
 func party_underleveled(diff_id: String = "") -> Array:
-	var diff: Dictionary = ResolveSystemScript.difficulty(diff_id if diff_id != "" else selected_difficulty_id)
+	var diff: Dictionary = selected_expedition(diff_id)
 	return party.filter(func(h): return h is Dictionary and not h.get("dead", false) and ResolveSystemScript.underlevel(h, diff) > 0)
 
 
@@ -1027,6 +1043,11 @@ func build_combat_context_for_node(node_id: String) -> void:
 		en["dead"] = false
 		en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
 		en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
+		# Tougher tiers resist ailments more (doc 05 §4: +10% Veterano, +20% Campeón).
+		var er: int = int(mission_difficulty.get("enemy_resist", 0))
+		if er != 0 and en.get("status_resist", null) is Dictionary:
+			for rk in en["status_resist"]:
+				en["status_resist"][rk] = int(en["status_resist"][rk]) + er
 		seen[str(en["id"])] = int(seen.get(str(en["id"]), 0)) + 1
 		squad.append(en)
 	var counts: Dictionary = {}
@@ -1118,7 +1139,7 @@ func complete_mission() -> Dictionary:
 		heroes.append(e)
 	last_expedition_summary = {
 		"region_name": str(mission_region_data.get("name", "Expedición")),
-		"difficulty_name": str(mission_difficulty.get("name", "")),
+		"difficulty_name": "%s, nivel %d" % [str(mission_difficulty.get("name", "")), int(mission_difficulty.get("level", 1))],
 		"xp": xp,
 		"ledger": mission_ledger.duplicate(true),
 		"heroes": heroes,

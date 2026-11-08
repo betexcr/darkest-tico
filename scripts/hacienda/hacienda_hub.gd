@@ -42,7 +42,8 @@ func _ready() -> void:
 	_try_optional_hub_ambient()
 	_region_option.clear()
 	for r in GameState.PLAYABLE_REGIONS:
-		_region_option.add_item(str(r["name"]))
+		var rl: int = GameState.region_level(str(r["path"]))
+		_region_option.add_item("%s%s" % [r["name"], " (+%d de nivel)" % rl if rl > 0 else ""])
 	_region_option.item_selected.connect(_on_region_selected)
 	_build_difficulty_picker()
 	_btn_start.pressed.connect(_on_start_pressed)
@@ -82,6 +83,8 @@ func _on_region_selected(idx: int) -> void:
 		GameState.selected_mission_region_path = str(GameState.PLAYABLE_REGIONS[idx]["path"])
 	else:
 		GameState.selected_mission_region_path = GameState.DEFAULT_REGION_PATH
+	_refresh_difficulty_labels()
+	_refresh()
 
 
 ## Expedition difficulty (docs/01 §6): Aprendiz / Veterano / Campeón, next to the region.
@@ -97,17 +100,28 @@ func _build_difficulty_picker() -> void:
 	_difficulty_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var diffs: Array = ResolveSystemScript.difficulties()
 	for i in diffs.size():
-		var d: Dictionary = diffs[i]
-		_difficulty_option.add_item("%s (nivel %d)" % [d.get("name", "?"), int(d.get("level", 1))])
-		_difficulty_option.set_item_tooltip(i, "Resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos más duros y mejor paga en dificultades altas." % [
-			int(d.get("min_level", 0)), int(d.get("max_level", 6)), int(d.get("xp", 0))])
-		if str(d.get("id", "")) == GameState.selected_difficulty_id:
+		_difficulty_option.add_item(str(diffs[i].get("name", "?")))
+		if str(diffs[i].get("id", "")) == GameState.selected_difficulty_id:
 			_difficulty_option.select(i)
 	_difficulty_option.item_selected.connect(func(idx: int):
 		GameState.selected_difficulty_id = str(diffs[idx].get("id", "aprendiz"))
 		_say("")
 	)
 	row.add_child(_difficulty_option)
+	_refresh_difficulty_labels()
+
+
+## Labels show the expedition level for the selected region (difficulty + region level).
+func _refresh_difficulty_labels() -> void:
+	if _difficulty_option == null:
+		return
+	var diffs: Array = ResolveSystemScript.difficulties()
+	for i in diffs.size():
+		var e: Dictionary = GameState.selected_expedition(str(diffs[i].get("id", "")))
+		_difficulty_option.set_item_text(i, "%s (nivel %d)" % [e.get("name", "?"), int(e.get("level", 1))])
+		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño; paga x%.2f." % [
+			int(e.get("min_level", 0)), int(e.get("max_level", 6)), int(e.get("xp", 0)),
+			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("reward", 1.0))])
 
 
 func _try_optional_hub_ambient() -> void:
@@ -325,7 +339,7 @@ func _roster_row(h: Dictionary) -> Control:
 	var lvl: int = int(h.get("resolve_level", 0))
 	var pr: Dictionary = ResolveSystemScript.progress(h)
 	var xp: String = "máx." if lvl >= ResolveSystemScript.MAX_LEVEL else "%d/%d XP" % [int(pr["current"]), int(pr["needed"])]
-	var diff: Dictionary = ResolveSystemScript.difficulty(GameState.selected_difficulty_id)
+	var diff: Dictionary = GameState.selected_expedition()
 	var warn: String = ""
 	if ResolveSystemScript.refuses(h, diff):
 		warn = " ⚠ no va a %s" % diff.get("name", "")

@@ -89,6 +89,25 @@ static func difficulty(id: String) -> Dictionary:
 	return all[0] if not all.is_empty() else {"id": "aprendiz", "name": "Aprendiz", "level": 1, "min_level": 0, "max_level": 2, "xp": 4}
 
 
+## The picked difficulty applied to a region (region_level from the region JSON, doc 05 §4).
+## Same keys as a difficulty, plus "region_level"; level, min_level and max_level move up by
+## the region level (capped at MAX_LEVEL) and enemies, pay and XP grow per region level.
+static func expedition(diff_id: String, region_level: int) -> Dictionary:
+	var d: Dictionary = difficulty(diff_id).duplicate()
+	var rl: int = maxi(region_level, 0)
+	var rs: Dictionary = data().get("region_scaling", {})
+	d["region_level"] = rl
+	for k in ["level", "min_level", "max_level"]:
+		d[k] = mini(int(d.get(k, 0)) + rl, MAX_LEVEL)
+	d["enemy_hp"] = float(d.get("enemy_hp", 1.0)) * (1.0 + float(rs.get("enemy_hp", 0.0)) * rl)
+	d["enemy_dmg"] = float(d.get("enemy_dmg", 1.0)) * (1.0 + float(rs.get("enemy_dmg", 0.0)) * rl)
+	d["enemy_accuracy"] = int(d.get("enemy_accuracy", 0)) + int(rs.get("enemy_accuracy", 0)) * rl
+	d["enemy_resist"] = int(d.get("enemy_resist", 0)) + int(rs.get("enemy_resist", 0)) * rl
+	d["reward"] = float(d.get("reward", 1.0)) * (1.0 + float(rs.get("reward", 0.0)) * rl)
+	d["xp"] = int(d.get("xp", 2)) + int(rs.get("xp", 0)) * rl
+	return d
+
+
 ## True if the hero is too seasoned for this difficulty and refuses to go.
 static func refuses(hero: Dictionary, diff: Dictionary) -> bool:
 	return int(hero.get("resolve_level", 0)) > int(diff.get("max_level", MAX_LEVEL))

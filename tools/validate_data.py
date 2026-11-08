@@ -141,6 +141,16 @@ def main() -> int:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs xp > 0")
     if not prog.get("difficulties"):
         errors.append("progression.json: no difficulties")
+    # Region levels (doc 05 §4): every region has one, Sótanos is the easiest.
+    region_levels = {}
+    for rp in sorted((DATA / "regions").glob("*.json")):
+        rl = (load(rp) or {}).get("region_level")
+        if not isinstance(rl, int) or rl < 0:
+            errors.append(f"regions/{rp.name}: needs region_level (int >= 0)")
+        else:
+            region_levels[rp.stem] = rl
+    if "sotanos" in region_levels and region_levels["sotanos"] != min(region_levels.values()):
+        errors.append("regions: Sótanos must have the lowest region_level")
 
     stress_src = (ROOT / "scripts/domain/stress_system.gd").read_text(encoding="utf-8")
     mental_ids = set()

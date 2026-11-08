@@ -71,6 +71,13 @@ func _run() -> void:
 	_check(int(hero["status_resist"].get("aturdido", 0)) == stun0 + 20, "+10 pct stun resist per level (%d -> %d)" % [stun0, int(hero["status_resist"].get("aturdido", 0))])
 	var pr: Dictionary = rs.progress(hero)
 	_check(int(pr["current"]) == 0 and int(pr["needed"]) == 6, "progress 0/6 toward level 3")
+	var base_v: Dictionary = rs.expedition("veterano", 0)
+	_check(int(base_v["level"]) == 3 and is_equal_approx(float(base_v["enemy_hp"]), 1.22) and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, x1.22 PV, +10 resist (doc 05)")
+	var bosque: Dictionary = rs.expedition("aprendiz", 1)
+	_check(int(bosque["level"]) == 2 and int(bosque["min_level"]) == 1 and int(bosque["max_level"]) == 3, "Aprendiz in a level-1 region: level 2, heroes 1-3")
+	_check(float(bosque["enemy_hp"]) > 1.0 and int(bosque["xp"]) == 5, "level-1 region: tougher enemies, +1 XP")
+	_check(int(rs.expedition("campeon", 1)["max_level"]) == 6, "levels cap at 6")
+	_check(gs.region_level(gs.DEFAULT_REGION_PATH) == 0 and gs.region_level(gs.BOSQUE_REGION_PATH) == 1, "Sótanos is region level 0, Bosque 1")
 	gs.selected_difficulty_id = "aprendiz"
 	hero["resolve_level"] = 3
 	_check(gs.party_refusals().size() == 1, "Resolución 3 refuses an Aprendiz expedition")

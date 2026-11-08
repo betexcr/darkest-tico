@@ -226,7 +226,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `in-progress` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08): resolve XP/levels + expedition difficulty done (review); skill ranks still todo · Depends: P3-01
 - Spec: `02` §4, `04`, `01` §6.1
 - Files: `data/progression.json`, `scripts/domain/resolve_system.gd`, `scripts/autoload/game_state.gd` (difficulty, under-level penalty, `complete_mission`, save v6), `scripts/hacienda/hacienda_hub.gd` (difficulty picker, level/XP per hero), `tests/test_progression.gd`
-- Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [ ] skill ranks purchasable
+- Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [ ] skill ranks purchasable; [x] per-region level on top of the picker (owner 2026-11-08, Sótanos easiest)
 
 ### P3-05 · M · Taller (equipment) + Feria Nocturna (trinkets)
 - Status: `todo` · Depends: P3-04
