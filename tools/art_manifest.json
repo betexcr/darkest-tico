@@ -2268,6 +2268,146 @@
       "subject": "one rusty steel jaw trap, open, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
       "negative_extra": "candle, candles, fire, flame, table, scenery, person, face, text, letters"
+    },
+    {
+      "id": "item_sal_gruesa",
+      "out": "assets/items/sal_gruesa.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6731,
+      "subject": "a handful of coarse white sea salt crystals in an open palm-sized cloth, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_agua_florida",
+      "out": "assets/items/agua_florida.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6741,
+      "subject": "a small old glass bottle of perfumed florida water with a faded floral label, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cafe_cargado",
+      "out": "assets/items/cafe_cargado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6751,
+      "subject": "a small enamel tin cup of strong black coffee, steam, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_guarapo",
+      "out": "assets/items/guarapo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6761,
+      "subject": "a glass of cloudy green sugarcane juice beside a cut piece of sugarcane, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chicharron_de_olla",
+      "out": "assets/items/chicharron_de_olla.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6771,
+      "subject": "crispy golden fried pork rinds in a small clay bowl, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chilero_casero",
+      "out": "assets/items/chilero_casero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6781,
+      "subject": "a glass jar of pickled hot peppers and vegetables in vinegar, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_agua_de_la_negrita",
+      "out": "assets/items/agua_de_la_negrita.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6791,
+      "subject": "a small glass bottle of holy spring water with a tiny dark virgin medal tied to its neck, soft glow, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
     }
   ],
   "sprites": {

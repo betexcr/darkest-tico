@@ -46,6 +46,9 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 		if StatusEffectsScript.has(hero, str(status)):
 			StatusEffectsScript.remove(hero, str(status))
 			logs.append("%s ya no está %s." % [who, StatusEffectsScript.display_name(str(status)).to_lower()])
+	if bool(fx.get("cure_all", false)):
+		var gone: PackedStringArray = StatusEffectsScript.remove_all_negative(hero)
+		logs.append("%s queda limpio de todo mal%s." % [who, (": " + ", ".join(gone)) if not gone.is_empty() else ""])
 	# Buffs from ally/party items (enemy-target items are handled by the combat controller).
 	var ap = fx.get("applies", null)
 	if ap is Dictionary and str(item.get("target", "ally")) != "enemy":

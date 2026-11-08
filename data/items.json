@@ -1371,6 +1371,129 @@
           }
         }
       }
+    },
+    {
+      "id": "sal_gruesa",
+      "name": "Puño de sal gruesa",
+      "description": "Por encima del hombro, contra la mala suerte: quita lo salado y lo fichado.",
+      "price": 250,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "cure": [
+          "salado",
+          "fichado"
+        ]
+      }
+    },
+    {
+      "id": "agua_florida",
+      "name": "Agua florida",
+      "description": "Una friega que limpia el cuerpo y el ánimo: quita el susto y lo salado.",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -5,
+        "cure": [
+          "susto",
+          "salado"
+        ]
+      }
+    },
+    {
+      "id": "cafe_cargado",
+      "name": "Café bien cargado",
+      "description": "De chorreador, sin azúcar: quita lo atarantado y espabila.",
+      "price": 250,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "cure": [
+          "aturdido"
+        ],
+        "applies": {
+          "status": "espabilado",
+          "turns": 2
+        }
+      }
+    },
+    {
+      "id": "guarapo",
+      "name": "Guarapo",
+      "description": "Jugo de caña recién molido: queda chiva (+5 precisión, +5% crítico, 3 turnos).",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "applies": {
+          "status": "chiva",
+          "turns": 3,
+          "mods": {
+            "accuracy": 5,
+            "crit": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "chicharron_de_olla",
+      "name": "Chicharrón de olla",
+      "description": "Con la panza llena se aguanta más: queda chiva (+15 protección, 3 turnos).",
+      "price": 320,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "heal": 2,
+        "applies": {
+          "status": "chiva",
+          "turns": 3,
+          "mods": {
+            "prot": 15
+          }
+        }
+      }
+    },
+    {
+      "id": "chilero_casero",
+      "name": "Chilero casero",
+      "description": "Un trago de vinagre picante y queda respondón por 3 turnos.",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "stress": -3,
+        "applies": {
+          "status": "respondon",
+          "turns": 3
+        }
+      }
+    },
+    {
+      "id": "agua_de_la_negrita",
+      "name": "Agua de la Negrita",
+      "description": "Agua del manantial de la Basílica, traída de la romería. Quita TODOS los males: sangrado, veneno, atarantado, salado, fichado y susto.",
+      "price": 900,
+      "max_stack": 2,
+      "uses_per_node": 1,
+      "usable": "both",
+      "target": "ally",
+      "effects": {
+        "stress": -10,
+        "cure_all": true
+      }
     }
   ],
   "elements": [

@@ -374,6 +374,10 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 			if StatusEffectsScript.has(t, str(st)):
 				StatusEffectsScript.remove(t, str(st))
 				_log("  %s ya no está %s" % [t.get("name", "?"), StatusEffectsScript.display_name(str(st)).to_lower()], "88bb88")
+		if bool(skill.get("cure_all", false)):
+			var gone: PackedStringArray = StatusEffectsScript.remove_all_negative(t)
+			if not gone.is_empty():
+				_log("  %s queda limpio: %s" % [t.get("name", "?"), ", ".join(gone)], "88bb88")
 		if bool(skill.get("grant_guard", false)):
 			t["guarding"] = true
 			_log("  %s queda en guardia" % t.get("name", "?"), "88aacc")

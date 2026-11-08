@@ -446,6 +446,14 @@ func item_tooltip(item_id: String) -> String:
 	var ss = it.get("start_status", null)
 	if ss is Dictionary:
 		parts.append("Empieza cada pelea: %s" % SE.display_name(str(ss.get("status", ""))).to_lower())
+	var fx: Dictionary = it.get("effects", {})
+	if bool(fx.get("cure_all", false)):
+		parts.append("Quita TODOS los males")
+	elif not fx.get("cure", []).is_empty():
+		var cn: PackedStringArray = PackedStringArray()
+		for c in fx["cure"]:
+			cn.append(SE.display_name(str(c)).to_lower())
+		parts.append("Quita: " + ", ".join(cn))
 	var ap = it.get("effects", {}).get("applies", null)
 	if ap is Dictionary and str(it.get("target", "")) != "enemy":
 		parts.append("Deja %s" % SE.display_name(str(ap.get("status", ""))).to_lower())

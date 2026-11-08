@@ -113,6 +113,19 @@ func _run() -> void:
 	se.apply(c, "susto", 3, 3)
 	ie.apply_to_hero(GameStateLike.item("te_de_tilo"), c)
 	_check(not se.has(c, "susto"), "té de tilo removes susto")
+	var dirty := {"name": "D", "hp": 10, "hp_max": 20, "stress": 40}
+	for st in ["sangrado", "veneno", "salado", "fichado", "susto"]:
+		se.apply(dirty, st, 3, 1, {"ignore_resist": true})
+	se.apply(dirty, "aturdido", 1, 0, {"ignore_resist": true})
+	se.apply(dirty, "chiva", 3, 0, {"mods": {"dodge": 5}})
+	ie.apply_to_hero(GameStateLike.item("agua_de_la_negrita"), dirty)
+	_check(not se.any(dirty) and se.has(dirty, "chiva"), "agua de la Negrita removes ALL debuffs and keeps buffs")
+	se.apply(dirty, "fichado", 3, 0)
+	se.apply(dirty, "salado", 3, 0, {"ignore_resist": true})
+	ie.apply_to_hero(GameStateLike.item("sal_gruesa"), dirty)
+	_check(not se.has(dirty, "fichado") and not se.has(dirty, "salado"), "sal gruesa removes Salado and Fichado")
+	ie.apply_to_hero(GameStateLike.item("chilero_casero"), dirty)
+	_check(se.has(dirty, "respondon"), "chilero casero makes the hero Respondón")
 	var ab := {"name": "AB", "hp": 0, "hp_max": 20, "al_borde": true}
 	ie.apply_to_hero({"effects": {"heal": 5}}, ab)
 	_check(not ab["al_borde"] and ab.get("convaleciente", false), "healed out of Al Borde -> Convaleciente")

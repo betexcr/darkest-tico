@@ -211,6 +211,19 @@ static func apply(unit: Dictionary, status: String, turns: int, value: int, opts
 	return "%s: %s." % [who, display_name(status)]
 
 
+## Removes every negative effect (Sangrado, Envenenado, Atarantado, Salado, Fichado, Susto).
+## Returns the display names removed.
+static func remove_all_negative(unit: Dictionary) -> PackedStringArray:
+	var out: PackedStringArray = PackedStringArray()
+	var st = unit.get("statuses", {})
+	if st is Dictionary:
+		for k in st.keys():
+			if is_negative(str(k)) and has(unit, str(k)):
+				out.append(display_name(str(k)).to_lower())
+				st.erase(k)
+	return out
+
+
 static func remove(unit: Dictionary, status: String) -> bool:
 	var st = unit.get("statuses", {})
 	if st is Dictionary and st.has(status):
