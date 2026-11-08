@@ -1,0 +1,60 @@
+{
+  "_doc": "Camping (docs/01 §4.4, doc 07 §6). Rules: scripts/domain/camping_system.gd. target: self | ally (one companion, not the user) | others (every companion) | party (everyone). effects: stress (+/-), heal_pct (% of max PV), cure (status ids; 'all_negative' clears every negative), buff {mods, fights} (same mods as statuses: accuracy, dodge, speed, crit, prot, dmg_pct, stress_pct). self_effects also hit the user. prevent_ambush stops the night ambush.",
+  "respite_points": 12,
+  "firewood_per_expedition": 1,
+  "ambush": { "base_pct": 12, "low_light_pct": 6, "enemy_count": [2, 3] },
+  "meals": [
+    { "id": "festin", "name": "Festín", "food": 4, "heal_pct": 25, "stress": -10, "text": "Gallo pinto, natilla y cafecito. Hasta cantan." },
+    { "id": "completa", "name": "Comida completa", "food": 2, "heal_pct": 10, "stress": 0, "text": "Gallo pinto caliente para todos." },
+    { "id": "media", "name": "Media ración", "food": 1, "heal_pct": 0, "stress": 0, "text": "Alcanza para engañar el hambre." },
+    { "id": "ayuno", "name": "Ayuno", "food": 0, "heal_pct": -20, "stress": 15, "text": "Se acuestan con el estómago vacío." }
+  ],
+  "skills": [
+    { "id": "palabras_de_animo", "name": "Palabras de ánimo", "cost": 2, "target": "ally", "classes": ["*"],
+      "desc": "Un compañero: -15 estrés.", "effects": { "stress": -15 } },
+    { "id": "vendaje_de_trapo", "name": "Vendaje de trapo", "cost": 2, "target": "ally", "classes": ["*"],
+      "desc": "Un compañero: cura 15% PV y quita sangrado y veneno.", "effects": { "heal_pct": 15, "cure": ["sangrado", "veneno"] } },
+    { "id": "charla_de_fogon", "name": "Charla de fogón", "cost": 2, "target": "ally", "classes": ["*"],
+      "desc": "Un compañero: -15% estrés recibido por 4 peleas.", "effects": { "buff": { "mods": { "stress_pct": -15 }, "fights": 4 } } },
+
+    { "id": "afilar_machete", "name": "Afilar el machete", "cost": 3, "target": "self", "classes": ["machetero"],
+      "desc": "Propio: +20% daño por 4 peleas.", "effects": { "buff": { "mods": { "dmg_pct": 20 }, "fights": 4 } } },
+    { "id": "cuentos_de_finca", "name": "Cuentos de finca", "cost": 3, "target": "others", "classes": ["machetero"],
+      "desc": "Propio: -15 estrés. Compañeros: -5 estrés.", "effects": { "stress": -5 }, "self_effects": { "stress": -15 } },
+
+    { "id": "aguita_de_tilo", "name": "Agüita de tilo", "cost": 3, "target": "others", "classes": ["abuela"],
+      "desc": "Compañeros: -10 estrés.", "effects": { "stress": -10 } },
+    { "id": "remedio_casero", "name": "Remedio casero", "cost": 3, "target": "ally", "classes": ["abuela"],
+      "desc": "Un compañero: cura 30% PV y le quita todo mal.", "effects": { "heal_pct": 30, "cure": ["all_negative"] } },
+
+    { "id": "dron_vigia", "name": "Dron vigía", "cost": 4, "target": "party", "classes": ["tecnologo"],
+      "desc": "Evita la emboscada. Cuadrilla: +5 esquiva por 4 peleas.", "effects": { "buff": { "mods": { "dodge": 5 }, "fights": 4 } }, "prevent_ambush": true },
+    { "id": "radio_con_rancheras", "name": "Radio con rancheras", "cost": 2, "target": "party", "classes": ["tecnologo"],
+      "desc": "Cuadrilla: -8 estrés.", "effects": { "stress": -8 } },
+
+    { "id": "calentar_musculos", "name": "Calentar músculos", "cost": 3, "target": "self", "classes": ["montador"],
+      "desc": "Propio: +2 velocidad y +5 crítico por 4 peleas.", "effects": { "buff": { "mods": { "speed": 2, "crit": 5 }, "fights": 4 } } },
+    { "id": "guardia_de_corral", "name": "Guardia de corral", "cost": 2, "target": "self", "classes": ["montador"],
+      "desc": "Evita la emboscada. Propio: +10 estrés (no duerme).", "effects": { "stress": 10 }, "prevent_ambush": true },
+
+    { "id": "ronda_con_foco", "name": "Ronda con foco", "cost": 3, "target": "party", "classes": ["guachiman"],
+      "desc": "Evita la emboscada. Cuadrilla: +3 precisión por 4 peleas.", "effects": { "buff": { "mods": { "accuracy": 3 }, "fights": 4 } }, "prevent_ambush": true },
+    { "id": "cafe_de_termo", "name": "Café de termo", "cost": 2, "target": "ally", "classes": ["guachiman"],
+      "desc": "Un compañero: -12 estrés y +1 velocidad por 4 peleas.", "effects": { "stress": -12, "buff": { "mods": { "speed": 1 }, "fights": 4 } } },
+
+    { "id": "chequeo_general", "name": "Chequeo general", "cost": 3, "target": "ally", "classes": ["medica_josefina"],
+      "desc": "Un compañero: cura 35% PV y quita sangrado y veneno.", "effects": { "heal_pct": 35, "cure": ["sangrado", "veneno"] } },
+    { "id": "refuerzo_de_vacunas", "name": "Refuerzo de vacunas", "cost": 4, "target": "party", "classes": ["medica_josefina"],
+      "desc": "Cuadrilla: +10% protección por 4 peleas.", "effects": { "buff": { "mods": { "prot": 10 }, "fights": 4 } } },
+
+    { "id": "sahumerio", "name": "Sahumerio", "cost": 3, "target": "party", "classes": ["curandero"],
+      "desc": "Cuadrilla: -15% estrés recibido por 4 peleas.", "effects": { "buff": { "mods": { "stress_pct": -15 }, "fights": 4 } } },
+    { "id": "sobada_de_hueso", "name": "Sobada de hueso", "cost": 2, "target": "ally", "classes": ["curandero"],
+      "desc": "Un compañero: cura 20% PV y -5 estrés.", "effects": { "heal_pct": 20, "stress": -5 } },
+
+    { "id": "vigilia_de_oracion", "name": "Vigilia de oración", "cost": 3, "target": "self", "classes": ["exorcista"],
+      "desc": "Evita la emboscada. Propio: -10 estrés.", "effects": { "stress": -10 }, "prevent_ambush": true },
+    { "id": "bendecir_las_armas", "name": "Bendecir las armas", "cost": 4, "target": "party", "classes": ["exorcista"],
+      "desc": "Cuadrilla: +10% daño por 4 peleas.", "effects": { "buff": { "mods": { "dmg_pct": 10 }, "fights": 4 } } }
+  ]
+}

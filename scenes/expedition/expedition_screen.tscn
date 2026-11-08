@@ -180,9 +180,10 @@ size_flags_vertical = 3
 autowrap_mode = 3
 text = ""
 
-[node name="EventActions" type="HBoxContainer" parent="Stage/EventPanel/Margin/VBox"]
+[node name="EventActions" type="HFlowContainer" parent="Stage/EventPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 6
 alignment = 1
 
 [node name="EnemyInfo" type="PanelContainer" parent="Stage"]

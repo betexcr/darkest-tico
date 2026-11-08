@@ -223,9 +223,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Both buildings with activities, slots, and side effects; heroes are busy for the week
 
 ### P3-04 · M · Casa Comunal (skills) + hero XP/resolve level
-- Status: `todo` · Depends: P3-01
-- Spec: `02` §4, `04`
-- Done when: [ ] Heroes gain resolve XP per mission; skill ranks purchasable
+- Status: `in-progress` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08): resolve XP/levels + expedition difficulty done (review); skill ranks still todo · Depends: P3-01
+- Spec: `02` §4, `04`, `01` §6.1
+- Files: `data/progression.json`, `scripts/domain/resolve_system.gd`, `scripts/autoload/game_state.gd` (difficulty, under-level penalty, `complete_mission`, save v6), `scripts/hacienda/hacienda_hub.gd` (difficulty picker, level/XP per hero), `tests/test_progression.gd`
+- Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [ ] skill ranks purchasable; [x] per-region level on top of the picker (owner 2026-11-08, Sótanos easiest)
 
 ### P3-05 · M · Taller (equipment) + Feria Nocturna (trinkets)
 - Status: `todo` · Depends: P3-04
@@ -238,9 +239,21 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Positive/negative quirks gained on missions; treatment in Clínica
 
 ### P3-07 · S · Guardabosques (camp skills)
-- Status: `todo` · Depends: P2-01
+- Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08; owner asked for it ahead of P2-01) · Depends: P2-01
 - Spec: `02` §9, `01` §4.4
-- Done when: [ ] Camp node uses per-hero camp skills instead of the fixed "feast/skip"
+- Files: `data/camp_skills.json` (19 skills, meals, ambush), `data/heroes.json` (`camp_skill_ids`), `scripts/domain/camping_system.gd`, `scripts/expedition/expedition_screen.gd` (camp flow, ambush), `scripts/combat/combat_controller.gd` (surprise round, buffs tick per fight), `scripts/domain/status_effects.gd` (`stat()` reads camp buffs)
+- Done when: [x] Camp node uses per-hero camp skills instead of the fixed "feast/skip"; [x] meal tiers, 12 respite, 4-fight buffs, night ambush with surprise round, Luz back to 100
+- Follow-up: P3-13 (Guardabosques building: learn/swap camp skills).
+
+### P3-13 · S · Guardabosques building: learn and swap camp skills
+- Status: `todo` · Depends: P3-07
+- Spec: `02` §9
+- Done when: [ ] Hub building to swap a hero's 4 camp skills among the class + shared list, and the upgrade tracks from doc 02 §9
+
+### P3-14 · S · Level-tiered hub prices
+- Status: `todo` · Depends: P3-04
+- Spec: `04` §3.5 (treatment tiers by resolve 0–2 / 3–4 / 5–6)
+- Done when: [ ] EBAIS / Iglesia / future Clínica prices scale with the hero's resolve tier
 
 ### P3-11 · M · Equipment and elements (owner request 2026-11-07)
 - Status: `review`
@@ -277,6 +290,18 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Hero panel follows the turn; clicking a hero shows that hero
   - [x] Map and inventory toggle (tabs or M / I keys); arrows, arrow keys or clicking a neighbor room to move; items usable in and out of combat with the rules above
   - [x] Verified running in Godot 4.6.2 headless (`tests/smoke_expedition.gd`: 3 expeditions to boss victory, 0 failures)
+
+### P4-11 · S · Victory screen after a completed expedition (owner request 2026-11-08)
+- Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08) · Depends: P3-04
+- Spec: `01` §6.2; owner screenshots (DD-style rewards page + per-hero Resolve XP cards)
+- Files: `scripts/expedition/victory_screen.gd` (new), `scripts/bootstrap/main.gd`, `GameState.mission_ledger`/`complete_mission`, `tools/screens/progression_screenshot.gd`
+- Done when: [x] page 1 rewards (encargo, loot, items, fights/curios/camps); [x] page 2 hero cards (XP, level badge + bar, level-up, new Quebranto/Virtud, fallen); [ ] owner looks at it in-game
+
+### P1-14 · S · Seven Quebrantos and seven Virtudes (owner request 2026-11-08)
+- Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08) · Depends: —
+- Spec: `01` §3.3
+- Files: `scripts/domain/stress_system.gd`, `data/statuses.json` (`mental_mods`), `scripts/domain/status_effects.gd`, `scripts/combat/combat_controller.gd`, `scripts/combat/battle_unit.gd`
+- Done when: [x] 7 + 7 with hooks; Paranoia refuses heals/buffs per spec instead of skipping turns; [x] names shown everywhere
 
 ### P4-10 · S · Item icons
 - Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.

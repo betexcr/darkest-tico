@@ -7,6 +7,8 @@ signal start_mission_requested
 
 const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
+const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
+const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -33,14 +35,17 @@ var _shop_filter: String = "todo"
 ## Hero whose equipment is shown (click a name in the roster).
 var _selected: Dictionary = {}
 var _equip_slots: Array = []
+var _difficulty_option: OptionButton
 
 
 func _ready() -> void:
 	_try_optional_hub_ambient()
 	_region_option.clear()
 	for r in GameState.PLAYABLE_REGIONS:
-		_region_option.add_item(str(r["name"]))
+		var rl: int = GameState.region_level(str(r["path"]))
+		_region_option.add_item("%s%s" % [r["name"], " (+%d de nivel)" % rl if rl > 0 else ""])
 	_region_option.item_selected.connect(_on_region_selected)
+	_build_difficulty_picker()
 	_btn_start.pressed.connect(_on_start_pressed)
 	$Columns/Right/VBox/BtnQuit.pressed.connect(_on_quit_pressed)
 	$Columns/Left/VBox/BtnIglesia.pressed.connect(_on_iglesia_pressed)
@@ -78,6 +83,45 @@ func _on_region_selected(idx: int) -> void:
 		GameState.selected_mission_region_path = str(GameState.PLAYABLE_REGIONS[idx]["path"])
 	else:
 		GameState.selected_mission_region_path = GameState.DEFAULT_REGION_PATH
+	_refresh_difficulty_labels()
+	_refresh()
+
+
+## Expedition difficulty (docs/01 §6): Aprendiz / Veterano / Campeón, next to the region.
+func _build_difficulty_picker() -> void:
+	var row := HBoxContainer.new()
+	var box: VBoxContainer = $Columns/Left/VBox
+	box.add_child(row)
+	box.move_child(row, $Columns/Left/VBox/RegionRow.get_index() + 1)
+	var lbl := Label.new()
+	lbl.text = "Dificultad:"
+	row.add_child(lbl)
+	_difficulty_option = OptionButton.new()
+	_difficulty_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var diffs: Array = ResolveSystemScript.difficulties()
+	for i in diffs.size():
+		_difficulty_option.add_item(str(diffs[i].get("name", "?")))
+		if str(diffs[i].get("id", "")) == GameState.selected_difficulty_id:
+			_difficulty_option.select(i)
+	_difficulty_option.item_selected.connect(func(idx: int):
+		GameState.selected_difficulty_id = str(diffs[idx].get("id", "aprendiz"))
+		_say("")
+	)
+	row.add_child(_difficulty_option)
+	_refresh_difficulty_labels()
+
+
+## Labels show the expedition level for the selected region (difficulty + region level).
+func _refresh_difficulty_labels() -> void:
+	if _difficulty_option == null:
+		return
+	var diffs: Array = ResolveSystemScript.difficulties()
+	for i in diffs.size():
+		var e: Dictionary = GameState.selected_expedition(str(diffs[i].get("id", "")))
+		_difficulty_option.set_item_text(i, "%s (nivel %d)" % [e.get("name", "?"), int(e.get("level", 1))])
+		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño; paga x%.2f." % [
+			int(e.get("min_level", 0)), int(e.get("max_level", 6)), int(e.get("xp", 0)),
+			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("reward", 1.0))])
 
 
 func _try_optional_hub_ambient() -> void:
@@ -121,8 +165,11 @@ func _refresh() -> void:
 		b.disabled = GameState.colones < int(item.get("price", 0))
 	_refresh_recruits()
 	_refresh_roster()
-	_btn_start.disabled = GameState.living_party_count() <= 0
+	var refusing: Array = GameState.party_refusals()
+	_btn_start.disabled = GameState.living_party_count() <= 0 or not refusing.is_empty()
 	_btn_start.text = "Iniciar expedición (%d en la cuadrilla)" % GameState.living_party_count()
+	if not refusing.is_empty():
+		_btn_start.text = "%s no quiere ir a una expedición tan fácil" % ", ".join(refusing.map(func(h): return str(h.get("name", "?"))))
 
 
 # --- Pulpería ----------------------------------------------------------------------
@@ -282,14 +329,30 @@ func _roster_row(h: Dictionary) -> Control:
 	var extra: String = ""
 	var aff: String = str(h.get("affliction_id", ""))
 	if aff != "":
-		extra = " · Quebranto: %s" % aff.capitalize()
+		extra = " · Quebranto: %s" % StressSystemScript.affliction_name(aff)
+	elif str(h.get("virtud_id", "")) != "":
+		extra = " · Virtud: %s" % StressSystemScript.virtud_name(str(h["virtud_id"]))
 	var in_party: bool = GameState.is_in_party(h)
 	var rank: String = ""
 	if in_party:
 		rank = "%d. " % (GameState.party.find(h) + 1)
-	info.text = "%s%s — %s\nPV %d/%d · Estrés %d · Prot %d%% · Daño %+d%s" % [
-		rank, h.get("name", "?"), h.get("class_name", ""), int(h.get("hp", 0)), int(h.get("hp_max", 0)),
-		int(h.get("stress", 0)), int(h.get("prot", 0)), int(h.get("dmg_bonus", 0)), extra]
+	var lvl: int = int(h.get("resolve_level", 0))
+	var pr: Dictionary = ResolveSystemScript.progress(h)
+	var xp: String = "máx." if lvl >= ResolveSystemScript.MAX_LEVEL else "%d/%d XP" % [int(pr["current"]), int(pr["needed"])]
+	var diff: Dictionary = GameState.selected_expedition()
+	var warn: String = ""
+	if ResolveSystemScript.refuses(h, diff):
+		warn = " ⚠ no va a %s" % diff.get("name", "")
+	elif ResolveSystemScript.underlevel(h, diff) > 0:
+		warn = " ⚠ le falta resolución"
+	info.text = "%s%s — %s%s\nRes. %d (%s)%s · PV %d/%d · Estrés %d · Prot %d%% · Daño %+d" % [
+		rank, h.get("name", "?"), h.get("class_name", ""), extra, lvl, xp, warn,
+		int(h.get("hp", 0)), int(h.get("hp_max", 0)),
+		int(h.get("stress", 0)), int(h.get("prot", 0)), int(h.get("dmg_bonus", 0))]
+	# Long lines clip instead of pushing the buttons off-screen; the tooltip has everything.
+	info.clip_text = true
+	info.tooltip_text = "%s\nResolución %d: %s (%s)\nClic para ver y cambiar su equipo." % [
+		info.text, lvl, ResolveSystemScript.level_name(lvl), xp]
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if cost > 0:
@@ -354,6 +417,9 @@ func _confirm_dismiss(h: Dictionary) -> void:
 func _on_start_pressed() -> void:
 	if GameState.living_party_count() <= 0:
 		_hub_status.text = "Elige al menos un héroe para la cuadrilla."
+		return
+	if not GameState.party_refusals().is_empty():
+		_hub_status.text = "Héroes de mucha resolución no salen a expediciones fáciles: sube la dificultad o cambia la cuadrilla."
 		return
 	start_mission_requested.emit()
 

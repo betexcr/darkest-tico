@@ -13,8 +13,7 @@ signal equipment_dropped(message: String)
 
 const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 const SPRITE_SIZE := Vector2(140, 210)
-const AFFLICTION_NAMES := {"paranoia": "Paranoia", "cobardia": "Cobardía", "ira_ciega": "Ira ciega"}
-const VIRTUE_NAMES := {"serenidad": "Serenidad", "firmeza": "Firmeza"}
+const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 ## Status icons come from data/statuses.json (name, description, colour, letter); art in
@@ -285,10 +284,10 @@ func _status_text() -> String:
 	var parts: PackedStringArray = PackedStringArray()
 	var aff: String = str(data.get("affliction_id", ""))
 	if aff != "":
-		parts.append(AFFLICTION_NAMES.get(aff, aff))
+		parts.append(StressSystemScript.affliction_name(aff))
 	var vir: String = str(data.get("virtud_id", ""))
 	if vir != "":
-		parts.append(VIRTUE_NAMES.get(vir, vir))
+		parts.append(StressSystemScript.virtud_name(vir))
 	# Ailments and Guard are shown as icons (_refresh_status_icons).
 	return " · ".join(parts)
 

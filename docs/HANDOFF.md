@@ -17,6 +17,41 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 (later) — P1-14, P3-04, P3-07, P4-11 — 7+7 Quebrantos/Virtudes, resolve levels, camping, victory screen
+- **Agent / branch:** Claude Code (cloud) / `betomm/amazing-clarke-lv3whd` (based on `betomm/sleepy-ramanujan-78dwh9` at 84b2602, owner request)
+- **Status after session:** P1-14 review · P3-04 in-progress (XP/levels/difficulty done; skill ranks todo) · P3-07 review · P4-11 review · new todo: P3-13, P3-14
+- **Changed:**
+  - **Quebrantos/Virtudes, 7 each** (`stress_system.gd`):
+    - Paranoia now refuses heal/buff skills (spec) instead of skipping turns.
+    - New afflictions: Bravata (wastes Luz), Desesperanza (spreads stress when hit), Nervios, Fatalismo.
+    - New virtues: Valentía, Puntería, Esperanza (calms others each round), Vigor (+1 PV each round), Abnegación (takes hits for a companion).
+    - Stat parts are data: `statuses.json` `mental_mods`, read by `StatusEffects.stat()` and `deathblow_chance()`, so they show in the info panel.
+  - **Resolve levels** (`data/progression.json`, `resolve_system.gd`):
+    - Levels 0–6 using the Darkest Dungeon XP curve (2/8/14/24/36/48). XP only on a completed expedition.
+    - +10% Atarantado/Veneno/Sangrado/Salado and +5% Trampas resistance per level (`recompute_stats`).
+    - **Difficulty** picker in the hub: Aprendiz/Veterano/Campeón. Heroes above the range refuse to go; heroes below get +20 stress per missing level and +25% stress taken per level. Enemy PV/damage/accuracy and pay scale with difficulty.
+    - Hub roster shows level, XP and warnings. Save v6, migrating v5.
+  - **Camping** (`data/camp_skills.json`, `camping_system.gd`, `expedition_screen.gd`):
+    - 1 leña per expedition. Meal tiers in gallo pinto, 12 respite points, 4 camp skills per hero (2 class + 2 shared, `heroes.json` `camp_skill_ids`), each usable once per camp.
+    - Buffs last 4 fights (`hero.camp_buffs`, ticked in `combat_controller._finish`).
+    - Night ambush 12% (+6% low light, 0 with a watch skill): 2–3 region monsters who act first in round 1.
+    - Luz back to 100. "Seguir sin acampar" keeps the fogata for later.
+    - `EventActions` is now an `HFlowContainer` (one row per hero in the respite menu).
+  - **Victory screen** (`victory_screen.gd`, `main.gd`): page 1 rewards (encargo, loot colones, item tiles, fights/curios/camps), page 2 per-hero cards (XP, level badge + bar, level-up, new Quebranto/Virtud, fallen). Data from `GameState.mission_ledger` + `complete_mission()`.
+  - Validator checks `camp_skills.json`, `progression.json`, `camp_skill_ids` and `mental_mods`. Spec doc 01 §3.3, §4.4, §6.1, §6.2.
+- **Verified:** `validate_data.py` 0 errors. Godot 4.6.2 headless: `test_progression` (71 checks), `smoke_expedition` (now camps on the way and checks the victory summary), `test_status`, `test_hub`, `test_equipment`, `test_feedback`, `test_guard`: all 0 failures, no script errors. Screenshots of the camp, both victory pages and the hub checked by eye (`tools/screens/progression_screenshot.gd`).
+- **Not verified / risks:**
+  - Balance. 6 of 9 smoke runs won vs 5 of 6 on the base branch (small samples; the smoke now detours to the camp). Veterano/Campeón multipliers are first guesses.
+  - The smoke bot always eats the Festín.
+  - Esperanza/Vigor only start from round 2.
+- **Owner decision (same day):** keep the global difficulty picker, and give each dungeon its own scaling level with Sótanos the easiest.
+  - Done: `region_level` in region JSONs (Sótanos 0, Bosque 1, more per doc 05 §4), `ResolveSystem.expedition()` combines it with the difficulty, and the hub labels show the combined level.
+  - Difficulty enemy multipliers were corrected to doc 05 §4 (Veterano ×1.22 PV / ×1.12 damage / +10% resist; Campeón ×1.46 / ×1.24 / +20%).
+  - Bosque stays hidden (P2-07); its level-1 scaling applies once it's back in `PLAYABLE_REGIONS`.
+- **Merged into `betomm/sleepy-ramanujan-78dwh9`** (owner request), on top of aef3787 (action bar P4-09, new icons). One conflict in `expedition_screen.gd` (new vars + combat start), kept both sides. After the merge: validate_data 0 errors / 0 warnings; all 7 Godot tests 0 failures, no script errors; camp screen re-checked by screenshot.
+- **Decisions needed:** should heroes too seasoned for the expedition block the start (as now, like DD) or just warn? (asked 2026-11-08)
+- **Next step:** P3-04 skill ranks: open `scripts/hacienda/hacienda_hub.gd`, add the Casa Comunal (doc 02 §4: rank purchase gated by `resolve_level`, costs in doc 04 §3.3).
+
 ## 2026-11-08 (late night) — P1-04 — Effects list, % resistances, gear with resistances/buffs
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P1-04 review

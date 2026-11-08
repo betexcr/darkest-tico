@@ -91,13 +91,25 @@ This document formalizes the gameplay loop and systemic rules for the Tico Gothi
 
 ### 3.3 Affliction Behavior Hooks
 
-- `Paranoia`: chance to refuse buffs/heals.
-- `Cobardia`: chance to move backward and self-debuff.
-- `Ira Ciega`: chance to mis-target attacks.
-- `Bravata`: chance to consume extra resources.
-- `Virtud` examples:
-  - `Serenidad`: incoming stress reduced.
-  - `Firmeza`: death save chance increased.
+Seven `Quebranto` afflictions (one picked at random on a failed resolve check). Behaviour hooks live in `scripts/domain/stress_system.gd`; stat changes are data (`data/statuses.json` `mental_mods`, read by `StatusEffects.stat()`).
+
+- `Paranoia`: 35% chance to refuse a heal/buff skill (turn lost); in camp, may refuse a companion's care.
+- `Cobardia`: 20% chance to skip the turn and gain +5 stress.
+- `Ira Ciega`: 15% chance per attack to hit a random ally for 2–5 instead.
+- `Bravata`: 20% chance per attack to waste 5 Luz showing off (extra resource use).
+- `Desesperanza`: when hit, 25% chance to give every other living hero +3 stress.
+- `Nervios`: −5 accuracy, −5 crit.
+- `Fatalismo`: −15 points of death-save chance (Al Borde and Colapso).
+
+Seven `Virtud` breakthroughs (stress drops to 40):
+
+- `Serenidad`: incoming stress −25%.
+- `Firmeza`: +8 points of death-save chance.
+- `Valentia`: +15% damage.
+- `Punteria`: +5 accuracy, +5 crit.
+- `Esperanza`: from round 2 on, other living heroes −2 stress at the start of each round.
+- `Vigor`: from round 2 on, +1 PV at the start of each round (not while Al Borde).
+- `Abnegacion`: 25% chance to take a single-target attack aimed at a companion (not while Al Borde).
 
 ### 3.4 Heart-Attack Equivalent at 200
 
@@ -135,11 +147,15 @@ This document formalizes the gameplay loop and systemic rules for the Tico Gothi
 
 ### 4.4 Camp Rules
 
-- One camp trigger item allowed per mission segment.
+Implemented (P3-07). Data: `data/camp_skills.json`; rules: `scripts/domain/camping_system.gd`.
+
+- Each expedition carries **1 leña** (`firewood_per_expedition`, or region `firewood`). Camping in a Fogata room spends it; the party may also walk on and come back later.
 - Camp phase:
-  1. Food spend decision (heal/stress tradeoff).
-  2. Respite points allocated to camp skills.
-  3. Ambush chance roll (affected by buffs).
+  1. **Meal** in gallo pinto (cost listed for 4 heroes, scaled down with fewer living): Festín 4 (+25% PV, −10 stress), Comida completa 2 (+10% PV), Media ración 1 (no effect), Ayuno 0 (−20% PV, never below 1; +15 stress).
+  2. **Respite: 12 points.** Each hero carries 4 camp skills (`camp_skill_ids`: 2 of the class + 2 shared). Each hero may use each of their skills once per camp. Targets: self, one companion, every companion, or the whole party. Effects: stress, % PV, cures, and buffs that last **4 fights** (same stat keys as statuses).
+  3. **Night ambush:** 12% base, +6% if Luz was under the low-light threshold, 0% if a watch skill was used (Dron vigía, Guardia de corral, Ronda con foco, Vigilia de oración). The ambush is a fight against 2–3 region monsters in which the enemies act first in round 1. It pays nothing.
+- After sleeping, Luz resets to 100.
+- Guardabosques del Arenal (swapping and learning camp skills, doc 02 §9) is not built yet.
 
 ## 5) Mission and Objective System
 
@@ -184,6 +200,39 @@ Longer missions increase reward multipliers and roster fatigue.
   - Failed extraction
 
 Grade impacts loot roll quality and town event weighting.
+
+### 6.1 Resolve Level and Expedition Difficulty
+
+Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/domain/resolve_system.gd`.
+
+- Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 8 / 14 / 24 / 36 / 48.
+- **Resolve XP is earned only by completing an expedition** (killing the boss). Fleeing or a wipe gives none, and the fallen get none.
+- Each level adds **+10% resistance** to Atarantado, Veneno, Sangrado and Salado, and **+5%** to Trampas.
+- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy scaling follows doc 05 §4:
+
+| Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / accuracy / ailment resist | Pay |
+|---|---|---|---|---|---|
+| Aprendiz | 1 | 0–2 | 4 | ×1 / ×1 / +0 / +0% | ×1 |
+| Veterano | 3 | 3–4 | 8 | ×1.22 / ×1.12 / +3 / +10% | ×1.6 |
+| Campeón | 5 | 5–6 | 16 | ×1.46 / ×1.24 / +6 / +20% | ×2.5 |
+
+- **Regions have their own level** (owner 2026-11-08: "dungeons should have scaling difficulty, Sótanos the easiest"). Each region JSON has a `region_level` following the doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4. It **adds to the picked difficulty**:
+  - The expedition level and the hero range both move up by the region level, capped at 6. For example, Aprendiz in Bosque is level 2 for heroes 1–3.
+  - Per region level, enemies get +11% PV, +6% damage, +1 accuracy and +5% ailment resist, pay grows 15%, and survivors earn +1 XP (`progression.json` `region_scaling`).
+  - The hub shows the combined level on each difficulty and the region's offset in the region list. The validator requires Sótanos to have the lowest `region_level`.
+
+- A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party.
+- A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.
+- Not built yet: Casa Comunal skill ranks gated by level, and level-tiered treatment prices (doc 02 §4, doc 04 §3.5).
+
+### 6.2 Victory Screen
+
+After a completed expedition (`scripts/expedition/victory_screen.gd`, shown by `main.gd` before the hub):
+
+1. **Page 1:** the encargo reward, colones from fights and curios, the items found, fights won (elites and bosses), curios, camps, ambushes, and the total.
+2. **Page 2:** one card per hero with portrait, Resolve XP gained, a level badge and XP bar, any level-up, a new Quebranto or Virtud, PV and stress. The fallen are greyed out with no XP.
+
+The data comes from `GameState.mission_ledger`, filled during the run, and `GameState.complete_mission()`.
 
 ## 7) Balancing Guardrails (Initial)
 

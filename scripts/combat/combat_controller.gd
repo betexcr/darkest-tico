@@ -9,6 +9,7 @@ const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -28,6 +29,7 @@ var hero_units: Array = []
 var enemy_units: Array = []
 var is_elite: bool = false
 var is_boss: bool = false
+var is_ambush: bool = false
 
 var _round: int = 0
 var _turn_queue: Array = []
@@ -69,7 +71,7 @@ func set_target(e: Dictionary) -> void:
 	_refresh_markers()
 
 
-func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool) -> void:
+func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool, ambush: bool = false) -> void:
 	party = p_party
 	enemies = p_enemies
 	target_enemy = {}
@@ -77,11 +79,14 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	enemy_units = p_enemy_units
 	is_elite = elite
 	is_boss = boss
+	is_ambush = ambush
 	_round = 0
 	_ended = false
 	_busy = false
 	var tier := ""
-	if boss:
+	if ambush:
+		tier = "¡Emboscada nocturna! "
+	elif boss:
 		tier = "¡Jefe! "
 	elif elite:
 		tier = "Enemigo de élite. "
@@ -110,6 +115,11 @@ func use_skill(skill: Dictionary, ally: Dictionary = {}) -> void:
 	var kind := str(skill.get("kind", ""))
 	var enemy_before: Array = _enemy_snapshot()
 	var party_before: Array = _party_snapshot()
+	if kind != "attack" and StressSystemScript.refuses_support(hero):
+		# Paranoia (doc 01 §3.3): refuses buffs/heals; the turn is lost.
+		_log("%s (paranoia) desconfía y no usa %s." % [hero.get("name", "?"), skill.get("name", "?")], "cc7744")
+		await _after_action(enemy_before, party_before)
+		return
 	await _unit_for_hero(hero).play_action("attack" if kind == "attack" else "cast")
 	if kind == "attack":
 		_resolve_hero_attack(hero, skill, current_target())
@@ -214,6 +224,9 @@ func _after_action(enemy_before: Array, party_before: Array) -> void:
 
 func _start_round() -> void:
 	_round += 1
+	if _round > 1:
+		# Virtudes Esperanza (calms companions) and Vigor (regains PV) at the top of each round.
+		_log_all(StressSystemScript.round_start_effects(party))
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
@@ -232,6 +245,11 @@ func _roll_initiative_queue() -> void:
 			var ein: int = CombatResolverScript.roll_initiative(es, 0)
 			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": es, "rl": 0, "tie": randf()})
 	entries.sort_custom(_sort_initiative)
+	if is_ambush and _round == 1:
+		# Night ambush (doc 07 §6): the enemies get a surprise round and all act first.
+		var foes: Array = entries.filter(func(x): return x["kind"] == "enemy")
+		var heroes: Array = entries.filter(func(x): return x["kind"] == "hero")
+		entries = foes + heroes
 	_turn_queue = entries
 	_log("— Ronda %d —" % _round, "888888")
 
@@ -291,7 +309,7 @@ func _process_turn() -> void:
 			_turn_index += 1
 			continue
 		if StressSystemScript.hero_turn_blocked(hero):
-			_log("%s no actúa (quebranto)." % hero.get("name", "?"), "cc7744")
+			_log("%s no actúa (cobardía)." % hero.get("name", "?"), "cc7744")
 			await get_tree().create_timer(0.6).timeout
 			_turn_index += 1
 			if _check_end():
@@ -323,6 +341,8 @@ func _finish(victory: bool) -> void:
 		if h is Dictionary:
 			h["guarding"] = false
 			StatusEffectsScript.clear(h)
+			# Camp buffs last a number of fights (P3-07).
+			CampingSystemScript.tick_fight(h)
 	for e in enemies:
 		StatusEffectsScript.clear(e)
 	for u in hero_units:
@@ -412,6 +432,10 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		_log("%s (ira ciega) hiere a %s por %d" % [hero.get("name", "?"), ff.get("name", "?"), fdmg], "cc7744")
 		_log_all(StressSystemScript.add_stress(hero, 4))
 		return
+	var light_cost: int = StressSystemScript.bravata_light_cost(hero)
+	if light_cost > 0:
+		GameState.mission_light = maxi(GameState.mission_light - light_cost, 0)
+		_log("%s (bravata) agita la candela para lucirse: Luz -%d." % [hero.get("name", "?"), light_cost], "cc7744")
 	var sk_acc: int = int(skill.get("skill_accuracy", 0))
 	var acc: int = int(hero.get("accuracy", 5)) + StatusEffectsScript.stat(hero, "accuracy")
 	var dod: int = int(enemy.get("dodge", 5)) + StatusEffectsScript.stat(enemy, "dodge")
@@ -529,6 +553,12 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		if not guard.is_empty():
 			_log("%s se interpone y recibe el golpe dirigido a %s." % [guard.get("name", "?"), pick.get("name", "?")], "88aacc")
 			pick = guard
+		else:
+			# Virtud Abnegación: a companion may step in on their own.
+			var hero_shield: Dictionary = StressSystemScript.find_protector(pick, party)
+			if not hero_shield.is_empty():
+				_log("%s (abnegación) se interpone por %s." % [hero_shield.get("name", "?"), pick.get("name", "?")], "88bb88")
+				pick = hero_shield
 		targets = [pick]
 	# Attacking gives away a hidden enemy (unless this skill is the one that hides it).
 	var hides: bool = false
@@ -556,6 +586,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 				await _hero_riposte(t, enemy)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
+		# Expedition difficulty (data/progression.json enemy_dmg).
+		dmg = int(round(dmg * float(enemy.get("dmg_mult", 1.0))))
 		dmg = _scaled_damage(dmg, enemy, t, skill)
 		dmg = _elemental(dmg, str(skill.get("element", "")), t)
 		if dmg > 0:
@@ -566,6 +598,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		if stress > 0 and not t.get("dead", false):
 			_log_all(StressSystemScript.add_stress(t, stress))
 			_log("  %s: estrés +%d" % [t.get("name", "?"), stress], "aa88cc")
+		if dmg > 0:
+			_log_all(StressSystemScript.spread_despair(t, party))
 		if not t.get("dead", false):
 			for ap in _applies_list(skill.get("applies", null)):
 				_try_apply(t, ap, false, "  ")

@@ -1,0 +1,19 @@
+{
+  "_doc": "Hero resolve level (0-6) and expedition difficulty. Rules: scripts/domain/resolve_system.gd. Spec: docs/01-core-systems-spec.md §6.",
+  "resolve": {
+    "level_names": ["Novato", "Aprendiz", "Baquiano", "Veterano", "Maestro", "Campeón", "Leyenda"],
+    "xp_thresholds": [0, 2, 8, 14, 24, 36, 48],
+    "_resist_doc": "Status resistance points (%) gained per resolve level (resist_categories in statuses.json).",
+    "resist_per_level": { "aturdido": 10, "veneno": 10, "sangrado": 10, "salado": 10, "trampa": 5 },
+    "underlevel_start_stress": 20,
+    "underlevel_stress_pct": 25
+  },
+  "_region_doc": "Each region JSON has a region_level (doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4). It adds to the picked difficulty: expedition level and the hero range move up by region_level (capped at 6), and enemies/pay/XP grow per region level as below.",
+  "region_scaling": { "enemy_hp": 0.11, "enemy_dmg": 0.06, "enemy_accuracy": 1, "enemy_resist": 5, "reward": 0.15, "xp": 1 },
+  "_difficulty_doc": "level = expedition level shown to the player. Heroes above max_level refuse to go; heroes below min_level are under-leveled (start stress + extra stress taken per level short). xp = Resolve XP each survivor earns on a completed expedition. enemy_hp/enemy_dmg multiply, enemy_accuracy and enemy_resist (status resist points) add; values follow doc 05 §4. reward multiplies pay.",
+  "difficulties": [
+    { "id": "aprendiz", "name": "Aprendiz", "level": 1, "min_level": 0, "max_level": 2, "xp": 4, "enemy_hp": 1.0, "enemy_dmg": 1.0, "enemy_accuracy": 0, "enemy_resist": 0, "reward": 1.0 },
+    { "id": "veterano", "name": "Veterano", "level": 3, "min_level": 3, "max_level": 4, "xp": 8, "enemy_hp": 1.22, "enemy_dmg": 1.12, "enemy_accuracy": 3, "enemy_resist": 10, "reward": 1.6 },
+    { "id": "campeon", "name": "Campeón", "level": 5, "min_level": 5, "max_level": 6, "xp": 16, "enemy_hp": 1.46, "enemy_dmg": 1.24, "enemy_accuracy": 6, "enemy_resist": 20, "reward": 2.5 }
+  ]
+}
