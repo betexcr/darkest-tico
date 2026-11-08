@@ -19,5 +19,5 @@
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
   "timestamp": "2026-11-08T18:54:55+00:00",
-  "post": "by hand after generation: a second machete in the low (left) hand erased; the chopped left fist replaced by the relaxed left hand from idle.png (rotated 12 deg) — tools/sprite_edits/campesino_attack_left_hand.py"
+  "post": "by hand after generation: a second machete in the low (left) hand erased; the chopped left fist replaced by the relaxed left hand from idle.png, slimmed to the forearm and pivoted 24 deg on the wrist to continue the forearm — tools/sprite_edits/campesino_attack_left_hand.py 197 231 24"
 }
