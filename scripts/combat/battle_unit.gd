@@ -118,7 +118,7 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 
 func _can_drop_data(_at_position: Vector2, d: Variant) -> bool:
 	return is_hero and d is Dictionary and str(d.get("kind", "")) == "item" \
-		and GameState.is_equipment(str(d.get("id", ""))) and not GameState.equip_locked and not is_dead()
+		and GameState.is_equipment(str(d.get("id", ""))) and GameState.can_change_equipment(data) and not is_dead()
 
 
 func _drop_data(_at_position: Vector2, d: Variant) -> void:

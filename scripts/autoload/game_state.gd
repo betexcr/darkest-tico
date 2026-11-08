@@ -66,8 +66,11 @@ var party: Array = []
 ## Candidates at the Terminal de Buses, refreshed every week.
 var recruit_pool: Array = []
 var _next_uid: int = 1
-## True while a fight is on: equipment can't be changed (owner rule).
+## True while a fight is on: only `equip_turn_hero` may change equipment, and it costs
+## their turn (owner 2026-11-08; before that gear was fully locked in combat).
 var equip_locked: bool = false
+## The hero waiting for orders during a fight ({} otherwise).
+var equip_turn_hero: Dictionary = {}
 ## Short report of what happened at the end of the last expedition (hub status line).
 var last_week_report: String = ""
 
@@ -480,11 +483,17 @@ func slots_for(item_id: String) -> Array:
 	return []
 
 
+## Out of combat anyone may change gear. In combat only the hero whose turn it is
+## (equip_turn_hero), and doing so spends that turn (owner 2026-11-08).
+func can_change_equipment(hero: Dictionary) -> bool:
+	return not equip_locked or (not hero.is_empty() and is_same(hero, equip_turn_hero))
+
+
 ## Equip from the inventory. `slot` "" picks the right (or first free accessory) slot.
 ## Whatever was in the slot goes back to the inventory. Returns an error, or "".
 func equip(hero: Dictionary, item_id: String, slot: String = "") -> String:
-	if equip_locked:
-		return "No se cambia el equipo en pleno combate."
+	if not can_change_equipment(hero):
+		return "En combate solo el héroe en turno cambia su equipo (le cuesta el turno)."
 	var allowed: Array = slots_for(item_id)
 	if allowed.is_empty():
 		return "Eso no se puede equipar."
@@ -514,8 +523,8 @@ func equip(hero: Dictionary, item_id: String, slot: String = "") -> String:
 
 
 func unequip(hero: Dictionary, slot: String) -> String:
-	if equip_locked:
-		return "No se cambia el equipo en pleno combate."
+	if not can_change_equipment(hero):
+		return "En combate solo el héroe en turno cambia su equipo (le cuesta el turno)."
 	var eq = hero.get("equipment", {})
 	if not eq is Dictionary or str(eq.get(slot, "")) == "":
 		return ""
