@@ -28,7 +28,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Verified:** validate_data 0 errors; Godot headless test_equipment, test_status, test_feedback, test_hub, smoke all 0 failures; screenshots checked.
 - **Not verified / risks:** Balance (heroes now resist ailments ~30-70%).
 - **Decisions needed:** none
-- **Next step:** commit the queued icons (13 status + 12 item + trampa) when `tools/sd_local.py` finishes; then P4-08 enemy sprites.
+- **Later the same night:** 7 more consumables — debuff removers (Puño de sal gruesa: salado+fichado; Agua florida: susto+salado; Café bien cargado: atarantado → espabilado), buffs (Guarapo, Chicharrón de olla, Chilero casero → respondón) and the cure-all **Agua de la Negrita** (`effects.cure_all`, also usable on skills). Tooltips list what each item removes. Tests updated (test_status).
+- **Next step:** commit the icons from the running `python tools/sd_local.py` (18 missing item/status icons; rerun it with no arguments if the container restarted — it only makes missing ones); then P4-08 enemy sprites.
 
 ## 2026-11-08 (night) — P1-04 — Every Darkest Dungeon status effect, Tico names
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
