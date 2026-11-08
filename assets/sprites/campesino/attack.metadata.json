@@ -19,5 +19,5 @@
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
   "timestamp": "2026-11-08T02:45:38+00:00",
-  "post": "second machete (hanging behind the legs) erased by hand after generation"
+  "post": "by hand after generation: (1) a stray second machete behind the legs erased; (2) the dark stick in the forward hand replaced by the steel machete blade from assets/sprites/campesino/idle.png, rotated to 52 deg, length x0.68, width x1.15, brightened"
 }
