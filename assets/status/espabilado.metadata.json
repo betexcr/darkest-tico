@@ -1,0 +1,18 @@
+{
+  "id": "status_espabilado",
+  "prompt": "dark fantasy painting, one wide open eye, alert, pale yellow glow, plain black background, simple bold painted game icon, single object, centered, dark muted colors, painterly",
+  "negative_prompt": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6441,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "64x64",
+  "post": {
+    "brightness": 1.3,
+    "contrast": 1.15
+  },
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-08T21:18:37+00:00"
+}
