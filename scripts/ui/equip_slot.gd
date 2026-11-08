@@ -47,7 +47,7 @@ func _on_pressed() -> void:
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	return data is Dictionary and str(data.get("kind", "")) == "item" and not hero.is_empty() \
-		and not GameState.equip_locked and GameState.slots_for(str(data.get("id", ""))).has(slot)
+		and GameState.can_change_equipment(hero) and GameState.slots_for(str(data.get("id", ""))).has(slot)
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:

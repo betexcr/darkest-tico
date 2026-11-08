@@ -186,6 +186,20 @@ func pass_turn() -> void:
 	_process_turn()
 
 
+## Changing equipment mid-fight is allowed for the acting hero but spends the turn.
+func spend_turn_on_equipment() -> void:
+	var hero: Dictionary = active_hero()
+	if hero.is_empty():
+		return
+	_awaiting_hero = false
+	_log("%s se cambia el equipo y pierde el turno." % hero.get("name", "?"), "aaaaaa")
+	var u = _unit_for_hero(hero)
+	if u != null:
+		u.refresh()
+	_turn_index += 1
+	_process_turn()
+
+
 # --- Flow ---------------------------------------------------------------------------
 
 func _after_action(enemy_before: Array, party_before: Array) -> void:
