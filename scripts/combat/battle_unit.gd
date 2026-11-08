@@ -17,13 +17,10 @@ const AFFLICTION_NAMES := {"paranoia": "Paranoia", "cobardia": "Cobardía", "ira
 const VIRTUE_NAMES := {"serenidad": "Serenidad", "firmeza": "Firmeza"}
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
-## Status icons shown above a fighter: id -> [label, badge colour, letter].
-const STATUS_ICONS := {
-	"sangrado": ["Sangrado", Color(0.75, 0.1, 0.1), "S"],
-	"veneno": ["Envenenado", Color(0.35, 0.65, 0.2), "V"],
-	"aturdido": ["Aturdido", Color(0.85, 0.75, 0.25), "A"],
-	"guardia": ["En guardia: daño físico a la mitad", Color(0.35, 0.5, 0.8), "G"],
-}
+## Status icons come from data/statuses.json (name, description, colour, letter); art in
+## res://assets/status/<id>.png, or a coloured letter badge until it exists.
+## Some effects share art: id -> icon file id.
+const ICON_ALIAS := {"cuidando": "guardia"}
 const ICON_SIZE := Vector2(24, 24)
 const COLOR_DAMAGE := Color(1.0, 0.3, 0.25)
 const COLOR_CRIT := Color(1.0, 0.85, 0.2)
@@ -71,8 +68,8 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_status_row.custom_minimum_size = Vector2(0, ICON_SIZE.y)
 	_status_row.add_theme_constant_override("separation", 3)
 	add_child(_status_row)
-	for id in STATUS_ICONS:
-		var path := "res://assets/status/%s.png" % id
+	for id in StatusEffectsScript.defs():
+		var path := "res://assets/status/%s.png" % str(ICON_ALIAS.get(id, id))
 		if ResourceLoader.exists(path):
 			_status_tex[id] = load(path)
 
@@ -178,31 +175,36 @@ func refresh() -> void:
 	_refresh_status_icons()
 
 
-## Icons for ailments (with turns left) and Guard.
+## Icons for every active status effect (with turns left / stacks) and Guard.
 func _refresh_status_icons() -> void:
 	for c in _status_row.get_children():
 		c.queue_free()
 	if is_dead():
 		return
-	var st = data.get("statuses", {})
-	if st is Dictionary:
-		for id in st:
-			if STATUS_ICONS.has(id):
-				_status_row.add_child(_make_status_icon(str(id), int(st[id].get("turns", 0)), int(st[id].get("value", 0))))
-	if bool(data.get("guarding", false)):
-		_status_row.add_child(_make_status_icon("guardia", 0, 0))
+	for e in StatusEffectsScript.entries(data):
+		_status_row.add_child(_make_status_icon(str(e["id"]), int(e["turns"]), int(e["value"]), int(e["stacks"])))
 
 
-func _make_status_icon(id: String, turns: int, value: int) -> Control:
-	var info: Array = STATUS_ICONS[id]
+func _make_status_icon(id: String, turns: int, value: int, stacks: int = 1) -> Control:
+	var d: Dictionary = StatusEffectsScript.def(id)
 	var box := Control.new()
 	box.custom_minimum_size = ICON_SIZE
 	box.mouse_filter = Control.MOUSE_FILTER_PASS
-	var tip: String = str(info[0])
-	if value > 0:
-		tip += " (%d PV por turno)" % value
-	if turns > 0:
+	var tip: String = str(d.get("name", id))
+	match id:
+		"sangrado", "veneno":
+			tip += " (%d PV por turno)" % value
+		"sobado":
+			tip += " (+%d PV por turno)" % value
+		"susto":
+			tip += " (+%d estrés por turno)" % value
+		"santiguado":
+			tip += " (%d golpe%s)" % [value, "" if value == 1 else "s"]
+	if stacks > 1:
+		tip += " ×%d" % stacks
+	if turns > 0 and turns < 90:
 		tip += " — %d turno%s" % [turns, "" if turns == 1 else "s"]
+	tip += "\n" + str(d.get("description", ""))
 	box.tooltip_text = tip
 	if _status_tex.has(id):
 		var tr := TextureRect.new()
@@ -214,22 +216,31 @@ func _make_status_icon(id: String, turns: int, value: int) -> Control:
 		box.add_child(tr)
 	else:
 		var badge := ColorRect.new()
-		badge.color = info[1]
+		badge.color = Color.html(str(d.get("color", "#777777")))
 		badge.size = ICON_SIZE
 		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.add_child(badge)
 		var l := Label.new()
-		l.text = str(info[2])
+		l.text = str(d.get("letter", id.substr(0, 1).to_upper()))
 		l.size = ICON_SIZE
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		l.add_theme_font_size_override("font_size", 14)
+		l.add_theme_color_override("font_outline_color", Color.BLACK)
+		l.add_theme_constant_override("outline_size", 4)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.add_child(l)
-	if turns > 0:
+	var corner: String = ""
+	if id == "santiguado":
+		corner = str(value)
+	elif stacks > 1:
+		corner = "×%d" % stacks
+	elif turns > 0 and turns < 90:
+		corner = str(turns)
+	if corner != "":
 		var n := Label.new()
-		n.text = str(turns)
-		n.position = Vector2(ICON_SIZE.x - 9, ICON_SIZE.y - 14)
+		n.text = corner
+		n.position = Vector2(ICON_SIZE.x - 10, ICON_SIZE.y - 14)
 		n.add_theme_font_size_override("font_size", 11)
 		n.add_theme_color_override("font_outline_color", Color.BLACK)
 		n.add_theme_constant_override("outline_size", 4)
@@ -272,8 +283,6 @@ func _status_text() -> String:
 	if is_dead():
 		return "Caído"
 	var parts: PackedStringArray = PackedStringArray()
-	if bool(data.get("al_borde", false)):
-		parts.append("Al Borde")
 	var aff: String = str(data.get("affliction_id", ""))
 	if aff != "":
 		parts.append(AFFLICTION_NAMES.get(aff, aff))

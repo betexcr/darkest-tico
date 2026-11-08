@@ -68,6 +68,23 @@ def main() -> int:
     heroes_path = DATA / "heroes.json"
     enemies_path = DATA / "enemies.json"
 
+    statuses_raw = load(DATA / "statuses.json") or {}
+    status_defs = statuses_raw.get("statuses", {})
+    ailments = {k for k, v in status_defs.items() if v.get("kind") == "negative"}
+    stat_keys = {"accuracy", "dodge", "speed", "crit", "prot", "dmg_pct", "stress_pct"}
+    for k, v in status_defs.items():
+        for f in ("name", "kind", "description", "color"):
+            if not v.get(f):
+                errors.append(f"statuses.json: '{k}' missing '{f}'")
+
+    def check_applies(where: str, v) -> None:
+        for ap in ([v] if isinstance(v, dict) else (v or [])):
+            if ap.get("status") not in status_defs:
+                errors.append(f"{where}: applies unknown status '{ap.get('status')}'")
+            for mk in (ap.get("mods") or {}):
+                if mk not in stat_keys:
+                    errors.append(f"{where}: unknown stat '{mk}' in mods")
+
     skills = as_id_map(load(skills_path), "skills", skills_path)
     heroes = as_id_map(load(heroes_path), "heroes", heroes_path)
     enemies = as_id_map(load(enemies_path), "enemies", enemies_path)
@@ -86,6 +103,9 @@ def main() -> int:
         known_el = {"fuego", "hielo", "rayo", "agua", "tierra", "viento", "sagrado", "oscuridad"}
         if not en.get("elements"):
             errors.append(f"enemies.json: '{eid}' needs elemental affinities (owner rule)")
+        for st in (en.get("status_resist") or {}):
+            if st not in ailments:
+                errors.append(f"enemies.json: '{eid}' resists unknown status '{st}'")
         for e in en.get("elements", {}):
             if e not in known_el:
                 errors.append(f"enemies.json: '{eid}' has unknown element '{e}'")
@@ -94,9 +114,8 @@ def main() -> int:
                 errors.append(f"enemies.json: '{eid}.{x.get('id')}' has unknown element")
             if x.get("type") not in ("physical", "magical"):
                 errors.append(f"enemies.json: '{eid}.{x.get('id')}' has invalid type")
-            ap = x.get("applies")
-            if ap and ap.get("status") not in ("sangrado", "veneno", "aturdido"):
-                errors.append(f"enemies.json: '{eid}.{x.get('id')}' applies unknown status")
+            check_applies(f"enemies.json: '{eid}.{x.get('id')}'", x.get("applies"))
+            check_applies(f"enemies.json: '{eid}.{x.get('id')}' self", x.get("self_applies"))
             if not x.get("name"):
                 errors.append(f"enemies.json: '{eid}.{x.get('id')}' has no name")
 
@@ -105,6 +124,11 @@ def main() -> int:
             errors.append(f"skills.json: '{sid}' has invalid kind '{sk.get('kind')}'")
         if sk.get("target", "self") not in ("enemy", "self", "ally", "party"):
             errors.append(f"skills.json: '{sid}' has invalid target '{sk.get('target')}'")
+        check_applies(f"skills.json: '{sid}'", sk.get("applies"))
+        check_applies(f"skills.json: '{sid}' self", sk.get("self_applies"))
+        for c in sk.get("cure", []):
+            if c not in status_defs:
+                errors.append(f"skills.json: '{sid}' cures unknown status '{c}'")
     for hid, hero in heroes.items():
         for sid in hero.get("skill_ids", []):
             if sid not in skills:
@@ -188,14 +212,16 @@ def main() -> int:
                 if e not in elements:
                     errors.append(f"items.json: '{iid}' resists unknown element '{e}'")
             for st in it.get("immune", []):
-                if st not in ("sangrado", "veneno", "aturdido"):
+                if st not in ailments:
                     errors.append(f"items.json: '{iid}' immune to unknown ailment '{st}'")
             continue
         fx = it.get("effects", {})
         if fx.get("element") and fx["element"] not in elements:
             errors.append(f"items.json: '{iid}' damage element '{fx['element']}' unknown")
-        if fx.get("applies") and fx["applies"].get("status") not in ("sangrado", "veneno", "aturdido"):
-            errors.append(f"items.json: '{iid}' applies an unknown ailment")
+        check_applies(f"items.json: '{iid}'", fx.get("applies"))
+        for c in fx.get("cure", []):
+            if c not in status_defs:
+                errors.append(f"items.json: '{iid}' cures unknown status '{c}'")
         if it.get("usable") not in ("explore", "combat", "both", "curio"):
             errors.append(f"items.json: '{iid}' has invalid usable '{it.get('usable')}'")
         if it.get("target") not in ("ally", "party", "enemy", "none"):

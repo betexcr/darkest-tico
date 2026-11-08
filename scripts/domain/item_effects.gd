@@ -34,8 +34,9 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 	if fx.has("heal"):
 		var before: int = int(hero.get("hp", 0))
 		hero["hp"] = mini(before + int(fx["heal"]), int(hero.get("hp_max", 1)))
-		if int(hero["hp"]) > 0:
+		if int(hero["hp"]) > 0 and bool(hero.get("al_borde", false)):
 			hero["al_borde"] = false
+			hero["convaleciente"] = true   # Death's Door recovery: lasts the expedition
 		logs.append("%s recupera %d PV." % [who, int(hero["hp"]) - before])
 	if fx.has("stress"):
 		var delta: int = int(fx["stress"])
@@ -43,8 +44,8 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 		logs.append("%s: estrés %+d." % [who, delta])
 	for status in fx.get("cure", []):
 		if StatusEffectsScript.has(hero, str(status)):
-			hero["statuses"].erase(str(status))
-			logs.append("%s ya no está %s." % [who, StatusEffectsScript.NAMES.get(str(status), status).to_lower()])
+			StatusEffectsScript.remove(hero, str(status))
+			logs.append("%s ya no está %s." % [who, StatusEffectsScript.display_name(str(status)).to_lower()])
 	var risk = fx.get("hp_risk", null)
 	if risk is Dictionary and randf() < float(risk.get("chance", 0.0)):
 		var hp: int = int(hero.get("hp", 0))

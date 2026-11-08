@@ -124,14 +124,17 @@
     {
       "id": "agua_bendita",
       "name": "Agua bendita",
-      "description": "Traída de la romería. Calma el alma; los altares la reconocen.",
+      "description": "Traída de la romería. Calma el alma; los altares la reconocen. Quita lo salado.",
       "price": 350,
       "max_stack": 4,
       "uses_per_node": 1,
       "usable": "both",
       "target": "ally",
       "effects": {
-        "stress": -8
+        "stress": -8,
+        "cure": [
+          "salado"
+        ]
       },
       "curio_keys": [
         "altar_roto"
@@ -655,14 +658,17 @@
     {
       "id": "te_de_tilo",
       "name": "Té de tilo",
-      "description": "Para los nervios, como dice la abuela.",
+      "description": "Para los nervios, como dice la abuela. Quita el susto.",
       "price": 350,
       "max_stack": 6,
       "uses_per_node": 1,
       "usable": "both",
       "target": "ally",
       "effects": {
-        "stress": -15
+        "stress": -15,
+        "cure": [
+          "susto"
+        ]
       }
     },
     {

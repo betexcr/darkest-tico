@@ -167,7 +167,9 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 	if outcome.has("heal_party"):
 		for h in living:
 			h["hp"] = mini(int(h["hp"]) + int(outcome["heal_party"]), int(h["hp_max"]))
-			h["al_borde"] = false
+			if bool(h.get("al_borde", false)):
+				h["al_borde"] = false
+				h["convaleciente"] = true
 		logs.append("+%d PV a la cuadrilla." % int(outcome["heal_party"]))
 	if outcome.has("stress_party"):
 		for h in living:
@@ -692,6 +694,7 @@ func end_of_expedition_week() -> void:
 			roster.remove_at(k)
 		else:
 			h["al_borde"] = false
+			h.erase("convaleciente")
 			h["borde_checks"] = 0
 			h["hp"] = maxi(int(h.get("hp", 0)), 1)
 			h.erase("guarding")

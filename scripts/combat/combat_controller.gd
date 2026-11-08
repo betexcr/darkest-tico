@@ -48,18 +48,22 @@ func active_hero() -> Dictionary:
 	return {}
 
 
-## The chosen target if still alive, else the front-most living enemy.
+## The chosen target if it can still be hit, else the front-most enemy that can
+## (hidden/agazapado enemies only when nobody else is left).
 func current_target() -> Dictionary:
-	if not target_enemy.is_empty() and not target_enemy.get("dead", false):
+	var open: Array = StatusEffectsScript.targetable(enemies)
+	if not target_enemy.is_empty() and open.has(target_enemy):
 		return target_enemy
-	for e in enemies:
-		if not e.get("dead", false):
-			return e
-	return {}
+	return open[0] if not open.is_empty() else {}
+
+
+## Enemies a single-target attack may pick right now.
+func targetable_enemies() -> Array:
+	return StatusEffectsScript.targetable(enemies)
 
 
 func set_target(e: Dictionary) -> void:
-	if e.get("dead", false):
+	if e.get("dead", false) or not targetable_enemies().has(e):
 		return
 	target_enemy = e
 	_refresh_markers()
@@ -200,12 +204,14 @@ func _roll_initiative_queue() -> void:
 	var entries: Array = []
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):
-			var ini: int = CombatResolverScript.roll_initiative(int(h.get("speed", 3)), int(h.get("resolve_level", 0)))
-			entries.append({"kind": "hero", "actor": h, "ini": ini, "spd": int(h.get("speed", 0)), "rl": int(h.get("resolve_level", 0)), "tie": randf()})
+			var hs: int = int(h.get("speed", 3)) + StatusEffectsScript.stat(h, "speed")
+			var ini: int = CombatResolverScript.roll_initiative(hs, int(h.get("resolve_level", 0)))
+			entries.append({"kind": "hero", "actor": h, "ini": ini, "spd": hs, "rl": int(h.get("resolve_level", 0)), "tie": randf()})
 	for e in enemies:
 		if not e.get("dead", false):
-			var ein: int = CombatResolverScript.roll_initiative(int(e.get("speed", 3)), 0)
-			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": int(e.get("speed", 0)), "rl": 0, "tie": randf()})
+			var es: int = int(e.get("speed", 3)) + StatusEffectsScript.stat(e, "speed")
+			var ein: int = CombatResolverScript.roll_initiative(es, 0)
+			entries.append({"kind": "enemy", "actor": e, "ini": ein, "spd": es, "rl": 0, "tie": randf()})
 	entries.sort_custom(_sort_initiative)
 	_turn_queue = entries
 	_log("— Ronda %d —" % _round, "888888")
@@ -249,9 +255,14 @@ func _process_turn() -> void:
 		hero["guarding"] = false
 		var tk: Dictionary = StatusEffectsScript.tick(hero)
 		_log_all(tk["logs"])
-		if int(tk["damage"]) > 0:
+		if int(tk["damage"]) > 0 or int(tk["heal"]) > 0 or int(tk["stress"]) > 0:
 			var before: Array = _party_snapshot()
-			_apply_damage_to_hero(hero, int(tk["damage"]), false)
+			if int(tk["heal"]) > 0:
+				_heal(hero, int(tk["heal"]))
+			if int(tk["damage"]) > 0:
+				_apply_damage_to_hero(hero, int(tk["damage"]), false, false)
+			if int(tk["stress"]) > 0 and not hero.get("dead", false):
+				_log_all(StressSystemScript.add_stress(hero, _stress_after_mods(hero, int(tk["stress"]))))
 			await _animate_party_changes(before)
 			if _check_end():
 				return
@@ -336,26 +347,41 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 	for t in targets:
 		if skill.has("heal_min"):
 			var amt: int = randi_range(int(skill["heal_min"]), int(skill.get("heal_max", skill["heal_min"])))
-			t["hp"] = mini(int(t["hp"]) + amt, int(t["hp_max"]))
-			if int(t["hp"]) > 0:
-				t["al_borde"] = false
+			_heal(t, amt)
 			_log("  %s +%d PV" % [t.get("name", "?"), amt], "88bb88")
+		for ap in _applies_list(skill.get("applies", null)):
+			_try_apply(t, ap, false, "  ")
+		if bool(skill.get("guard_ally", false)) and not is_same(t, hero):
+			# Al cuido: the user takes single-target attacks aimed at the ally.
+			for other in party:
+				if other is Dictionary and StatusEffectsScript.has(other, "cuidado") and StatusEffectsScript.guardian_of(other, party) == hero:
+					StatusEffectsScript.remove(other, "cuidado")
+			StatusEffectsScript.remove(hero, "cuidando")
+			var turns: int = int(skill.get("guard_turns", 2))
+			StatusEffectsScript.apply(t, "cuidado", turns, 0, {"by_uid": int(hero.get("uid", -1))})
+			StatusEffectsScript.apply(hero, "cuidando", turns, 0)
+			_log("  %s cuida a %s (recibe sus golpes)." % [hero.get("name", "?"), t.get("name", "?")], "88aacc")
 		var rel: int = int(skill.get("stress_relief", skill.get("self_stress_relief", 0)))
 		if rel > 0:
 			_log_all(StressSystemScript.add_stress(t, -rel))
 			_log("  %s estrés -%d" % [t.get("name", "?"), rel], "88bb88")
 		for st in skill.get("cure", []):
 			if StatusEffectsScript.has(t, str(st)):
-				t["statuses"].erase(str(st))
-				_log("  %s ya no está %s" % [t.get("name", "?"), StatusEffectsScript.NAMES.get(str(st), st).to_lower()], "88bb88")
+				StatusEffectsScript.remove(t, str(st))
+				_log("  %s ya no está %s" % [t.get("name", "?"), StatusEffectsScript.display_name(str(st)).to_lower()], "88bb88")
 		if bool(skill.get("grant_guard", false)):
 			t["guarding"] = true
 			_log("  %s queda en guardia" % t.get("name", "?"), "88aacc")
+	for ap in _applies_list(skill.get("self_applies", null)):
+		_try_apply(hero, ap, false, "  ")
 
 
 func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary) -> void:
 	if enemy.is_empty():
 		return
+	# Attacking gives away a hidden hero.
+	if StatusEffectsScript.remove(hero, "agazapado"):
+		_log("%s sale de su escondite." % hero.get("name", "?"), "999999")
 	var ff: Dictionary = StressSystemScript.ira_ciega_friendly_fire_target(hero, party)
 	if not ff.is_empty():
 		var fdmg: int = StressSystemScript.friendly_fire_damage()
@@ -364,26 +390,37 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		_log_all(StressSystemScript.add_stress(hero, 4))
 		return
 	var sk_acc: int = int(skill.get("skill_accuracy", 0))
-	var p: float = CombatResolverScript.hit_chance(int(hero.get("accuracy", 5)), sk_acc, int(enemy.get("dodge", 5)))
+	var acc: int = int(hero.get("accuracy", 5)) + StatusEffectsScript.stat(hero, "accuracy")
+	var dod: int = int(enemy.get("dodge", 5)) + StatusEffectsScript.stat(enemy, "dodge")
+	var p: float = CombatResolverScript.hit_chance(acc, sk_acc, dod)
+	for ap in _applies_list(skill.get("self_applies", null)):
+		_try_apply(hero, ap, false, "")
 	if randf() > p:
 		_log("%s falla %s." % [hero.get("name", "?"), skill.get("name", "")], "")
 		var mu = _unit_for_enemy(enemy)
 		if mu != null:
 			mu.float_text("Falla", COLOR_MISS)
 		_log_all(StressSystemScript.add_stress(hero, 3))
+		_enemy_riposte(enemy, hero)
 		return
 	var raw: int = CombatResolverScript.roll_damage(skill) + int(hero.get("dmg_bonus", 0))
-	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)), 0)
+	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)) + StatusEffectsScript.stat(hero, "crit"), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
+	dmg = _scaled_damage(dmg, hero, enemy, skill)
 	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
 	if crit:
 		enemy["_crit_hit"] = true
-	_apply_damage_to_enemy(enemy, dmg)
-	var ap = skill.get("applies", null)
-	if ap is Dictionary and not enemy.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
-		var msg: String = StatusEffectsScript.apply(enemy, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
-		if msg != "":
-			_log(msg, "cc9944")
+	if StatusEffectsScript.use_aegis(enemy):
+		_log("¡%s se santiguó: el golpe no le hace nada!" % enemy.get("name", "?"), "e6e0c8")
+		dmg = 0
+	else:
+		_apply_damage_to_enemy(enemy, dmg)
+	if crit:
+		StatusEffectsScript.apply(hero, "encarrerado", 2, 0)
+	if not enemy.get("dead", false):
+		for ap in _applies_list(skill.get("applies", null)):
+			_try_apply(enemy, ap, crit, "")
+	_enemy_riposte(enemy, hero)
 	var cost: int = int(skill.get("self_stress", 0))
 	if cost > 0:
 		_log_all(StressSystemScript.add_stress(hero, cost))
@@ -438,6 +475,11 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	# Ailments tick first; a stunned enemy loses its turn.
 	var tk: Dictionary = StatusEffectsScript.tick(enemy)
 	_log_all(tk["logs"])
+	if int(tk["heal"]) > 0:
+		enemy["hp"] = mini(int(enemy["hp"]) + int(tk["heal"]), int(enemy.get("hp_max", enemy["hp"])))
+		var hu = _unit_for_enemy(enemy)
+		if hu != null:
+			hu.play_heal(int(tk["heal"]), 0)
 	if int(tk["damage"]) > 0:
 		var before: Array = _enemy_snapshot()
 		_apply_damage_to_enemy(enemy, int(tk["damage"]))
@@ -452,7 +494,22 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		return
 	var skill: Dictionary = _pick_enemy_skill(enemy)
 	var magical: bool = str(skill.get("type", "physical")) == "magical"
-	var targets: Array = living if str(skill.get("target", "single")) == "party" else [living[randi() % living.size()]]
+	var single: bool = str(skill.get("target", "single")) != "party"
+	var targets: Array = living
+	if single:
+		var pick: Dictionary = StatusEffectsScript.pick_target(living)
+		# Al cuido: the guardian steps in front of single-target attacks.
+		var guard: Dictionary = StatusEffectsScript.guardian_of(pick, party)
+		if not guard.is_empty():
+			_log("%s se interpone y recibe el golpe dirigido a %s." % [guard.get("name", "?"), pick.get("name", "?")], "88aacc")
+			pick = guard
+		targets = [pick]
+	# Attacking gives away a hidden enemy (unless this skill is the one that hides it).
+	var hides: bool = false
+	for ap in _applies_list(skill.get("self_applies", null)):
+		hides = hides or str(ap.get("status", "")) == "agazapado"
+	if not hides and StatusEffectsScript.remove(enemy, "agazapado"):
+		_log("%s sale de las sombras." % enemy.get("name", "?"), "999999")
 	var party_before: Array = _party_snapshot()
 	var eu = _unit_for_enemy(enemy)
 	if eu != null:
@@ -461,27 +518,35 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	var dmg_range: Array = skill.get("damage", [4, 9])
 	var physical: bool = not magical and not bool(skill.get("ignores_guard", false))
 	for t in targets:
-		var p: float = CombatResolverScript.hit_chance(int(enemy.get("accuracy", 8)), int(skill.get("accuracy", 0)), int(t.get("dodge", 5)))
+		var acc: int = int(enemy.get("accuracy", 8)) + StatusEffectsScript.stat(enemy, "accuracy")
+		var dod: int = int(t.get("dodge", 5)) + StatusEffectsScript.stat(t, "dodge")
+		var p: float = CombatResolverScript.hit_chance(acc, int(skill.get("accuracy", 0)), dod)
 		if randf() > p:
 			_log("  %s esquiva." % t.get("name", "?"), "")
 			var du = _unit_for_hero(t)
 			if du != null:
 				du.float_text("Esquiva", COLOR_MISS)
+			if single:
+				await _hero_riposte(t, enemy)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
+		dmg = _scaled_damage(dmg, enemy, t, skill)
 		dmg = _elemental(dmg, str(skill.get("element", "")), t)
 		if dmg > 0:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
 		var stress: int = int(round(int(skill.get("stress", 0)) * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
+		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):
 			_log_all(StressSystemScript.add_stress(t, stress))
 			_log("  %s: estrés +%d" % [t.get("name", "?"), stress], "aa88cc")
-		var ap = skill.get("applies", null)
-		if ap is Dictionary and not t.get("dead", false) and randf() < float(ap.get("chance", 0.0)):
-			var msg: String = StatusEffectsScript.apply(t, str(ap.get("status", "")), int(ap.get("turns", 1)), int(ap.get("value", 0)))
-			if msg != "":
-				_log("  " + msg, "cc9944")
+		if not t.get("dead", false):
+			for ap in _applies_list(skill.get("applies", null)):
+				_try_apply(t, ap, false, "  ")
+		if single:
+			await _hero_riposte(t, enemy)
+	for ap in _applies_list(skill.get("self_applies", null)):
+		_try_apply(enemy, ap, false, "")
 	var light: int = int(skill.get("light", 0))
 	if light != 0:
 		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
@@ -494,12 +559,17 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	await _animate_party_changes(party_before)
 
 
-## All current attacks are physical; `physical` is there for future magic/stress damage.
-func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true) -> void:
+## `physical`: protection and Guard apply. `direct`: a hit from an attack (Santiguado can
+## block it); bleed/blight ticks pass direct = false.
+func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, direct: bool = true) -> void:
 	if hero.get("dead", false):
 		return
-	if physical and int(hero.get("prot", 0)) > 0:
-		dmg = maxi(int(round(dmg * (1.0 - int(hero["prot"]) / 100.0))), 1)
+	if direct and StatusEffectsScript.use_aegis(hero):
+		_log("¡%s estaba santiguado: el golpe no le hace nada!" % hero.get("name", "?"), "e6e0c8")
+		return
+	var prot: int = clampi(int(hero.get("prot", 0)) + StatusEffectsScript.stat(hero, "prot"), 0, 80)
+	if physical and prot > 0:
+		dmg = maxi(int(round(dmg * (1.0 - prot / 100.0))), 1)
 	if physical and bool(hero.get("guarding", false)):
 		dmg = maxi(int(ceil(dmg / 2.0)), 1)
 		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")
@@ -517,10 +587,87 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true) ->
 		_log("%s resiste Al Borde." % hero.get("name", "?"), "")
 		hero["hp"] = 1
 		hero["al_borde"] = false
+		hero["convaleciente"] = true
 	else:
 		hero["dead"] = true
 		hero["hp"] = 0
 		_log("%s ha caído." % hero.get("name", "?"), "cc4444")
+
+
+## Heal a hero; coming back from Al Borde leaves them Convaleciente for the expedition.
+func _heal(hero: Dictionary, amount: int) -> void:
+	if hero.get("dead", false) or amount <= 0:
+		return
+	hero["hp"] = mini(int(hero["hp"]) + amount, int(hero["hp_max"]))
+	if int(hero["hp"]) > 0 and bool(hero.get("al_borde", false)):
+		hero["al_borde"] = false
+		hero["convaleciente"] = true
+		_log("%s sale de Al Borde, pero queda convaleciente." % hero.get("name", "?"), "c09090")
+
+
+## Damage after buffs/debuffs (dmg_pct) and the mark bonus (skill "vs_marked_pct").
+func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: Dictionary) -> int:
+	var pct: int = StatusEffectsScript.stat(attacker, "dmg_pct")
+	if StatusEffectsScript.has(target, "fichado"):
+		pct += int(skill.get("vs_marked_pct", 0))
+	return maxi(int(round(dmg * (1.0 + pct / 100.0))), 1) if dmg > 0 else dmg
+
+
+func _stress_after_mods(hero: Dictionary, stress: int) -> int:
+	if stress <= 0:
+		return stress
+	return int(round(stress * (1.0 + StatusEffectsScript.stat(hero, "stress_pct") / 100.0)))
+
+
+## "applies" may be one entry or a list: {status, chance, turns, value, mods}.
+func _applies_list(v) -> Array:
+	if v is Dictionary:
+		return [v]
+	if v is Array:
+		return v
+	return []
+
+
+func _try_apply(unit: Dictionary, ap: Dictionary, crit: bool, indent: String) -> void:
+	if unit.get("dead", false) or randf() >= float(ap.get("chance", 1.0)):
+		return
+	var opts: Dictionary = {"crit": crit}
+	if ap.has("mods"):
+		opts["mods"] = ap["mods"]
+	var msg: String = StatusEffectsScript.apply(unit, str(ap.get("status", "")), int(ap.get("turns", 0)), int(ap.get("value", 0)), opts)
+	if msg != "":
+		_log(indent + msg, "cc9944" if StatusEffectsScript.is_negative(str(ap.get("status", ""))) else "88bbdd")
+
+
+## Respondón (riposte) on an enemy: it hits back the hero that attacked it.
+func _enemy_riposte(enemy: Dictionary, hero: Dictionary) -> void:
+	if enemy.get("dead", false) or hero.get("dead", false) or not StatusEffectsScript.has(enemy, "respondon"):
+		return
+	var basic: Dictionary = {}
+	for s in enemy.get("skills", []):
+		if bool(s.get("basic", false)):
+			basic = s
+	var dr: Array = basic.get("damage", [3, 6])
+	var dmg: int = _scaled_damage(randi_range(int(dr[0]), int(dr[1])), enemy, hero, basic)
+	_log("%s responde el golpe: %d a %s." % [enemy.get("name", "?"), dmg, hero.get("name", "?")], "cc6655")
+	_apply_damage_to_hero(hero, dmg, true)
+
+
+## Respondón on a hero: hits back the enemy that attacked them, with their first attack skill.
+func _hero_riposte(hero: Dictionary, enemy: Dictionary) -> void:
+	if hero.get("dead", false) or enemy.get("dead", false) or not StatusEffectsScript.has(hero, "respondon"):
+		return
+	var sk: Dictionary = _first_skill_of_kind(hero, "attack")
+	if sk.is_empty():
+		return
+	var before: Array = _enemy_snapshot()
+	var dmg: int = _scaled_damage(CombatResolverScript.roll_damage(sk) + int(hero.get("dmg_bonus", 0)), hero, enemy, sk)
+	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
+	if StatusEffectsScript.use_aegis(enemy):
+		dmg = 0
+	_apply_damage_to_enemy(enemy, dmg)
+	_log("%s responde el golpe: %d a %s." % [hero.get("name", "?"), dmg, enemy.get("name", "?")], "ddbb55")
+	await _animate_enemy_changes(before)
 
 
 func _living_heroes() -> int:

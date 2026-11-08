@@ -37,7 +37,13 @@
           "target": "party",
           "weight": 20,
           "description": "Un alarido que se mete en los huesos de todos.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "applies": {
+            "status": "susto",
+            "chance": 0.5,
+            "turns": 3,
+            "value": 4
+          }
         },
         {
           "id": "toque_helado",
@@ -64,6 +70,9 @@
       "elements": {
         "sagrado": 1.5,
         "oscuridad": 0.5
+      },
+      "status_resist": {
+        "sangrado": 60
       }
     },
     "sombra_cuadrilla": {
@@ -128,7 +137,11 @@
             "value": 0
           },
           "description": "La sombra se echa encima y no deja moverse.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "self_applies": {
+            "status": "agazapado",
+            "turns": 2
+          }
         }
       ],
       "elements": {
@@ -174,7 +187,15 @@
           "weight": 20,
           "light": -10,
           "description": "La casa se apaga un instante y duele a todos.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "self_applies": {
+            "status": "chiva",
+            "turns": 3,
+            "mods": {
+              "dmg_pct": 20,
+              "accuracy": 5
+            }
+          }
         },
         {
           "id": "golpe_al_escudo",
@@ -218,6 +239,9 @@
         "rayo": 1.25,
         "agua": 0.0,
         "oscuridad": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40
       }
     },
     "nuboso_spectre": {
@@ -255,12 +279,21 @@
           "stress": 5,
           "target": "single",
           "weight": 20,
-          "applies": {
-            "status": "aturdido",
-            "chance": 0.3,
-            "turns": 1,
-            "value": 0
-          },
+          "applies": [
+            {
+              "status": "aturdido",
+              "chance": 0.3,
+              "turns": 1
+            },
+            {
+              "status": "salado",
+              "chance": 0.5,
+              "turns": 2,
+              "mods": {
+                "dodge": -6
+              }
+            }
+          ],
           "description": "La neblina hace perder el rumbo.",
           "element": "viento"
         }
@@ -270,6 +303,9 @@
         "sagrado": 1.5,
         "viento": 0.5,
         "agua": 0.5
+      },
+      "status_resist": {
+        "sangrado": 60
       }
     },
     "cadejo_negro": {
@@ -293,7 +329,8 @@
           "stress": 4,
           "target": "single",
           "weight": 50,
-          "description": "Colmillos del perro del camino."
+          "description": "Colmillos del perro del camino.",
+          "vs_marked_pct": 40
         },
         {
           "id": "aullido_de_medianoche",
@@ -308,7 +345,13 @@
           "target": "party",
           "weight": 20,
           "description": "El aullido que se oye en los cafetales.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "applies": {
+            "status": "susto",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 3
+          }
         },
         {
           "id": "zarpazo_con_cadena",
@@ -379,7 +422,13 @@
           "target": "single",
           "weight": 20,
           "description": "Primero bella, luego calavera.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "applies": {
+            "status": "susto",
+            "chance": 0.6,
+            "turns": 3,
+            "value": 5
+          }
         },
         {
           "id": "relincho",
@@ -402,6 +451,9 @@
         "hielo": 1.25,
         "oscuridad": 0.5,
         "viento": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40
       }
     },
     "peon_penado": {
@@ -440,12 +492,24 @@
           "target": "single",
           "weight": 20,
           "description": "Cien años de deuda en una mirada.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "applies": {
+            "status": "salado",
+            "chance": 0.6,
+            "turns": 3,
+            "mods": {
+              "accuracy": -5,
+              "dmg_pct": -15
+            }
+          }
         }
       ],
       "elements": {
         "sagrado": 1.5,
         "tierra": 0.5
+      },
+      "status_resist": {
+        "sangrado": 20
       }
     },
     "mandador_en_pena": {
@@ -475,7 +539,8 @@
             "turns": 3,
             "value": 2
           },
-          "description": "El fuete del mandador abre la piel."
+          "description": "El fuete del mandador abre la piel.",
+          "vs_marked_pct": 50
         },
         {
           "id": "libreta_de_deudas",
@@ -505,7 +570,12 @@
           "target": "single",
           "weight": 20,
           "description": "Le rebaja el alma a uno solo.",
-          "element": "oscuridad"
+          "element": "oscuridad",
+          "applies": {
+            "status": "fichado",
+            "chance": 1.0,
+            "turns": 3
+          }
         }
       ],
       "elements": {
@@ -561,6 +631,9 @@
       "elements": {
         "fuego": 1.5,
         "tierra": 0.75
+      },
+      "status_resist": {
+        "veneno": 50
       }
     },
     "murcielago_bodega": {
@@ -665,7 +738,12 @@
           "target": "party",
           "weight": 20,
           "description": "Un rezo al revés que hiere a todos.",
-          "element": "fuego"
+          "element": "fuego",
+          "self_applies": {
+            "status": "sobado",
+            "turns": 3,
+            "value": 3
+          }
         },
         {
           "id": "rezo_torcido",
@@ -751,7 +829,11 @@
           "target": "party",
           "weight": 20,
           "description": "El pitazo avisa al Portón: todos se tensan.",
-          "element": "viento"
+          "element": "viento",
+          "self_applies": {
+            "status": "respondon",
+            "turns": 3
+          }
         }
       ],
       "elements": {
@@ -795,7 +877,13 @@
           "target": "single",
           "weight": 20,
           "description": "Le dice a uno lo que más teme.",
-          "element": "agua"
+          "element": "agua",
+          "applies": {
+            "status": "susto",
+            "chance": 0.6,
+            "turns": 3,
+            "value": 4
+          }
         },
         {
           "id": "agua_estancada",
@@ -824,6 +912,9 @@
         "sagrado": 1.5,
         "fuego": 0.5,
         "agua": 0.0
+      },
+      "status_resist": {
+        "sangrado": 40
       }
     },
     "duende_sotano": {
@@ -869,7 +960,11 @@
           "weight": 20,
           "steal_colones": 60,
           "description": "Se lleva unos colones y se ríe.",
-          "element": "tierra"
+          "element": "tierra",
+          "self_applies": {
+            "status": "agazapado",
+            "turns": 2
+          }
         },
         {
           "id": "travesura",
@@ -947,6 +1042,9 @@
         "rayo": 1.5,
         "fuego": 1.25,
         "agua": 0.0
+      },
+      "status_resist": {
+        "veneno": 40
       }
     }
   }

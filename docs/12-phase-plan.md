@@ -89,14 +89,14 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [ ] Unit tests for rank_rules (if P1-01 done)
 
 ### P1-04 · M · Status effect engine
-- Status: `in-progress` · Depends: P1-02 · Partly done in P1-12 (sangrado, veneno, aturdido on heroes and enemies). Still to do: mark, guard-as-status, heroes applying ailments, initiative modifiers, resistances.
-- Spec: `01` §2.5
-- Files: `scripts/domain/status_effects.gd` (new), `data/skills.json` (`applies: [{status, chance, duration, value}]`), `scripts/combat/combat_scene.gd`
+- Status: `review` (all in, tested headless; needs a human playtest) · Depends: P1-02
+- Owner 2026-11-08: every Darkest Dungeon status effect with Tico names. Definitions `data/statuses.json`; rules `scripts/domain/status_effects.gd`; combat hooks in `scripts/combat/combat_controller.gd`; icons/tooltips in `battle_unit.gd`. Effects: Sangrado, Envenenado, Atarantado → Espabilado, Salado, Fichado, Susto, Chiva, Encarrerado, Al cuido / Cuidando, Respondón, Sobado, Santiguado, Agazapado, Al Borde, Convaleciente. Stacking per application, 3-turn default, crit DoTs 5 turns, `status_resist` on enemies. Hero skills, enemy specials and two items (té de tilo, agua bendita) use them. Tests: `tests/test_status.gd` (50 checks).
 - Done when:
-  - [ ] Supports bleed, stun, mark, guard at minimum; durations tick per round
-  - [ ] Initiative includes `statusModifiers`; tie-breakers per `01` §2.2 (speed → resolve → random)
-  - [ ] Status shown on unit UI
-
+  - [x] Supports bleed, stun, mark, guard at minimum; durations tick per round
+  - [x] Initiative includes status speed changes; tie-breakers speed → resolve → random
+  - [x] Status shown on unit UI (icons + tooltips)
+  - [ ] Move / Shuffle (needs formation ranks, P1-03)
+  - [ ] Art for the new status icons (letter badges until then)
 ### P1-05 · S · Spec-accurate Al Borde and crit stress
 - Status: `todo` · Depends: —
 - Spec: `01` §2.3–2.4, §3.4

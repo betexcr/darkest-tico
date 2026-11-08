@@ -136,7 +136,7 @@ func _clear_enemies() -> void:
 func _on_unit_clicked(unit) -> void:
 	if not _pending.is_empty():
 		var side: String = "ally" if unit.is_hero else "enemy"
-		if side == str(_pending["side"]) and not unit.is_dead():
+		if side == str(_pending["side"]) and _living_units(unit.is_hero).has(unit):
 			_execute_pending(unit.data)
 		return
 	if unit.is_hero:
@@ -601,8 +601,11 @@ func _update_turn_label() -> void:
 # --- Choosing a target after pressing a skill or item -----------------------------
 
 func _living_units(heroes: bool) -> Array:
-	var src: Array = _hero_units if heroes else _enemy_units
-	return src.filter(func(u): return not u.is_dead())
+	if heroes:
+		return _hero_units.filter(func(u): return not u.is_dead())
+	# Hidden (agazapado) enemies can't be picked while others are left.
+	var open: Array = _combat.targetable_enemies()
+	return _enemy_units.filter(func(u): return not u.is_dead() and open.has(u.data))
 
 
 ## Single-target skills/items ask for a click on an enemy (or ally); with one valid
