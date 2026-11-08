@@ -17,6 +17,18 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-08 (later) — P4-08, P1-13 — Right-arm attacks (mirrored stage), combat feedback
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
+- **Status after session:** P4-08 in-progress (8 hero attack sprites done; enemies left); P1-13 review
+- **Changed:**
+  - Owner: the weapon must be in the RIGHT arm. SD 1.5 + OpenPose always raises the arm on the enemy side of the picture, which for a right-facing hero is the left arm (profile, two-handed, back-view, init-from-another-sprite and hand-repaint attempts all failed). Fix: **mirrored the battle stage** — party on the right facing left, enemies on the left (`scenes/expedition/expedition_screen.tscn`, `expedition_screen.gd`, `battle_unit.gd`). Attack skeleton faces left; weapon guide angle 135°, `hand: right`. Rule in AGENTS.md §4.
+  - All 8 hero `attack.png` regenerated facing left (seeds in `redo_seeds`); small hand edits recorded in each sprite's metadata `post` (second weapons erased, médica syringe moved to the right hand, curandero smoke). Scripts in `tools/sprite_edits/`.
+  - P1-13 combat feedback: floating damage/crit/heal/stress/miss numbers + hit flash; status icons (sangrado, veneno, aturdido, guardia) above fighters with turns + tooltip (`battle_unit.gd`). Art entries `status_*` in the manifest (`assets/status/<id>.png`, 64 px); a coloured letter badge shows until the PNG exists. Test `tests/test_feedback.gd`.
+- **Verified:** `validate_data.py` 0 errors. Godot headless: smoke (0 failures), test_guard, test_status, test_hub, test_equipment, test_feedback (0 failures).
+- **Not verified / risks:** Nobody has looked at the mirrored stage or the popups in a running game. Hero idle/cast/hurt sprites were made for the old layout (mostly front-facing, so they still work).
+- **Decisions needed:** none
+- **Next step:** P4-08 enemies one by one: rewrite each enemy `look` from `assets/enemies/<id>.png`, generate facing LEFT like heroes (the game mirrors enemies), `redo_reference: idle`, check for extra weapons. Then commit the `status_*` icons if the queued run produced them (`python tools/sd_local.py --only status_sangrado status_veneno status_aturdido status_guardia`).
+
 ## 2026-11-08 — P4-08 — Hero attack poses aimed at the enemy
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
 - **Status after session:** P4-08 in-progress (8 heroes done incl. new attack poses; 15 enemies left)
