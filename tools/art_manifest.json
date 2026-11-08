@@ -1741,7 +1741,7 @@
         "pose": "lunging forward and striking with {weapon}, dynamic attack",
         "beast_pose": "lunging forward to attack with {weapon}, dynamic attack",
         "beast_strength": 0.7,
-        "redo_pose": "side view, violent lunge, right arm raising {weapon} forward, snarling",
+        "redo_pose": "side view, violent lunge, both hands raising {weapon} forward, snarling",
         "redo_strength": 0.9,
         "redo_mode": "txt",
         "redo_pose_scale": 1.3
@@ -1880,8 +1880,14 @@
           0.575,
           0.3
         ],
-        null,
-        null,
+        [
+          0.665,
+          0.25
+        ],
+        [
+          0.765,
+          0.18
+        ],
         [
           0.53,
           0.55
@@ -2213,7 +2219,7 @@
           0.83
         ]
       ],
-      "_attack_doc": "Attack (owner 2026-11-08): side view facing the enemy (right). Their RIGHT arm is the near arm: it comes from the near shoulder in front of the chest and raises the weapon on a 45-degree line; their LEFT arm is hidden behind the body (null keypoints). A 3/4-front body makes the model lead with the far (left) arm, so keep it in profile."
+      "_attack_doc": "Attack (owner 2026-11-08): side view facing the enemy (right), violent lunge, BOTH hands on the weapon raised on a 45-degree line up-forward, so their right (near) arm is visibly raised. With only one raised arm the model always raised the far (left) arm and put a 2nd weapon in the low near hand."
     },
     "characters": [
       {
@@ -2224,7 +2230,6 @@
         "weapon": "a long steel machete",
         "weapon_shape": {
           "kind": "line",
-          "hand": "right",
           "angle": 45,
           "length": 0.2,
           "width": 0.03
@@ -2246,7 +2251,6 @@
         "negative_extra": "dancing, walking, calm, cape, hide, saddle",
         "weapon_shape": {
           "kind": "rope",
-          "hand": "right",
           "angle": 45,
           "length": 0.15,
           "loop": 0.07,
@@ -2262,7 +2266,7 @@
           "attack": 0.35
         },
         "redo_poses": {
-          "attack": "side view, violent lunge, right arm whipping a lasso forward, snarling"
+          "attack": "side view, violent lunge, both hands whipping a lasso forward, snarling"
         }
       },
       {
@@ -2273,7 +2277,6 @@
         "weapon": "a wooden ladle and clay bowl",
         "weapon_shape": {
           "kind": "bowl",
-          "hand": "right",
           "angle": 45,
           "length": 0.2
         },
@@ -2293,7 +2296,6 @@
         "weapon": "a small homemade drone",
         "weapon_shape": {
           "kind": "box",
-          "hand": "right",
           "angle": 45,
           "length": 0.15
         },
@@ -2313,14 +2315,13 @@
         "weapon": "a wooden baton",
         "weapon_shape": {
           "kind": "line",
-          "hand": "right",
           "angle": 45,
           "length": 0.2
         },
         "redo_seeds": {
-          "attack": 5300
+          "attack": 5310
         },
-        "negative_extra": "dancing, walking, calm",
+        "negative_extra": "dancing, walking, calm, long hair, ponytail",
         "redo_ref_scale": {
           "attack": 0.35
         }
@@ -2334,7 +2335,6 @@
         "negative_extra": "dancing, walking, calm, bare legs, high heels",
         "weapon_shape": {
           "kind": "line",
-          "hand": "right",
           "angle": 45,
           "length": 0.12
         },
@@ -2356,7 +2356,6 @@
         "weapon": "a bundle of smoking herbs",
         "weapon_shape": {
           "kind": "line",
-          "hand": "right",
           "angle": 45,
           "length": 0.14
         },
@@ -2376,7 +2375,6 @@
         "weapon": "a crucifix",
         "weapon_shape": {
           "kind": "cross",
-          "hand": "right",
           "angle": 45,
           "length": 0.2
         },
