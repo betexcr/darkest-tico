@@ -192,6 +192,7 @@ def load_pipelines(model: str, control_model: str, ref: dict | None = None, weap
         # Second ControlNet (scribble): a drawn weapon shape, so the weapon goes where we want it.
         cw = ControlNetModel.from_pretrained(weapon_model, torch_dtype=dtype).to(device)
         pipes["txt_pose_weapon"] = StableDiffusionControlNetPipeline(**comps, controlnet=[cn, cw])
+        pipes["img_pose_weapon"] = StableDiffusionControlNetImg2ImgPipeline(**comps, controlnet=[cn, cw])
     for p in pipes.values():
         p.set_progress_bar_config(disable=True)
     return pipes, device, torch
@@ -331,7 +332,19 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         skel = draw_skeleton(skeleton_for(cfg, c, sid), (w, h))
         weapon = draw_weapon(cfg, c, sid, (w, h)) if "txt_pose_weapon" in pipes else None
         scale = float(st.get("redo_pose_scale", control_scale))
-        if weapon is not None:
+        init_from = c.get("redo_init", {}).get(sid)
+        if init_from and weapon is not None:
+            # Start from another character's finished sprite of this state (e.g. an attack whose
+            # near/right arm is raised): img2img keeps that layout, the reference + prompt repaint
+            # it as this character.
+            ini = Image.open(ROOT / init_from).convert("RGBA")
+            bgi = Image.new("RGBA", ini.size, (128, 128, 128, 255))
+            bgi.alpha_composite(ini)
+            src = dict(image=bgi.convert("RGB").resize((w, h)), control_image=[skel, weapon],
+                       strength=float(c.get("redo_init_strength", 0.8)))
+            pipe = pipes["img_pose_weapon"]
+            scale = [scale, float(cfg["weapon_guide"].get("scale", 0.7))]
+        elif weapon is not None:
             src = dict(image=[skel, weapon], width=w, height=h)
             pipe = pipes["txt_pose_weapon"]
             scale = [scale, float(cfg["weapon_guide"].get("scale", 0.7))]
@@ -501,7 +514,9 @@ def main() -> int:
                             "seed": seeds[sid], "sheet_seed": int(c["seed"]), "steps": steps, "cfg_scale": guidance,
                             "sampler": manifest["sampler"], "resolution": "%dx%d, scaled into a %dx%d cell" % (
                                 cfg["size"][0], cfg["size"][1], cfg["sheet"]["cell"][0], cfg["sheet"]["cell"][1]),
-                            "mode": "txt2img" if st.get("redo_mode") == "txt" else "img2img from the sheet cell",
+                            "mode": ("img2img from " + ck["redo_init"][sid] + f" (strength {ck.get('redo_init_strength', 0.8)})")
+                            if ck.get("redo_init", {}).get(sid)
+                            else ("txt2img" if st.get("redo_mode") == "txt" else "img2img from the sheet cell"),
                             "pose_control": cfg["control_model"],
                             "weapon_control": cfg.get("weapon_guide", {}).get("control_model")
                             if draw_weapon(cfg, ck, sid, (64, 96)) is not None else None,

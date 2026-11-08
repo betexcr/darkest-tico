@@ -2257,7 +2257,7 @@
           "width": 0.012
         },
         "redo_seeds": {
-          "attack": 5350
+          "attack": 5355
         },
         "redo_looks": {
           "attack": "young man, Costa Rican ranch hand, thin mustache, curly dark hair, black cowboy hat, buttoned denim shirt, ripped jeans, boots"
@@ -2300,12 +2300,16 @@
           "length": 0.15
         },
         "redo_seeds": {
-          "attack": 5345
+          "attack": 5350
         },
         "negative_extra": "dancing, walking, calm",
         "redo_ref_scale": {
           "attack": 0.35
-        }
+        },
+        "redo_init": {
+          "attack": "assets/sprites/guachiman/attack.png"
+        },
+        "redo_init_strength": 0.8
       },
       {
         "id": "guachiman",
