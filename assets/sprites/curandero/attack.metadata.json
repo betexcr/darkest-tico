@@ -1,8 +1,8 @@
 {
   "id": "sprite_curandero_attack",
-  "prompt": "elderly folk healer, long grey braids, wide dark hat with leaves, dark brown robes, beaded necklace, lunging right, both hands thrusting a bundle of smoking herbs forward at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5061,
+  "prompt": "elderly folk healer, long grey braids, wide dark hat with leaves, dark brown robes, beaded necklace, facing left, violent lunge, right arm raising a bundle of smoking herbs toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5560,
   "sheet_seed": 5060,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -12,12 +12,11 @@
   "pose_control": "lllyasviel/control_v11p_sd15_openpose",
   "weapon_control": "lllyasviel/control_v11p_sd15_scribble",
   "reference": {
-    "image": "assets/portraits/curandero.png",
-    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
-    "scale": 0.6
+    "image": "assets/sprites/curandero/idle.png (padded square on grey)",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors"
   },
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-07T22:57:23+00:00"
+  "timestamp": "2026-11-08T19:48:53+00:00"
 }
