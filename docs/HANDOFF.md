@@ -26,9 +26,9 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - `--redo-tries N --preview-dir D` writes PNG + metadata variants; pick one by copying both into `assets/sprites/<id>/attack.*` and setting `redo_seeds`.
   - Medica Josefina: black leggings (her negative no longer contains "stockings", which suppressed leg coverings).
 - **Verified:** `validate_data.py` 0 errors. Each attack picked by eye from 2 variants.
-- **Not verified / risks:** montador attack is the older seed-5015 render (lunging, lasso coiling); 5 retries for a thrown lasso all added a big extra hat/saddle/hide behind him — likely from his portrait's huge hat brim. The manifest's montador redo settings describe the last retry, not that asset (its metadata has the real prompt). Guachimán attack has a ponytail he lacks elsewhere.
-- **Decisions needed:** Is the montador attack acceptable as is?
-- **Next step:** P4-08 — if owner wants a better montador attack: crop the hat out of `tools/.sprite_cache/montador_ref.png` (reference) and run `--only montador --states attack --force --redo-tries 2 --preview-dir <dir>`. Otherwise start enemies one by one (see previous entry).
+- **Not verified / risks:** Fixed later the same day (owner: hats stretched, faces not looking right): attack redraws for campesino, montador, medica, exorcista use the character's own idle sprite as the IP-Adapter reference (`redo_reference: idle`) instead of the portrait close-up, plus 'head in profile facing right'. Campesino attack (seed 5101) had a stray second machete erased by hand (`post` in its metadata). Guachimán attack has a ponytail he lacks elsewhere.
+- **Decisions needed:** Owner review of the 8 attack sprites (all now face right).
+- **Next step:** P4-08 — start enemies one by one (see previous entry); for their attack poses set `redo_reference: idle` (portrait close-ups distort full-body redraws) and a `weapon_shape`.
 
 ## 2026-11-07 (night) — P4-08, P4-10 — Hero sprites that match the portraits; all item icons
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ramanujan-78dwh9`
