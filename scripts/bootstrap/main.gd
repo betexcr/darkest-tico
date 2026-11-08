@@ -4,6 +4,7 @@ extends Control
 
 const HaciendaHubScene := preload("res://scenes/hacienda/hacienda_hub.tscn")
 const ExpeditionScreenScene := preload("res://scenes/expedition/expedition_screen.tscn")
+const VictoryScreenScript := preload("res://scripts/expedition/victory_screen.gd")
 
 
 func _ready() -> void:
@@ -33,7 +34,19 @@ func _on_start_expedition() -> void:
 	add_child(screen)
 
 
-func _on_expedition_finished(_reason: String) -> void:
+func _on_expedition_finished(reason: String) -> void:
+	# Completed expeditions show the victory screen (loot + Resolve XP) before the hub.
+	if reason == "objective" and not GameState.last_expedition_summary.is_empty():
+		await _clear()
+		var victory := VictoryScreenScript.new()
+		victory.continue_pressed.connect(_back_to_hub, CONNECT_ONE_SHOT)
+		add_child(victory)
+		return
+	await _back_to_hub()
+
+
+func _back_to_hub() -> void:
+	GameState.last_expedition_summary = {}
 	GameState.end_of_expedition_week()
 	SaveService.save_game()
 	await _open_hub()

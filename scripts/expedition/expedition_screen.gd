@@ -11,6 +11,8 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
+const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 
@@ -31,7 +33,7 @@ enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
 @onready var _event_panel: PanelContainer = $Stage/EventPanel
 @onready var _event_title: Label = $Stage/EventPanel/Margin/VBox/EventTitle
 @onready var _event_text: Label = $Stage/EventPanel/Margin/VBox/EventText
-@onready var _event_actions: HBoxContainer = $Stage/EventPanel/Margin/VBox/EventActions
+@onready var _event_actions: HFlowContainer = $Stage/EventPanel/Margin/VBox/EventActions
 @onready var _hero_portrait: TextureRect = $BottomPanel/Row/HeroCard/HeroPortrait
 @onready var _hero_name: Label = $BottomPanel/Row/HeroInfo/HeroName
 @onready var _hero_stats: Label = $BottomPanel/Row/HeroInfo/HeroStats
@@ -60,6 +62,11 @@ var _equip_slots: Array = []
 ## Enemy shown in the info panel (click an enemy outside target-picking).
 var _inspected: Dictionary = {}
 var _inspected_is_hero: bool = false
+## Camp phase (P3-07): respite left, skills used ("uid:skill"), whether someone keeps watch.
+var _camp_respite: int = 0
+var _camp_used: Array = []
+var _camp_watch: bool = false
+var _combat_is_ambush: bool = false
 
 
 func _ready() -> void:
@@ -81,7 +88,11 @@ func _ready() -> void:
 	$Stage/EnemyInfo/VBox/Head/Close.pressed.connect(_hide_enemy_info)
 	_show_page(false)
 	_view_hero(_first_living_hero())
-	_log_line("La cuadrilla entra a %s." % GameState.mission_region_data.get("name", "la oscuridad"), "dddddd")
+	_log_line("La cuadrilla entra a %s (%s)." % [GameState.mission_region_data.get("name", "la oscuridad"),
+		GameState.mission_difficulty.get("name", "")], "dddddd")
+	for l in GameState.mission_start_logs:
+		_log_line(l, "cc7744")
+	GameState.mission_start_logs = PackedStringArray()
 	_enter_room()
 
 
@@ -242,6 +253,7 @@ func _show_hero_info(h: Dictionary) -> void:
 	_enemy_info_health.value = int(round(100.0 * hp / hp_max))
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("PV [b]%d/%d[/b] · Estrés [b]%d[/b]/200" % [hp, hp_max, int(h.get("stress", 0))])
+	lines.append(_resolve_line(h))
 	var se = StatusEffectsScript
 	lines.append("Prec %d · Esq %d · Vel %d · Crít %d%% · Prot %d%%" % [
 		int(h.get("accuracy", 0)) + se.stat(h, "accuracy"), int(h.get("dodge", 0)) + se.stat(h, "dodge"),
@@ -265,12 +277,25 @@ func _status_icon_bb(id: String) -> String:
 	return "[bgcolor=%s][color=#ffffff] %s [/color][/bgcolor]" % [str(d.get("color", "#777777")), str(d.get("letter", "?"))]
 
 
+## "Resolución 2 · Baquiano (9/14 XP)".
+func _resolve_line(h: Dictionary) -> String:
+	var lvl: int = int(h.get("resolve_level", 0))
+	var pr: Dictionary = ResolveSystemScript.progress(h)
+	var xp: String = "máximo" if lvl >= ResolveSystemScript.MAX_LEVEL else "%d/%d XP" % [int(pr["current"]), int(pr["needed"])]
+	return "Resolución [b]%d[/b] · %s (%s)" % [lvl, ResolveSystemScript.level_name(lvl), xp]
+
+
 ## Active buffs/debuffs: one line each with icon, name, turns/stacks and what it does.
 func _effects_bbcode(u: Dictionary) -> String:
 	var out: PackedStringArray = PackedStringArray(["[color=#e8d7a8]Efectos[/color]"])
 	var list: Array = StatusEffectsScript.entries(u)
-	if list.is_empty():
+	var camp: Array = u.get("camp_buffs", [])
+	if list.is_empty() and camp.is_empty():
 		out.append("[color=#999999]Ninguno.[/color]")
+	for b in camp:
+		out.append("[color=#ffd27a][b]%s[/b][/color] [color=#bbbbbb](fogata, %d pelea%s)[/color] [%s]" % [
+			str(b.get("name", "?")), int(b.get("fights", 0)), "" if int(b.get("fights", 0)) == 1 else "s",
+			CampingSystemScript.mods_text(b.get("mods", {}))])
 	for e in list:
 		var id: String = str(e["id"])
 		var d: Dictionary = StatusEffectsScript.def(id)
@@ -428,7 +453,8 @@ func _view_hero(hero: Dictionary) -> void:
 	_hero_portrait.texture = load(p) as Texture2D if ResourceLoader.exists(p) else null
 	_hero_name.text = "%s\n%s" % [hero.get("name", "?"), hero.get("class_name", "")]
 	var lines: PackedStringArray = PackedStringArray()
-	lines.append("PV %d/%d · Estrés %d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0)), int(hero.get("stress", 0))])
+	lines.append("PV %d/%d · Estrés %d · Resolución %d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0)),
+		int(hero.get("stress", 0)), int(hero.get("resolve_level", 0))])
 	lines.append("Prec %d · Crít %d%% · Esq %d" % [int(hero.get("accuracy", 0)), int(hero.get("crit", 0)), int(hero.get("dodge", 0))])
 	lines.append("Vel %d · Prot %d%% · Daño %+d" % [int(hero.get("speed", 0)), int(hero.get("prot", 0)), int(hero.get("dmg_bonus", 0))])
 	if str(hero.get("element", "")) != "":
@@ -439,10 +465,10 @@ func _view_hero(hero: Dictionary) -> void:
 		lines.append("Al Borde")
 	var aff: String = str(hero.get("affliction_id", ""))
 	if aff != "":
-		lines.append("Quebranto: %s" % aff.capitalize())
+		lines.append("Quebranto: %s" % StressSystemScript.affliction_name(aff))
 	var vir: String = str(hero.get("virtud_id", ""))
 	if vir != "":
-		lines.append("Virtud: %s" % vir.capitalize())
+		lines.append("Virtud: %s" % StressSystemScript.virtud_name(vir))
 	_hero_stats.text = "\n".join(lines)
 	for es in _equip_slots:
 		es.show_hero(hero)
@@ -648,10 +674,12 @@ func _open_curio() -> void:
 	var key: String = str(curio.get("key_item", ""))
 	if key != "" and GameState.item_count(key) > 0:
 		_event_button("Usar %s" % GameState.get_item(key).get("name", key), func():
+			GameState.ledger_add("curios")
 			GameState.remove_item(key, 1)
 			_curio_result(str(curio.get("key_text", "")), curio.get("key_outcome", {}))
 		)
 	_event_button("Examinar", func():
+		GameState.ledger_add("curios")
 		var table: Array = curio.get("blind", [])
 		var total: float = 0.0
 		for o in table:
@@ -675,21 +703,129 @@ func _curio_result(text: String, outcome: Dictionary) -> void:
 
 
 func _open_camp() -> void:
+	var nid: String = GameState.current_node_id
+	if not GameState.can_camp_at(nid):
+		_open_event("Fogata de trocha", "No queda leña para acampar. Solo pueden calentarse las manos.")
+		_event_button("Calentarse (-3 estrés)", func():
+			_party_stress(-3)
+			_resolve_event("Un respiro corto. -3 estrés.")
+		)
+		return
+	_open_event("Fogata de trocha", "Leña: %d. Acampar gasta una: comen, usan habilidades de campamento (%d puntos de respiro) y duermen. La Luz vuelve a 100, pero la noche puede traer una emboscada." % [
+		GameState.mission_firewood, CampingSystemScript.respite_points()])
+	_event_button("Acampar", _camp_begin)
+	_event_button("Seguir sin acampar", func():
+		# Not cleared: the fogata stays available if they come back.
+		_close_event()
+		_mode = Mode.EXPLORE
+		_narrate("Guardan la leña para más adelante.")
+		_refresh_all()
+	)
+
+
+func _camp_begin() -> void:
+	GameState.mission_firewood -= 1
+	GameState.camped_node_ids.append(GameState.current_node_id)
+	GameState.ledger_add("camps")
+	_camp_respite = CampingSystemScript.respite_points()
+	_camp_used = []
+	_camp_watch = false
+	_log_line("Encienden la fogata (-1 leña).", "ffd27a")
+	_camp_meal()
+
+
+func _camp_meal() -> void:
 	var food: int = GameState.item_count("gallo_pinto")
-	_open_event("Fogata de trocha", "Pueden acampar. Tienen %d gallo pinto." % food)
-	_event_button("Festín (2 gallo pinto)", func():
-		if GameState.item_count("gallo_pinto") < 2:
-			_event_text.text = "No alcanza: se necesitan 2 gallo pinto."
-			return
-		GameState.remove_item("gallo_pinto", 2)
-		_heal_party(6)
-		_party_stress(-10)
-		_resolve_event("Festín humilde. +6 PV y -10 estrés a todos.")
-	)
-	_event_button("Solo calentarse", func():
-		_party_stress(-3)
-		_resolve_event("Un respiro corto. -3 estrés.")
-	)
+	_open_event("Fogata — la comida", "¿Cuánto comen? Tienen %d gallo pinto. La cuenta es para 4 héroes; baja si son menos." % food)
+	for meal in CampingSystemScript.meals():
+		var cost: int = CampingSystemScript.meal_cost(meal, GameState.party)
+		_event_button("%s (%d gallo pinto): %s" % [meal.get("name", "?"), cost, CampingSystemScript.meal_summary(meal)], func():
+			if GameState.item_count("gallo_pinto") < cost:
+				_camp_meal()
+				return
+			if cost > 0:
+				GameState.remove_item("gallo_pinto", cost)
+			_log_line("%s. %s" % [meal.get("name", ""), meal.get("text", "")], "ffd27a")
+			for l in CampingSystemScript.apply_meal(meal, GameState.party):
+				_log_line(l, "cc7744")
+			_refresh_all()
+			_camp_respite_menu()
+		)
+		# The new button is the last child (old ones are only queued for deletion).
+		_event_actions.get_child(_event_actions.get_child_count() - 1).disabled = cost > food
+
+
+## Respite: every living hero's camp skills; ally skills then ask for a companion.
+func _camp_respite_menu() -> void:
+	_open_event("Fogata — respiro: %d puntos" % _camp_respite,
+		"Cada héroe puede usar cada una de sus habilidades una vez.%s Pasa el mouse por una habilidad para ver qué hace." % (
+			" Alguien hace guardia: no habrá emboscada." if _camp_watch else ""))
+	var rest := Button.new()
+	rest.text = "Dormir"
+	rest.tooltip_text = "Terminar el campamento (los puntos que sobren se pierden)."
+	rest.pressed.connect(_camp_sleep)
+	_event_actions.add_child(rest)
+	# One row per hero: name, then their 4 camp skills (cost in brackets; hover for the effect).
+	for h in CampingSystemScript.living(GameState.party):
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 4)
+		var who := Label.new()
+		who.text = str(h.get("name", "?"))
+		who.custom_minimum_size = Vector2(96, 0)
+		who.add_theme_font_size_override("font_size", 13)
+		who.add_theme_color_override("font_color", Color(0.95, 0.82, 0.55))
+		row.add_child(who)
+		for sk in CampingSystemScript.hero_skills(h):
+			var b := Button.new()
+			b.text = "%s (%d)" % [sk.get("name", "?"), int(sk.get("cost", 0))]
+			b.add_theme_font_size_override("font_size", 13)
+			b.tooltip_text = "%s — %s" % [h.get("name", "?"), sk.get("desc", "")]
+			b.disabled = not CampingSystemScript.can_use(h, sk, GameState.party, _camp_respite, _camp_used)
+			b.pressed.connect(_camp_pick.bind(h, sk))
+			row.add_child(b)
+		_event_actions.add_child(row)
+
+
+func _camp_pick(user: Dictionary, sk: Dictionary) -> void:
+	if str(sk.get("target", "")) != "ally":
+		_camp_use(user, sk, {})
+		return
+	_open_event("Fogata — %s" % sk.get("name", "?"), "%s: ¿a quién? %s" % [user.get("name", "?"), sk.get("desc", "")])
+	for h in CampingSystemScript.living(GameState.party):
+		if is_same(h, user):
+			continue
+		_event_button("%s (PV %d/%d, estrés %d)" % [h.get("name", "?"), int(h.get("hp", 0)), int(h.get("hp_max", 0)), int(h.get("stress", 0))],
+			_camp_use.bind(user, sk, h))
+	_event_button("Cancelar", _camp_respite_menu)
+
+
+func _camp_use(user: Dictionary, sk: Dictionary, ally: Dictionary) -> void:
+	if not CampingSystemScript.can_use(user, sk, GameState.party, _camp_respite, _camp_used):
+		_camp_respite_menu()
+		return
+	_camp_respite -= int(sk.get("cost", 0))
+	CampingSystemScript.mark_used(user, sk, _camp_used)
+	var res: Dictionary = CampingSystemScript.use_skill(user, sk, GameState.party, ally)
+	for l in res["logs"]:
+		_log_line(l, "ffd27a")
+	_camp_watch = _camp_watch or bool(res["prevent_ambush"])
+	_refresh_all()
+	_camp_respite_menu()
+
+
+func _camp_sleep() -> void:
+	var chance: int = CampingSystemScript.ambush_chance(GameState.mission_light,
+		int(GameState.mission_params.get("low_light_threshold", 40)), _camp_watch)
+	GameState.mission_light = 100
+	GameState.mark_node_cleared(GameState.current_node_id)
+	if randi() % 100 < chance:
+		_close_event()
+		_log_line("¡Emboscada nocturna! Algo sale de la oscuridad (%d%% de probabilidad)." % chance, "cc4444")
+		GameState.ledger_add("ambushes")
+		GameState.build_ambush_context(GameState.current_node_id)
+		_start_combat_from_context(GameState.current_node_id)
+		return
+	_resolve_event("La noche pasa tranquila. Amanece y la Luz vuelve a 100.")
 
 
 func _party_stress(delta: int) -> void:
@@ -723,6 +859,10 @@ func _damage_random_hero(amt: int) -> Dictionary:
 
 func _start_combat(node_id: String) -> void:
 	GameState.build_combat_context_for_node(node_id)
+	_start_combat_from_context(node_id)
+
+
+func _start_combat_from_context(node_id: String) -> void:
 	var ctx: Dictionary = GameState.combat_context
 	var squad: Array = ctx.get("enemies", [])
 	if squad.is_empty():
@@ -734,8 +874,9 @@ func _start_combat(node_id: String) -> void:
 	_turn_label.text = ""
 	_spawn_enemies(squad)
 	GameState.equip_locked = true
+	_combat_is_ambush = bool(ctx.get("is_ambush", false))
 	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
-		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)))
+		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush)
 
 
 func _update_turn_label() -> void:
@@ -873,11 +1014,20 @@ func _on_combat_over(victory: bool) -> void:
 		_end_expedition("defeat", "La cuadrilla ha caído. La hacienda guarda silencio.")
 		return
 	GameState.mark_node_cleared(_combat_node_id)
-	var pay: int = int(nd.get("reward_colones", 0))
-	GameState.colones += pay
-	_log_line("Botín: +%d colones." % pay, "66aa66")
-	if bool(nd.get("is_boss", false)) or _combat_node_id == GameState.objective_node_id:
-		GameState.apply_objective_rewards()
+	GameState.ledger_add("fights")
+	if _combat_is_ambush:
+		_log_line("Repelieron la emboscada. Amanece.", "66aa66")
+	else:
+		var pay: int = GameState.combat_reward(_combat_node_id)
+		GameState.colones += pay
+		GameState.ledger_add("loot_colones", pay)
+		if bool(nd.get("is_boss", false)):
+			GameState.ledger_add("bosses")
+		elif bool(nd.get("is_elite", false)):
+			GameState.ledger_add("elites")
+		_log_line("Botín: +%d colones." % pay, "66aa66")
+	if not _combat_is_ambush and (bool(nd.get("is_boss", false)) or _combat_node_id == GameState.objective_node_id):
+		GameState.complete_mission()
 		_end_expedition("objective", "%s ha caído. La corrupción del sótano retrocede… por ahora." % GameState.combat_context.get("enemies", [{}])[0].get("name", "El jefe"))
 		return
 	await get_tree().create_timer(0.6).timeout

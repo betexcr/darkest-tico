@@ -10,6 +10,8 @@ const ExpeditionLoaderScript := preload("res://scripts/domain/expedition_loader.
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const MapGeneratorScript := preload("res://scripts/domain/map_generator.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
+const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -35,7 +37,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
 const ROSTER_CAP := 8
 const PARTY_SIZE := 4
 const RECRUIT_POOL_SIZE := 3
@@ -123,6 +125,21 @@ var _curios_by_id: Dictionary = {}
 ## Rooms revealed by curios (map scouting) this mission.
 var scouted_node_ids: Array = []
 
+## Expedition difficulty picked in the hub (data/progression.json "difficulties").
+var selected_difficulty_id: String = "aprendiz"
+var mission_difficulty: Dictionary = {}
+## Camping (P3-07): firewood left this mission, rooms already camped in.
+var mission_firewood: int = 0
+var camped_node_ids: Array = []
+## What this expedition earned (victory screen): colones by source, items found, fights won.
+var mission_ledger: Dictionary = {}
+## Per hero (by uid) at mission start: mental state, to spot new Quebrantos/Virtudes.
+var mission_start_snapshot: Dictionary = {}
+## Lines from start_mission (under-leveled heroes) for the expedition log.
+var mission_start_logs: PackedStringArray = PackedStringArray()
+## Built by complete_mission(); read by the victory screen.
+var last_expedition_summary: Dictionary = {}
+
 
 func _ready() -> void:
 	_load_registries()
@@ -184,18 +201,21 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 		var c = outcome["colones"]
 		var amt_c: int = randi_range(int(c[0]), int(c[1])) if c is Array and c.size() >= 2 else int(c)
 		colones += amt_c
+		ledger_add("loot_colones", amt_c)
 		logs.append("+%d colones." % amt_c)
 	if bool(outcome.get("random_equipment", false)):
 		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)))
 		if not gear.is_empty():
 			var pick: String = str(gear[randi() % gear.size()])
 			if add_item(pick, 1) > 0:
+				ledger_item(pick, 1)
 				logs.append("Encuentran: %s." % get_item(pick).get("name", pick))
 			else:
 				logs.append("Había %s, pero no cabe en la alforja." % get_item(pick).get("name", pick))
 	var add = outcome.get("add_item", null)
 	if add is Dictionary:
 		var got: int = add_item(str(add.get("id", "")), int(add.get("qty", 1)))
+		ledger_item(str(add.get("id", "")), got)
 		if got > 0:
 			logs.append("Encuentran: %s." % get_item(str(add.get("id", ""))).get("name", ""))
 	if bool(outcome.get("reveal_neighbors", false)):
@@ -396,7 +416,10 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"dodge": int(template.get("dodge", 5)),
 		"crit": int(template.get("crit", 5)),
 		"resolve_level": int(template.get("resolve_level", 0)),
+		"resolve_xp": ResolveSystemScript.xp_for_level(int(template.get("resolve_level", 0))),
 		"skill_ids": template.get("skill_ids", []).duplicate(),
+		"camp_skill_ids": template.get("camp_skill_ids", []).duplicate(),
+		"camp_buffs": [],
 		"al_borde": false,
 		"borde_checks": 0,
 		"dead": false,
@@ -555,6 +578,10 @@ func recompute_stats(hero: Dictionary) -> void:
 	if base_res is Dictionary:
 		for k in base_res:
 			sres[k] = int(base_res[k])
+	# Resolve level (docs/01 §6): + resistances per level.
+	var lvl: int = int(hero.get("resolve_level", 0))
+	for k in ResolveSystemScript.cfg().get("resist_per_level", {}):
+		sres[k] = int(sres.get(k, 0)) + ResolveSystemScript.resist_bonus(lvl, str(k))
 	var element: String = ""
 	var scout: bool = false
 	var on_hit: Array = []
@@ -778,6 +805,8 @@ func start_mission(region_path: String = "") -> bool:
 	var path: String = region_path if region_path != "" else selected_mission_region_path
 	if living_party_count() <= 0:
 		return false
+	if not party_refusals().is_empty():
+		return false
 	var r: Dictionary = ExpeditionLoaderScript.load_region(path)
 	if r.is_empty():
 		return false
@@ -800,6 +829,12 @@ func start_mission(region_path: String = "") -> bool:
 	visited_node_ids = [current_node_id]
 	cleared_node_ids = []
 	mission_active = true
+	mission_difficulty = ResolveSystemScript.difficulty(selected_difficulty_id)
+	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1)))
+	camped_node_ids = []
+	mission_ledger = {"loot_colones": 0, "objective_colones": 0, "items": {}, "fights": 0, "elites": 0,
+		"bosses": 0, "ambushes": 0, "curios": 0, "camps": 0, "rooms": 0}
+	_prepare_party_for_mission()
 	mission_params = {
 		"light_decay": int(r.get("light_decay_per_move", 5)),
 		"low_light_threshold": int(r.get("low_light_threshold", 40)),
@@ -812,8 +847,72 @@ func start_mission(region_path: String = "") -> bool:
 	return true
 
 
+## Snapshot each hero's mental state and apply the under-level penalty (docs/01 §6).
+func _prepare_party_for_mission() -> void:
+	mission_start_snapshot.clear()
+	mission_start_logs = PackedStringArray()
+	for h in party:
+		if not h is Dictionary:
+			continue
+		h["camp_buffs"] = []
+		h["underlevel_stress_pct"] = 0
+		mission_start_snapshot[int(h.get("uid", 0))] = {
+			"affliction_id": str(h.get("affliction_id", "")),
+			"virtud_id": str(h.get("virtud_id", "")),
+			"resolve_level": int(h.get("resolve_level", 0)),
+		}
+		if h.get("dead", false):
+			continue
+		var short: int = ResolveSystemScript.underlevel(h, mission_difficulty)
+		if short > 0:
+			var st: int = ResolveSystemScript.underlevel_start_stress(short)
+			mission_start_logs.append("%s no tiene la resolución para una expedición %s: +%d estrés y %+d%% de estrés recibido." % [
+				h.get("name", "?"), str(mission_difficulty.get("name", "")), st, ResolveSystemScript.underlevel_stress_pct(short)])
+			mission_start_logs.append_array(StressSystemScript.add_stress(h, st))
+			h["underlevel_stress_pct"] = ResolveSystemScript.underlevel_stress_pct(short)
+
+
+## Heroes in the party who refuse the selected difficulty (too seasoned for it).
+func party_refusals(diff_id: String = "") -> Array:
+	var diff: Dictionary = ResolveSystemScript.difficulty(diff_id if diff_id != "" else selected_difficulty_id)
+	return party.filter(func(h): return h is Dictionary and not h.get("dead", false) and ResolveSystemScript.refuses(h, diff))
+
+
+## Heroes in the party below the selected difficulty's level (they go, with a stress penalty).
+func party_underleveled(diff_id: String = "") -> Array:
+	var diff: Dictionary = ResolveSystemScript.difficulty(diff_id if diff_id != "" else selected_difficulty_id)
+	return party.filter(func(h): return h is Dictionary and not h.get("dead", false) and ResolveSystemScript.underlevel(h, diff) > 0)
+
+
+## Victory-screen bookkeeping. kind: a counter in mission_ledger ("fights", "curios"…).
+func ledger_add(kind: String, amount: int = 1) -> void:
+	if mission_active:
+		mission_ledger[kind] = int(mission_ledger.get(kind, 0)) + amount
+
+
+func ledger_item(item_id: String, qty: int) -> void:
+	if mission_active and qty > 0:
+		var items: Dictionary = mission_ledger.get("items", {})
+		items[item_id] = int(items.get(item_id, 0)) + qty
+		mission_ledger["items"] = items
+
+
+## Colones a won fight in this room pays (room reward × difficulty).
+func combat_reward(node_id: String) -> int:
+	var nd: Dictionary = mission_nodes_index.get(node_id, {})
+	return int(round(int(nd.get("reward_colones", 0)) * float(mission_difficulty.get("reward", 1.0))))
+
+
+func can_camp_at(node_id: String) -> bool:
+	return mission_firewood > 0 and not camped_node_ids.has(node_id)
+
+
 func end_mission_abandon() -> void:
 	mission_active = false
+	for h in party:
+		if h is Dictionary:
+			h["camp_buffs"] = []
+			h["underlevel_stress_pct"] = 0
 	mission_region_data.clear()
 	mission_nodes_index.clear()
 	combat_context.clear()
@@ -922,9 +1021,12 @@ func build_combat_context_for_node(node_id: String) -> void:
 			if k == 0 and bool(nd0.get("is_elite", false)):
 				hp *= 1.25
 			hp *= squad_scale
+		hp *= float(mission_difficulty.get("enemy_hp", 1.0))
 		en["hp_max"] = maxi(int(ceil(hp)), 1)
 		en["hp"] = en["hp_max"]
 		en["dead"] = false
+		en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
+		en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
 		seen[str(en["id"])] = int(seen.get(str(en["id"]), 0)) + 1
 		squad.append(en)
 	var counts: Dictionary = {}
@@ -979,8 +1081,70 @@ func clear_combat_return_flags() -> void:
 
 
 func apply_objective_rewards() -> void:
-	var rew: int = int(mission_params.get("objective_reward", 0))
+	var rew: int = int(round(int(mission_params.get("objective_reward", 0)) * float(mission_difficulty.get("reward", 1.0))))
 	colones += rew
+	ledger_add("objective_colones", rew)
+
+
+## Objective done: pay out, give every survivor Resolve XP, build the victory summary.
+## Call before end_mission_abandon(); returns last_expedition_summary.
+func complete_mission() -> Dictionary:
+	apply_objective_rewards()
+	var xp: int = int(mission_difficulty.get("xp", 2))
+	var heroes: Array = []
+	for h in party:
+		if not h is Dictionary:
+			continue
+		var snap: Dictionary = mission_start_snapshot.get(int(h.get("uid", 0)), {})
+		var e: Dictionary = {
+			"uid": int(h.get("uid", 0)), "hero_id": str(h.get("hero_id", "")), "name": str(h.get("name", "?")),
+			"class_name": str(h.get("class_name", "")), "dead": bool(h.get("dead", false)),
+			"xp_gained": 0, "level_before": int(h.get("resolve_level", 0)), "level_after": int(h.get("resolve_level", 0)),
+			"affliction_id": str(h.get("affliction_id", "")), "virtud_id": str(h.get("virtud_id", "")),
+			"new_affliction": false, "new_virtud": false,
+		}
+		if not e["dead"]:
+			var res: Dictionary = ResolveSystemScript.grant_xp(h, xp)
+			e["xp_gained"] = xp
+			e["level_after"] = int(res["level_after"])
+			if int(res["level_after"]) != int(res["level_before"]):
+				recompute_stats(h)
+		e["new_affliction"] = e["affliction_id"] != "" and e["affliction_id"] != str(snap.get("affliction_id", ""))
+		e["new_virtud"] = e["virtud_id"] != "" and e["virtud_id"] != str(snap.get("virtud_id", ""))
+		e["resolve_xp"] = int(h.get("resolve_xp", 0))
+		e["hp"] = int(h.get("hp", 0))
+		e["hp_max"] = int(h.get("hp_max", 1))
+		e["stress"] = int(h.get("stress", 0))
+		heroes.append(e)
+	last_expedition_summary = {
+		"region_name": str(mission_region_data.get("name", "Expedición")),
+		"difficulty_name": str(mission_difficulty.get("name", "")),
+		"xp": xp,
+		"ledger": mission_ledger.duplicate(true),
+		"heroes": heroes,
+	}
+	return last_expedition_summary
+
+
+## Night ambush at a camp (doc 07 §6): 2–3 monsters from the region's pool, no payout.
+func build_ambush_context(node_id: String) -> void:
+	var gen: Dictionary = mission_region_data.get("generator", {})
+	var pool: Array = gen.get("enemy_pool", ["espanto"])
+	var cnt: Array = CampingSystemScript.data().get("ambush", {}).get("enemy_count", [2, 3])
+	var n: int = randi_range(int(cnt[0]), int(cnt[1]))
+	var ids: Array = []
+	for _k in n:
+		ids.append(str(pool[randi() % pool.size()]))
+	var nd: Dictionary = mission_nodes_index.get(node_id, {})
+	var saved: Dictionary = nd.duplicate()
+	nd["enemy_ids"] = ids
+	nd.erase("is_boss")
+	nd.erase("is_elite")
+	nd["reward_colones"] = 0
+	build_combat_context_for_node(node_id)
+	nd.clear()
+	nd.merge(saved)
+	combat_context["is_ambush"] = true
 
 
 func is_region_playable(path: String) -> bool:
@@ -994,6 +1158,8 @@ func apply_save_data(data: Dictionary) -> void:
 	colones = int(data.get("colones", colones))
 	week = int(data.get("week", week))
 	selected_mission_region_path = str(data.get("selected_mission_region_path", DEFAULT_REGION_PATH))
+	# v6: expedition difficulty.
+	selected_difficulty_id = str(ResolveSystemScript.difficulty(str(data.get("selected_difficulty_id", "aprendiz"))).get("id", "aprendiz"))
 	if not is_region_playable(selected_mission_region_path):
 		selected_mission_region_path = DEFAULT_REGION_PATH
 	# v4: inventory. Older saves keep the starter pack and convert hub purchases to items.
@@ -1063,6 +1229,13 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 		out["virtud_id"] = ""
 	if not out.get("equipment") is Dictionary:
 		out["equipment"] = {}
+	# v6: resolve XP and camp skills (older saves: XP at the floor of their level, class loadout).
+	out["resolve_level"] = clampi(int(out.get("resolve_level", 0)), 0, ResolveSystemScript.MAX_LEVEL)
+	out["resolve_xp"] = maxi(int(out.get("resolve_xp", ResolveSystemScript.xp_for_level(int(out["resolve_level"])))), 0)
+	if not out.get("camp_skill_ids") is Array or (out["camp_skill_ids"] as Array).is_empty():
+		out["camp_skill_ids"] = t.get("camp_skill_ids", []).duplicate()
+	out["camp_buffs"] = []
+	out["underlevel_stress_pct"] = 0
 	recompute_stats(out)
 	var smax: int = maxi(int(out.get("stress_max", 200)), 200)
 	out["stress_max"] = smax
@@ -1080,6 +1253,7 @@ func to_save_dict() -> Dictionary:
 		"recruit_pool": recruit_pool.duplicate(true),
 		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
+		"selected_difficulty_id": selected_difficulty_id,
 		"inventory": inventory.duplicate(true),
 	}
 

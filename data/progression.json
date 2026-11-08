@@ -1,0 +1,17 @@
+{
+  "_doc": "Hero resolve level (0-6) and expedition difficulty. Rules: scripts/domain/resolve_system.gd. Spec: docs/01-core-systems-spec.md §6.",
+  "resolve": {
+    "level_names": ["Novato", "Aprendiz", "Baquiano", "Veterano", "Maestro", "Campeón", "Leyenda"],
+    "xp_thresholds": [0, 2, 8, 14, 24, 36, 48],
+    "_resist_doc": "Status resistance points (%) gained per resolve level (resist_categories in statuses.json).",
+    "resist_per_level": { "aturdido": 10, "veneno": 10, "sangrado": 10, "salado": 10, "trampa": 5 },
+    "underlevel_start_stress": 20,
+    "underlevel_stress_pct": 25
+  },
+  "_difficulty_doc": "level = expedition level shown to the player. Heroes above max_level refuse to go; heroes below min_level are under-leveled (start stress + extra stress taken per level short). xp = Resolve XP each survivor earns on a completed expedition. enemy_* and reward scale fights and payouts.",
+  "difficulties": [
+    { "id": "aprendiz", "name": "Aprendiz", "level": 1, "min_level": 0, "max_level": 2, "xp": 4, "enemy_hp": 1.0, "enemy_dmg": 1.0, "enemy_accuracy": 0, "reward": 1.0 },
+    { "id": "veterano", "name": "Veterano", "level": 3, "min_level": 3, "max_level": 4, "xp": 8, "enemy_hp": 1.3, "enemy_dmg": 1.25, "enemy_accuracy": 3, "reward": 1.6 },
+    { "id": "campeon", "name": "Campeón", "level": 5, "min_level": 5, "max_level": 6, "xp": 16, "enemy_hp": 1.6, "enemy_dmg": 1.5, "enemy_accuracy": 6, "reward": 2.5 }
+  ]
+}

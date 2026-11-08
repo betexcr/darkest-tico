@@ -62,18 +62,27 @@ func _run() -> void:
 		var max_squad: int = 1
 		var picks: int = 0
 		var info_opened: bool = false
+		# Walk through the camp room first (camping + respite UI), then to the boss.
+		var camp_id: String = ""
+		for nid in gs.mission_nodes_index:
+			if str(gs.mission_nodes_index[nid].get("type", "")) == "camp":
+				camp_id = str(nid)
+				break
 		while _finished == "" and steps < MAX_STEPS:
 			steps += 1
 			await process_frame
 			match int(screen._mode):
 				0:  # EXPLORE
-					var path: Array = _path(gs, loader, gs.current_node_id, gs.objective_node_id)
+					var goal: String = gs.objective_node_id
+					if camp_id != "" and gs.camped_node_ids.is_empty() and gs.current_node_id != camp_id:
+						goal = camp_id
+					var path: Array = _path(gs, loader, gs.current_node_id, goal)
 					if path.size() >= 2:
 						screen._on_room_clicked(str(path[1]))
 						rooms_moved += 1
-				1, 3:  # EVENT, ENDED: take the first option
-					var actions = screen._event_actions.get_children()
-					if not actions.is_empty() and not actions[0].disabled:
+				1, 3:  # EVENT, ENDED: take the first option that can be used
+					var actions = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion() and not b.disabled)
+					if not actions.is_empty():
 						actions[0].pressed.emit()
 				2:  # COMBAT
 					var hero: Dictionary = screen._combat.active_hero()
@@ -102,6 +111,13 @@ func _run() -> void:
 								screen._on_unit_clicked(opts[opts.size() - 1])
 		_check(_finished != "", "expedition ended (%s) after %d moves, %d hero turns, %d guards" % [_finished, rooms_moved, hero_turns, guards])
 		_check(_finished in ["objective", "defeat"], "ended by boss victory or defeat")
+		if camp_id != "":
+			_check(int(gs.mission_ledger.get("camps", 0)) == 1 or _finished == "defeat", "camped once (%d ambush)" % int(gs.mission_ledger.get("ambushes", 0)))
+		if _finished == "objective":
+			var sm: Dictionary = gs.last_expedition_summary
+			var survivors: Array = sm.get("heroes", []).filter(func(e): return not e["dead"])
+			_check(not survivors.is_empty() and survivors.all(func(e): return int(e["xp_gained"]) > 0), "victory summary: every survivor earned Resolve XP")
+			gs.last_expedition_summary = {}
 		_check(max_squad > 1, "fought a squad of up to %d enemies" % max_squad)
 		_check(picks > 0, "chose targets after pressing a skill %d times" % picks)
 		if run == 0:

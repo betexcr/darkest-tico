@@ -163,6 +163,26 @@
       "stress_pct": 10
     }
   },
+  "_mental_doc": "Stat changes from a hero's Quebranto (affliction_id) or Virtud (virtud_id), same keys as state_mods plus 'deathblow' (+/- points on the Al Borde survival %). Behaviour hooks (skip turn, friendly fire, etc.) live in scripts/domain/stress_system.gd.",
+  "mental_mods": {
+    "nervios": {
+      "accuracy": -5,
+      "crit": -5
+    },
+    "fatalismo": {
+      "deathblow": -15
+    },
+    "punteria": {
+      "accuracy": 5,
+      "crit": 5
+    },
+    "valentia": {
+      "dmg_pct": 15
+    },
+    "firmeza": {
+      "deathblow": 8
+    }
+  },
   "encarrerado_mods": {
     "dmg_pct": 15,
     "crit": 5

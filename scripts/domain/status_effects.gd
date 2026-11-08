@@ -157,6 +157,7 @@ static func resist_value(unit: Dictionary, id: String) -> int:
 static func deathblow_chance(unit: Dictionary) -> float:
 	var table = unit.get("status_resist", {})
 	var v: int = int(table.get("golpe_de_gracia", 67)) if table is Dictionary else 67
+	v += mental_mod(unit, "deathblow")
 	return clampi(v, 0, int(data().get("deathblow_cap", 87))) / 100.0
 
 
@@ -232,7 +233,8 @@ static func remove(unit: Dictionary, status: String) -> bool:
 	return false
 
 
-## Sum of one stat's changes from salado/chiva/encarrerado stacks and the Al Borde / Convaleciente states.
+## Sum of one stat's changes from salado/chiva/encarrerado stacks, the Al Borde / Convaleciente
+## states, the hero's Quebranto/Virtud ("mental_mods") and camp buffs (hero["camp_buffs"]).
 ## Stats: accuracy, dodge, speed, crit, prot, dmg_pct, stress_pct.
 static func stat(unit: Dictionary, key: String) -> int:
 	var n: int = 0
@@ -248,6 +250,21 @@ static func stat(unit: Dictionary, key: String) -> int:
 		n += int(sm.get("al_borde", {}).get(key, 0))
 	elif bool(unit.get("convaleciente", false)):
 		n += int(sm.get("convaleciente", {}).get(key, 0))
+	n += mental_mod(unit, key)
+	for b in unit.get("camp_buffs", []):
+		if b is Dictionary and b.get("mods", null) is Dictionary:
+			n += int(b["mods"].get(key, 0))
+	return n
+
+
+## Stat change from the hero's Quebranto (affliction_id) and Virtud (virtud_id).
+static func mental_mod(unit: Dictionary, key: String) -> int:
+	var mm: Dictionary = data().get("mental_mods", {})
+	var n: int = 0
+	for f in ["affliction_id", "virtud_id"]:
+		var id: String = str(unit.get(f, ""))
+		if id != "" and mm.get(id, null) is Dictionary:
+			n += int(mm[id].get(key, 0))
 	return n
 
 
