@@ -1,8 +1,8 @@
 {
   "id": "sprite_abuela_attack",
-  "prompt": "elderly grandmother, wrinkled face, black hooded shawl over her head, long dark robe, prayer beads, side view, violent lunge, both hands raising a wooden ladle and clay bowl forward, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "prompt": "elderly grandmother, wrinkled face, black hooded shawl over her head, long dark robe, prayer beads, facing left, violent lunge, right arm raising a wooden ladle and clay bowl toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
   "negative_prompt": "dancing, walking, calm, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5330,
+  "seed": 5521,
   "sheet_seed": 5020,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -18,5 +18,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T07:18:56+00:00"
+  "timestamp": "2026-11-08T19:04:57+00:00"
 }
