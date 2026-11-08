@@ -257,7 +257,7 @@ def draw_weapon(cfg: dict, c: dict, sid: str, size):
     return im
 
 
-def sprite_reference(cid: str, sid: str = "idle"):
+def sprite_reference(cid: str, sid: str = "idle", crop: float = 1.0):
     """The character's own finished sprite (e.g. idle), padded to a square on grey, as an
     IP-Adapter reference. The portrait is a close-up: redrawing a full-body pose from it
     smears big features (a wide hat brim) across the figure. None if the sprite is missing."""
@@ -267,6 +267,8 @@ def sprite_reference(cid: str, sid: str = "idle"):
     if not p.exists():
         return None
     im = Image.open(p).convert("RGBA")
+    if crop < 1.0:  # keep only the top part (e.g. drop a weapon hanging at the side)
+        im = im.crop((0, 0, im.width, int(im.height * crop)))
     side = max(im.size)
     sq = Image.new("RGBA", (side, side), (128, 128, 128, 255))
     sq.alpha_composite(im, ((side - im.width) // 2, (side - im.height) // 2))
@@ -341,7 +343,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         ref_scale = c.get("redo_ref_scale", {}).get(sid)
         ref_from = c.get("redo_reference", cfg["sheet"].get("redo_reference", "portrait"))
         if ref_kw and ref_from != "portrait":
-            own = sprite_reference(c["id"], ref_from)
+            own = sprite_reference(c["id"], ref_from, float(c.get("redo_reference_crop", 1.0)))
             if own is not None:
                 ref_kw = {"ip_adapter_image": own}
         if ref_kw and ref_scale is not None:

@@ -2235,13 +2235,14 @@
           "length": 0.36
         },
         "redo_seeds": {
-          "attack": 5102
+          "attack": 5104
         },
         "redo_reference": "idle",
         "redo_poses": {
           "attack": "lunging right, head in profile facing right, both hands thrusting {weapon} at the enemy"
         },
-        "negative_extra": "two weapons, dual wielding, second machete"
+        "negative_extra": "two weapons, dual wielding, second machete",
+        "redo_reference_crop": 0.5
       },
       {
         "id": "montador",
