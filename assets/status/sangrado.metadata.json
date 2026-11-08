@@ -1,18 +1,7 @@
 {
   "id": "status_sangrado",
-  "prompt": "dark fantasy painting, a single large glossy drop of dark red blood dripping, isolated symbol, centered, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
-  "negative_prompt": "candle, candles, fire, flame, table, scenery, text, letters, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6401,
-  "steps": 25,
-  "cfg_scale": 7.0,
-  "sampler": "DPM++ 2M Karras",
-  "resolution": "512x512",
-  "output_resolution": "64x64",
-  "post": {
-    "brightness": 1.4,
-    "contrast": 1.15
-  },
-  "model": "Lykon/dreamshaper-8",
-  "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-08T20:06:26+00:00"
+  "generator": "tools/sprite_edits/status_sangrado_drop.py (hand-painted with PIL, no model)",
+  "note": "Stable Diffusion attempts (seeds 6401-6406) produced spheres, faces and buildings; owner asked for a big drop of blood.",
+  "resolution": "512x512 drawn, downsampled to 64x64",
+  "timestamp": "2026-11-08T21:05:46+00:00"
 }

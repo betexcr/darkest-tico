@@ -1686,7 +1686,8 @@
       "seed": 6404,
       "subject": "one big drop of dark red blood, teardrop shape, glossy, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
-      "negative_extra": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters"
+      "negative_extra": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters",
+      "_note": "Hand-painted: python tools/sprite_edits/status_sangrado_drop.py (SD kept drawing spheres/scenery). Do not regenerate with sd_local."
     },
     {
       "id": "status_veneno",

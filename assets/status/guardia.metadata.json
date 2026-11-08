@@ -1,8 +1,8 @@
 {
   "id": "status_guardia",
-  "prompt": "dark fantasy painting, an old battered wooden round shield with iron rim, front view, isolated object, centered, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game status icon",
-  "negative_prompt": "candle, candles, fire, flame, table, scenery, text, letters, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6431,
+  "prompt": "dark fantasy painting, one old wooden shield with iron rim, no person, plain black background, simple bold painted game icon, single object, centered, dark muted colors, painterly",
+  "negative_prompt": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6434,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-08T20:12:54+00:00"
+  "timestamp": "2026-11-08T21:00:30+00:00"
 }
