@@ -1,8 +1,8 @@
 {
   "id": "sprite_campesino_attack",
-  "prompt": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers, side view, violent lunge, both hands raising a long steel machete forward, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "prompt": "Costa Rican farm worker, long dark hair, mustache, frayed straw hat, dark olive button-up work shirt, dark trousers, facing left, violent lunge, right arm raising a long steel machete toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
   "negative_prompt": "dancing, walking, calm, second machete, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5320,
+  "seed": 5501,
   "sheet_seed": 5001,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -18,6 +18,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T07:10:49+00:00",
-  "post": "by hand after generation: a stray second straw hat behind his back erased (hat-shaped mask, shirt texture cloned over the brim line, specks removed)"
+  "timestamp": "2026-11-08T18:54:55+00:00"
 }
