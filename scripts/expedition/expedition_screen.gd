@@ -195,8 +195,8 @@ func _hide_enemy_info() -> void:
 
 ## The info panel opens on the side away from the clicked unit (party right, enemies left).
 func _place_info_panel(on_left: bool) -> void:
-	_enemy_info.offset_top = 44.0
-	_enemy_info.offset_bottom = 446.0
+	_enemy_info.offset_top = 36.0
+	_enemy_info.offset_bottom = 462.0
 	_enemy_info.anchor_left = 0.0 if on_left else 1.0
 	_enemy_info.anchor_right = 0.0 if on_left else 1.0
 	_enemy_info.offset_left = 12.0 if on_left else -342.0
