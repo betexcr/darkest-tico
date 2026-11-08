@@ -18,5 +18,6 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T06:39:48+00:00"
+  "timestamp": "2026-11-08T06:39:48+00:00",
+  "post": "by hand after generation: a second baton in the low (left) hand erased"
 }
