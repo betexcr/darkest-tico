@@ -101,18 +101,6 @@ show_percentage = false
 
 [node name="HeroRow" type="HBoxContainer" parent="Stage"]
 layout_mode = 1
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 44.0
-offset_right = -24.0
-offset_bottom = -30.0
-grow_vertical = 2
-theme_override_constants/separation = 6
-alignment = 2
-
-[node name="EnemyRow" type="HBoxContainer" parent="Stage"]
-layout_mode = 1
 anchor_left = 0.5
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -123,6 +111,18 @@ offset_bottom = -30.0
 grow_horizontal = 0
 grow_vertical = 2
 theme_override_constants/separation = 6
+
+[node name="EnemyRow" type="HBoxContainer" parent="Stage"]
+layout_mode = 1
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 44.0
+offset_right = -24.0
+offset_bottom = -30.0
+grow_vertical = 2
+theme_override_constants/separation = 6
+alignment = 2
 
 [node name="Narration" type="Label" parent="Stage"]
 layout_mode = 1

@@ -103,18 +103,19 @@ func _unhandled_input(event: InputEvent) -> void:
 # --- Stage ------------------------------------------------------------------------
 
 func _build_party() -> void:
-	# Party order = ranks 1..4; rank 1 stands nearest the middle, so add rank 4 first.
+	# Party order = ranks 1..4. The party stands on the RIGHT half facing left (owner 2026-11-08:
+	# attack sprites face left so the weapon is in the right arm); rank 1 nearest the middle = first child.
 	for h in GameState.party:
 		var u = BattleUnitScript.new()
 		u.setup(h, true, "res://assets/portraits/%s.png" % str(h.get("hero_id", "")))
 		u.clicked.connect(_on_unit_clicked)
 		u.equipment_dropped.connect(_on_equipment_changed)
 		_hero_units.append(u)
-	for k in range(_hero_units.size() - 1, -1, -1):
-		_hero_row.add_child(_hero_units[k])
+	for u in _hero_units:
+		_hero_row.add_child(u)
 
 
-## Squad order = ranks 1..4, rank 1 nearest the middle (first child of EnemyRow).
+## Squad order = ranks 1..4. Enemies stand on the LEFT half; rank 1 nearest the middle (last child of EnemyRow).
 func _spawn_enemies(squad: Array) -> void:
 	_clear_enemies()
 	for enemy in squad:
@@ -122,7 +123,8 @@ func _spawn_enemies(squad: Array) -> void:
 		u.setup(enemy, false, "res://assets/enemies/%s.png" % str(enemy.get("id", "")))
 		u.clicked.connect(_on_unit_clicked)
 		_enemy_units.append(u)
-		_enemy_row.add_child(u)
+	for k in range(_enemy_units.size() - 1, -1, -1):
+		_enemy_row.add_child(_enemy_units[k])
 
 
 func _clear_enemies() -> void:

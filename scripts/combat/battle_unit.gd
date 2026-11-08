@@ -35,7 +35,8 @@ var _dir: float = 1.0
 func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	data = unit_data
 	is_hero = hero
-	_dir = 1.0 if hero else -1.0
+	# Party on the right facing left, enemies on the left facing right: lunges go toward the middle.
+	_dir = -1.0 if hero else 1.0
 	alignment = BoxContainer.ALIGNMENT_END
 	custom_minimum_size = Vector2(SPRITE_SIZE.x, 0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -66,7 +67,8 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_sprite.pivot_offset = Vector2(SPRITE_SIZE.x / 2.0, SPRITE_SIZE.y)
-	# Sprites are generated facing right; enemies face the party.
+	# Sprites are generated facing LEFT (hero attack poses: weapon in the right arm toward the
+	# enemy); enemies are mirrored so they face the party on the right.
 	_sprite.flip_h = not hero
 	_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_holder.add_child(_sprite)
