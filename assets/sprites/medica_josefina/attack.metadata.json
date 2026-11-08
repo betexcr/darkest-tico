@@ -1,8 +1,8 @@
 {
   "id": "sprite_medica_josefina_attack",
-  "prompt": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black skirt, black leggings covering the legs, flat boots, lunging right, head in profile facing right, stabbing a syringe at the enemy, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "shorts, bare legs, bare thighs, high heels, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5121,
+  "prompt": "stern woman doctor, dark hair in a bun, white nurse cap, white doctor's coat, black leggings, flat boots, facing left, violent lunge, right arm raising a syringe toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, bare legs, high heels, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5550,
   "sheet_seed": 5051,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -18,5 +18,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-08T03:00:30+00:00"
+  "timestamp": "2026-11-08T19:38:45+00:00"
 }
