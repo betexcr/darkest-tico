@@ -39,5 +39,6 @@ static func resolve_attack_damage(raw: int, crit: bool) -> int:
 	return raw
 
 
-static func roll_death_save() -> bool:
-	return randf() < DEATH_SAVE_BASE
+## Chance 0-1 to survive a hit while Al Borde (hero status_resist "golpe_de_gracia" %, capped).
+static func roll_death_save(chance: float = DEATH_SAVE_BASE) -> bool:
+	return randf() < chance

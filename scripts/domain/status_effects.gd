@@ -138,6 +138,28 @@ static func resist_chance(unit: Dictionary, status: String) -> int:
 	return clampi(r, 0, 100)
 
 
+## Resistance categories shown in the UI: [{id, name, icon, heroes_only}].
+static func resist_categories() -> Array:
+	return data().get("resist_categories", [])
+
+
+## Resistance in % for one category, as the UI shows it (immunity = 100).
+static func resist_value(unit: Dictionary, id: String) -> int:
+	if unit.get("immune", []).has(id):
+		return 100
+	if id == "golpe_de_gracia":
+		return int(round(deathblow_chance(unit) * 100))
+	var table = unit.get("status_resist", {})
+	return int(table.get(id, 0)) if table is Dictionary else 0
+
+
+## Chance 0-1 that a hero survives a hit while Al Borde.
+static func deathblow_chance(unit: Dictionary) -> float:
+	var table = unit.get("status_resist", {})
+	var v: int = int(table.get("golpe_de_gracia", 67)) if table is Dictionary else 67
+	return clampi(v, 0, int(data().get("deathblow_cap", 87))) / 100.0
+
+
 ## Applies one status. Returns a log line ("" if nothing happened).
 ## opts: "mods" (stat deltas for salado/chiva), "by_uid" (guardian for cuidado), "crit" (DoTs last 5),
 ## "ignore_resist" (bool).

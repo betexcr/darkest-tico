@@ -409,6 +409,7 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"element": "",
 		"resist": {},
 		"immune": [],
+		"status_resist": template.get("status_resist", {}).duplicate(),
 	}
 
 
@@ -431,8 +432,23 @@ func item_tooltip(item_id: String) -> String:
 	for e in it.get("resist", {}):
 		var m: float = float(it["resist"][e])
 		parts.append("%s %s" % ["Inmune a" if m == 0.0 else "Resiste", ELEMENT_NAMES.get(str(e), e)])
+	var SE = load("res://scripts/domain/status_effects.gd")
 	for st in it.get("immune", []):
-		parts.append("Inmune: %s" % str(st))
+		parts.append("Inmune: %s" % SE.display_name(str(st)))
+	var cats: Dictionary = {}
+	for c in SE.resist_categories():
+		cats[str(c["id"])] = str(c["name"])
+	for k in it.get("status_resist", {}):
+		parts.append("Resist. %s %+d%%" % [cats.get(k, k), int(it["status_resist"][k])])
+	var oh = it.get("on_hit", null)
+	if oh is Dictionary:
+		parts.append("Al golpear: %d%% %s" % [int(round(float(oh.get("chance", 1.0)) * 100)), SE.display_name(str(oh.get("status", ""))).to_lower()])
+	var ss = it.get("start_status", null)
+	if ss is Dictionary:
+		parts.append("Empieza cada pelea: %s" % SE.display_name(str(ss.get("status", ""))).to_lower())
+	var ap = it.get("effects", {}).get("applies", null)
+	if ap is Dictionary and str(it.get("target", "")) != "enemy":
+		parts.append("Deja %s" % SE.display_name(str(ap.get("status", ""))).to_lower())
 	if not parts.is_empty():
 		lines.append(" · ".join(parts))
 	var where: String = {
@@ -525,8 +541,16 @@ func recompute_stats(hero: Dictionary) -> void:
 	}
 	var resist: Dictionary = {}
 	var immune: Array = []
+	# Status resistances in % (data/statuses.json resist_categories): class base + equipment.
+	var sres: Dictionary = {}
+	var base_res = t.get("status_resist", {})
+	if base_res is Dictionary:
+		for k in base_res:
+			sres[k] = int(base_res[k])
 	var element: String = ""
 	var scout: bool = false
+	var on_hit: Array = []
+	var start_status: Array = []
 	var eq = hero.get("equipment", {})
 	if eq is Dictionary:
 		for slot in eq:
@@ -538,8 +562,14 @@ func recompute_stats(hero: Dictionary) -> void:
 			for st in item.get("immune", []):
 				if not immune.has(st):
 					immune.append(st)
+			for k in item.get("status_resist", {}):
+				sres[k] = int(sres.get(k, 0)) + int(item["status_resist"][k])
 			if str(slot) == "weapon":
 				element = str(item.get("element", ""))
+				if item.get("on_hit", null) is Dictionary:
+					on_hit.append(item["on_hit"])
+			if item.get("start_status", null) is Dictionary:
+				start_status.append(item["start_status"])
 			if bool(item.get("scout", false)):
 				scout = true
 	for k in ["accuracy", "crit", "dodge", "speed", "hp_max"]:
@@ -552,6 +582,11 @@ func recompute_stats(hero: Dictionary) -> void:
 	hero["element"] = element
 	hero["resist"] = resist
 	hero["immune"] = immune
+	for k in sres:
+		sres[k] = clampi(int(sres[k]), 0, 95)
+	hero["status_resist"] = sres
+	hero["on_hit"] = on_hit
+	hero["start_status"] = start_status
 	hero["scout"] = scout
 
 

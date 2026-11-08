@@ -7,6 +7,7 @@ extends Control
 
 signal expedition_finished(reason: String)
 
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
@@ -58,6 +59,7 @@ var _pending: Dictionary = {}
 var _equip_slots: Array = []
 ## Enemy shown in the info panel (click an enemy outside target-picking).
 var _inspected: Dictionary = {}
+var _inspected_is_hero: bool = false
 
 
 func _ready() -> void:
@@ -141,6 +143,7 @@ func _on_unit_clicked(unit) -> void:
 		return
 	if unit.is_hero:
 		_view_hero(unit.data)
+		_show_hero_info(unit.data)
 	else:
 		_show_enemy_info(unit.data)
 
@@ -162,7 +165,10 @@ func _refresh_all() -> void:
 	_refresh_inventory()
 	_map_view.refresh()
 	if _enemy_info.visible:
-		_show_enemy_info(_inspected)
+		if _inspected_is_hero:
+			_show_hero_info(_inspected)
+		else:
+			_show_enemy_info(_inspected)
 
 
 # --- Enemy info (click an enemy): health %, or everything with the Lentes del abuelo --
@@ -172,12 +178,25 @@ func _hide_enemy_info() -> void:
 	_inspected = {}
 
 
+## The info panel opens on the side away from the clicked unit (party right, enemies left).
+func _place_info_panel(on_left: bool) -> void:
+	_enemy_info.offset_top = 44.0
+	_enemy_info.offset_bottom = 446.0
+	_enemy_info.anchor_left = 0.0 if on_left else 1.0
+	_enemy_info.anchor_right = 0.0 if on_left else 1.0
+	_enemy_info.offset_left = 12.0 if on_left else -342.0
+	_enemy_info.offset_right = 342.0 if on_left else -12.0
+	_enemy_info.grow_horizontal = Control.GROW_DIRECTION_END if on_left else Control.GROW_DIRECTION_BEGIN
+
+
 func _show_enemy_info(e: Dictionary) -> void:
 	if e.is_empty():
 		_hide_enemy_info()
 		return
 	_inspected = e
+	_inspected_is_hero = false
 	_enemy_info.visible = true
+	_place_info_panel(false)
 	var hp: int = int(e.get("hp", 0))
 	var hp_max: int = maxi(int(e.get("hp_max", 1)), 1)
 	var pct: int = int(round(100.0 * hp / hp_max))
@@ -193,15 +212,119 @@ func _show_enemy_info(e: Dictionary) -> void:
 	else:
 		lines.append("PV [b]%d/%d[/b] (%d%%) · Vel %d · Esq %d · Prec %d" % [
 			hp, hp_max, pct, int(e.get("speed", 0)), int(e.get("dodge", 0)), int(e.get("accuracy", 0))])
-		var st: PackedStringArray = load("res://scripts/domain/status_effects.gd").labels(e)
-		if not st.is_empty():
-			lines.append("Estado: " + ", ".join(st))
 		lines.append("[color=#e8d7a8]Ataques[/color]")
 		for sk in e.get("skills", []):
 			lines.append("• [b]%s[/b] — %s" % [sk.get("name", "?"), _enemy_skill_summary(sk)])
 		lines.append("[color=#e8d7a8]Afinidades[/color]")
 		lines.append(_affinity_summary(e.get("elements", {})))
+	if not bool(e.get("dead", false)):
+		lines.append(_effects_bbcode(e))
+		if GameState.party_can_scout():
+			lines.append(_resist_bbcode(e, false))
+		else:
+			lines.append("[color=#e8d7a8]Resistencias[/color]\n[color=#999999]Con los Lentes del abuelo verías sus resistencias.[/color]")
 	_enemy_info_body.text = "\n".join(lines)
+
+
+## Hero view in the same panel: health, stats, active effects and resistances.
+func _show_hero_info(h: Dictionary) -> void:
+	if h.is_empty():
+		_hide_enemy_info()
+		return
+	_inspected = h
+	_inspected_is_hero = true
+	_enemy_info.visible = true
+	_place_info_panel(true)
+	var hp: int = int(h.get("hp", 0))
+	var hp_max: int = maxi(int(h.get("hp_max", 1)), 1)
+	_enemy_info_name.text = "%s — %s" % [h.get("name", "?"), h.get("class_name", "")]
+	_enemy_info_health.max_value = 100
+	_enemy_info_health.value = int(round(100.0 * hp / hp_max))
+	var lines: PackedStringArray = PackedStringArray()
+	lines.append("PV [b]%d/%d[/b] · Estrés [b]%d[/b]/200" % [hp, hp_max, int(h.get("stress", 0))])
+	var se = StatusEffectsScript
+	lines.append("Prec %d · Esq %d · Vel %d · Crít %d%% · Prot %d%%" % [
+		int(h.get("accuracy", 0)) + se.stat(h, "accuracy"), int(h.get("dodge", 0)) + se.stat(h, "dodge"),
+		int(h.get("speed", 0)) + se.stat(h, "speed"), int(h.get("crit", 0)) + se.stat(h, "crit"),
+		clampi(int(h.get("prot", 0)) + se.stat(h, "prot"), 0, 80)])
+	if bool(h.get("dead", false)):
+		lines.append("Caído.")
+	else:
+		lines.append(_effects_bbcode(h))
+		lines.append(_resist_bbcode(h, true))
+	_enemy_info_body.text = "\n".join(lines)
+
+
+## Icon for a status id as bbcode: the art if it exists, else a coloured letter badge.
+func _status_icon_bb(id: String) -> String:
+	var file: String = {"cuidando": "guardia"}.get(id, id)
+	var path := "res://assets/status/%s.png" % file
+	if ResourceLoader.exists(path):
+		return "[img=18x18]%s[/img]" % path
+	var d: Dictionary = StatusEffectsScript.def(id)
+	return "[bgcolor=%s][color=#ffffff] %s [/color][/bgcolor]" % [str(d.get("color", "#777777")), str(d.get("letter", "?"))]
+
+
+## Active buffs/debuffs: one line each with icon, name, turns/stacks and what it does.
+func _effects_bbcode(u: Dictionary) -> String:
+	var out: PackedStringArray = PackedStringArray(["[color=#e8d7a8]Efectos[/color]"])
+	var list: Array = StatusEffectsScript.entries(u)
+	if list.is_empty():
+		out.append("[color=#999999]Ninguno.[/color]")
+	for e in list:
+		var id: String = str(e["id"])
+		var d: Dictionary = StatusEffectsScript.def(id)
+		var extra: PackedStringArray = PackedStringArray()
+		match id:
+			"sangrado", "veneno":
+				extra.append("%d PV/turno" % int(e["value"]))
+			"sobado":
+				extra.append("+%d PV/turno" % int(e["value"]))
+			"susto":
+				extra.append("+%d estrés/turno" % int(e["value"]))
+			"santiguado":
+				extra.append("%d golpe%s" % [int(e["value"]), "" if int(e["value"]) == 1 else "s"])
+		if int(e["stacks"]) > 1:
+			extra.append("×%d" % int(e["stacks"]))
+		if int(e["turns"]) > 0 and int(e["turns"]) < 90:
+			extra.append("%d turno%s" % [int(e["turns"]), "" if int(e["turns"]) == 1 else "s"])
+		var mods: String = _mods_text(u, id)
+		var col: String = "#ff8a7a" if StatusEffectsScript.is_negative(id) else "#9fd4ff"
+		# Hover the name for the full description.
+		out.append("%s [hint=%s][color=%s][b]%s[/b][/color][/hint]%s %s" % [
+			_status_icon_bb(id), str(d.get("description", "")).replace("]", ")"), col, str(d.get("name", id)),
+			(" [color=#bbbbbb](" + ", ".join(extra) + ")[/color]") if not extra.is_empty() else "", mods])
+	return "\n".join(out)
+
+
+## Stat changes of a salado/chiva effect, e.g. "[Prec -5, Daño -15%]".
+func _mods_text(u: Dictionary, id: String) -> String:
+	if not id in ["salado", "chiva"]:
+		return ""
+	var tot: Dictionary = {}
+	for s in u["statuses"][id]["stacks"]:
+		for k in s.get("mods", {}):
+			tot[k] = int(tot.get(k, 0)) + int(s["mods"][k])
+	var names := {"accuracy": "Prec", "dodge": "Esq", "speed": "Vel", "crit": "Crít", "prot": "Prot", "dmg_pct": "Daño", "stress_pct": "Estrés"}
+	var parts: PackedStringArray = PackedStringArray()
+	for k in tot:
+		var pct: String = "%" if k in ["dmg_pct", "stress_pct", "prot", "crit"] else ""
+		parts.append("%s %+d%s" % [names.get(k, k), int(tot[k]), pct])
+	return "[" + ", ".join(parts) + "] " if not parts.is_empty() else ""
+
+
+## Resistances as a two-column % table (Darkest Dungeon style).
+func _resist_bbcode(u: Dictionary, hero: bool) -> String:
+	var cats: Array = StatusEffectsScript.resist_categories().filter(func(c): return hero or not bool(c.get("heroes_only", false)))
+	var t: String = "[color=#e8d7a8]Resistencias[/color]\n[table=6]"
+	for c in cats:
+		var v: int = StatusEffectsScript.resist_value(u, str(c["id"]))
+		var col: String = "#ffffff" if v < 100 else "#88aaff"
+		t += "[cell]%s[/cell][cell] %s [/cell][cell][color=%s]%s[/color]   [/cell]" % [
+			_status_icon_bb(str(c.get("icon", c["id"]))), str(c["name"]), col, ("Inmune" if v >= 100 else "%d%%" % v)]
+	if cats.size() % 2 == 1:
+		t += "[cell][/cell][cell][/cell][cell][/cell]"
+	return t + "[/table]"
 
 
 func _enemy_skill_summary(sk: Dictionary) -> String:
@@ -218,9 +341,13 @@ func _enemy_skill_summary(sk: Dictionary) -> String:
 		parts.append("a toda la cuadrilla")
 	if int(sk.get("stress", 0)) > 0:
 		parts.append("+%d estrés" % int(sk["stress"]))
-	var ap = sk.get("applies", null)
-	if ap is Dictionary:
-		parts.append("%d%% %s" % [int(float(ap.get("chance", 0)) * 100), str(ap.get("status", ""))])
+	for ap in _applies_of(sk.get("applies", null)):
+		var c: int = int(round(float(ap.get("chance", 1.0)) * 100))
+		parts.append(("%d%% " % c if c < 100 else "") + StatusEffectsScript.display_name(str(ap.get("status", ""))).to_lower())
+	for ap in _applies_of(sk.get("self_applies", null)):
+		parts.append("se vuelve " + StatusEffectsScript.display_name(str(ap.get("status", ""))).to_lower())
+	if int(sk.get("vs_marked_pct", 0)) > 0:
+		parts.append("+%d%% a fichados" % int(sk["vs_marked_pct"]))
 	if bool(sk.get("ignores_guard", false)):
 		parts.append("ignora la guardia")
 	if int(sk.get("light", 0)) != 0:
@@ -230,6 +357,12 @@ func _enemy_skill_summary(sk: Dictionary) -> String:
 	if bool(sk.get("basic", false)):
 		parts.append("ataque básico")
 	return ", ".join(parts)
+
+
+func _applies_of(v) -> Array:
+	if v is Dictionary:
+		return [v]
+	return v if v is Array else []
 
 
 func _affinity_summary(els) -> String:
@@ -472,17 +605,31 @@ func _resolve_event(text: String) -> void:
 	_refresh_all()
 
 
+## Best "trampa" resistance in the living party (%): the one who spots it guides the rest.
+func _trap_sense() -> int:
+	var best: int = 0
+	for h in GameState.party:
+		if h is Dictionary and not h.get("dead", false):
+			best = maxi(best, StatusEffectsScript.resist_value(h, "trampa"))
+	return best
+
+
 func _open_trap() -> void:
 	_open_event("Trampa", "%s. Elige cómo pasar." % GameState.current_node().get("label", "Algo cruje"))
+	var sense: int = _trap_sense()
 	_event_button("Con cuidado", func():
-		if randf() < 0.25:
+		if randi() % 100 < sense:
+			_resolve_event("Alguien vio la trampa a tiempo (Trampas %d%%). Pasaron sin incidentes." % sense)
+		elif randf() < 0.25:
 			_party_stress(5)
 			_resolve_event("Aun así resbalaron. +5 estrés a la cuadrilla.")
 		else:
 			_resolve_event("Pasaron sin incidentes.")
 	)
 	_event_button("A la rápida", func():
-		if randf() < 0.45:
+		if randi() % 100 < sense / 2:
+			_resolve_event("Saltaron la trampa sin pensarlo (Trampas %d%%)." % sense)
+		elif randf() < 0.45:
 			var who: Dictionary = _damage_random_hero(4)
 			_resolve_event("¡Caída! %s pierde 4 PV." % who.get("name", "Alguien"))
 		else:

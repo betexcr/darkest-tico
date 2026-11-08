@@ -3,49 +3,213 @@
   "default_turns": 3,
   "crit_dot_turns": 5,
   "statuses": {
-    "sangrado": {"name": "Sangrado", "kind": "negative", "stacks": true, "color": "#b81a1a", "letter": "S",
-      "description": "Pierde PV al inicio de cada turno; atraviesa la protección. Se cura con venda."},
-    "veneno": {"name": "Envenenado", "kind": "negative", "stacks": true, "color": "#58a632", "letter": "V",
-      "description": "Pierde PV al inicio de cada turno; atraviesa la protección. Se cura con ruda o ungüento."},
-    "aturdido": {"name": "Atarantado", "kind": "negative", "stacks": false, "color": "#d9bf40", "letter": "A",
-      "description": "Pierde su próximo turno. Después queda Espabilado (más difícil de atarantar)."},
-    "espabilado": {"name": "Espabilado", "kind": "positive", "stacks": true, "color": "#e8dc8a", "letter": "E",
-      "description": "+50% de resistencia a quedar Atarantado por cada vez seguida; se quita al iniciar un turno normal."},
-    "salado": {"name": "Salado", "kind": "negative", "stacks": true, "color": "#8a7f74", "letter": "-",
-      "description": "Mala racha: le bajan precisión, esquiva, daño, velocidad o protección. Se quita con agua bendita."},
-    "fichado": {"name": "Fichado", "kind": "negative", "stacks": false, "irresistible": true, "color": "#e04a2a", "letter": "F",
-      "description": "Marcado: los enemigos lo prefieren y algunos golpes le hacen daño extra."},
-    "susto": {"name": "Susto", "kind": "negative", "stacks": true, "color": "#4b3a5c", "letter": "!",
-      "description": "Gana estrés al inicio de cada turno. Se quita con té de tilo."},
-    "chiva": {"name": "Chiva", "kind": "positive", "stacks": true, "color": "#4aa3d9", "letter": "+",
-      "description": "Con todo: le suben precisión, esquiva, daño, velocidad o protección."},
-    "encarrerado": {"name": "Encarrerado", "kind": "positive", "stacks": false, "color": "#f08c2a", "letter": "»",
-      "description": "Tras un golpe crítico: más daño y críticos por 2 turnos."},
-    "cuidado": {"name": "Al cuido", "kind": "positive", "stacks": false, "color": "#5f86c2", "letter": "C",
-      "description": "Otro aliado recibe en su lugar los ataques a un solo objetivo."},
-    "cuidando": {"name": "Cuidando", "kind": "positive", "stacks": false, "color": "#3c62a8", "letter": "G",
-      "description": "Recibe los ataques dirigidos al aliado que cuida. Si queda Atarantado, deja de cuidar."},
-    "respondon": {"name": "Respondón", "kind": "positive", "stacks": false, "color": "#c2443c", "letter": "R",
-      "description": "Devuelve un golpe a quien lo ataque, le pegue o no."},
-    "sobado": {"name": "Sobado", "kind": "positive", "stacks": true, "color": "#6cc46c", "letter": "+",
-      "description": "Recupera PV al inicio de cada turno, antes del sangrado y el veneno."},
-    "santiguado": {"name": "Santiguado", "kind": "positive", "stacks": false, "color": "#e6e0c8", "letter": "†",
-      "description": "Bloquea por completo el daño directo de los próximos ataques (máximo 2). No frena el sangrado ni el veneno."},
-    "agazapado": {"name": "Agazapado", "kind": "positive", "stacks": false, "color": "#2f2f3a", "letter": "~",
-      "description": "Escondido: no lo pueden atacar con golpes a un solo objetivo mientras haya otros blancos. Se descubre al atacar."},
-    "guardia": {"name": "En guardia", "kind": "positive", "stacks": false, "color": "#3c62a8", "letter": "G",
-      "description": "Mitad de daño físico hasta su próximo turno."},
-    "al_borde": {"name": "Al Borde", "kind": "negative", "stacks": false, "color": "#7a0d0d", "letter": "†",
-      "description": "A las puertas de la muerte: otro golpe puede matarlo. -10 precisión, -25% daño, -5 velocidad, +33% estrés."},
-    "convaleciente": {"name": "Convaleciente", "kind": "negative", "stacks": false, "color": "#8c5a5a", "letter": "c",
-      "description": "Salió de Al Borde: -2 precisión, -5% daño, -1 velocidad, +10% estrés hasta terminar la expedición."}
+    "sangrado": {
+      "name": "Sangrado",
+      "kind": "negative",
+      "stacks": true,
+      "color": "#b81a1a",
+      "letter": "S",
+      "description": "Pierde PV al inicio de cada turno; atraviesa la protección. Se cura con venda."
+    },
+    "veneno": {
+      "name": "Envenenado",
+      "kind": "negative",
+      "stacks": true,
+      "color": "#58a632",
+      "letter": "V",
+      "description": "Pierde PV al inicio de cada turno; atraviesa la protección. Se cura con ruda o ungüento."
+    },
+    "aturdido": {
+      "name": "Atarantado",
+      "kind": "negative",
+      "stacks": false,
+      "color": "#d9bf40",
+      "letter": "A",
+      "description": "Pierde su próximo turno. Después queda Espabilado (más difícil de atarantar)."
+    },
+    "espabilado": {
+      "name": "Espabilado",
+      "kind": "positive",
+      "stacks": true,
+      "color": "#e8dc8a",
+      "letter": "E",
+      "description": "+50% de resistencia a quedar Atarantado por cada vez seguida; se quita al iniciar un turno normal."
+    },
+    "salado": {
+      "name": "Salado",
+      "kind": "negative",
+      "stacks": true,
+      "color": "#8a7f74",
+      "letter": "-",
+      "description": "Mala racha: le bajan precisión, esquiva, daño, velocidad o protección. Se quita con agua bendita."
+    },
+    "fichado": {
+      "name": "Fichado",
+      "kind": "negative",
+      "stacks": false,
+      "irresistible": true,
+      "color": "#e04a2a",
+      "letter": "F",
+      "description": "Marcado: los enemigos lo prefieren y algunos golpes le hacen daño extra."
+    },
+    "susto": {
+      "name": "Susto",
+      "kind": "negative",
+      "stacks": true,
+      "color": "#4b3a5c",
+      "letter": "!",
+      "description": "Gana estrés al inicio de cada turno. Se quita con té de tilo."
+    },
+    "chiva": {
+      "name": "Chiva",
+      "kind": "positive",
+      "stacks": true,
+      "color": "#4aa3d9",
+      "letter": "+",
+      "description": "Con todo: le suben precisión, esquiva, daño, velocidad o protección."
+    },
+    "encarrerado": {
+      "name": "Encarrerado",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#f08c2a",
+      "letter": "»",
+      "description": "Tras un golpe crítico: más daño y críticos por 2 turnos."
+    },
+    "cuidado": {
+      "name": "Al cuido",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#5f86c2",
+      "letter": "C",
+      "description": "Otro aliado recibe en su lugar los ataques a un solo objetivo."
+    },
+    "cuidando": {
+      "name": "Cuidando",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#3c62a8",
+      "letter": "G",
+      "description": "Recibe los ataques dirigidos al aliado que cuida. Si queda Atarantado, deja de cuidar."
+    },
+    "respondon": {
+      "name": "Respondón",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#c2443c",
+      "letter": "R",
+      "description": "Devuelve un golpe a quien lo ataque, le pegue o no."
+    },
+    "sobado": {
+      "name": "Sobado",
+      "kind": "positive",
+      "stacks": true,
+      "color": "#6cc46c",
+      "letter": "+",
+      "description": "Recupera PV al inicio de cada turno, antes del sangrado y el veneno."
+    },
+    "santiguado": {
+      "name": "Santiguado",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#e6e0c8",
+      "letter": "†",
+      "description": "Bloquea por completo el daño directo de los próximos ataques (máximo 2). No frena el sangrado ni el veneno."
+    },
+    "agazapado": {
+      "name": "Agazapado",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#2f2f3a",
+      "letter": "~",
+      "description": "Escondido: no lo pueden atacar con golpes a un solo objetivo mientras haya otros blancos. Se descubre al atacar."
+    },
+    "guardia": {
+      "name": "En guardia",
+      "kind": "positive",
+      "stacks": false,
+      "color": "#3c62a8",
+      "letter": "G",
+      "description": "Mitad de daño físico hasta su próximo turno."
+    },
+    "al_borde": {
+      "name": "Al Borde",
+      "kind": "negative",
+      "stacks": false,
+      "color": "#7a0d0d",
+      "letter": "†",
+      "description": "A las puertas de la muerte: otro golpe puede matarlo. -10 precisión, -25% daño, -5 velocidad, +33% estrés."
+    },
+    "convaleciente": {
+      "name": "Convaleciente",
+      "kind": "negative",
+      "stacks": false,
+      "color": "#8c5a5a",
+      "letter": "c",
+      "description": "Salió de Al Borde: -2 precisión, -5% daño, -1 velocidad, +10% estrés hasta terminar la expedición."
+    }
   },
   "state_mods": {
-    "al_borde": {"accuracy": -10, "dmg_pct": -25, "speed": -5, "stress_pct": 33},
-    "convaleciente": {"accuracy": -2, "dmg_pct": -5, "speed": -1, "stress_pct": 10}
+    "al_borde": {
+      "accuracy": -10,
+      "dmg_pct": -25,
+      "speed": -5,
+      "stress_pct": 33
+    },
+    "convaleciente": {
+      "accuracy": -2,
+      "dmg_pct": -5,
+      "speed": -1,
+      "stress_pct": 10
+    }
   },
-  "encarrerado_mods": {"dmg_pct": 15, "crit": 5},
+  "encarrerado_mods": {
+    "dmg_pct": 15,
+    "crit": 5
+  },
   "espabilado_stun_resist": 50,
   "santiguado_max": 2,
-  "marked_target_chance": 0.7
+  "marked_target_chance": 0.7,
+  "resist_categories": [
+    {
+      "id": "aturdido",
+      "name": "Atarantado",
+      "icon": "aturdido"
+    },
+    {
+      "id": "veneno",
+      "name": "Veneno",
+      "icon": "veneno"
+    },
+    {
+      "id": "sangrado",
+      "name": "Sangrado",
+      "icon": "sangrado"
+    },
+    {
+      "id": "salado",
+      "name": "Salado",
+      "icon": "salado"
+    },
+    {
+      "id": "susto",
+      "name": "Susto",
+      "icon": "susto",
+      "heroes_only": true
+    },
+    {
+      "id": "golpe_de_gracia",
+      "name": "Golpe de gracia",
+      "icon": "al_borde",
+      "heroes_only": true
+    },
+    {
+      "id": "trampa",
+      "name": "Trampas",
+      "icon": "trampa",
+      "heroes_only": true
+    }
+  ],
+  "_resist_doc": "Resistances are % chances (0-95). Heroes: class base (heroes.json status_resist) + equipment status_resist; 'immune' items make it 100. Golpe de gracia = chance to survive a hit while Al Borde (cap 87). Trampas = chance to slip past a trap unharmed. Enemies: enemies.json status_resist. Move/Disease wait for those systems.",
+  "deathblow_cap": 87
 }

@@ -26,7 +26,16 @@
         "Juancho",
         "Beto",
         "Lalo"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 40,
+        "sangrado": 40,
+        "salado": 30,
+        "susto": 30,
+        "golpe_de_gracia": 67,
+        "trampa": 40
+      }
     },
     {
       "id": "abuela",
@@ -52,7 +61,16 @@
         "Doña Tina",
         "Abuela Mina",
         "Doña Cuca"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 20,
+        "veneno": 60,
+        "sangrado": 30,
+        "salado": 50,
+        "susto": 50,
+        "golpe_de_gracia": 67,
+        "trampa": 10
+      }
     },
     {
       "id": "tecnologo",
@@ -78,7 +96,16 @@
         "Yendry",
         "Brandon",
         "Dayana"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 30,
+        "sangrado": 30,
+        "salado": 40,
+        "susto": 20,
+        "golpe_de_gracia": 67,
+        "trampa": 60
+      }
     },
     {
       "id": "montador",
@@ -104,7 +131,16 @@
         "Pipo",
         "Toro Mora",
         "Neco"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 60,
+        "veneno": 30,
+        "sangrado": 50,
+        "salado": 30,
+        "susto": 30,
+        "golpe_de_gracia": 72,
+        "trampa": 20
+      }
     },
     {
       "id": "guachiman",
@@ -129,7 +165,16 @@
         "Don Lalo",
         "Don Fello",
         "Don Beto"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 50,
+        "veneno": 30,
+        "sangrado": 40,
+        "salado": 40,
+        "susto": 40,
+        "golpe_de_gracia": 67,
+        "trampa": 50
+      }
     },
     {
       "id": "medica_josefina",
@@ -154,7 +199,16 @@
         "Dra. Marta",
         "Dra. Ivannia",
         "Dra. Grettel"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 70,
+        "sangrado": 60,
+        "salado": 40,
+        "susto": 30,
+        "golpe_de_gracia": 67,
+        "trampa": 20
+      }
     },
     {
       "id": "curandero",
@@ -179,7 +233,16 @@
         "Don Chico",
         "Doña Sixta",
         "Don Tomás"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 40,
+        "salado": 50,
+        "susto": 50,
+        "golpe_de_gracia": 67,
+        "trampa": 30
+      }
     },
     {
       "id": "exorcista",
@@ -204,7 +267,16 @@
         "Hermano Wilberth",
         "Padre Chaves",
         "Sor Ligia"
-      ]
+      ],
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 30,
+        "sangrado": 30,
+        "salado": 60,
+        "susto": 70,
+        "golpe_de_gracia": 67,
+        "trampa": 20
+      }
     }
   ]
 }

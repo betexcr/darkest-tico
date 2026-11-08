@@ -129,7 +129,11 @@ def main() -> int:
         for c in sk.get("cure", []):
             if c not in status_defs:
                 errors.append(f"skills.json: '{sid}' cures unknown status '{c}'")
+    res_ids = {c["id"] for c in statuses_raw.get("resist_categories", [])}
     for hid, hero in heroes.items():
+        for k in hero.get("status_resist", {}):
+            if k not in res_ids:
+                errors.append(f"heroes.json: '{hid}' resists unknown category '{k}'")
         for sid in hero.get("skill_ids", []):
             if sid not in skills:
                 errors.append(f"heroes.json: hero '{hid}' references unknown skill '{sid}'")
@@ -211,6 +215,12 @@ def main() -> int:
             for e in it.get("resist", {}):
                 if e not in elements:
                     errors.append(f"items.json: '{iid}' resists unknown element '{e}'")
+            res_cats = {c["id"] for c in statuses_raw.get("resist_categories", [])}
+            for k in it.get("status_resist", {}):
+                if k not in res_cats:
+                    errors.append(f"items.json: '{iid}' resists unknown category '{k}'")
+            check_applies(f"items.json: '{iid}' on_hit", it.get("on_hit"))
+            check_applies(f"items.json: '{iid}' start_status", it.get("start_status"))
             for st in it.get("immune", []):
                 if st not in ailments:
                     errors.append(f"items.json: '{iid}' immune to unknown ailment '{st}'")

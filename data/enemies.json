@@ -72,7 +72,10 @@
         "oscuridad": 0.5
       },
       "status_resist": {
-        "sangrado": 60
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 90,
+        "salado": 30
       }
     },
     "sombra_cuadrilla": {
@@ -148,6 +151,12 @@
         "sagrado": 1.5,
         "fuego": 1.25,
         "oscuridad": 0.5
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 50,
+        "sangrado": 70,
+        "salado": 30
       }
     },
     "mayordomo_hundido": {
@@ -241,7 +250,10 @@
         "oscuridad": 0.5
       },
       "status_resist": {
-        "aturdido": 40
+        "aturdido": 60,
+        "veneno": 50,
+        "sangrado": 40,
+        "salado": 40
       }
     },
     "nuboso_spectre": {
@@ -305,7 +317,10 @@
         "agua": 0.5
       },
       "status_resist": {
-        "sangrado": 60
+        "aturdido": 30,
+        "veneno": 70,
+        "sangrado": 90,
+        "salado": 20
       }
     },
     "cadejo_negro": {
@@ -378,6 +393,12 @@
         "sagrado": 1.5,
         "fuego": 0.75,
         "oscuridad": 0.0
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 40,
+        "sangrado": 20,
+        "salado": 30
       }
     },
     "segua_boss": {
@@ -453,7 +474,10 @@
         "viento": 0.5
       },
       "status_resist": {
-        "aturdido": 40
+        "aturdido": 60,
+        "veneno": 40,
+        "sangrado": 30,
+        "salado": 40
       }
     },
     "peon_penado": {
@@ -509,7 +533,10 @@
         "tierra": 0.5
       },
       "status_resist": {
-        "sangrado": 20
+        "aturdido": 20,
+        "veneno": 30,
+        "sangrado": 30,
+        "salado": 20
       }
     },
     "mandador_en_pena": {
@@ -582,6 +609,12 @@
         "sagrado": 1.5,
         "rayo": 1.25,
         "oscuridad": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 40,
+        "sangrado": 50,
+        "salado": 40
       }
     },
     "rata_de_troje": {
@@ -633,7 +666,10 @@
         "tierra": 0.75
       },
       "status_resist": {
-        "veneno": 50
+        "aturdido": 10,
+        "veneno": 70,
+        "sangrado": 10,
+        "salado": 20
       }
     },
     "murcielago_bodega": {
@@ -700,6 +736,12 @@
         "rayo": 1.5,
         "viento": 0.5,
         "tierra": 0.0
+      },
+      "status_resist": {
+        "aturdido": 20,
+        "veneno": 30,
+        "sangrado": 10,
+        "salado": 20
       }
     },
     "monaguillo_porton": {
@@ -771,6 +813,12 @@
         "sagrado": 1.25,
         "fuego": 0.5,
         "oscuridad": 0.75
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 30,
+        "sangrado": 30,
+        "salado": 50
       }
     },
     "vigia_porton": {
@@ -839,6 +887,12 @@
       "elements": {
         "rayo": 1.25,
         "fuego": 0.75
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 30,
+        "sangrado": 20,
+        "salado": 30
       }
     },
     "susurro_aljibe": {
@@ -914,7 +968,10 @@
         "agua": 0.0
       },
       "status_resist": {
-        "sangrado": 40
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 70,
+        "salado": 40
       }
     },
     "duende_sotano": {
@@ -991,6 +1048,12 @@
       "elements": {
         "hielo": 1.5,
         "tierra": 0.5
+      },
+      "status_resist": {
+        "aturdido": 20,
+        "veneno": 40,
+        "sangrado": 20,
+        "salado": 60
       }
     },
     "sirviente_ahogado": {
@@ -1044,7 +1107,10 @@
         "agua": 0.0
       },
       "status_resist": {
-        "veneno": 40
+        "aturdido": 20,
+        "veneno": 60,
+        "sangrado": 40,
+        "salado": 20
       }
     }
   }

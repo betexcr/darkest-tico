@@ -46,6 +46,15 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 		if StatusEffectsScript.has(hero, str(status)):
 			StatusEffectsScript.remove(hero, str(status))
 			logs.append("%s ya no está %s." % [who, StatusEffectsScript.display_name(str(status)).to_lower()])
+	# Buffs from ally/party items (enemy-target items are handled by the combat controller).
+	var ap = fx.get("applies", null)
+	if ap is Dictionary and str(item.get("target", "ally")) != "enemy":
+		var opts: Dictionary = {}
+		if ap.has("mods"):
+			opts["mods"] = ap["mods"]
+		var msg: String = StatusEffectsScript.apply(hero, str(ap.get("status", "")), int(ap.get("turns", 0)), int(ap.get("value", 0)), opts)
+		if msg != "":
+			logs.append(msg)
 	var risk = fx.get("hp_risk", null)
 	if risk is Dictionary and randf() < float(risk.get("chance", 0.0)):
 		var hp: int = int(hero.get("hp", 0))

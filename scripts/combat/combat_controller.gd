@@ -89,6 +89,11 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	for e in enemies:
 		names.append(str(e.get("name", "?")))
 	_log("%s%s bloquean el paso." % [tier, ", ".join(names)] if enemies.size() > 1 else "%s%s bloquea el paso." % [tier, names[0]], "dd8866")
+	# Accessories that start every fight with an effect (items.json "start_status").
+	for h in party:
+		if h is Dictionary and not h.get("dead", false):
+			for ss in h.get("start_status", []):
+				_try_apply(h, ss, false, "")
 	_refresh_markers()
 	_start_round()
 
@@ -420,6 +425,9 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 	if not enemy.get("dead", false):
 		for ap in _applies_list(skill.get("applies", null)):
 			_try_apply(enemy, ap, crit, "")
+		# Weapon effects (items.json "on_hit").
+		for ap in hero.get("on_hit", []):
+			_try_apply(enemy, ap, crit, "")
 	_enemy_riposte(enemy, hero)
 	var cost: int = int(skill.get("self_stress", 0))
 	if cost > 0:
@@ -583,7 +591,7 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 		_log("%s está Al Borde!" % hero.get("name", "?"), "dd8844")
 		return
 	hero["borde_checks"] = int(hero.get("borde_checks", 0)) + 1
-	if CombatResolverScript.roll_death_save():
+	if CombatResolverScript.roll_death_save(StatusEffectsScript.deathblow_chance(hero)):
 		_log("%s resiste Al Borde." % hero.get("name", "?"), "")
 		hero["hp"] = 1
 		hero["al_borde"] = false

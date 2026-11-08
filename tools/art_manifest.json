@@ -2008,6 +2008,266 @@
       "subject": "a red heart wrapped in a white bandage, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
       "negative_extra": "person, man, woman, knight, face, figure, building, house, window, frame, candle, fire, text, letters"
+    },
+    {
+      "id": "item_medallita_de_la_negrita",
+      "out": "assets/items/medallita_de_la_negrita.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6601,
+      "subject": "a small dark oval religious medal of a virgin on a thin chain, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cinta_roja",
+      "out": "assets/items/cinta_roja.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6611,
+      "subject": "a thin red string bracelet tied in a knot, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_ojo_de_buey",
+      "out": "assets/items/ojo_de_buey.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6621,
+      "subject": "a round brown sea bean seed with a dark band, lucky charm, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_panuelo_de_sabanero",
+      "out": "assets/items/panuelo_de_sabanero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6631,
+      "subject": "a folded red cowboy bandana handkerchief, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_pita_de_cabuya",
+      "out": "assets/items/pita_de_cabuya.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6641,
+      "subject": "a coiled belt of rough natural fiber rope, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_estampita_de_san_isidro",
+      "out": "assets/items/estampita_de_san_isidro.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6651,
+      "subject": "a small worn holy card of a farmer saint with oxen, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_gorra_de_la_sele",
+      "out": "assets/items/gorra_de_la_sele.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6661,
+      "subject": "a worn red baseball cap with a small blue and white stripe, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_corbata_de_luto",
+      "out": "assets/items/corbata_de_luto.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6671,
+      "subject": "a black necktie folded, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_agua_de_sapo",
+      "out": "assets/items/agua_de_sapo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6681,
+      "subject": "a glass of golden brown ginger drink with a lime slice, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_resbaladera",
+      "out": "assets/items/resbaladera.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6691,
+      "subject": "a glass of creamy white rice drink with cinnamon on top, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_vela_de_la_negrita",
+      "out": "assets/items/vela_de_la_negrita.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6701,
+      "subject": "a tall glass jar votive with a dark religious image, unlit, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_tapa_de_dulce",
+      "out": "assets/items/tapa_de_dulce.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6711,
+      "subject": "a round block of brown raw cane sugar wrapped in dry leaves, isolated object, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "status_trampa",
+      "out": "assets/status/trampa.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.3,
+        "contrast": 1.15
+      },
+      "seed": 6721,
+      "subject": "one rusty steel jaw trap, open, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "candle, candles, fire, flame, table, scenery, person, face, text, letters"
     }
   ],
   "sprites": {

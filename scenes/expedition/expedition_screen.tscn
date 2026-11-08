@@ -219,13 +219,14 @@ custom_minimum_size = Vector2(0, 14)
 layout_mode = 2
 
 [node name="Body" type="RichTextLabel" parent="Stage/EnemyInfo/VBox"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(320, 300)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 12
+theme_override_font_sizes/bold_font_size = 12
 bbcode_enabled = true
-fit_content = true
-scroll_active = false
+fit_content = false
+scroll_active = true
 text = ""
 
 [node name="BottomPanel" type="PanelContainer" parent="."]

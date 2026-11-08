@@ -204,7 +204,7 @@
     {
       "id": "machete_cartago",
       "name": "Machete de Cartago",
-      "description": "Hoja larga, mango de madera. El de toda la vida.",
+      "description": "Hoja larga, mango de madera. El de toda la vida. Bien afilado: puede dejar sangrando.",
       "price": 600,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -214,6 +214,12 @@
       "effects": {},
       "bonus": {
         "damage": 2
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.2,
+        "turns": 3,
+        "value": 2
       }
     },
     {
@@ -316,7 +322,7 @@
     {
       "id": "honda_de_jicaro",
       "name": "Honda de jícaro",
-      "description": "Tirador de hule y horqueta de jícaro. Silba en el aire.",
+      "description": "Tirador de hule y horqueta de jícaro. Silba en el aire. La pedrada deja al enemigo fichado.",
       "price": 650,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -327,12 +333,17 @@
       "bonus": {
         "accuracy": 2
       },
-      "element": "viento"
+      "element": "viento",
+      "on_hit": {
+        "status": "fichado",
+        "chance": 0.3,
+        "turns": 3
+      }
     },
     {
       "id": "garrote_de_guayabo",
       "name": "Garrote de guayabo",
-      "description": "Madera dura. Pesado pero contundente.",
+      "description": "Madera dura. Pesado pero contundente. A veces deja atarantado.",
       "price": 700,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -343,6 +354,11 @@
       "bonus": {
         "damage": 3,
         "accuracy": -1
+      },
+      "on_hit": {
+        "status": "aturdido",
+        "chance": 0.15,
+        "turns": 1
       }
     },
     {
@@ -359,6 +375,9 @@
       "bonus": {
         "prot": 5,
         "dodge": 1
+      },
+      "status_resist": {
+        "sangrado": 10
       }
     },
     {
@@ -374,6 +393,9 @@
       "effects": {},
       "bonus": {
         "prot": 15
+      },
+      "status_resist": {
+        "sangrado": 20
       }
     },
     {
@@ -390,6 +412,10 @@
       "bonus": {
         "prot": 20,
         "speed": -1
+      },
+      "status_resist": {
+        "sangrado": 15,
+        "aturdido": 10
       }
     },
     {
@@ -409,6 +435,9 @@
       "resist": {
         "agua": 0.5,
         "rayo": 0.5
+      },
+      "status_resist": {
+        "veneno": 10
       }
     },
     {
@@ -446,6 +475,9 @@
       },
       "resist": {
         "fuego": 0.5
+      },
+      "status_resist": {
+        "sangrado": 10
       }
     },
     {
@@ -465,12 +497,16 @@
       },
       "resist": {
         "oscuridad": 0.5
+      },
+      "status_resist": {
+        "susto": 15,
+        "salado": 10
       }
     },
     {
       "id": "escapulario",
       "name": "Escapulario",
-      "description": "De la abuela. Calma los nervios.",
+      "description": "De la abuela. Calma los nervios. Aguanta sustos y hasta un golpe de gracia.",
       "price": 500,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -480,6 +516,10 @@
       "effects": {},
       "bonus": {
         "stress_resist": 15
+      },
+      "status_resist": {
+        "susto": 20,
+        "golpe_de_gracia": 5
       }
     },
     {
@@ -497,6 +537,10 @@
       "resist": {
         "oscuridad": 0.5,
         "sagrado": 0.75
+      },
+      "status_resist": {
+        "susto": 15,
+        "salado": 15
       }
     },
     {
@@ -520,7 +564,7 @@
     {
       "id": "bolsita_de_ruda",
       "name": "Bolsita de ruda",
-      "description": "Colgada al cuello contra pestes y venenos.",
+      "description": "Colgada al cuello contra pestes y venenos. La ruda también espanta la mala suerte.",
       "price": 550,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -531,12 +575,15 @@
       "bonus": {},
       "immune": [
         "veneno"
-      ]
+      ],
+      "status_resist": {
+        "salado": 15
+      }
     },
     {
       "id": "ojo_de_venado",
       "name": "Ojo de venado",
-      "description": "Semilla-amuleto contra el mal de ojo. No deja que lo dejen tieso.",
+      "description": "Semilla contra el mal de ojo: la mala racha no se le pega.",
       "price": 600,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -545,9 +592,10 @@
       "slot": "accessory",
       "effects": {},
       "bonus": {},
-      "immune": [
-        "aturdido"
-      ]
+      "status_resist": {
+        "salado": 35,
+        "susto": 10
+      }
     },
     {
       "id": "sombrero_de_lona",
@@ -562,6 +610,9 @@
       "effects": {},
       "bonus": {
         "dodge": 2
+      },
+      "status_resist": {
+        "trampa": 10
       }
     },
     {
@@ -598,7 +649,7 @@
     {
       "id": "botas_de_hule",
       "name": "Botas de hule",
-      "description": "Para el barreal. Aíslan de la tierra y la corriente.",
+      "description": "Para el barreal. Aíslan de la tierra y la corriente. Ni el barro ni las culebras.",
       "price": 500,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -612,6 +663,10 @@
       "resist": {
         "tierra": 0.5,
         "rayo": 0.75
+      },
+      "status_resist": {
+        "trampa": 15,
+        "veneno": 10
       }
     },
     {
@@ -826,7 +881,13 @@
         "damage": 1,
         "crit": 2
       },
-      "element": "oscuridad"
+      "element": "oscuridad",
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.25,
+        "turns": 3,
+        "value": 2
+      }
     },
     {
       "id": "peto_de_adobe",
@@ -845,6 +906,9 @@
       },
       "resist": {
         "tierra": 0.5
+      },
+      "status_resist": {
+        "aturdido": 15
       }
     },
     {
@@ -883,6 +947,10 @@
       },
       "resist": {
         "sagrado": 0.5
+      },
+      "status_resist": {
+        "susto": 10,
+        "salado": 10
       }
     },
     {
@@ -915,12 +983,15 @@
       },
       "resist": {
         "oscuridad": 0.75
+      },
+      "status_resist": {
+        "susto": 15
       }
     },
     {
       "id": "pulsera_de_azabache",
       "name": "Pulsera de azabache",
-      "description": "Contra el mal de ojo, como la de los chiquitos.",
+      "description": "Contra el mal de ojo, como la de los chiquitos. La del mal de ojo, como a los chiquitos.",
       "price": 450,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -931,6 +1002,9 @@
       "bonus": {
         "dodge": 1,
         "stress_resist": 5
+      },
+      "status_resist": {
+        "salado": 25
       }
     },
     {
@@ -947,6 +1021,9 @@
       "bonus": {
         "damage": 1,
         "accuracy": 1
+      },
+      "status_resist": {
+        "sangrado": 10
       }
     },
     {
@@ -962,6 +1039,9 @@
       "effects": {},
       "bonus": {
         "hp_max": 4
+      },
+      "status_resist": {
+        "golpe_de_gracia": 5
       }
     },
     {
@@ -998,7 +1078,7 @@
     {
       "id": "termo_de_cafe",
       "name": "Termo de café",
-      "description": "Café chorreado caliente toda la noche.",
+      "description": "Café chorreado caliente toda la noche. Con café nadie se ataranta.",
       "price": 550,
       "max_stack": 1,
       "uses_per_node": 1,
@@ -1009,6 +1089,9 @@
       "bonus": {
         "speed": 1,
         "stress_resist": 5
+      },
+      "status_resist": {
+        "aturdido": 10
       }
     },
     {
@@ -1061,6 +1144,232 @@
       },
       "resist": {
         "fuego": 0.75
+      }
+    },
+    {
+      "id": "medallita_de_la_negrita",
+      "name": "Medallita de la Negrita",
+      "description": "De la romería a Cartago. Empieza cada pelea santiguado.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "stress_resist": 5
+      },
+      "status_resist": {
+        "susto": 20
+      },
+      "start_status": {
+        "status": "santiguado",
+        "value": 1
+      }
+    },
+    {
+      "id": "cinta_roja",
+      "name": "Cinta roja",
+      "description": "Amarrada en la muñeca contra el mal de ojo.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "status_resist": {
+        "salado": 30,
+        "susto": 10
+      }
+    },
+    {
+      "id": "ojo_de_buey",
+      "name": "Ojo de buey",
+      "description": "Semilla de playa que dicen que da buena suerte y cabeza fría.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "status_resist": {
+        "aturdido": 25,
+        "salado": 10
+      }
+    },
+    {
+      "id": "panuelo_de_sabanero",
+      "name": "Pañuelo rojo de sabanero",
+      "description": "Para amarrar la herida a tiempo.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "dodge": 1
+      },
+      "status_resist": {
+        "sangrado": 25
+      }
+    },
+    {
+      "id": "pita_de_cabuya",
+      "name": "Pita de cabuya",
+      "description": "Faja de cabuya: siempre hay de dónde agarrarse.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "status_resist": {
+        "trampa": 30,
+        "golpe_de_gracia": 3
+      }
+    },
+    {
+      "id": "estampita_de_san_isidro",
+      "name": "Estampita de San Isidro",
+      "description": "El patrono del campo: empieza cada pelea con ganas (+10% daño, 3 turnos).",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "hp_max": 2
+      },
+      "start_status": {
+        "status": "chiva",
+        "turns": 3,
+        "mods": {
+          "dmg_pct": 10
+        }
+      }
+    },
+    {
+      "id": "gorra_de_la_sele",
+      "name": "Gorra de la Sele",
+      "description": "Con la gorra puesta se juega mejor: empieza cada pelea chiva (+4 precisión, +1 velocidad, 2 turnos).",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {},
+      "start_status": {
+        "status": "chiva",
+        "turns": 2,
+        "mods": {
+          "accuracy": 4,
+          "speed": 1
+        }
+      }
+    },
+    {
+      "id": "corbata_de_luto",
+      "name": "Corbata de luto",
+      "description": "Ya ha ido a demasiados velorios para asustarse.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "effects": {},
+      "bonus": {
+        "stress_resist": 5
+      },
+      "status_resist": {
+        "susto": 25
+      }
+    },
+    {
+      "id": "agua_de_sapo",
+      "name": "Agua de sapo",
+      "description": "Tapa de dulce, jengibre y limón: queda chiva (+2 velocidad, +5 esquiva, 3 turnos).",
+      "price": 300,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "stress": -5,
+        "applies": {
+          "status": "chiva",
+          "turns": 3,
+          "mods": {
+            "speed": 2,
+            "dodge": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "resbaladera",
+      "name": "Resbaladera",
+      "description": "Fresco de arroz y canela: queda sobado (+2 PV por turno, 3 turnos).",
+      "price": 280,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "applies": {
+          "status": "sobado",
+          "turns": 3,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "vela_de_la_negrita",
+      "name": "Vela de la Negrita",
+      "description": "Se enciende y se reza: queda santiguado (bloquea el próximo golpe).",
+      "price": 450,
+      "max_stack": 3,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "applies": {
+          "status": "santiguado",
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": "tapa_de_dulce",
+      "name": "Tapa de dulce",
+      "description": "Un pedazo para el camino: queda chiva (+10% daño, 2 turnos).",
+      "price": 200,
+      "max_stack": 4,
+      "uses_per_node": 1,
+      "usable": "combat",
+      "target": "ally",
+      "effects": {
+        "stress": -3,
+        "applies": {
+          "status": "chiva",
+          "turns": 2,
+          "mods": {
+            "dmg_pct": 10
+          }
+        }
       }
     }
   ],
