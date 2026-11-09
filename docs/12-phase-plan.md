@@ -323,6 +323,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `scripts/combat/battle_unit.gd` (`DEAD_Z`, `_apply_dead_look`, `_gui_input`), `scripts/expedition/expedition_screen.gd` (`_on_unit_clicked`), `scenes/expedition/expedition_screen.tscn` (background at z -2), `tests/test_feedback.gd`
 - Done when: [x] a defeated enemy ignores the mouse (no click, no tooltip, no info panel; clicks reach the living enemy next to it); [x] fallen fighters (enemies and heroes) draw behind living ones; [ ] owner looks at it in-game
 
+### P4-14 · S · One tooltip design for the whole game (owner request 2026-11-09)
+- Status: `review` (Claude Code, `betomm/tender-brown-x04ghq`, 2026-11-09; owner to look at it in-game) · Depends: P4-12
+- Spec: owner request: style all tooltips with a better design. Content of skill/status/stress tooltips is still P4-02.
+- Files: `scripts/ui/tooltip_card.gd` (new, shared look), `scripts/autoload/tooltip_styler.gd` (new autoload `TooltipStyler`), `project.godot`, `scripts/ui/item_tooltip.gd`, `scripts/ui/skill_button.gd`, `scripts/ui/equip_slot.gd`, `tools/screens/tooltip_screenshot.gd`
+- Done when: [x] every plain `tooltip_text` tooltip (hub, expedition, status icons, map, option lists) shows as the opaque card, with "Title\nbody" or "Title — body" split into a gold title and wrapped body; [x] skill and item tooltips use the same card; [ ] owner looks at it in-game
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

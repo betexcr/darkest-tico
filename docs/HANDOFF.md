@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-09 (night) — P4-14 — One tooltip design for the whole game
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-14 review · P4-13 review · P4-12 review (entries below). Owner to look at all three in-game.
+- **Changed:**
+  - `scripts/ui/tooltip_card.gd` (new): the shared tooltip look (opaque dark card, warm border, gold title, rule, wrapped body, effect bullets, hint colour for "Clic…" lines). `from_text("Title\nbody")` / `"Title — body"` / plain sentence.
+  - `scripts/autoload/tooltip_styler.gd` (new autoload `TooltipStyler`, registered in `project.godot`): when Godot's default tooltip popup enters the tree, its label is replaced by the card. So **every** `tooltip_text` in the game is styled with no change at the call site; new tooltips need nothing.
+  - `item_tooltip.gd`, `skill_button.gd`, `equip_slot.gd` build on `tooltip_card.gd` (skill effects are one row each).
+  - `tests/test_feedback.gd` (+2 checks), `tools/screens/tooltip_screenshot.gd` (new: hovers 9 controls in hub and battle).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: all 9 test scripts 0 failures, no `SCRIPT ERROR`. Tooltips checked by screenshot with real hovers: hub (sell, Pura Vida, hero row, event), battle (skill, guard, status icon, enemy, map room).
+- **Not verified / risks:**
+  - `TooltipStyler` relies on how Godot 4.6 builds the default tooltip (a `PopupPanel` "TooltipPanel" with one `Label` "TooltipLabel"). If an engine upgrade changes that, tooltips fall back to Godot's default look; `test_feedback` and `tooltip_screenshot.gd` will show it.
+  - Tooltip wording was not changed; some would read better rewritten as "Title\nbody" (P4-02).
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-09 (later) — P4-13 — Defeated enemies can't be selected and lie behind the living
 - **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
 - **Status after session:** P4-13 review · P4-12 review (entry below). Owner to look at both in-game.

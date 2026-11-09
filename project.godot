@@ -16,6 +16,7 @@ run/main_scene="res://scenes/bootstrap/main.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
 [autoload]
+TooltipStyler="*res://scripts/autoload/tooltip_styler.gd"
 
 GameState="*res://scripts/autoload/game_state.gd"
 SaveService="*res://scripts/autoload/save_service.gd"

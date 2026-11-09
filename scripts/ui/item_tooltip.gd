@@ -7,18 +7,14 @@ extends RefCounted
 ## A control uses it by calling `clear_frame(self)` once and returning `build(...)` from
 ## `_make_custom_tooltip`. Its `tooltip_text` must still be non-empty or Godot shows nothing.
 
-const WIDTH := 300.0
-## Width inside the card's border and padding. Wrapped labels get an explicit width:
-## Godot sizes the tooltip popup before layout, when an autowrap label still reports the
-## height of its narrowest form, which left a tall empty card.
-const INNER := WIDTH - 24.0
-const BG := Color(0.075, 0.058, 0.048, 1.0)
-const BORDER := Color(0.72, 0.56, 0.3, 1.0)
-const GOLD := Color(0.96, 0.84, 0.56)
-const TEXT := Color(0.93, 0.9, 0.84)
-const MUTED := Color(0.66, 0.61, 0.54)
-const GOOD := Color(0.62, 0.86, 0.52)
-const BAD := Color(0.93, 0.47, 0.4)
+const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
+const INNER: float = TooltipCardScript.INNER
+const BORDER: Color = TooltipCardScript.BORDER
+const GOLD: Color = TooltipCardScript.GOLD
+const TEXT: Color = TooltipCardScript.TEXT
+const MUTED: Color = TooltipCardScript.MUTED
+const GOOD: Color = TooltipCardScript.GOOD
+const BAD: Color = TooltipCardScript.BAD
 ## Category chip colours, by slot ("" = consumable).
 const KIND_COLORS := {
 	"weapon": Color(0.74, 0.3, 0.24),
@@ -28,24 +24,17 @@ const KIND_COLORS := {
 }
 
 
-## Godot draws its own see-through frame (TooltipPanel) around a custom tooltip; blank it
-## for `control` so only the opaque card shows.
 static func clear_frame(control: Control) -> void:
-	var th := Theme.new()
-	th.set_stylebox("panel", "TooltipPanel", StyleBoxEmpty.new())
-	control.theme = th
+	TooltipCardScript.clear_frame(control)
 
 
 ## `note` is an extra hint at the bottom ("Clic para comprar"); `warning` is shown in red
 ## (why it can't be bought); `qty` > 1 adds "×N" next to the name.
 static func build(item_id: String, note: String = "", warning: String = "", qty: int = 0) -> Control:
 	var p: Dictionary = GameState.item_tooltip_parts(item_id)
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", _card_box())
-	card.custom_minimum_size = Vector2(WIDTH, 0)
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 6)
-	card.add_child(col)
+	var made: Array = TooltipCardScript.new_card()
+	var card: PanelContainer = made[0]
+	var col: VBoxContainer = made[1]
 	if p.is_empty():
 		col.add_child(_label(item_id, 14, TEXT))
 		return card
@@ -72,11 +61,7 @@ static func build(item_id: String, note: String = "", warning: String = "", qty:
 	titles.add_theme_constant_override("separation", 4)
 	head.add_child(titles)
 	var name_text: String = str(p["name"]) + (" ×%d" % qty if qty > 1 else "")
-	var name_label := _label(name_text, 17, GOLD, true, INNER - 68.0 if ResourceLoader.exists(icon_path) else INNER)
-	var bold := FontVariation.new()
-	bold.variation_embolden = 0.7
-	name_label.add_theme_font_override("font", bold)
-	titles.add_child(name_label)
+	titles.add_child(TooltipCardScript.title_label(name_text, 17, INNER - 68.0 if ResourceLoader.exists(icon_path) else INNER))
 	var chip := PanelContainer.new()
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var chip_color: Color = KIND_COLORS.get(str(p["slot"]), KIND_COLORS[""])
@@ -96,18 +81,7 @@ static func build(item_id: String, note: String = "", warning: String = "", qty:
 	var stats: Array = p["stats"]
 	if not stats.is_empty():
 		col.add_child(_rule())
-		var list := VBoxContainer.new()
-		list.add_theme_constant_override("separation", 2)
-		col.add_child(list)
-		for s in stats:
-			var row := HBoxContainer.new()
-			row.add_theme_constant_override("separation", 6)
-			var negative: bool = str(s).contains(" -")
-			row.add_child(_label("◆", 9, BAD if negative else GOOD, false))
-			var l := _label(str(s), 14, BAD if negative else TEXT, true, INNER - 20.0)
-			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			row.add_child(l)
-			list.add_child(row)
+		col.add_child(TooltipCardScript.bullet_list(stats))
 
 	if str(p["where"]) != "":
 		col.add_child(_label(str(p["where"]), 12, MUTED))
@@ -131,40 +105,17 @@ static func build(item_id: String, note: String = "", warning: String = "", qty:
 	if warning != "":
 		col.add_child(_label(warning, 12, BAD))
 	if note != "":
-		col.add_child(_label(note, 12, Color(0.75, 0.8, 0.9)))
+		col.add_child(_label(note, 12, TooltipCardScript.HINT))
 	return card
 
 
 static func _label(text: String, size: int, color: Color, wrap: bool = true, width: float = INNER) -> Label:
-	var l := Label.new()
-	l.text = text
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", color)
-	if wrap:
-		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		l.custom_minimum_size = Vector2(width, 0)
-	return l
+	return TooltipCardScript.label(text, size, color, wrap, width)
 
 
 static func _rule() -> Control:
-	var r := ColorRect.new()
-	r.color = Color(BORDER, 0.35)
-	r.custom_minimum_size = Vector2(0, 1)
-	return r
+	return TooltipCardScript.rule()
 
 
 static func _flat(bg: Color, border: Color, width: int, radius: int, margin: int) -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.border_color = border
-	sb.set_border_width_all(width)
-	sb.set_corner_radius_all(radius)
-	sb.set_content_margin_all(margin)
-	return sb
-
-
-static func _card_box() -> StyleBoxFlat:
-	var sb := _flat(BG, BORDER, 2, 6, 12)
-	sb.shadow_color = Color(0, 0, 0, 0.6)
-	sb.shadow_size = 6
-	return sb
+	return TooltipCardScript.flat(bg, border, width, radius, margin)

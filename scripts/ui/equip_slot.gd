@@ -8,6 +8,7 @@ signal changed(message: String)
 const LABELS := {"weapon": "Arma", "armor": "Armadura", "accessory1": "Accesorio", "accessory2": "Accesorio"}
 
 const ItemTooltipScript := preload("res://scripts/ui/item_tooltip.gd")
+const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
 
 var hero: Dictionary = {}
 var slot: String = ""
@@ -44,14 +45,11 @@ func show_hero(h: Dictionary) -> void:
 	tooltip_text = GameState.item_tooltip(id) + "\nClic para quitarlo."
 
 
-## Item card for a worn item; the plain (opaque) text box for an empty slot.
+## Item card for a worn item; an empty slot gets the standard text card.
 func _make_custom_tooltip(for_text: String) -> Object:
 	if _item_id != "":
 		return ItemTooltipScript.build(_item_id, "Clic para quitarlo.")
-	var card := PanelContainer.new()
-	card.add_theme_stylebox_override("panel", ItemTooltipScript._card_box())
-	card.add_child(ItemTooltipScript._label(for_text, 13, ItemTooltipScript.TEXT, false))
-	return card
+	return TooltipCardScript.from_text(for_text)
 
 
 func _on_pressed() -> void:

@@ -73,5 +73,19 @@ func _run() -> void:
 	e._gui_input(click)
 	_check(clicks.is_empty() and e.mouse_filter == Control.MOUSE_FILTER_IGNORE, "a defeated enemy can't be clicked")
 	_check(e.z_index < u.z_index, "the fallen are drawn behind the living")
+	# Every plain tooltip is restyled as an opaque card (TooltipStyler autoload).
+	var Card = load("res://scripts/ui/tooltip_card.gd")
+	var tip_card: Control = Card.from_text("Envenenado — 3 turnos\nPierde PV al inicio de cada turno; atraviesa la protección.")
+	_check(tip_card.get_theme_stylebox("panel").bg_color.a == 1.0 and tip_card.custom_minimum_size.x == Card.WIDTH, "long tooltips become an opaque, wrapped card")
+	tip_card.free()
+	var popup := PopupPanel.new()
+	popup.theme_type_variation = &"TooltipPanel"
+	var plain := Label.new()
+	plain.theme_type_variation = &"TooltipLabel"
+	plain.text = "Mapa (M)"
+	popup.add_child(plain)
+	root.add_child(popup)
+	_check(popup.get_child_count() == 2 and not plain.visible, "a default tooltip popup gets the card in place of its label")
+	popup.free()
 	print("%d failure(s)" % _failures)
 	quit(1 if _failures > 0 else 0)

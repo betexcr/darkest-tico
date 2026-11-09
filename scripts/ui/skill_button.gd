@@ -4,7 +4,10 @@ extends Button
 ## shows a tooltip with the action's name (bold) and what it does.
 
 const SkillIconScript := preload("res://scripts/ui/skill_icon.gd")
+const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
 const SIZE := Vector2(52, 52)
+## How an effects line starts (see `_skill_tooltip` in expedition_screen.gd).
+const EFFECT_PREFIXES := ["Ataque:", "Cura ", "Alivia ", "Objetivo:"]
 
 var title: String = ""
 var body: String = ""
@@ -26,37 +29,15 @@ func setup(icon_id: String, kind: String, p_title: String, p_body: String) -> vo
 	ic.offset_right = -3
 	ic.offset_bottom = -3
 	add_child(ic)
-	# The popup's own frame (TooltipPanel) is see-through by default; make it transparent
-	# with no margin so only the opaque box from _make_custom_tooltip shows.
-	var th := Theme.new()
-	var empty := StyleBoxEmpty.new()
-	th.set_stylebox("panel", "TooltipPanel", empty)
-	theme = th
+	TooltipCardScript.clear_frame(self)
 
 
-## Opaque dark box with a warm border, so the text reads over the stage art.
-static func _tooltip_box() -> StyleBoxFlat:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.07, 0.055, 0.045, 1.0)
-	sb.border_color = Color(0.6, 0.48, 0.3, 1.0)
-	sb.set_border_width_all(1)
-	sb.set_corner_radius_all(4)
-	sb.set_content_margin_all(8)
-	return sb
-
-
+## `body` is "description\neffect · effect · effect" (or just one of the two): the
+## description is plain text and each effect gets its own row.
 func _make_custom_tooltip(_for_text: String) -> Object:
-	# The default tooltip panel is see-through: replace it with an opaque one.
-	var box := PanelContainer.new()
-	box.add_theme_stylebox_override("panel", _tooltip_box())
-	var rt := RichTextLabel.new()
-	rt.bbcode_enabled = true
-	rt.fit_content = true
-	rt.scroll_active = false
-	rt.custom_minimum_size = Vector2(280, 0)
-	rt.add_theme_font_size_override("normal_font_size", 13)
-	rt.add_theme_font_size_override("bold_font_size", 14)
-	rt.add_theme_color_override("default_color", Color(0.95, 0.93, 0.88))
-	rt.text = "[b][color=#f0d890]%s[/color][/b]\n%s" % [title, body]
-	box.add_child(rt)
-	return box
+	var lines: Array = Array(body.split("\n", false))
+	var bullets: Array = []
+	var last: String = str(lines[-1]) if not lines.is_empty() else ""
+	if lines.size() > 1 or last.contains(" · ") or EFFECT_PREFIXES.any(func(p): return last.begins_with(p)):
+		bullets = Array(str(lines.pop_back()).split(" · ", false))
+	return TooltipCardScript.text_card(title, lines, bullets)
