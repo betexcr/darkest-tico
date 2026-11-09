@@ -6,6 +6,7 @@ extends Control
 signal start_mission_requested
 
 const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
+const ShopSlotScript := preload("res://scripts/ui/shop_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
@@ -15,7 +16,7 @@ const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
 @onready var _week: Label = $Columns/Left/VBox/InfoRow/WeekLabel
 @onready var _region_option: OptionButton = $Columns/Left/VBox/RegionRow/RegionOption
-@onready var _shop_grid: GridContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
+@onready var _shop_grid: HFlowContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
 @onready var _btn_sell: Button = $Columns/Left/VBox/ShopHead/BtnSell
 @onready var _shop_filters: HBoxContainer = $Columns/Left/VBox/ShopFilters
 
@@ -178,9 +179,8 @@ func _refresh() -> void:
 	_week.text = "Semana: %d" % GameState.week
 	_refresh_equipment()
 	for b in _shop_grid.get_children():
-		var sid: String = str(b.get_meta("item_id", ""))
-		b.text = _shop_label(sid)
-		b.disabled = GameState.colones < GameState.item_price(sid) or GameState.buy_block_reason(sid) != ""
+		if not b.is_queued_for_deletion():
+			b.refresh()
 	var igl: Button = $Columns/Left/VBox/BtnIglesia
 	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "iglesia")
 	igl.text = "Iglesia Vieja: cerrada esta semana" if closed else "Iglesia Vieja: misa rápida (%s, -%d estrés a todos)" % [
@@ -222,7 +222,8 @@ func _category(item: Dictionary) -> String:
 	return "consumable"
 
 
-## One "buy" button per item (data/items.json) in the selected category, in file order.
+## One icon tile per item (data/items.json) in the selected category, in file order.
+## The tile shows the price; name, stats and description are in its tooltip card.
 func _build_shop() -> void:
 	for c in _shop_grid.get_children():
 		c.queue_free()
@@ -230,30 +231,11 @@ func _build_shop() -> void:
 		var item: Dictionary = GameState.get_item(str(id))
 		if _shop_filter != "todo" and _category(item) != _shop_filter:
 			continue
-		var b := Button.new()
-		b.text = _shop_label(str(id))
-		b.tooltip_text = GameState.item_tooltip(str(id))
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		b.clip_text = true
-		b.add_theme_font_size_override("font_size", 13)
-		var icon_path: String = "res://assets/items/%s.png" % str(id)
-		if ResourceLoader.exists(icon_path):
-			b.icon = load(icon_path) as Texture2D
-			b.expand_icon = true
-		b.set_meta("item_id", str(id))
+		var b = ShopSlotScript.new()
+		b.setup(str(id))
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		_shop_grid.add_child(b)
-
-
-## "Gallo pinto envuelto — 75 ₡ (antes 150)" when a town event changes the price.
-func _shop_label(id: String) -> String:
-	var item: Dictionary = GameState.get_item(id)
-	var base: int = int(item.get("price", 0))
-	var now: int = GameState.item_price(id)
-	if now == base:
-		return "%s — %d ₡" % [item.get("name", id), base]
-	return "%s — %s (antes %d)" % [item.get("name", id), "gratis" if now == 0 else "%d ₡" % now, base]
 
 
 func _on_iglesia_pressed() -> void:

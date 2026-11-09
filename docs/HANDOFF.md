@@ -17,6 +17,24 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-09 — P4-12 — Pulpería shows icon tiles; new opaque item tooltip card
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-12 review (owner to look at it in-game).
+- **Changed:**
+  - `scripts/ui/shop_slot.gd` (new): a store tile is the item's icon with this week's price under it. Click buys. Price is green/red when a town event changes it, "cerrado" when blocked.
+  - `scripts/ui/item_tooltip.gd` (new): the item card (icon, name, category chip, description, one line per effect, where it is used, buy/sell, hint or red warning). Fully opaque. Used by the store, alforja cells (`inventory_slot.gd`, new `tooltip_note`), equipment slots and the combat alforja.
+  - `GameState.item_tooltip_parts(id)`: the tooltip facts as a Dictionary; `item_tooltip(id)` builds the same plain text from it.
+  - `hacienda_hub.tscn`: `ShopGrid` is now an `HFlowContainer` (tiles wrap to the column width).
+  - `tests/test_hub.gd` (+4 checks), `tools/screens/shop_screenshot.gd` (new).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: `smoke_expedition`, `test_guard`, `test_status`, `test_hub`, `test_equipment`, `test_feedback`, `test_combat_items`, `test_progression`, `test_town_events`: all 0 failures, no `SCRIPT ERROR`. Store and tooltip checked by screenshot (xvfb, real hover).
+- **Not verified / risks:**
+  - The store area shows about 3 rows of tiles at 1280×720 before scrolling; item names are only in the tooltip now.
+  - `item_tooltip.gd` uses the `GameState` autoload, so a `-s` script must `load()` it at run time, not `preload` it.
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-08 (night) — P3-15 — Town events (Tico versions of every DD one), Modo Pura Vida, Mano vuelta
 - **Agent / branch:** Claude Code (cloud) / `betomm/amazing-clarke-lv3whd`
 - **Status after session:** P3-15 review. The open question from the previous entry is answered: the owner asked what DD does (it blocks), then asked for DD's two exceptions.

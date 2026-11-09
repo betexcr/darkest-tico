@@ -102,7 +102,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Pulpería La Hacienda — arrastra aquí para vender"
+text = "Pulpería La Hacienda — clic para comprar, arrastra aquí para vender"
 
 [node name="BtnSell" type="Button" parent="Columns/Left/VBox/ShopHead"]
 layout_mode = 2
@@ -119,12 +119,11 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ShopGrid" type="GridContainer" parent="Columns/Left/VBox/ShopScroll"]
+[node name="ShopGrid" type="HFlowContainer" parent="Columns/Left/VBox/ShopScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
-columns = 2
 
 [node name="BtnIglesia" type="Button" parent="Columns/Left/VBox"]
 layout_mode = 2

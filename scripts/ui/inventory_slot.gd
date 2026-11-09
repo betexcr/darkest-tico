@@ -5,6 +5,11 @@ extends Button
 
 signal used(item_id: String)
 
+const ItemTooltipScript := preload("res://scripts/ui/item_tooltip.gd")
+
+## Extra hint at the bottom of the tooltip card ("Usarlo gasta el turno.").
+var tooltip_note: String = ""
+
 var item_id: String = ""
 var qty: int = 0
 
@@ -27,8 +32,14 @@ func setup(id: String, amount: int) -> void:
 	else:
 		var short: String = str(item.get("name", id)).split(" ")[0].substr(0, 7)
 		text = "%s\n×%d" % [short, amount] if amount > 1 else short
+	# Godot only shows a tooltip when tooltip_text is set; the card replaces it.
 	tooltip_text = GameState.item_tooltip(id)
+	ItemTooltipScript.clear_frame(self)
 	pressed.connect(func(): used.emit(item_id))
+
+
+func _make_custom_tooltip(_for_text: String) -> Object:
+	return ItemTooltipScript.build(item_id, tooltip_note, "", qty)
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:

@@ -1062,7 +1062,7 @@ func _show_combat_items(hero: Dictionary) -> void:
 		var b = InventorySlotScript.new()
 		b.setup(id, int(slot["qty"]))
 		b.custom_minimum_size = Vector2(52, 52)
-		b.tooltip_text = GameState.item_tooltip(id) + "\nUsarlo gasta el turno."
+		b.tooltip_note = "Usarlo gasta el turno."
 		b.used.connect(_on_item_pressed)
 		_skills.add_child(b)
 		shown += 1

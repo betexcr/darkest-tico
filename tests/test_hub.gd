@@ -93,5 +93,22 @@ func _run() -> void:
 	_check(counts["consumable"] + counts["weapon"] + counts["armor"] + counts["accessory"] == counts["todo"],
 		"filters split the store: %d consumibles, %d armas, %d armaduras, %d accesorios" % [
 		counts["consumable"], counts["weapon"], counts["armor"], counts["accessory"]])
+	# Pulpería tiles are icons with a price; the full text lives in the tooltip card.
+	hub._shop_filter = "todo"
+	hub._build_shop()
+	await process_frame
+	var tiles: Array = hub._shop_grid.get_children().filter(func(b): return not b.is_queued_for_deletion())
+	var tile = tiles[0]
+	_check(tile.icon != null and tile.text == "%d ₡" % gs.item_price(tile.item_id), "store tile shows icon + price only (%s)" % tile.text)
+	var card = tile._make_custom_tooltip("")
+	_check(card is Control and card.get_theme_stylebox("panel").bg_color.a == 1.0, "item tooltip is an opaque card")
+	card.free()
+	var c1: int = gs.item_count(tile.item_id)
+	gs.colones = 5000
+	tile.pressed.emit()
+	_check(gs.item_count(tile.item_id) == c1 + 1, "clicking a store tile buys the item")
+	gs.colones = 0
+	hub._refresh()
+	_check(tile.disabled, "store tiles disable when the colones don't reach")
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
