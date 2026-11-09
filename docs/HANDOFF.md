@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-09 (later) — P4-13 — Defeated enemies can't be selected and lie behind the living
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-13 review · P4-12 review (entry below). Owner to look at both in-game.
+- **Changed:**
+  - `scripts/combat/battle_unit.gd`: a fallen fighter gets `z_index = DEAD_Z` (-1) so living sprites draw over it. A defeated enemy also sets `mouse_filter = IGNORE` and drops its tooltip, so clicks reach the living enemy it overlaps. `rest()` restores both for a living fighter.
+  - `scenes/expedition/expedition_screen.tscn`: `BgTexture` and `Darken` at `z_index = -2`, otherwise the fallen would go behind the background.
+  - `scripts/expedition/expedition_screen.gd`: `_on_unit_clicked` ignores defeated enemies (no info panel, no target).
+  - `tests/test_feedback.gd` (+2 checks).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: all 9 test scripts 0 failures, no `SCRIPT ERROR`. Draw order checked by screenshot (a living enemy between two fallen ones).
+- **Not verified / risks:**
+  - Fallen heroes stay clickable on purpose (the click shows the first living hero, as before).
+  - Anything added to the expedition screen below z -1 would hide behind the background.
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-09 — P4-12 — Pulpería shows icon tiles; new opaque item tooltip card
 - **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
 - **Status after session:** P4-12 review (owner to look at it in-game).

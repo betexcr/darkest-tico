@@ -35,6 +35,7 @@ grow_vertical = 2
 script = ExtResource("1_screen")
 
 [node name="BgTexture" type="TextureRect" parent="."]
+z_index = -2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,6 +47,7 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="Darken" type="ColorRect" parent="."]
+z_index = -2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

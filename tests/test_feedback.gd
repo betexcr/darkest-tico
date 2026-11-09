@@ -63,5 +63,15 @@ func _run() -> void:
 	await process_frame
 	e.refresh()
 	_check(e._status_row.get_child_count() == 0, "dead fighters show no icons")
+	# Defeated enemies: drawn behind the living, and clicks pass through them.
+	e.rest()
+	var clicks: Array = []
+	e.clicked.connect(func(_u): clicks.append(1))
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	e._gui_input(click)
+	_check(clicks.is_empty() and e.mouse_filter == Control.MOUSE_FILTER_IGNORE, "a defeated enemy can't be clicked")
+	_check(e.z_index < u.z_index, "the fallen are drawn behind the living")
 	print("%d failure(s)" % _failures)
 	quit(1 if _failures > 0 else 0)

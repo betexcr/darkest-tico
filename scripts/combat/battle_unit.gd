@@ -11,6 +11,8 @@ signal clicked(unit)
 ## Equipment dropped on this hero from the inventory (message "" = ok).
 signal equipment_dropped(message: String)
 
+## Draw order of a fallen fighter; living ones stay at 0.
+const DEAD_Z := -1
 const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 const SPRITE_SIZE := Vector2(140, 210)
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
@@ -310,6 +312,8 @@ func rest() -> void:
 		_apply_dead_look()
 		return
 	_sprite.rotation_degrees = 0.0
+	z_index = 0
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	_show_state(st)
 	_start_idle()
 
@@ -424,9 +428,15 @@ func _apply_dead_look() -> void:
 		# No corpse sprite yet: tip the idle pose over.
 		_sprite.rotation_degrees = -80.0 * _dir
 	_sprite.modulate = Color(0.6, 0.55, 0.55, 0.9)
+	# The fallen lie behind the living (the stage background sits at z -2), and a defeated
+	# enemy is scenery: clicks go through it to whoever stands next to it.
+	z_index = DEAD_Z
+	if not is_hero:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tooltip_text = ""
 
 
 func _gui_input(event: InputEvent) -> void:
 	var mb := event as InputEventMouseButton
-	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+	if mb != null and mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT and (is_hero or not is_dead()):
 		clicked.emit(self)

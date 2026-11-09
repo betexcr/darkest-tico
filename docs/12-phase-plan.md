@@ -318,6 +318,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `scripts/ui/shop_slot.gd` (new), `scripts/ui/item_tooltip.gd` (new), `scripts/ui/inventory_slot.gd`, `scripts/ui/equip_slot.gd`, `scripts/hacienda/hacienda_hub.gd` + `.tscn` (`ShopGrid` is an `HFlowContainer`), `GameState.item_tooltip_parts`, `tools/screens/shop_screenshot.gd`
 - Done when: [x] store tiles = icon + this week's price (green when cheaper, red when dearer, "cerrado" when an event blocks it); [x] one opaque card (icon, name, category chip, description, one line per effect, where it is used, buy/sell price, hint or warning) for the store, the alforja, equipment slots and the combat alforja; [ ] owner looks at it in-game
 
+### P4-13 · S · Defeated enemies: not selectable, drawn behind the living (owner request 2026-11-09)
+- Status: `review` (Claude Code, `betomm/tender-brown-x04ghq`, 2026-11-09; owner to look at it in-game) · Depends: P4-07
+- Files: `scripts/combat/battle_unit.gd` (`DEAD_Z`, `_apply_dead_look`, `_gui_input`), `scripts/expedition/expedition_screen.gd` (`_on_unit_clicked`), `scenes/expedition/expedition_screen.tscn` (background at z -2), `tests/test_feedback.gd`
+- Done when: [x] a defeated enemy ignores the mouse (no click, no tooltip, no info panel; clicks reach the living enemy next to it); [x] fallen fighters (enemies and heroes) draw behind living ones; [ ] owner looks at it in-game
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

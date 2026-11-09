@@ -153,6 +153,9 @@ func _clear_enemies() -> void:
 
 
 func _on_unit_clicked(unit) -> void:
+	# Defeated enemies can't be selected or inspected.
+	if not unit.is_hero and unit.is_dead():
+		return
 	if not _pending.is_empty():
 		var side: String = "ally" if unit.is_hero else "enemy"
 		if side == str(_pending["side"]) and _living_units(unit.is_hero).has(unit):
