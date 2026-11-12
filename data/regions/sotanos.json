@@ -9,13 +9,15 @@
   "objective_reward_colones": 800,
   "region_level": 0,
   "generator": {
-    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss.",
+    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching.",
     "rooms": [
       10,
       13
     ],
     "min_boss_distance": 5,
     "extra_links": 1,
+    "branch_newest_chance": 0.6,
+    "max_exits": 3,
     "camps": 1,
     "elites": 1,
     "min_combat": 3,

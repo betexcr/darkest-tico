@@ -5,6 +5,7 @@ extends RefCounted
 ## modifiers. GameState owns the state (active event, deck, graveyard…) and applies effects.
 
 const DATA_PATH := "res://data/town_events.json"
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 static var _data: Dictionary = {}
 static var _by_id: Dictionary = {}
@@ -33,7 +34,7 @@ static func get_event(id: String) -> Dictionary:
 
 
 static func chance_pct() -> int:
-	return int(data().get("chance_pct", 60))
+	return int(BalanceScript.req(data(), "chance_pct", "town_events.json"))
 
 
 static func effects(ev: Dictionary) -> Dictionary:
@@ -228,7 +229,7 @@ static func effect_lines(ev: Dictionary, immediate: bool = true) -> PackedString
 	if m.has("quebranto_start_stress"):
 		out.append("Próxima expedición: los quebrantados empiezan con +%d estrés" % int(m["quebranto_start_stress"]))
 	if fx.has("hire_veteran"):
-		out.append("En la terminal: un héroe de Resolución %d por %d ₡" % [int(fx["hire_veteran"].get("level", 6)), int(fx["hire_veteran"].get("price", 0))])
+		out.append("En la terminal: un héroe de Resolución %d por %d ₡" % [int(BalanceScript.req(fx["hire_veteran"], "level", "town_events.json hire_veteran")), int(fx["hire_veteran"].get("price", 0))])
 	if fx.has("resurrect"):
 		out.append("Escoja a un caído para que vuelva")
 	if fx.has("steal_items"):

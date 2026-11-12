@@ -1,0 +1,104 @@
+{
+  "_doc": "Balance numbers (P1-06, doc 04). Read through scripts/domain/balance.gd (Balance.num('section.key')); tools/validate_data.py checks every key, type and range. Chances are 0-1; percent points are 0-100. Other tuning lives next to its system: statuses.json (status durations, caps), progression.json (XP, difficulty, skill ranks), camp_skills.json, town_events.json, items.json (prices), region JSONs (map generator, light).",
+  "combat": {
+    "_doc": "Hit = hit_base + (accuracy + skill accuracy - dodge) * hit_per_point, clamped hit_min..hit_max. Crit chance capped at crit_cap; crits deal x crit_mult. Protection is capped at prot_cap %. Guard: physical damage x guard_mult. A hero who misses gains miss_stress; a crit leaves them Encarrerado for encarrerado_turns. Enemies without 'crit' in enemies.json use enemy_base_crit.",
+    "hit_base": 0.7,
+    "hit_per_point": 0.02,
+    "hit_min": 0.05,
+    "hit_max": 0.95,
+    "initiative_jitter": 2,
+    "crit_cap": 0.5,
+    "crit_mult": 1.5,
+    "prot_cap": 80,
+    "guard_mult": 0.5,
+    "miss_stress": 3,
+    "encarrerado_turns": 2,
+    "enemy_base_crit": 5
+  },
+  "crits": {
+    "_doc": "Doc 01 §2.3 stress shock (owner 2026-11-11, Darkest Dungeon style): a hero's crit relieves party_relief stress for every living hero; an enemy crit adds enemy_crit_stress to the hero hit.",
+    "party_relief": 3,
+    "enemy_crit_stress": 10
+  },
+  "death": {
+    "_doc": "Doc 01 §2.4 Al Borde death roll: base = default 'golpe_de_gracia' % (heroes.json may set their own); minus check_penalty per earlier roll this expedition; minus the highest stress_penalties entry [stress, points] that applies; minus collapse_penalty on a Colapso (doc 01 §3.4). The cap is statuses.json deathblow_cap.",
+    "base": 67,
+    "check_penalty": 8,
+    "stress_penalties": [
+      [
+        100,
+        10
+      ],
+      [
+        150,
+        20
+      ]
+    ],
+    "collapse_penalty": 30
+  },
+  "stress": {
+    "_doc": "Doc 01 §3: resolve check at resolve_threshold (Quebranto with quebranto_chance, else Virtud, which resets stress to virtud_reset); Colapso at colapso (also the stress cap); surviving a Colapso while Al Borde leaves colapso_survive. Hero stress_resist is clamped to stress_resist_min..stress_resist_max; status resistances to status_resist_cap.",
+    "resolve_threshold": 100,
+    "colapso": 200,
+    "colapso_survive": 170,
+    "quebranto_chance": 0.75,
+    "virtud_reset": 40,
+    "stress_resist_min": -50,
+    "stress_resist_max": 80,
+    "status_resist_cap": 95
+  },
+  "afflictions": {
+    "_doc": "Quebranto / Virtud behaviour (doc 01 §3.3; stat changes are statuses.json mental_mods). Chances 0-1.",
+    "paranoia_refuse": 0.35,
+    "cobardia_skip": 0.2,
+    "cobardia_stress": 5,
+    "ira_ciega_chance": 0.15,
+    "ira_ciega_damage": [
+      2,
+      5
+    ],
+    "ira_ciega_self_stress": 4,
+    "bravata_chance": 0.2,
+    "bravata_light": 5,
+    "desesperanza_chance": 0.25,
+    "desesperanza_stress": 3,
+    "serenidad_mult": 0.75,
+    "esperanza_relief": 2,
+    "vigor_regen": 1,
+    "abnegacion_chance": 0.25
+  },
+  "enemies": {
+    "_doc": "Room squads: the leader gets boss_hp_mult (boss rooms) or elite_hp_mult (elite rooms); everyone else's HP is scaled by squad_hp_scale[squad size] (index 0-4).",
+    "boss_hp_mult": 1.45,
+    "elite_hp_mult": 1.25,
+    "squad_hp_scale": [
+      1.0,
+      1.0,
+      0.75,
+      0.6,
+      0.5
+    ]
+  },
+  "hub": {
+    "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia misa: iglesia_cost, relieves iglesia_relief stress; with iglesia_backfire_chance a hero gets iglesia_backfire_stress instead.",
+    "start_colones": 5000,
+    "sell_rate": 0.5,
+    "heal_cost_per_hp": 15,
+    "heal_min_cost": 100,
+    "iglesia_cost": 800,
+    "iglesia_relief": 10,
+    "iglesia_backfire_chance": 0.12,
+    "iglesia_backfire_stress": 8
+  },
+  "limits": {
+    "_doc": "Owner 2026-11-12: tunable limits. The party size (4) stays in code: the stage, positions 1-4 and the hub are built around it.",
+    "roster_cap": 8,
+    "inventory_slots": 24,
+    "recruit_pool": 3,
+    "graveyard_cap": 12
+  },
+  "light": {
+    "_doc": "Torch light (Luz) ranges 0..max.",
+    "max": 100
+  }
+}

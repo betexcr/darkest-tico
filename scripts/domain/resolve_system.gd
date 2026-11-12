@@ -7,6 +7,7 @@ extends RefCounted
 ##   min_level are under-leveled (start stress + extra stress taken for the whole mission).
 
 const DATA_PATH := "res://data/progression.json"
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 const MAX_LEVEL := 6
 
 static var _data: Dictionary = {}
@@ -31,8 +32,8 @@ static func cfg() -> Dictionary:
 
 static func thresholds() -> Array:
 	if radiant:
-		return cfg().get("xp_thresholds_radiant", [0, 2, 7, 13, 21, 29, 40])
-	return cfg().get("xp_thresholds", [0, 2, 8, 14, 24, 36, 48])
+		return BalanceScript.req(cfg(), "xp_thresholds_radiant", "progression.json")
+	return BalanceScript.req(cfg(), "xp_thresholds", "progression.json")
 
 
 static func level_name(level: int) -> String:
@@ -105,13 +106,13 @@ static func expedition(diff_id: String, region_level: int) -> Dictionary:
 	for k in ["level", "min_level", "max_level"]:
 		d[k] = mini(int(d.get(k, 0)) + rl, MAX_LEVEL)
 	if radiant:
-		d["max_level"] = mini(int(d["max_level"]) + int(cfg().get("radiant_extra_levels", 2)), MAX_LEVEL)
+		d["max_level"] = mini(int(d["max_level"]) + int(BalanceScript.req(cfg(), "radiant_extra_levels", "progression.json")), MAX_LEVEL)
 	d["enemy_hp"] = float(d.get("enemy_hp", 1.0)) * (1.0 + float(rs.get("enemy_hp", 0.0)) * rl)
 	d["enemy_dmg"] = float(d.get("enemy_dmg", 1.0)) * (1.0 + float(rs.get("enemy_dmg", 0.0)) * rl)
 	d["enemy_accuracy"] = int(d.get("enemy_accuracy", 0)) + int(rs.get("enemy_accuracy", 0)) * rl
 	d["enemy_resist"] = int(d.get("enemy_resist", 0)) + int(rs.get("enemy_resist", 0)) * rl
 	d["reward"] = float(d.get("reward", 1.0)) * (1.0 + float(rs.get("reward", 0.0)) * rl)
-	d["xp"] = int(d.get("xp", 2)) + int(rs.get("xp", 0)) * rl
+	d["xp"] = int(BalanceScript.req(d, "xp", "progression.json difficulty")) + int(rs.get("xp", 0)) * rl
 	return d
 
 
@@ -126,8 +127,8 @@ static func underlevel(hero: Dictionary, diff: Dictionary) -> int:
 
 
 static func underlevel_start_stress(levels: int) -> int:
-	return int(cfg().get("underlevel_start_stress", 20)) * levels
+	return int(BalanceScript.req(cfg(), "underlevel_start_stress", "progression.json")) * levels
 
 
 static func underlevel_stress_pct(levels: int) -> int:
-	return int(cfg().get("underlevel_stress_pct", 25)) * levels
+	return int(BalanceScript.req(cfg(), "underlevel_stress_pct", "progression.json")) * levels

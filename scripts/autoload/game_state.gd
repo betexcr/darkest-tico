@@ -14,6 +14,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 
 
@@ -23,7 +24,6 @@ const SKILLS_PATH := "res://data/skills.json"
 const ENEMIES_PATH := "res://data/enemies.json"
 const ITEMS_PATH := "res://data/items.json"
 const CURIOS_PATH := "res://data/curios.json"
-const INVENTORY_SLOTS := 24
 const EQUIP_SLOTS := ["weapon", "armor", "accessory1", "accessory2"]
 const ELEMENT_NAMES := {
 	"fuego": "Fuego", "hielo": "Hielo", "rayo": "Rayo", "agua": "Agua",
@@ -41,17 +41,34 @@ const PLAYABLE_REGIONS := [
 
 
 const SAVE_VERSION := 9
-const ROSTER_CAP := 8
 const PARTY_SIZE := 4
-const RECRUIT_POOL_SIZE := 3
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
-const HEAL_COST_PER_HP := 15
-const HEAL_MIN_COST := 100
 ## Items sell for half their buying price (owner, 2026-11-07).
-const SELL_RATE := 0.5
 
 
-var colones: int = 5000
+var colones: int = BalanceScript.int_of("hub.start_colones")
+
+
+# --- Balance limits and prices (data/balance.json, P1-06) ---------------------------
+
+func inventory_slots() -> int:
+	return BalanceScript.int_of("limits.inventory_slots")
+
+
+func roster_cap() -> int:
+	return BalanceScript.int_of("limits.roster_cap")
+
+
+func recruit_pool_size() -> int:
+	return BalanceScript.int_of("limits.recruit_pool")
+
+
+func graveyard_cap() -> int:
+	return BalanceScript.int_of("limits.graveyard_cap")
+
+
+func light_max() -> int:
+	return BalanceScript.int_of("light.max")
 
 var week: int = 1
 
@@ -63,7 +80,7 @@ var _skills_by_id: Dictionary = {}
 var _enemies_by_id: Dictionary = {}
 
 
-## Every hero the player owns (max ROSTER_CAP).
+## Every hero the player owns (max roster_cap()).
 var roster: Array = []
 ## Heroes going on the next/current expedition, in rank order (max PARTY_SIZE).
 ## Same dictionaries as in `roster`, so combat changes show up in both.
@@ -163,7 +180,6 @@ var stolen_items: Array = []
 var mission_event: Dictionary = {}
 ## What the drawn event did right away (shown on the hub's event card).
 var event_report: PackedStringArray = PackedStringArray()
-const GRAVEYARD_CAP := 12
 
 
 func _ready() -> void:
@@ -299,7 +315,7 @@ func add_item(item_id: String, qty: int) -> int:
 			var put: int = mini(stack - int(slot["qty"]), left)
 			slot["qty"] = int(slot["qty"]) + put
 			left -= put
-	while left > 0 and inventory.size() < INVENTORY_SLOTS:
+	while left > 0 and inventory.size() < inventory_slots():
 		var put2: int = mini(stack, left)
 		inventory.append({"id": item_id, "qty": put2})
 		left -= put2
@@ -370,7 +386,7 @@ func _item_use_key(hero: Dictionary, item_id: String) -> String:
 
 func sell_price(item_id: String) -> int:
 	var rate: float = TownEventsScript.sell_rate(active_event(), get_item(item_id))
-	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else SELL_RATE)))
+	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else BalanceScript.num("hub.sell_rate"))))
 
 
 ## Pulpería buys back one unit at half price. Returns a message for the hub.
@@ -416,7 +432,7 @@ func use_item_outside_combat(item_id: String, hero: Dictionary) -> PackedStringA
 	node_item_uses[key] = int(node_item_uses.get(key, 0)) + 1
 	var light: int = ItemEffectsScript.light_amount(item)
 	if light != 0:
-		mission_light = clampi(mission_light + light, 0, 100)
+		mission_light = clampi(mission_light + light, 0, light_max())
 		logs.append("La luz sube a %d." % mission_light)
 	if str(item.get("target", "")) == "party":
 		for h in party:
@@ -501,7 +517,7 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"class_id": template.get("class_id", ""),
 		"hp_max": hp_max,
 		"hp": hp_max,
-		"stress_max": 200,
+		"stress_max": BalanceScript.int_of("stress.colapso"),
 		"stress": 0,
 		"speed": int(template.get("speed", 3)),
 		"accuracy": int(template.get("accuracy", 5)),
@@ -733,14 +749,14 @@ func recompute_stats(hero: Dictionary) -> void:
 		hero[k] = stats[k]
 	hero["hp_max"] = maxi(int(hero["hp_max"]), 1)
 	hero["hp"] = mini(int(hero.get("hp", hero["hp_max"])), int(hero["hp_max"]))
-	hero["prot"] = clampi(int(stats["prot"]), 0, 80)
+	hero["prot"] = clampi(int(stats["prot"]), 0, BalanceScript.int_of("combat.prot_cap"))
 	hero["dmg_bonus"] = int(stats["damage"])
-	hero["stress_resist"] = clampi(int(stats["stress_resist"]), -50, 80)
+	hero["stress_resist"] = clampi(int(stats["stress_resist"]), BalanceScript.int_of("stress.stress_resist_min"), BalanceScript.int_of("stress.stress_resist_max"))
 	hero["element"] = element
 	hero["resist"] = resist
 	hero["immune"] = immune
 	for k in sres:
-		sres[k] = clampi(int(sres[k]), 0, 95)
+		sres[k] = clampi(int(sres[k]), 0, BalanceScript.int_of("stress.status_resist_cap"))
 	hero["status_resist"] = sres
 	hero["on_hit"] = on_hit
 	hero["start_status"] = start_status
@@ -766,7 +782,7 @@ func hire_cost(hero: Dictionary) -> int:
 func refresh_recruits() -> void:
 	recruit_pool.clear()
 	var ids: Array = _heroes_by_id.keys()
-	for _k in RECRUIT_POOL_SIZE:
+	for _k in recruit_pool_size():
 		if ids.is_empty():
 			break
 		recruit_pool.append(_instantiate_hero(_heroes_by_id[ids[randi() % ids.size()]]))
@@ -778,8 +794,8 @@ func hire_recruit(index: int) -> String:
 		return "Ese candidato ya se fue en el bus."
 	if TownEventsScript.is_closed(active_event(), "terminal"):
 		return "La terminal está cerrada esta semana (%s)." % active_event().get("name", "")
-	if roster.size() >= ROSTER_CAP:
-		return "La hacienda no tiene más camas (máximo %d héroes)." % ROSTER_CAP
+	if roster.size() >= roster_cap():
+		return "La hacienda no tiene más camas (máximo %d héroes)." % roster_cap()
 	var h: Dictionary = recruit_pool[index]
 	var cost: int = hire_cost(h)
 	if colones < cost:
@@ -801,7 +817,7 @@ func dismiss_hero(hero: Dictionary) -> String:
 		return "La hacienda no puede quedarse sin nadie."
 	var eq = hero.get("equipment", {})
 	var gear: Array = eq.values() if eq is Dictionary else []
-	if inventory.size() + gear.size() > INVENTORY_SLOTS:
+	if inventory.size() + gear.size() > inventory_slots():
 		return "No hay espacio en la alforja para guardar el equipo de %s." % hero.get("name", "?")
 	for id in gear:
 		add_item(str(id), 1)
@@ -864,7 +880,7 @@ func heal_cost(hero: Dictionary) -> int:
 	var missing: int = int(hero.get("hp_max", 0)) - int(hero.get("hp", 0))
 	if missing <= 0 or bool(hero.get("dead", false)):
 		return 0
-	var base: int = maxi(missing * HEAL_COST_PER_HP, HEAL_MIN_COST)
+	var base: int = maxi(missing * BalanceScript.int_of("hub.heal_cost_per_hp"), BalanceScript.int_of("hub.heal_min_cost"))
 	return int(round(base * TownEventsScript.service_mult(active_event(), "ebais")))
 
 
@@ -892,7 +908,7 @@ func end_of_expedition_week() -> void:
 		if bool(h.get("dead", false)):
 			fallen.append(str(h.get("name", "?")))
 			graveyard.append(h)
-			if graveyard.size() > GRAVEYARD_CAP:
+			if graveyard.size() > graveyard_cap():
 				graveyard.remove_at(0)
 			roster.remove_at(k)
 		else:
@@ -913,17 +929,15 @@ func end_of_expedition_week() -> void:
 
 
 ## Iglesia Vieja stub: group prayer, small risk of bad mood.
-const IGLESIA_COST := 800
-const IGLESIA_RELIEF := 10
 
 
 func iglesia_cost() -> int:
-	return int(round(IGLESIA_COST * TownEventsScript.service_mult(active_event(), "iglesia")))
+	return int(round(BalanceScript.int_of("hub.iglesia_cost") * TownEventsScript.service_mult(active_event(), "iglesia")))
 
 
 ## Stress the misa removes this week (town events can raise or lower it).
 func iglesia_relief() -> int:
-	return int(floor(IGLESIA_RELIEF * TownEventsScript.relief_mult(active_event())))
+	return int(floor(BalanceScript.int_of("hub.iglesia_relief") * TownEventsScript.relief_mult(active_event())))
 
 
 func iglesia_misa_rapida() -> String:
@@ -938,16 +952,17 @@ func iglesia_misa_rapida() -> String:
 		if h is Dictionary and not h.get("dead", false):
 			for _x in StressSystemScript.add_stress(h, -relief):
 				pass
-	if randf() < 0.12:
+	if randf() < BalanceScript.num("hub.iglesia_backfire_chance"):
 		var living: Array = []
 		for h in roster:
 			if h is Dictionary and not h.get("dead", false):
 				living.append(h)
 		if not living.is_empty():
 			var v: Dictionary = living[randi() % living.size()]
-			for _x in StressSystemScript.add_stress(v, 8):
+			var bf: int = BalanceScript.int_of("hub.iglesia_backfire_stress")
+			for _x in StressSystemScript.add_stress(v, bf):
 				pass
-			return "La misa ayuda, pero %s sigue inquieto (+8 estrés)." % v.get("name", "?")
+			return "La misa ayuda, pero %s sigue inquieto (+%d estrés)." % [v.get("name", "?"), bf]
 	return "La Iglesia Vieja devuelve un poco de calma (-%d estrés a todos los héroes)." % relief
 
 
@@ -971,7 +986,7 @@ func start_mission(region_path: String = "") -> bool:
 			n["label"] = str(get_curio(str(n["curio_id"])).get("name", n.get("label", "")))
 	mission_nodes_index = ExpeditionLoaderScript.node_by_id(r)
 	current_region_id = str(r.get("region_id", ""))
-	mission_light = mini(100, int(r.get("initial_light", 100)))
+	mission_light = mini(light_max(), int(r.get("initial_light", light_max())))
 	mission_food = item_count("gallo_pinto")
 	node_item_uses.clear()
 	current_node_id = str(r.get("start_node", "n0"))
@@ -1198,7 +1213,15 @@ func mark_node_cleared(node_id: String) -> void:
 
 
 ## HP multiplier per member for a squad of n (fights stay short when 3-4 enemies show up).
-const SQUAD_HP_SCALE := [1.0, 1.0, 0.75, 0.6, 0.5]
+
+
+## HP multiplier of a room's leader: boss or elite (data/balance.json "enemies"), else 1.
+func leader_hp_mult(nd: Dictionary) -> float:
+	if bool(nd.get("is_boss", false)):
+		return BalanceScript.num("enemies.boss_hp_mult")
+	if bool(nd.get("is_elite", false)):
+		return BalanceScript.num("enemies.elite_hp_mult")
+	return 1.0
 
 
 ## Builds combat_context["enemies"] for a room: fresh copies with scaled HP; duplicate
@@ -1208,7 +1231,8 @@ func build_combat_context_for_node(node_id: String) -> void:
 	var ids: Array = nd0.get("enemy_ids", [])
 	if ids.is_empty():
 		ids = [str(nd0.get("enemy_id", "espanto"))]
-	var squad_scale: float = SQUAD_HP_SCALE[mini(ids.size(), SQUAD_HP_SCALE.size() - 1)]
+	var scales: Array = BalanceScript.arr("enemies.squad_hp_scale")
+	var squad_scale: float = float(scales[mini(ids.size(), scales.size() - 1)])
 	var squad: Array = []
 	var seen: Dictionary = {}
 	for k in ids.size():
@@ -1218,10 +1242,10 @@ func build_combat_context_for_node(node_id: String) -> void:
 			en = {"id": "espanto", "name": "Espanto del Sótano", "hp_max": 45, "speed": 4, "dodge": 5, "accuracy": 8}
 		var hp: float = float(en.get("hp_max", 40))
 		if k == 0 and bool(nd0.get("is_boss", false)):
-			hp *= 1.45
+			hp *= leader_hp_mult(nd0)
 		else:
-			if k == 0 and bool(nd0.get("is_elite", false)):
-				hp *= 1.25
+			if k == 0:
+				hp *= leader_hp_mult(nd0)
 			hp *= squad_scale
 		hp *= float(mission_difficulty.get("enemy_hp", 1.0))
 		en["hp_max"] = maxi(int(ceil(hp)), 1)
@@ -1269,10 +1293,7 @@ func _build_single_context(node_id: String) -> void:
 			"accuracy": 8,
 		}
 	var hp_max: int = int(en.get("hp_max", 40))
-	if bool(nd.get("is_elite", false)):
-		hp_max = int(ceili(float(hp_max) * 1.25))
-	if bool(nd.get("is_boss", false)):
-		hp_max = int(ceili(float(hp_max) * 1.45))
+	hp_max = int(ceili(float(hp_max) * leader_hp_mult(nd)))
 	en["hp_max"] = hp_max
 	en["hp"] = hp_max
 	en["dead"] = false
@@ -1501,7 +1522,7 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["camp_buffs"] = []
 	out["underlevel_stress_pct"] = 0
 	recompute_stats(out)
-	var smax: int = maxi(int(out.get("stress_max", 200)), 200)
+	var smax: int = maxi(int(out.get("stress_max", 0)), BalanceScript.int_of("stress.colapso"))
 	out["stress_max"] = smax
 	out["stress"] = clampi(int(out.get("stress", 0)), 0, smax)
 	return out
@@ -1640,7 +1661,7 @@ func _apply_event_now(ev: Dictionary) -> PackedStringArray:
 		recruit_pool.append(vet)
 		out.append("%s (%s, Resolución %d) espera en la terminal." % [vet.get("name", "?"), vet.get("class_name", ""), int(vet["resolve_level"])])
 	for _k in int(fx.get("add_roster_free", 0)):
-		if roster.size() >= ROSTER_CAP:
+		if roster.size() >= roster_cap():
 			out.append("No hay camas libres para el forastero.")
 			break
 		var fr: Dictionary = _instantiate_hero(_random_template())
@@ -1680,7 +1701,7 @@ func resurrect_candidates() -> Array:
 func resurrect(uid: int) -> String:
 	if resurrect_candidates().filter(func(h): return int(h.get("uid", 0)) == uid).is_empty():
 		return "Ya no se puede."
-	if roster.size() >= ROSTER_CAP:
+	if roster.size() >= roster_cap():
 		return "No hay camas libres en la hacienda."
 	for k in graveyard.size():
 		var h: Dictionary = graveyard[k]

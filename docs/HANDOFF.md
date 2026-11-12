@@ -17,6 +17,47 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (night) — P1-06 — Balance constants to data/balance.json
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-06 review. Owner 2026-11-12: the tunable limits moved too; party size 4 stays in code.
+- **Changed:**
+  - **`data/balance.json` (new):**
+    - `combat`: hit band, initiative, crit cap/mult, prot cap, Guard, miss stress, Encarrerado turns, enemy base crit.
+    - `crits`; `death`; `stress` (thresholds and resist caps); `afflictions` (all Quebranto/Virtud numbers).
+    - `enemies`: boss/elite HP, squad scale. `hub`: starting colones, sell rate, EBAIS, Iglesia and its backfire. `limits`: roster, inventory, recruits, graveyard. `light.max`.
+    - Same values as before.
+  - **`scripts/domain/balance.gd` (new):**
+    - `num` / `int_of` / `arr` getters are strict (`push_error` on a missing key).
+    - `req(dict, key)` for required keys in other data files.
+    - `override` / `reset` for tests.
+  - **Domain scripts:**
+    - `combat_resolver` and `stress_system` constants were removed.
+    - `status_effects`, `camping_system`, `resolve_system`, `skill_ranks`, `town_events` and `map_generator` lost their duplicate numeric fallbacks.
+    - The map shape numbers went to the `sotanos.json` generator block (`branch_newest_chance`, `max_exits`).
+  - **`GameState`:**
+    - Prices, starting colones, stress/light/resist caps come from data; one `leader_hp_mult` replaces the duplicated 1.45 / 1.25.
+    - The limits are now functions (`inventory_slots()`, `roster_cap()`, `recruit_pool_size()`, `graveyard_cap()`, `light_max()`). Callers in the hub, the expedition screen and the tests are updated.
+  - **`combat_controller.gd`:** miss stress, Ira ciega self-stress, Encarrerado turns, Guard, prot cap, light max and crit numbers come from `Balance`.
+  - **`tools/validate_data.py`:**
+    - `BALANCE_KEYS` checks the type and range of every balance key, and every path the scripts read must be listed there.
+    - The magic-number scan rejects numeric consts and `.get(…, N)` fallbacks in `scripts/domain/` unless marked `# structural`.
+  - **Tests:**
+    - `tests/test_balance.gd` (new, 12 checks: values match the data, overrides change behaviour, reset).
+    - `test_hub` / `test_town_events` read prices from `Balance`.
+    - The `test_formation` Patada check no longer flakes on the 95% hit cap (it forces the hit through `override`).
+  - **Docs:** 04 §0 "Where the numbers live", AGENTS.md §2/§4 and the verify list.
+- **Verified:**
+  - `validate_data.py` 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2: all 11 test scripts 0 failures, no errors or `push_error` lines; `test_formation` passed 3 runs in a row.
+  - Hub screenshot shows 4/8 heroes, 4/24 slots, Iglesia 800 ₡ / −10.
+- **Not verified / risks:**
+  - The behaviour should be identical. The smoke bot lost 3/3 in one run, which is noise on top of P1-05's deadlier rules: the values are unchanged and the numeric tests all pass.
+  - Trap/curio chances, the camp ambush roll and the Light reset in `expedition_screen.gd` are still in code. They belong to P2-01 (data-driven events).
+- **Decisions needed:** none.
+- **Next step:** P1-07 (combat Monte Carlo sim). Write a headless script that runs N fights of the starting party vs each Sótanos squad, using `Balance.override` to compare settings, and reports win rate, hero deaths and stress per fight. Start from the `tests/test_formation.gd` fight setup.
+
+---
+
 ## 2026-11-12 (later) — P1-03b — Push, pull, shuffle, Amarrado, and fixing the formation between fights
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-03b review. P1-03 is now fully built (a and b both in review).

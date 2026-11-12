@@ -1,4 +1,5 @@
 extends RefCounted
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 ## Random grid dungeon (docs/12-phase-plan.md P2-06).
 ## Rooms sit on integer grid cells; corridors join orthogonal neighbors, so every move is
@@ -12,9 +13,9 @@ const DIRS := [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 static func generate(region: Dictionary, seed_value: int) -> Dictionary:
 	# Retry with the next seed until the boss is far enough from the entrance.
 	var gen: Dictionary = region.get("generator", {})
-	var min_boss: int = int(gen.get("min_boss_distance", 5))
+	var min_boss: int = int(BalanceScript.req(gen, "min_boss_distance", "region generator"))
 	var out: Dictionary = {}
-	for attempt in 30:
+	for attempt in 30:  # structural: retry guard
 		out = _generate_once(gen, seed_value + attempt)
 		if int(out.get("boss_distance", 0)) >= min_boss:
 			return out
@@ -25,15 +26,15 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 
-	var rooms_range: Array = gen.get("rooms", [10, 13])
+	var rooms_range: Array = BalanceScript.req(gen, "rooms", "region generator")
 	var target: int = rng.randi_range(int(rooms_range[0]), int(rooms_range[1]))
 	var cells: Array = [Vector2i.ZERO]
 	var cell_index: Dictionary = {Vector2i.ZERO: 0}
 	var adj: Array = [[]]
 	var guard: int = 0
-	while cells.size() < target and guard < 5000:
+	while cells.size() < target and guard < 5000:  # structural: loop guard
 		guard += 1
-		var from: int = _pick_growth_room(cells, adj, rng)
+		var from: int = _pick_growth_room(cells, adj, rng, gen)
 		var free_dirs: Array = []
 		for d in DIRS:
 			if not cell_index.has(cells[from] + d):
@@ -63,7 +64,7 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 	var boss_dist: int = int(dist[boss])
 	var links: int = int(gen.get("extra_links", 1))
 	var tries: int = 0
-	while links > 0 and tries < 200:
+	while links > 0 and tries < 200:  # structural: loop guard
 		tries += 1
 		var a: int = rng.randi_range(1, cells.size() - 1)
 		if a == boss:
@@ -114,7 +115,7 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 	for k in pool:
 		if types[k] == "":
 			types[k] = _weighted(weights, rng)
-	var min_combat: int = int(gen.get("min_combat", 2))
+	var min_combat: int = int(BalanceScript.req(gen, "min_combat", "region generator"))
 	var n_combat: int = types.count("combat") + types.count("elite")
 	for k in pool:
 		if n_combat >= min_combat:
@@ -143,20 +144,20 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 			"combat":
 				nd["enemy_id"] = _pick(gen.get("enemy_pool", ["espanto"]), rng)
 				nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
-				nd["reward_colones"] = _range(gen.get("reward_colones", [300, 450]), rng)
+				nd["reward_colones"] = _range(BalanceScript.req(gen, "reward_colones", "region generator"), rng)
 			"elite":
 				nd["type"] = "combat"
 				nd["is_elite"] = true
 				nd["enemy_id"] = _pick(gen.get("elite_pool", gen.get("enemy_pool", ["espanto"])), rng)
 				nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
-				nd["reward_colones"] = _range(gen.get("elite_reward_colones", [500, 650]), rng)
+				nd["reward_colones"] = _range(BalanceScript.req(gen, "elite_reward_colones", "region generator"), rng)
 			"curio":
 				nd["curio_id"] = _pick(gen.get("curios", []), rng)
 			"boss":
 				nd["is_boss"] = true
 				nd["enemy_id"] = str(gen.get("boss_enemy_id", "espanto"))
 				nd["enemy_ids"] = [nd["enemy_id"]] + Array(gen.get("boss_escort", []))
-				nd["reward_colones"] = int(gen.get("boss_reward_colones", 900))
+				nd["reward_colones"] = int(BalanceScript.req(gen, "boss_reward_colones", "region generator"))
 		nodes.append(nd)
 	var edges: Array = []
 	for a in adj.size():
@@ -176,7 +177,7 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 
 ## Leader first (front rank), then 0..n extra members from the normal pool (P1-02).
 static func _squad(leader: String, gen: Dictionary, rng: RandomNumberGenerator) -> Array:
-	var size_range: Array = gen.get("squad_size", [1, 3])
+	var size_range: Array = BalanceScript.req(gen, "squad_size", "region generator")
 	var n: int = rng.randi_range(int(size_range[0]), int(size_range[1]))
 	var out: Array = [leader]
 	for _k in n - 1:
@@ -184,14 +185,14 @@ static func _squad(leader: String, gen: Dictionary, rng: RandomNumberGenerator) 
 	return out
 
 
-## Mostly extend the newest room (long corridors), sometimes branch from any room with
-## fewer than 3 exits.
-static func _pick_growth_room(cells: Array, adj: Array, rng: RandomNumberGenerator) -> int:
-	if rng.randf() < 0.6:
+## Mostly extend the newest room (long corridors; generator branch_newest_chance), sometimes
+## branch from any room with fewer than generator max_exits exits.
+static func _pick_growth_room(cells: Array, adj: Array, rng: RandomNumberGenerator, gen: Dictionary) -> int:
+	if rng.randf() < float(BalanceScript.req(gen, "branch_newest_chance", "region generator")):
 		return cells.size() - 1
 	var options: Array = []
 	for k in cells.size():
-		if adj[k].size() < 3:
+		if adj[k].size() < int(BalanceScript.req(gen, "max_exits", "region generator")):
 			options.append(k)
 	if options.is_empty():
 		return rng.randi() % cells.size()

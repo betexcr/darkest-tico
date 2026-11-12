@@ -8,6 +8,7 @@ extends RefCounted
 
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 ## Every key per_rank / rank_bonus may use (the validator checks the same list).
 ## status_mods (+N to each numeric mod of applies/self_applies) is meant for a skill's own
@@ -21,7 +22,7 @@ static func cfg() -> Dictionary:
 
 
 static func max_rank() -> int:
-	return int(cfg().get("max_rank", 5))
+	return int(BalanceScript.req(cfg(), "max_rank", "progression.json skill_ranks"))
 
 
 ## Rank of `sid` for this hero (1 when never trained).

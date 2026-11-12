@@ -90,7 +90,7 @@ func _run() -> void:
 	gs.draw_town_event("el_padre_de_gira")
 	_check(gs.iglesia_misa_rapida().begins_with("La Iglesia Vieja está cerrada"), "El padre anda de gira: Iglesia closed")
 	gs.party[0]["hp"] = 10
-	var ebais_full: int = maxi((int(gs.party[0]["hp_max"]) - 10) * gs.HEAL_COST_PER_HP, gs.HEAL_MIN_COST)
+	var ebais_full: int = maxi((int(gs.party[0]["hp_max"]) - 10) * gs.BalanceScript.int_of("hub.heal_cost_per_hp"), gs.BalanceScript.int_of("hub.heal_min_cost"))
 	_check(gs.heal_cost(gs.party[0]) == ebais_full / 2, "…EBAIS at half price")
 	gs.draw_town_event("feria_de_la_salud")
 	var before_c: int = gs.colones

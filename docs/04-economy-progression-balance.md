@@ -2,6 +2,28 @@
 
 This spec defines currency loops, costs, reward scaling, and long-term pacing targets.
 
+## 0) Where the numbers live (P1-06)
+
+- `data/balance.json`, read through `scripts/domain/balance.gd`:
+  - `combat`: hit band, crits, protection cap, Guard, miss stress
+  - `crits`: crit stress
+  - `death`: Al Borde death roll
+  - `stress`: thresholds and caps
+  - `afflictions`: Quebranto and Virtud chances and amounts
+  - `enemies`: boss and elite HP, squad HP scale
+  - `hub`: starting colones, sell rate, EBAIS, Iglesia
+  - `limits`: roster, inventory, recruits, graveyard
+  - `light`
+- Next to their system:
+  - `items.json`: item prices
+  - `progression.json`: resolve XP, difficulty, skill-rank costs
+  - `statuses.json`: status durations and caps
+  - `camp_skills.json`: camp, meals, ambush
+  - `town_events.json`: event chance and effects
+  - region JSONs: map generator, rewards, light decay
+- `tools/validate_data.py` checks every balance key's type and range. It also fails on new numeric constants or numeric fallbacks in `scripts/domain/`.
+- Tests can change a value for one check with `Balance.override` / `Balance.reset` (`tests/test_balance.gd`).
+
 ## 1) Currency Model
 
 ### 1.1 Colones (soft currency)

@@ -9,6 +9,7 @@ const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
 const DATA_PATH := "res://data/camp_skills.json"
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 static var _data: Dictionary = {}
 static var _by_id: Dictionary = {}
@@ -33,7 +34,7 @@ static func skill(id: String) -> Dictionary:
 
 
 static func respite_points() -> int:
-	return int(data().get("respite_points", 12))
+	return int(BalanceScript.req(data(), "respite_points", "camp_skills.json"))
 
 
 static func meals() -> Array:
@@ -48,7 +49,7 @@ static func living(party: Array) -> Array:
 
 ## Food listed is for 4 heroes; it shrinks with fewer living heroes (rounded up).
 static func meal_cost(meal: Dictionary, party: Array) -> int:
-	return int(ceil(float(meal.get("food", 0)) * float(living(party).size()) / 4.0))
+	return int(ceil(float(meal.get("food", 0)) * float(living(party).size()) / 4.0))  # structural: meal food is written for a party of 4
 
 
 static func meal_summary(meal: Dictionary) -> String:
@@ -161,8 +162,8 @@ static func _apply_effects(hero: Dictionary, eff: Dictionary, sk: Dictionary) ->
 		logs.append_array(StressSystemScript.add_stress(hero, int(eff["stress"])))
 	var b = eff.get("buff", null)
 	if b is Dictionary:
-		add_buff(hero, str(sk.get("id", "")), str(sk.get("name", "")), b.get("mods", {}), int(b.get("fights", 4)))
-		logs.append("  %s: %s por %d peleas." % [who, mods_text(b.get("mods", {})), int(b.get("fights", 4))])
+		add_buff(hero, str(sk.get("id", "")), str(sk.get("name", "")), b.get("mods", {}), int(BalanceScript.req(b, "fights", "camp_skills.json buff")))
+		logs.append("  %s: %s por %d peleas." % [who, mods_text(b.get("mods", {})), int(BalanceScript.req(b, "fights", "camp_skills.json buff"))])
 	return logs
 
 
@@ -205,7 +206,7 @@ static func ambush_chance(light: int, low_light_threshold: int, prevented: bool)
 	if prevented:
 		return 0
 	var a: Dictionary = data().get("ambush", {})
-	var c: int = int(a.get("base_pct", 12))
+	var c: int = int(BalanceScript.req(a, "base_pct", "camp_skills.json ambush"))
 	if light < low_light_threshold:
-		c += int(a.get("low_light_pct", 6))
+		c += int(BalanceScript.req(a, "low_light_pct", "camp_skills.json ambush"))
 	return c

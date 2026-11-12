@@ -258,12 +258,12 @@ func _refresh_equipment() -> void:
 		_equip_title.text = "MODO VENDER: clic en un artículo de la alforja para venderlo (mitad de precio)"
 	else:
 		_equip_title.text = "Equipo de %s — arrastra desde la alforja (%d/%d espacios)" % [
-			_selected.get("name", "—"), GameState.inventory.size(), GameState.INVENTORY_SLOTS]
+			_selected.get("name", "—"), GameState.inventory.size(), GameState.inventory_slots()]
 	for es in _equip_slots:
 		es.show_hero(_selected)
 	for c in _pack_grid.get_children():
 		c.queue_free()
-	for k in GameState.INVENTORY_SLOTS:
+	for k in GameState.inventory_slots():
 		var b = InventorySlotScript.new()
 		if k < GameState.inventory.size():
 			b.setup(str(GameState.inventory[k]["id"]), int(GameState.inventory[k]["qty"]))
@@ -368,7 +368,7 @@ func _refresh_recruits() -> void:
 			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)), GameState.hire_cost(h)]
 		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
 			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
-		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.ROSTER_CAP \
+		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.roster_cap() \
 			or TownEventsScript.is_closed(GameState.active_event(), "terminal")
 		b.pressed.connect(func(): _say(GameState.hire_recruit(i)))
 		_recruit_box.add_child(b)
@@ -380,7 +380,7 @@ func _refresh_roster() -> void:
 	for c in _roster_list.get_children():
 		c.queue_free()
 	_roster_title.text = "Héroes (%d/%d) — cuadrilla %d/%d, en orden de rango" % [
-		GameState.roster.size(), GameState.ROSTER_CAP, GameState.party.size(), GameState.PARTY_SIZE]
+		GameState.roster.size(), GameState.roster_cap(), GameState.party.size(), GameState.PARTY_SIZE]
 	# Party first (rank order), then the rest.
 	var ordered: Array = GameState.party.duplicate()
 	for h in GameState.roster:

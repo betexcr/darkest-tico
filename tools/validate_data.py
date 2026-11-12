@@ -24,6 +24,7 @@ Run this before every handoff (see AGENTS.md).
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import deque
 from pathlib import Path
@@ -497,6 +498,9 @@ def main() -> int:
             elif not (ROOT / out).exists():
                 warnings.append(f"art_manifest.json: '{aid}' not generated yet ({out})")
 
+    check_balance(errors)
+    check_domain_magic_numbers(errors)
+
     for w in warnings:
         print(f"WARN  {w}")
     for e in errors:
@@ -507,6 +511,107 @@ def main() -> int:
         f"{len(errors)} error(s), {len(warnings)} warning(s)"
     )
     return 1 if errors else 0
+
+
+# --- P1-06: data/balance.json ------------------------------------------------------------
+# Every key the code reads (scripts/domain/balance.gd paths) and what it may hold:
+# "chance" 0-1, "pct" 0-100 points, "pos" > 0 number, "int>=0" whole number, "mult" > 0.
+BALANCE_KEYS = {
+    "combat.hit_base": "chance", "combat.hit_per_point": "chance", "combat.hit_min": "chance",
+    "combat.hit_max": "chance", "combat.initiative_jitter": "int>=0", "combat.crit_cap": "chance",
+    "combat.crit_mult": "mult", "combat.prot_cap": "pct", "combat.guard_mult": "chance",
+    "combat.miss_stress": "int>=0", "combat.encarrerado_turns": "int>=0", "combat.enemy_base_crit": "pct",
+    "crits.party_relief": "int>=0", "crits.enemy_crit_stress": "int>=0",
+    "death.base": "pct", "death.check_penalty": "int>=0", "death.collapse_penalty": "int>=0",
+    "stress.resolve_threshold": "pos", "stress.colapso": "pos", "stress.colapso_survive": "int>=0",
+    "stress.quebranto_chance": "chance", "stress.virtud_reset": "int>=0",
+    "stress.stress_resist_min": "int", "stress.stress_resist_max": "pct", "stress.status_resist_cap": "pct",
+    "afflictions.paranoia_refuse": "chance", "afflictions.cobardia_skip": "chance",
+    "afflictions.cobardia_stress": "int>=0", "afflictions.ira_ciega_chance": "chance",
+    "afflictions.ira_ciega_self_stress": "int>=0", "afflictions.bravata_chance": "chance",
+    "afflictions.bravata_light": "int>=0", "afflictions.desesperanza_chance": "chance",
+    "afflictions.desesperanza_stress": "int>=0", "afflictions.serenidad_mult": "mult",
+    "afflictions.esperanza_relief": "int>=0", "afflictions.vigor_regen": "int>=0",
+    "afflictions.abnegacion_chance": "chance",
+    "enemies.boss_hp_mult": "mult", "enemies.elite_hp_mult": "mult",
+    "hub.start_colones": "int>=0", "hub.sell_rate": "chance", "hub.heal_cost_per_hp": "int>=0",
+    "hub.heal_min_cost": "int>=0", "hub.iglesia_cost": "int>=0", "hub.iglesia_relief": "int>=0",
+    "hub.iglesia_backfire_chance": "chance", "hub.iglesia_backfire_stress": "int>=0",
+    "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
+    "limits.graveyard_cap": "pos", "light.max": "pos",
+}
+
+
+def check_balance(errors: list) -> None:
+    bal = load(DATA / "balance.json")
+    if not bal:
+        errors.append("balance.json: missing or invalid")
+        return
+
+    def get(path):
+        node = bal
+        for part in path.split("."):
+            if not isinstance(node, dict) or part not in node:
+                return None
+            node = node[part]
+        return node
+
+    for path, kind in BALANCE_KEYS.items():
+        v = get(path)
+        num = isinstance(v, (int, float)) and not isinstance(v, bool)
+        ok = num and {
+            "chance": lambda x: 0 <= x <= 1,
+            "pct": lambda x: 0 <= x <= 100,
+            "pos": lambda x: x > 0,
+            "int>=0": lambda x: x >= 0 and float(x).is_integer(),
+            "int": lambda x: float(x).is_integer(),
+            "mult": lambda x: x > 0,
+        }[kind](v)
+        if not ok:
+            errors.append(f"balance.json: '{path}' must be {kind} (is {v!r})")
+    if (get("combat.hit_min") or 0) >= (get("combat.hit_max") or 0):
+        errors.append("balance.json: combat.hit_min must be below combat.hit_max")
+    if not (0 < (get("stress.resolve_threshold") or 0) < (get("stress.colapso") or 0)):
+        errors.append("balance.json: need 0 < stress.resolve_threshold < stress.colapso")
+    if (get("stress.colapso_survive") or 0) >= (get("stress.colapso") or 0):
+        errors.append("balance.json: stress.colapso_survive must be below stress.colapso")
+    sp = get("death.stress_penalties")
+    if not isinstance(sp, list) or not sp or any(not isinstance(p, list) or len(p) != 2 for p in sp) \
+            or [p[0] for p in sp] != sorted(p[0] for p in sp):
+        errors.append("balance.json: death.stress_penalties must be [[stress, points], ...] sorted by stress")
+    sc = get("enemies.squad_hp_scale")
+    if not isinstance(sc, list) or len(sc) != 5 or any(not isinstance(x, (int, float)) or x <= 0 for x in sc):
+        errors.append("balance.json: enemies.squad_hp_scale needs 5 positive numbers (squad size 0-4)")
+    dmg = get("afflictions.ira_ciega_damage")
+    if not isinstance(dmg, list) or len(dmg) != 2 or dmg[0] > dmg[1] or dmg[0] < 0:
+        errors.append("balance.json: afflictions.ira_ciega_damage must be [min, max]")
+    # Every Balance path used in scripts must be listed above (so it is checked).
+    used = set()
+    for gd in (ROOT / "scripts").rglob("*.gd"):
+        used |= set(re.findall(r'BalanceScript\.(?:num|int_of|arr|value)\("([a-z_.]+)"\)', gd.read_text(encoding="utf-8")))
+    arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage"}
+    for path in sorted(used - set(BALANCE_KEYS) - arrays):
+        errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
+
+
+# "No magic balance numbers left in scripts/domain/" (P1-06). Flags numeric consts and
+# numeric .get(..., N) fallbacks other than 0/1; a line may opt out with "# structural".
+MAGIC_ALLOW = {"MAX_LEVEL"}
+
+
+def check_domain_magic_numbers(errors: list) -> None:
+    const_re = re.compile(r'^const ([A-Z_]+) := (-?[0-9.]+|\[[-0-9., \[\]]+\])\s*(#.*)?$')
+    get_re = re.compile(r'\.get\("[^"]+", (-?[0-9.]+|\[[-0-9., ]+\])\)')
+    for gd in sorted((ROOT / "scripts" / "domain").glob("*.gd")):
+        for n, line in enumerate(gd.read_text(encoding="utf-8").splitlines(), 1):
+            if "# structural" in line or line.lstrip().startswith("#"):
+                continue
+            m = const_re.match(line)
+            if m and m.group(1) not in MAGIC_ALLOW:
+                errors.append(f"{gd.relative_to(ROOT)}:{n}: balance const {m.group(1)} belongs in data (or mark '# structural')")
+            for g in get_re.finditer(line):
+                if g.group(1) not in ("0", "1", "0.0", "1.0", "-1"):
+                    errors.append(f"{gd.relative_to(ROOT)}:{n}: numeric fallback {g.group(0)} duplicates data (use Balance.req or mark '# structural')")
 
 
 if __name__ == "__main__":

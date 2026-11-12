@@ -124,12 +124,12 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [x] Damage formula includes `atkMods` / defense multipliers (0 by default)
 
 ### P1-06 · S · Balance constants to data
-- Status: `todo` · Depends: P1-05
+- Status: `review` (Claude Code, `main`, 2026-11-12) · Depends: P1-05. Owner 2026-11-12: also move the tunable limits (roster, inventory, recruits, graveyard); party size 4 stays in code.
 - Spec: `04`, roadmap §8 item 1
 - Files: `data/balance.json` (new), `scripts/domain/*.gd`, `scripts/autoload/game_state.gd`
 - Done when:
-  - [ ] Hit band, crit cap/multiplier, death save base/decay, stress thresholds, shop prices are read from `data/balance.json`
-  - [ ] No magic balance numbers left in `scripts/domain/`
+  - [x] Hit band, crit cap/multiplier, death save base/decay, stress thresholds, shop prices are read from `data/balance.json`
+  - [x] No magic balance numbers left in `scripts/domain/` (enforced by `tools/validate_data.py`)
 
 ### P1-07 · M · Combat Monte Carlo sim
 - Status: `todo` · Depends: P1-06

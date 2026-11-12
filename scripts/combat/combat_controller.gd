@@ -13,6 +13,7 @@ const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -197,7 +198,7 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 			_log_all(ItemEffectsScript.apply_to_hero(item, target))
 	var light: int = ItemEffectsScript.light_amount(item)
 	if light != 0:
-		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
+		GameState.mission_light = clampi(GameState.mission_light + light, 0, GameState.light_max())
 	await _after_action(enemy_before, party_before)
 
 
@@ -489,7 +490,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		var fdmg: int = StressSystemScript.friendly_fire_damage()
 		_apply_damage_to_hero(ff, fdmg)
 		_log("%s (ira ciega) hiere a %s por %d" % [hero.get("name", "?"), ff.get("name", "?"), fdmg], "cc7744")
-		_log_all(StressSystemScript.add_stress(hero, 4))
+		_log_all(StressSystemScript.add_stress(hero, BalanceScript.int_of("afflictions.ira_ciega_self_stress")))
 		return
 	var light_cost: int = StressSystemScript.bravata_light_cost(hero)
 	if light_cost > 0:
@@ -506,7 +507,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		var mu = _unit_for_enemy(enemy)
 		if mu != null:
 			mu.float_text("Falla", COLOR_MISS)
-		_log_all(StressSystemScript.add_stress(hero, 3))
+		_log_all(StressSystemScript.add_stress(hero, BalanceScript.int_of("combat.miss_stress")))
 		_enemy_riposte(enemy, hero)
 		return
 	var raw: int = CombatResolverScript.roll_damage(skill) + int(hero.get("dmg_bonus", 0))
@@ -525,7 +526,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 	else:
 		_apply_damage_to_enemy(enemy, dmg)
 	if crit:
-		StatusEffectsScript.apply(hero, "encarrerado", 2, 0)
+		StatusEffectsScript.apply(hero, "encarrerado", BalanceScript.int_of("combat.encarrerado_turns"), 0)
 	if not enemy.get("dead", false):
 		for ap in _applies_list(skill.get("applies", null)):
 			_try_apply(enemy, ap, crit, "")
@@ -672,7 +673,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 				await _hero_riposte(t, enemy)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
-		var crit: bool = CombatResolverScript.roll_crit(int(enemy.get("crit", CombatResolverScript.ENEMY_BASE_CRIT)) + StatusEffectsScript.stat(enemy, "crit"))
+		var crit: bool = CombatResolverScript.roll_crit(int(enemy.get("crit", BalanceScript.int_of("combat.enemy_base_crit"))) + StatusEffectsScript.stat(enemy, "crit"))
 		dmg = CombatResolverScript.resolve_attack_damage(dmg, crit)
 		# Expedition difficulty (data/progression.json enemy_dmg).
 		dmg = int(round(dmg * float(enemy.get("dmg_mult", 1.0))))
@@ -687,7 +688,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
 		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
-		var base_stress: int = int(skill.get("stress", 0)) + (CombatResolverScript.ENEMY_CRIT_STRESS if crit else 0)
+		var base_stress: int = int(skill.get("stress", 0)) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
 		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):
@@ -706,7 +707,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		_try_apply(enemy, ap, false, "")
 	var light: int = int(skill.get("light", 0))
 	if light != 0:
-		GameState.mission_light = clampi(GameState.mission_light + light, 0, 100)
+		GameState.mission_light = clampi(GameState.mission_light + light, 0, GameState.light_max())
 		_log("La luz baja a %d." % GameState.mission_light, "aa8866")
 	var steal: int = int(skill.get("steal_colones", 0))
 	if steal > 0:
@@ -725,11 +726,11 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 	if direct and StatusEffectsScript.use_aegis(hero):
 		_log("¡%s estaba santiguado: el golpe no le hace nada!" % hero.get("name", "?"), "e6e0c8")
 		return
-	var prot: int = clampi(int(hero.get("prot", 0)) + StatusEffectsScript.stat(hero, "prot"), 0, 80)
+	var prot: int = clampi(int(hero.get("prot", 0)) + StatusEffectsScript.stat(hero, "prot"), 0, CombatResolverScript.prot_cap())
 	if physical and prot > 0:
 		dmg = CombatResolverScript.final_damage(dmg, 0, prot)
 	if physical and bool(hero.get("guarding", false)):
-		dmg = maxi(int(ceil(dmg / 2.0)), 1)
+		dmg = maxi(int(ceil(dmg * BalanceScript.num("combat.guard_mult"))), 1)
 		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")
 	var nh: int = int(hero["hp"]) - dmg
 	if nh > 0:
@@ -776,8 +777,8 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 func _crit_relief() -> void:
 	for h in party:
 		if h is Dictionary and not h.get("dead", false) and int(h.get("stress", 0)) > 0:
-			_log_all(StressSystemScript.add_stress(h, -CombatResolverScript.CRIT_PARTY_RELIEF))
-	_log("  El crítico anima a la cuadrilla: estrés -%d a todos." % CombatResolverScript.CRIT_PARTY_RELIEF, "88bb88")
+			_log_all(StressSystemScript.add_stress(h, -BalanceScript.int_of("crits.party_relief")))
+	_log("  El crítico anima a la cuadrilla: estrés -%d a todos." % BalanceScript.int_of("crits.party_relief"), "88bb88")
 
 
 func _stress_after_mods(hero: Dictionary, stress: int) -> int:

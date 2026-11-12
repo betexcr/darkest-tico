@@ -599,7 +599,7 @@ func _show_page(inventory: bool) -> void:
 func _refresh_inventory() -> void:
 	for c in _inventory.get_children():
 		c.queue_free()
-	for k in GameState.INVENTORY_SLOTS:
+	for k in GameState.inventory_slots():
 		var b = InventorySlotScript.new()
 		if k < GameState.inventory.size():
 			var slot: Dictionary = GameState.inventory[k]

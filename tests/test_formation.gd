@@ -223,9 +223,13 @@ func _test_forced_moves(fm, gs, screen, cc) -> void:
 	# A real hero skill: Patada de Corral (push 1) from the Montador.
 	var mont: Dictionary = cc.party.filter(func(h): return str(h["hero_id"]) == "montador")[0]
 	var patada: Dictionary = gs.hero_skill(mont, "patada_de_corral").duplicate(true)
-	patada["skill_accuracy"] = 200
 	patada.erase("applies")
+	# Hits are capped at 95%: make this one certain so the check isn't flaky.
+	var bal = load("res://scripts/domain/balance.gd")
+	bal.override("combat.hit_min", 1.0)
+	bal.override("combat.hit_max", 1.0)
 	cc._resolve_hero_attack(mont, patada, e1)
+	bal.reset()
 	await cc._apply_queued_moves()
 	_check(fm.position_of(e1, cc.enemies) == 2, "Patada de Corral pushes the enemy it hits back one position")
 	var body: String = load("res://scripts/ui/skill_button.gd").body_for(gs.hero_skill(mont, "patada_de_corral"))

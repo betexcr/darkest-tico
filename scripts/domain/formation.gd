@@ -11,7 +11,7 @@ extends RefCounted
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
-const ALL := [1, 2, 3, 4]
+const ALL := [1, 2, 3, 4]  # structural: the four positions (party size)
 
 
 static func is_alive(u) -> bool:

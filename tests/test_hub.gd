@@ -38,7 +38,7 @@ func _run() -> void:
 	_check(is_same(gs.party[0], hired), "move to rank 1")
 	var h0: Dictionary = gs.party[1]
 	h0["hp"] = int(h0["hp_max"]) - 10
-	_check(gs.heal_cost(h0) == maxi(10 * gs.HEAL_COST_PER_HP, gs.HEAL_MIN_COST), "EBAIS price follows missing HP")
+	_check(gs.heal_cost(h0) == maxi(10 * gs.BalanceScript.int_of("hub.heal_cost_per_hp"), gs.BalanceScript.int_of("hub.heal_min_cost")), "EBAIS price follows missing HP")
 	var before: int = gs.colones
 	gs.heal_hero(h0)
 	_check(int(h0["hp"]) == int(h0["hp_max"]) and gs.colones < before, "EBAIS heals to full for colones")

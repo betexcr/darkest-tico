@@ -22,7 +22,7 @@ extends RefCounted
 ##   agazapado          can't be picked by single-target attacks while other targets exist; lost when attacking
 
 const DATA_PATH := "res://data/statuses.json"
-const DEFAULT_TURNS := 3
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 static var _data: Dictionary = {}
 
@@ -137,7 +137,7 @@ static func resist_chance(unit: Dictionary, status: String) -> int:
 	if table is Dictionary:
 		r = int(table.get(key, 0))
 	if status == "aturdido":
-		r += stack_count(unit, "espabilado") * int(data().get("espabilado_stun_resist", 50))
+		r += stack_count(unit, "espabilado") * int(BalanceScript.req(data(), "espabilado_stun_resist", "statuses.json"))
 	return clampi(r, 0, 100)
 
 
@@ -159,9 +159,10 @@ static func resist_value(unit: Dictionary, id: String) -> int:
 ## Chance 0-1 that a hero survives a hit while Al Borde.
 static func deathblow_chance(unit: Dictionary) -> float:
 	var table = unit.get("status_resist", {})
-	var v: int = int(table.get("golpe_de_gracia", 67)) if table is Dictionary else 67
+	var base: int = BalanceScript.int_of("death.base")
+	var v: int = int(table.get("golpe_de_gracia", base)) if table is Dictionary else base
 	v += mental_mod(unit, "deathblow")
-	return clampi(v, 0, int(data().get("deathblow_cap", 87))) / 100.0
+	return clampi(v, 0, int(BalanceScript.req(data(), "deathblow_cap", "statuses.json"))) / 100.0
 
 
 ## Applies one status. Returns a log line ("" if nothing happened).
@@ -179,9 +180,9 @@ static func apply(unit: Dictionary, status: String, turns: int, value: int, opts
 		if r > 0 and randi() % 100 < r:
 			return "%s resiste: no queda %s." % [who, display_name(status).to_lower()]
 	if turns <= 0:
-		turns = int(data().get("default_turns", DEFAULT_TURNS))
+		turns = int(BalanceScript.req(data(), "default_turns", "statuses.json"))
 	if bool(opts.get("crit", false)) and status in ["sangrado", "veneno"]:
-		turns = maxi(turns, int(data().get("crit_dot_turns", 5)))
+		turns = maxi(turns, int(BalanceScript.req(data(), "crit_dot_turns", "statuses.json")))
 	if not unit.get("statuses") is Dictionary:
 		unit["statuses"] = {}
 	var st: Dictionary = unit["statuses"]
@@ -190,7 +191,7 @@ static func apply(unit: Dictionary, status: String, turns: int, value: int, opts
 		stack["mods"] = opts["mods"]
 	match status:
 		"santiguado":
-			var blocks: int = mini(total_value(unit, status) + maxi(value, 1), int(data().get("santiguado_max", 2)))
+			var blocks: int = mini(total_value(unit, status) + maxi(value, 1), int(BalanceScript.req(data(), "santiguado_max", "statuses.json")))
 			st[status] = {"stacks": [{"turns": 99, "value": blocks}]}
 			return "%s se santigua: bloquea %d golpe%s." % [who, blocks, "" if blocks == 1 else "s"]
 		"aturdido":
@@ -344,7 +345,7 @@ static func pick_target(units: Array) -> Dictionary:
 	if pool.is_empty():
 		return {}
 	var marked: Array = pool.filter(func(u): return has(u, "fichado"))
-	if not marked.is_empty() and randf() < float(data().get("marked_target_chance", 0.7)):
+	if not marked.is_empty() and randf() < float(BalanceScript.req(data(), "marked_target_chance", "statuses.json")):
 		return marked[randi() % marked.size()]
 	return pool[randi() % pool.size()]
 
@@ -355,7 +356,7 @@ static func guardian_of(unit: Dictionary, allies: Array) -> Dictionary:
 		return {}
 	var uid: int = int(unit["statuses"]["cuidado"].get("by_uid", -1))
 	for a in allies:
-		if a is Dictionary and int(a.get("uid", -2)) == uid and not bool(a.get("dead", false)) and has(a, "cuidando") and not has(a, "aturdido"):
+		if a is Dictionary and int(a.get("uid", -2)) == uid and not bool(a.get("dead", false)) and has(a, "cuidando") and not has(a, "aturdido"):  # structural: "no uid" sentinel
 			return a
 	return {}
 
