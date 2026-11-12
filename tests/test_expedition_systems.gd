@@ -23,6 +23,7 @@ func _run() -> void:
 	gs.reset_party_from_catalog()
 	gs.start_mission()
 	_test_hero_damage(gs)
+	_test_light(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -60,3 +61,64 @@ func _test_hero_damage(gs) -> void:
 		other["dead"] = false
 		other["al_borde"] = false
 		other["hp"] = other["hp_max"]
+
+
+func _test_light(gs) -> void:
+	print("Luz tiers (P1-17)")
+	var ls = load("res://scripts/domain/light_system.gd")
+	var bal = load("res://scripts/domain/balance.gd")
+	var names: Array = [100, 76, 75, 51, 50, 26, 25, 1, 0].map(func(l): return str(ls.tier(l)["id"]))
+	_check(names == ["radiante", "radiante", "tenue", "tenue", "penumbra", "penumbra", "oscuro", "oscuro", "negro"], "tier boundaries 76/51/26/1/0: %s" % [names])
+	_check(not ls.is_low(51) and ls.is_low(50) and ls.is_low(0), "Penumbra and darker count as low light")
+
+	# Loot: the tier's bonus multiplies the room reward.
+	gs.mission_event = {}
+	gs.mission_light = 100
+	var bright: float = gs.loot_mult()
+	gs.mission_light = 0
+	var dark: float = gs.loot_mult()
+	_check(is_equal_approx(bright, 1.0) and is_equal_approx(dark, 1.0 + ls.val(0, "loot_pct") / 100.0), "loot x%.2f at Radiante, x%.2f at Negro" % [bright, dark])
+
+	# Combat: hero stress taken grows in the dark (_stress_after_mods reads the live Luz).
+	var cc = load("res://scripts/combat/combat_controller.gd").new()
+	var h := _hero(10)
+	gs.mission_light = 100
+	var s_bright: int = cc._stress_after_mods(h, 10)
+	gs.mission_light = 0
+	var s_dark: int = cc._stress_after_mods(h, 10)
+	_check(s_bright == 10 and s_dark == int(round(10 * (1.0 + ls.val(0, "stress_pct") / 100.0))), "stress 10 -> %d at Radiante, %d at Negro" % [s_bright, s_dark])
+	cc.free()
+
+	# Surprise: forced through the tier numbers.
+	bal.override("light.tiers", [
+		{"id": "a", "name": "A", "min": 50, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 0, "enemies_surprised_pct": 100, "trap_pct": 0, "move_stress": 0, "move_stress_all": false, "low": false},
+		{"id": "b", "name": "B", "min": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 100, "enemies_surprised_pct": 0, "trap_pct": 0, "move_stress": 4, "move_stress_all": true, "low": true}])
+	_check(ls.roll_surprise(80) == "enemies" and ls.roll_surprise(10) == "party", "surprise rolls follow the tier (100% enemies / 100% party)")
+	# Walking in the dark: move_stress to everyone in the all-tier.
+	var start_id: String = gs.current_node_id
+	var nb: Array = gs.mission_neighbors()
+	gs.mission_light = 10
+	for p in gs.party:
+		p["stress"] = 0
+	gs.move_to_node(str(nb[0]))
+	_check(gs.party.all(func(p): return int(p["stress"]) == 4), "each move in the darkest tier: +4 stress to every hero")
+	gs.mission_light = 90
+	var lux0: int = gs.mission_light
+	gs.move_to_node(start_id)
+	_check(gs.mission_light == lux0 - int(gs.mission_params["light_decay"]) and gs.party.all(func(p): return int(p["stress"]) == 4), "a bright move only costs Luz (%d per move)" % int(gs.mission_params["light_decay"]))
+	bal.reset()
+	for p in gs.party:
+		p["stress"] = 0
+	# Apagar la candela.
+	gs.mission_light = 60
+	var lost: int = gs.snuff_light()
+	_check(lost == bal.int_of("light.snuff") and gs.mission_light == 60 - lost, "Apagar la candela: -%d Luz" % lost)
+	gs.mission_light = 10
+	_check(gs.snuff_light() == 10 and gs.mission_light == 0, "…never below 0")
+	# Camp: ambush in low light, exhausted party, Luz resets to light_max.
+	var camp = load("res://scripts/domain/camping_system.gd")
+	var calm: Array = [{"stress": 10}, {"stress": 20}]
+	var tired: Array = [{"stress": 60}, {"stress": 50}]
+	_check(camp.ambush_chance(100, false, calm) == 12 and camp.ambush_chance(30, false, calm) == 18, "ambush 12% bright / 18% at Penumbra")
+	_check(camp.ambush_chance(100, false, tired) == 16 and camp.ambush_chance(100, true, tired) == 0, "exhausted party (avg stress 50+) +4%; a watch still makes it 0")
+	gs.mission_light = 100

@@ -109,6 +109,10 @@ def main() -> int:
                 if mk not in stat_keys:
                     errors.append(f"{where}: unknown stat '{mk}' in buff mods")
 
+    amb = camp_raw.get("ambush", {})
+    for k in ("base_pct", "low_light_pct", "exhausted_pct", "exhausted_stress"):
+        if not isinstance(amb.get(k), int) or amb.get(k) < 0:
+            errors.append(f"camp_skills.json: ambush.{k} must be a whole number >= 0")
     if len(camp_skills) != len(camp_raw.get("skills", [])):
         errors.append("camp_skills.json: duplicate skill ids")
     for cid, c in camp_skills.items():
@@ -538,8 +542,13 @@ BALANCE_KEYS = {
     "hub.heal_min_cost": "int>=0", "hub.iglesia_cost": "int>=0", "hub.iglesia_relief": "int>=0",
     "hub.iglesia_backfire_chance": "chance", "hub.iglesia_backfire_stress": "int>=0",
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
-    "limits.graveyard_cap": "pos", "light.max": "pos",
+    "limits.graveyard_cap": "pos", "light.max": "pos", "light.snuff": "int>=0",
 }
+
+# P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).
+LIGHT_TIER_KEYS = ("id", "name", "min", "enemy_dmg_pct", "enemy_crit", "stress_pct", "loot_pct",
+                   "party_surprised_pct", "enemies_surprised_pct", "trap_pct", "move_stress",
+                   "move_stress_all", "low")
 
 
 def check_balance(errors: list) -> None:
@@ -585,11 +594,24 @@ def check_balance(errors: list) -> None:
     dmg = get("afflictions.ira_ciega_damage")
     if not isinstance(dmg, list) or len(dmg) != 2 or dmg[0] > dmg[1] or dmg[0] < 0:
         errors.append("balance.json: afflictions.ira_ciega_damage must be [min, max]")
+    tiers = get("light.tiers")
+    if not isinstance(tiers, list) or not tiers:
+        errors.append("balance.json: light.tiers must be a non-empty list")
+    else:
+        mins = [t.get("min") for t in tiers if isinstance(t, dict)]
+        if mins != sorted(mins, reverse=True) or len(set(mins)) != len(mins) or mins[-1] != 0:
+            errors.append("balance.json: light.tiers must be brightest first with distinct mins, the last at 0")
+        for t in tiers:
+            missing = [k for k in LIGHT_TIER_KEYS if k not in t]
+            if missing:
+                errors.append(f"balance.json: light tier '{t.get('id')}' is missing {missing}")
+            elif not 0 <= t["party_surprised_pct"] + t["enemies_surprised_pct"] <= 100:
+                errors.append(f"balance.json: light tier '{t['id']}' surprise chances must add up to 0-100")
     # Every Balance path used in scripts must be listed above (so it is checked).
     used = set()
     for gd in (ROOT / "scripts").rglob("*.gd"):
         used |= set(re.findall(r'BalanceScript\.(?:num|int_of|arr|value)\("([a-z_.]+)"\)', gd.read_text(encoding="utf-8")))
-    arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage"}
+    arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage", "light.tiers"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
 

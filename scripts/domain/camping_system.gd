@@ -10,6 +10,7 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
 const DATA_PATH := "res://data/camp_skills.json"
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 
 static var _data: Dictionary = {}
 static var _by_id: Dictionary = {}
@@ -201,12 +202,21 @@ static func mods_text(mods: Dictionary) -> String:
 
 # --- Night ambush -------------------------------------------------------------------------
 
-## Chance in % (doc 07 §6: base 12%, +6% in low light, 0 if a skill keeps watch).
-static func ambush_chance(light: int, low_light_threshold: int, prevented: bool) -> int:
+## Chance in % (doc 07 §6): base, + low_light_pct in low light (Luz tier Penumbra or
+## darker), + exhausted_pct when the living party's average stress reaches exhausted_stress;
+## 0 if a camp skill keeps watch.
+static func ambush_chance(light: int, prevented: bool, party: Array = []) -> int:
 	if prevented:
 		return 0
 	var a: Dictionary = data().get("ambush", {})
 	var c: int = int(BalanceScript.req(a, "base_pct", "camp_skills.json ambush"))
-	if light < low_light_threshold:
+	if LightSystemScript.is_low(light):
 		c += int(BalanceScript.req(a, "low_light_pct", "camp_skills.json ambush"))
+	var alive: Array = living(party)
+	if not alive.is_empty():
+		var total: int = 0
+		for h in alive:
+			total += int(h.get("stress", 0))
+		if total >= int(BalanceScript.req(a, "exhausted_stress", "camp_skills.json ambush")) * alive.size():
+			c += int(BalanceScript.req(a, "exhausted_pct", "camp_skills.json ambush"))
 	return c

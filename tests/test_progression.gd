@@ -243,7 +243,7 @@ func _run() -> void:
 	ally["stress"] = 40
 	camp.use_skill(gs.party[0], camp.skill("palabras_de_animo"), gs.party, ally)
 	_check(int(ally["stress"]) == 25, "Palabras de ánimo: -15 stress to the chosen ally")
-	_check(camp.ambush_chance(100, 40, false) == 12 and camp.ambush_chance(20, 40, false) == 18 and camp.ambush_chance(20, 40, true) == 0, "ambush 12% / 18% in low light / 0% with a watch")
+	_check(camp.ambush_chance(100, false) == 12 and camp.ambush_chance(20, false) == 18 and camp.ambush_chance(20, true) == 0, "ambush 12% / 18% in low light / 0% with a watch")
 
 	print("Completing an expedition")
 	gs.reset_party_from_catalog()

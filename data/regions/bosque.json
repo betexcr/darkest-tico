@@ -5,9 +5,7 @@
   "objective_node": "b6",
   "initial_light": 95,
   "initial_food": 9,
-  "light_decay_per_move": 6,
-  "low_light_threshold": 42,
-  "low_light_stress": 4,
+  "light_decay_per_move": 8,
   "objective_reward_colones": 1100,
   "region_level": 1,
   "nodes": [

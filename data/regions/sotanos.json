@@ -3,9 +3,7 @@
   "name": "Sótanos de la Hacienda",
   "initial_light": 100,
   "initial_food": 10,
-  "light_decay_per_move": 5,
-  "low_light_threshold": 40,
-  "low_light_stress": 3,
+  "light_decay_per_move": 8,
   "objective_reward_colones": 800,
   "region_level": 0,
   "generator": {

@@ -15,6 +15,7 @@ const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
+const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -37,6 +38,8 @@ var enemy_units: Array = []
 var is_elite: bool = false
 var is_boss: bool = false
 var is_ambush: bool = false
+## Luz tiers (P1-17): the heroes caught the enemies off guard and act first in round 1.
+var enemies_surprised: bool = false
 ## No pauses between steps (headless sim, tools/sim_combat.gd). With stub units whose
 ## play_* calls return at once, every action then resolves synchronously.
 var instant: bool = false
@@ -105,7 +108,9 @@ func set_target(e: Dictionary) -> void:
 	_refresh_markers()
 
 
-func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool, ambush: bool = false) -> void:
+## `ambush`: enemies act first in round 1 (night ambush, or the party was surprised: pass
+## `note` for the opening line). `surprised_enemies`: heroes act first in round 1.
+func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units: Array, elite: bool, boss: bool, ambush: bool = false, surprised_enemies: bool = false, note: String = "") -> void:
 	party = p_party
 	enemies = p_enemies
 	target_enemy = {}
@@ -114,11 +119,14 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	is_elite = elite
 	is_boss = boss
 	is_ambush = ambush
+	enemies_surprised = surprised_enemies and not ambush
 	_round = 0
 	_ended = false
 	_busy = false
 	var tier := ""
-	if ambush:
+	if note != "":
+		tier = note + " "
+	elif ambush:
 		tier = "¡Emboscada nocturna! "
 	elif boss:
 		tier = "¡Jefe! "
@@ -312,6 +320,11 @@ func _roll_initiative_queue() -> void:
 		var foes: Array = entries.filter(func(x): return x["kind"] == "enemy")
 		var heroes: Array = entries.filter(func(x): return x["kind"] == "hero")
 		entries = foes + heroes
+	elif enemies_surprised and _round == 1:
+		# Luz tiers: the heroes surprised the enemies and all act first.
+		var heroes2: Array = entries.filter(func(x): return x["kind"] == "hero")
+		var foes2: Array = entries.filter(func(x): return x["kind"] == "enemy")
+		entries = heroes2 + foes2
 	_turn_queue = entries
 	_log("— Ronda %d —" % _round, "888888")
 
@@ -684,10 +697,12 @@ func _enemy_turn(enemy: Dictionary) -> void:
 				await _hero_riposte(t, enemy)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
-		var crit: bool = CombatResolverScript.roll_crit(int(enemy.get("crit", BalanceScript.int_of("combat.enemy_base_crit"))) + StatusEffectsScript.stat(enemy, "crit"))
+		# Luz tiers (P1-17): the dark makes enemies hit harder and crit more (read live).
+		var lux: int = GameState.mission_light
+		var crit: bool = CombatResolverScript.roll_crit(int(enemy.get("crit", BalanceScript.int_of("combat.enemy_base_crit"))) + StatusEffectsScript.stat(enemy, "crit") + LightSystemScript.val(lux, "enemy_crit"))
 		dmg = CombatResolverScript.resolve_attack_damage(dmg, crit)
-		# Expedition difficulty (data/progression.json enemy_dmg).
-		dmg = int(round(dmg * float(enemy.get("dmg_mult", 1.0))))
+		# Expedition difficulty (data/progression.json enemy_dmg) and the Luz tier.
+		dmg = int(round(dmg * float(enemy.get("dmg_mult", 1.0)) * (1.0 + LightSystemScript.val(lux, "enemy_dmg_pct") / 100.0)))
 		dmg = _scaled_damage(dmg, enemy, t, skill)
 		dmg = _elemental(dmg, str(skill.get("element", "")), t)
 		if crit:
@@ -778,7 +793,9 @@ func _crit_relief() -> void:
 func _stress_after_mods(hero: Dictionary, stress: int) -> int:
 	if stress <= 0:
 		return stress
-	return int(round(stress * (1.0 + StatusEffectsScript.stat(hero, "stress_pct") / 100.0)))
+	# Buffs/debuffs plus the Luz tier (the dark frays nerves, P1-17).
+	var pct: int = StatusEffectsScript.stat(hero, "stress_pct") + LightSystemScript.val(GameState.mission_light, "stress_pct")
+	return int(round(stress * (1.0 + pct / 100.0)))
 
 
 ## "applies" may be one entry or a list: {status, chance, turns, value, mods}.

@@ -352,15 +352,15 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Test in `tests/test_expedition_systems.gd`
 
 ### P1-17 · M · Luz tiers (DD torch)
-- Status: `in-progress (Claude Code, main, 2026-11-12)` · Depends: P1-16
+- Status: `review` (Claude Code, `main`, 2026-11-12; owner to feel the tiers in a run) · Depends: P1-16
 - Owner 2026-11-12: full DD-style tiers (enemy danger, stress, loot, surprise, trap disarm) and "Apagar la candela".
 - Files: `scripts/domain/light_system.gd` (new), `data/balance.json` (`light.*`), `combat_controller.gd`, `expedition_screen.gd`, `game_state.gd`, region JSONs
 - Done when:
-  - [ ] 5 tiers from data affect enemy damage/crit, hero stress, loot, surprise and trap disarm; per-move stress in the dark
-  - [ ] Faster decay (8 per move), "Apagar la candela", tier shown on the HUD; camp resets to `light_max()`
+  - [x] 5 tiers from data affect enemy damage/crit, hero stress, loot, surprise and trap disarm (`trap_pct`, used by the traps in P2-01); per-move stress in the dark
+  - [x] Faster decay (8 per move), "Apagar la candela", tier shown on the HUD; camp resets to `light_max()`; doc 07 "exhausted party" +4% camp ambush
 
 ### P1-18 · M · Travel hunger + provisions
-- Status: `todo` · Depends: P1-16
+- Status: `in-progress (Claude Code, main, 2026-11-12)` · Depends: P1-16
 - Owner 2026-11-12: every 6 moves the party eats 1 gallo pinto per living hero; a hero who can't eat takes −10% PV (never below 1) and +10 stress; a camp meal resets the count.
 - Files: `data/balance.json` (`hunger.*`), `scripts/domain/camping_system.gd`, `game_state.gd`, `expedition_screen.gd`, `scripts/hacienda/hacienda_hub.gd`, region JSONs (`provisions`)
 - Done when:

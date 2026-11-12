@@ -17,6 +17,7 @@ const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
+const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -1005,8 +1006,6 @@ func start_mission(region_path: String = "") -> bool:
 	_prepare_party_for_mission()
 	mission_params = {
 		"light_decay": maxi(int(round(int(r.get("light_decay_per_move", 5)) * (1.0 + int(mission_event.get("light_decay_pct", 0)) / 100.0))), 1),
-		"low_light_threshold": int(r.get("low_light_threshold", 40)),
-		"low_light_stress": int(r.get("low_light_stress", 3)),
 		"objective_reward": int(r.get("objective_reward_colones", 0)),
 	}
 	combat_context.clear()
@@ -1112,7 +1111,8 @@ func combat_reward(node_id: String) -> int:
 
 ## Town events: colones found (fights, curios) and items found this mission.
 func loot_mult() -> float:
-	return 1.0 + float(mission_event.get("loot_pct", 0)) / 100.0
+	# Town event bonus, times the Luz tier's loot bonus (darker pays more, P1-17).
+	return (1.0 + float(mission_event.get("loot_pct", 0)) / 100.0) * LightSystemScript.loot_mult(mission_light)
 
 
 func items_mult() -> int:
@@ -1155,12 +1155,11 @@ func move_to_node(target_id: String) -> bool:
 	return true
 
 
-## Tuning: when Luz falls below threshold after a move, random living hero gains stress.
-
+## Walking in the dark (Luz tiers, P1-17): the tier's move_stress to one random living hero,
+## or to everyone in the darkest tier.
 func _apply_low_light_stress_on_travel() -> void:
-	var thr: int = int(mission_params.get("low_light_threshold", 40))
-	var st: int = int(mission_params.get("low_light_stress", 3))
-	if mission_light >= thr:
+	var ms: Dictionary = LightSystemScript.move_stress(mission_light)
+	if int(ms["amount"]) <= 0:
 		return
 	var living: Array = []
 	for h in party:
@@ -1168,9 +1167,17 @@ func _apply_low_light_stress_on_travel() -> void:
 			living.append(h)
 	if living.is_empty():
 		return
-	var victim: Dictionary = living[randi() % living.size()]
-	for _x in StressSystemScript.add_stress(victim, st):
-		pass
+	var victims: Array = living if bool(ms["all"]) else [living[randi() % living.size()]]
+	for v in victims:
+		for _x in StressSystemScript.add_stress(v, int(ms["amount"])):
+			pass
+
+
+## "Apagar la candela" (DD: lowering the torch): less Luz for more loot and more danger.
+func snuff_light() -> int:
+	var before: int = mission_light
+	mission_light = maxi(mission_light - BalanceScript.int_of("light.snuff"), 0)
+	return before - mission_light
 
 
 ## Grid position of a room (generated maps only), or Vector2i(-1, -1).
@@ -1272,6 +1279,8 @@ func build_combat_context_for_node(node_id: String) -> void:
 	# the generator's order, so the leader/boss stays ahead of escorts of the same kind.
 	combat_context["enemies"] = FormationScript.sort_squad(squad)
 	combat_context["enemy"] = leader
+	# Luz tiers (P1-17): a normal fight may open with one side surprised; never the boss.
+	combat_context["surprise"] = "" if bool(nd0.get("is_boss", false)) else LightSystemScript.roll_surprise(mission_light)
 
 
 func _build_single_context(node_id: String) -> void:
@@ -1387,6 +1396,7 @@ func build_ambush_context(node_id: String) -> void:
 	nd.clear()
 	nd.merge(saved)
 	combat_context["is_ambush"] = true
+	combat_context["surprise"] = ""
 
 
 func is_region_playable(path: String) -> bool:

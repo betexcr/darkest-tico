@@ -19,6 +19,8 @@ const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
+const LightSystemScript := preload("res://scripts/domain/light_system.gd")
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -194,8 +196,12 @@ func _refresh_all() -> void:
 	for u in _enemy_units:
 		u.refresh()
 	_light_bar.value = GameState.mission_light
-	var thr: int = int(GameState.mission_params.get("low_light_threshold", 40))
-	_light_label.text = "Luz %d%s" % [GameState.mission_light, " (oscuro)" if GameState.mission_light < thr else ""]
+	var lux: int = GameState.mission_light
+	_light_label.text = "Luz %d · %s" % [lux, LightSystemScript.tier_name(lux)]
+	var light_tip: String = "Luz %d · %s
+%s" % [lux, LightSystemScript.tier_name(lux), LightSystemScript.effects_text(lux)]
+	_light_label.tooltip_text = light_tip
+	_light_bar.tooltip_text = light_tip
 	_view_hero(_viewed_hero)
 	_refresh_inventory()
 	_map_view.refresh()
@@ -707,6 +713,22 @@ func _show_explore_actions() -> void:
 	flee.tooltip_text = "Volver a la hacienda sin completar el objetivo."
 	flee.pressed.connect(_on_flee_pressed)
 	_skills.add_child(flee)
+	var snuff := Button.new()
+	snuff.text = "Apagar la candela (-%d Luz)" % BalanceScript.int_of("light.snuff")
+	snuff.tooltip_text = "Bajar la Luz a propósito: más botín, pero más peligro y más estrés."
+	snuff.disabled = GameState.mission_light <= 0
+	snuff.pressed.connect(_on_snuff_pressed)
+	_skills.add_child(snuff)
+
+
+func _on_snuff_pressed() -> void:
+	if _mode != Mode.EXPLORE:
+		return
+	var lost: int = GameState.snuff_light()
+	if lost > 0:
+		_narrate("Bajan la mecha de la candela (-%d Luz). Ahora: %s." % [lost, LightSystemScript.tier_name(GameState.mission_light)])
+	_refresh_all()
+	_show_explore_actions()
 
 
 func _on_flee_pressed() -> void:
@@ -841,8 +863,8 @@ func _open_camp() -> void:
 			_resolve_event("Un respiro corto. -3 estrés.")
 		)
 		return
-	_open_event("Fogata de trocha", "Leña: %d. Acampar gasta una: comen, usan habilidades de campamento (%d puntos de respiro) y duermen. La Luz vuelve a 100, pero la noche puede traer una emboscada." % [
-		GameState.mission_firewood, CampingSystemScript.respite_points()])
+	_open_event("Fogata de trocha", "Leña: %d. Acampar gasta una: comen, usan habilidades de campamento (%d puntos de respiro) y duermen. La Luz vuelve a %d, pero la noche puede traer una emboscada." % [
+		GameState.mission_firewood, CampingSystemScript.respite_points(), GameState.light_max()])
 	_event_button("Acampar", _camp_begin)
 	_event_button("Seguir sin acampar", func():
 		# Not cleared: the fogata stays available if they come back.
@@ -944,9 +966,8 @@ func _camp_use(user: Dictionary, sk: Dictionary, ally: Dictionary) -> void:
 
 
 func _camp_sleep() -> void:
-	var chance: int = CampingSystemScript.ambush_chance(GameState.mission_light,
-		int(GameState.mission_params.get("low_light_threshold", 40)), _camp_watch)
-	GameState.mission_light = 100
+	var chance: int = CampingSystemScript.ambush_chance(GameState.mission_light, _camp_watch, GameState.party)
+	GameState.mission_light = GameState.light_max()
 	GameState.mark_node_cleared(GameState.current_node_id)
 	if randi() % 100 < chance:
 		_close_event()
@@ -955,7 +976,7 @@ func _camp_sleep() -> void:
 		GameState.build_ambush_context(GameState.current_node_id)
 		_start_combat_from_context(GameState.current_node_id)
 		return
-	_resolve_event("La noche pasa tranquila. Amanece y la Luz vuelve a 100.")
+	_resolve_event("La noche pasa tranquila. Amanece y la Luz vuelve a %d." % GameState.light_max())
 
 
 func _party_stress(delta: int) -> void:
@@ -1001,8 +1022,17 @@ func _start_combat_from_context(node_id: String) -> void:
 	GameState.equip_locked = true
 	_combat_is_ambush = bool(ctx.get("is_ambush", false))
 	GameState.equip_turn_hero = {}
+	# Luz tiers (P1-17): in the dark the party may be caught off guard; in good light they
+	# may catch the enemies instead.
+	var surprise: String = str(ctx.get("surprise", ""))
+	var note: String = ""
+	if surprise == "party":
+		note = "¡Los agarraron desprevenidos en la %s!" % LightSystemScript.tier_name(GameState.mission_light).to_lower()
+	elif surprise == "enemies":
+		note = "¡La cuadrilla los agarra desprevenidos!"
 	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
-		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush)
+		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush or surprise == "party",
+		surprise == "enemies", note)
 
 
 func _update_turn_label() -> void:
