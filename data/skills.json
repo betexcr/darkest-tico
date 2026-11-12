@@ -14,6 +14,53 @@
       "description": "Golpe de machete al enemigo."
     },
     {
+      "id": "cucharonazo",
+      "name": "Cucharonazo",
+      "kind": "attack",
+      "damage_min": 2,
+      "damage_max": 6,
+      "skill_accuracy": 2,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "description": "Un cucharonazo de palo como los de antes: poco daño, casi nunca falla y puede dejarlo atarantado.",
+      "applies": {
+        "status": "aturdido",
+        "chance": 0.2,
+        "turns": 1
+      }
+    },
+    {
+      "id": "corrientazo",
+      "name": "Corrientazo",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 1,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "description": "El dron baja y le pega un corrientazo con un cargador pelado. +25% de daño a fichados.",
+      "vs_marked_pct": 25
+    },
+    {
+      "id": "mecatazo",
+      "name": "Mecatazo",
+      "kind": "attack",
+      "damage_min": 4,
+      "damage_max": 8,
+      "skill_accuracy": 1,
+      "stress_on_hit_target": 3,
+      "target": "enemy",
+      "description": "Latigazo con el mecate de enlazar. Puede dejarlo enredado: salado, con menos esquiva.",
+      "applies": {
+        "status": "salado",
+        "chance": 0.3,
+        "turns": 2,
+        "mods": {
+          "dodge": -5
+        }
+      }
+    },
+    {
       "id": "trabajo_duro",
       "name": "Trabajo Duro",
       "kind": "buff",

@@ -285,6 +285,17 @@ def main() -> int:
             if k not in rank_keys:
                 errors.append(f"skills.json: '{sid}' rank_bonus unknown key '{k}'")
     res_ids = {c["id"] for c in statuses_raw.get("resist_categories", [])}
+    # Owner rule (2026-11-11): every class has its own skills, starting with its own basic
+    # attack (the first skill, kind attack). No skill id is shared by two classes.
+    skill_owner = {}
+    for hid, hero in heroes.items():
+        for sid in hero.get("skill_ids", []):
+            if sid in skill_owner and skill_owner[sid] != hid:
+                errors.append(f"heroes.json: skill '{sid}' is used by both '{skill_owner[sid]}' and '{hid}'")
+            skill_owner.setdefault(sid, hid)
+        first = hero.get("skill_ids", [None])[0] if hero.get("skill_ids") else None
+        if skills.get(first, {}).get("kind") != "attack":
+            errors.append(f"heroes.json: hero '{hid}' must start with its basic attack (first skill, kind attack)")
     for hid, hero in heroes.items():
         for k in hero.get("status_resist", {}):
             if k not in res_ids:

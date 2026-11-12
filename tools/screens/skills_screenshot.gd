@@ -62,6 +62,13 @@ func _run() -> void:
 	await _hover(cols[0].get_child(1), "hub_gated")
 	await _hover(cols[1].get_child(1), "hub_buyable")
 	await _hover(cols[0].get_child(0).get_child(0), "hub_icon")
+	# Every other party hero's row (their own basic attack icons, P2-08).
+	for k in range(1, gs.party.size()):
+		hub._selected = gs.party[k]
+		hub._refresh()
+		for i in 3:
+			await process_frame
+		await _shot("hub_%s" % gs.party[k]["hero_id"])
 	hub.queue_free()
 	gs.start_mission()
 	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()

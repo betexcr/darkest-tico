@@ -17,6 +17,29 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-11 (night) — P2-08 — Each class has its own basic attack
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P2-08 review. This answers the Machetazo question in the entry below: the owner wants one basic attack per class.
+- **Changed:**
+  - `data/skills.json` + `data/heroes.json`: three new attacks, each the class's first skill and themed on its sprite's weapon. Campesino keeps Machetazo.
+    - Abuela: **Cucharonazo** (wooden ladle): 2–6, +2 accuracy, 20% Atarantado.
+    - Tecnólogo: **Corrientazo** (drone with a stripped charger cable): 3–6, +1 accuracy, +25% damage vs Fichado (pairs with Dron Casero's mark).
+    - Montador: **Mecatazo** (lasso rope): 4–8, +1 accuracy, 30% Salado (−5 dodge, 2 turns).
+  - `tools/validate_data.py`: no skill may be shared by two classes, and every class's first skill must be an attack.
+  - `GameState`, save v9: a hero's `skill_ids` always follow the class on load (no mechanic changes them). A rank bought in a replaced skill moves to the new skill in the same slot, so an old Abuela's rank 3 Machetazo becomes rank 3 Cucharonazo.
+  - `scripts/ui/skill_icon.gd`: new `ladle` and `lasso` glyphs; Corrientazo uses `bolt`.
+  - `tests/test_progression.gd`: 11 checks (own first attack for all 8 classes, v8 save migration). `skills_screenshot.gd` also captures each party hero's hub row.
+  - Docs: AGENTS.md §4 Heroes rule; doc 03 lists the basic attacks; plan P2-08.
+- **Verified:** `python3 tools/validate_data.py` 0 errors / 0 warnings (32 skills). Godot 4.7.2 headless: all 9 test scripts 0 failures, no errors. Hub rows for the Abuela, Tecnólogo and Montador checked by screenshot.
+- **Not verified / risks:**
+  - Balance of the three attacks; nobody has played them.
+  - The lasso glyph reads a little like a magnifying glass at 52 px.
+  - The attack sprites were drawn before these skills existed. They hold the right weapons (ladle, drone, lasso), but nobody has checked them against the new names.
+- **Decisions needed:** none.
+- **Next step:** P1-03 battlefield ranks 1–4 (see the next entry's Next step).
+
+---
+
 ## 2026-11-11 (later) — P3-04 — Casa Comunal skill ranks
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P3-04 review (last acceptance box ticked). New todo tasks: P3-16 (Casa Comunal building upgrades), P3-17 (unlockable skills).

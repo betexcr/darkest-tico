@@ -39,7 +39,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 8
+const SAVE_VERSION := 9
 const ROSTER_CAP := 8
 const PARTY_SIZE := 4
 const RECRUIT_POOL_SIZE := 3
@@ -1454,6 +1454,23 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["borde_checks"] = int(out.get("borde_checks", 0))
 	if not out.has("skill_ids"):
 		out["skill_ids"] = []
+	# v9: the loadout always follows the class (heroes can't change skills). When a class's
+	# skill was replaced (P2-08: Abuela/Tecnólogo/Montador got their own basic attack instead
+	# of Machetazo), the rank bought in the old skill moves to the new one in the same slot.
+	var class_skills: Array = t.get("skill_ids", [])
+	if not class_skills.is_empty():
+		var old_ids: Array = out["skill_ids"] if out["skill_ids"] is Array else []
+		var old_ranks = out.get("skill_ranks", {})
+		if old_ranks is Dictionary:
+			var moved: Dictionary = {}
+			for k in class_skills.size():
+				var nid: String = str(class_skills[k])
+				var oid: String = str(old_ids[k]) if k < old_ids.size() else nid
+				var keep_id: String = nid if old_ranks.has(nid) else oid
+				if old_ranks.has(keep_id):
+					moved[nid] = old_ranks[keep_id]
+			out["skill_ranks"] = moved
+		out["skill_ids"] = class_skills.duplicate()
 	if not out.has("affliction_id"):
 		out["affliction_id"] = ""
 	if not out.has("virtud_id"):

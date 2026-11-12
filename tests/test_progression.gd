@@ -107,6 +107,31 @@ func _test_skill_ranks(gs) -> void:
 	gs.event_flags = {}
 	gs.graveyard.clear()
 
+	print("Own basic attack per class (P2-08)")
+	var firsts: Dictionary = {}
+	for id in ["campesino", "abuela", "tecnologo", "montador", "guachiman", "medica_josefina", "curandero", "exorcista"]:
+		var t: Dictionary = gs.get_hero_template(id)
+		var first: String = str(t["skill_ids"][0])
+		_check(str(gs.get_skill(first).get("kind", "")) == "attack" and not firsts.has(first), "%s opens with its own attack (%s)" % [id, first])
+		firsts[first] = id
+	gs.end_mission_abandon()
+	gs.reset_party_from_catalog()
+	var save: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))
+	for e in save["roster"]:
+		if str(e["hero_id"]) == "abuela":
+			# A v8 Abuela: still has Machetazo, trained to rank 3, plus rank 2 Sopa Milagrosa.
+			e["skill_ids"] = ["machetazo", "sopa_milagrosa", "regano_santo", "cataplasma_casero"]
+			e["skill_ranks"] = {"machetazo": 3, "sopa_milagrosa": 2}
+		if str(e["hero_id"]) == "campesino":
+			e["skill_ranks"] = {"machetazo": 4}
+	save["version"] = 8
+	gs.apply_save_data(save)
+	var ab: Dictionary = gs.roster.filter(func(h): return str(h["hero_id"]) == "abuela")[0]
+	var ca: Dictionary = gs.roster.filter(func(h): return str(h["hero_id"]) == "campesino")[0]
+	_check(str(ab["skill_ids"][0]) == "cucharonazo" and not ab["skill_ids"].has("machetazo"), "v8 save: the Abuela swaps Machetazo for Cucharonazo")
+	_check(sr.rank(ab, "cucharonazo") == 3 and sr.rank(ab, "sopa_milagrosa") == 2, "…and keeps the rank she paid for (3), other ranks unchanged")
+	_check(str(ca["skill_ids"][0]) == "machetazo" and sr.rank(ca, "machetazo") == 4, "the Campesino keeps Machetazo and its rank")
+
 
 func _run() -> void:
 	await process_frame

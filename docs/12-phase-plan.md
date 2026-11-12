@@ -208,6 +208,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when:
   - [x] Decision recorded in HANDOFF; picker updated accordingly
 
+### P2-08 · S · Each class has its own basic attack (owner request 2026-11-11)
+- Status: `review` (Claude Code, `main`, 2026-11-11; owner to try the three new attacks in a fight) · Depends: —
+- Spec: owner "I want each class to have their own basic attack"; AGENTS.md §4 (Tico names that fit the class); weapons from `tools/art_manifest.json` sprite entries
+- Files: `data/skills.json`, `data/heroes.json`, `scripts/ui/skill_icon.gd` (glyphs), `scripts/autoload/game_state.gd` (save v9: loadouts follow the class, ranks carried over), `tools/validate_data.py` (no skill shared between classes), `tests/test_progression.gd`
+- Done when: [x] Abuela, Tecnólogo and Montador no longer use Machetazo (Cucharonazo, Corrientazo, Mecatazo); [x] no skill id is shared by two classes, and every class starts with an attack (validator); [x] old saves swap the skill and keep its rank (save v9)
+
 ---
 
 ## P3 — Hacienda baseline (campaign loop)

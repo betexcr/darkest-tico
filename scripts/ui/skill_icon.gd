@@ -9,6 +9,9 @@ extends Control
 
 const GLYPHS := {
 	"machetazo": "machete",
+	"cucharonazo": "ladle",
+	"corrientazo": "bolt",
+	"mecatazo": "lasso",
 	"trabajo_duro": "fist",
 	"sopa_milagrosa": "pot",
 	"dron_casero": "drone",
@@ -284,6 +287,27 @@ func _g_pill() -> void:
 	_line([0.5, 0.5], [0.7, 0.3], 0.24, Color(0.9, 0.45, 0.4))
 	_circle(0.3, 0.7, 0.12)
 	_circle(0.7, 0.3, 0.12, Color(0.9, 0.45, 0.4))
+
+
+func _g_ladle() -> void:
+	# Wooden cooking ladle (cucharón): long handle, deep round bowl, motion lines.
+	var wood := Color(0.72, 0.5, 0.28)
+	_line([0.78, 0.12], [0.44, 0.52], 0.08, wood)
+	_circle(0.34, 0.64, 0.19, wood)
+	_circle(0.34, 0.62, 0.12, Color(0.42, 0.27, 0.14))
+	_ring(0.34, 0.64, 0.19, 0.025, INK)
+	_line([0.66, 0.6], [0.82, 0.56], 0.03)
+	_line([0.62, 0.72], [0.8, 0.74], 0.03)
+
+
+func _g_lasso() -> void:
+	# Ranch rope (mecate): a big loop with the running end lashing out.
+	_ring(0.42, 0.42, 0.24, 0.055)
+	_ring(0.42, 0.42, 0.24, 0.02, DARK, 0.6, 1.4)
+	_line([0.58, 0.6], [0.72, 0.76], 0.055)
+	_line([0.72, 0.76], [0.88, 0.7], 0.05)
+	_line([0.86, 0.56], [0.94, 0.5], 0.025)
+	_line([0.9, 0.66], [0.97, 0.66], 0.025)
 
 
 func _g_bolt() -> void:

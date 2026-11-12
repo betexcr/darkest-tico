@@ -14,6 +14,7 @@ Role model follows DD tactical ranks and FF-style clarity.
 
 - Starting rank preference shown as `[usable ranks]`.
 - Skills listed as short identity anchors, not full balance sheets.
+- **Basic attack** (owner 2026-11-11): every class has its own, with the weapon its battle sprite holds. It is the class's first skill in `data/heroes.json`, and no two classes share a skill.
 
 ---
 
@@ -34,6 +35,7 @@ Role model follows DD tactical ranks and FF-style clarity.
 - Ranks: `[1,2]`
 - Core identity: momentum tank with retaliatory style.
 - Signature skills:
+  - `Mecatazo` (basic attack): lash with the lasso rope; may tangle (Salado, less dodge).
   - `Entrada Brava`: taunt + prot buff.
   - `Monta Firme`: gains riposte when hit.
   - `Patada de Corral`: push and stun chance.
@@ -56,6 +58,7 @@ Role model follows DD tactical ranks and FF-style clarity.
 - Ranks: `[2,3,4]`
 - Core identity: healing, comfort, anti-curse kitchen alchemy.
 - Signature skills:
+  - `Cucharonazo` (basic attack): wooden ladle; weak, accurate, may stun.
   - `Sopa Milagrosa`: party heal over time.
   - `Regaño Santo`: ally stress heal + resolve resist.
   - `Cataplasma Casero`: cure bleed/blight-like effects.
@@ -122,6 +125,7 @@ Role model follows DD tactical ranks and FF-style clarity.
 - Ranks: `[2,3,4]`
 - Core identity: gadget burst, trap hacking, mark exploitation.
 - Signature skills:
+  - `Corrientazo` (basic attack): the drone shocks with a stripped charger cable; bonus vs marked.
   - `Dron Casero`: backline strike + reveal.
   - `Exploit Zero-Day`: heavy bonus vs marked.
   - `Firewall Humano`: temporary block to ally.

@@ -55,7 +55,7 @@
       "crit": 3,
       "resolve_level": 0,
       "skill_ids": [
-        "machetazo",
+        "cucharonazo",
         "sopa_milagrosa",
         "regano_santo",
         "cataplasma_casero"
@@ -96,7 +96,7 @@
       "crit": 6,
       "resolve_level": 0,
       "skill_ids": [
-        "machetazo",
+        "corrientazo",
         "dron_casero",
         "exploit_zero_day",
         "firewall_humano"
@@ -137,7 +137,7 @@
       "crit": 4,
       "resolve_level": 0,
       "skill_ids": [
-        "machetazo",
+        "mecatazo",
         "entrada_brava",
         "patada_de_corral",
         "no_me_tumban"
