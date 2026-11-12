@@ -36,6 +36,14 @@ Against the roadmap: **Phase 1 (preproduction)** has its docs done but its exit 
   - [x] Any agent can find what to do next from `docs/HANDOFF.md` alone
   - [x] Data validator runs without Godot
 
+### P0-02 · S · Move the project to Godot 4.7 (owner's install is 4.7.2)
+- Status: `done` (Claude Code, `main`, 2026-11-11)
+- Files: `project.godot`, `.cursor/rules/godot-runtime.mdc`, `AGENTS.md`, `README.md`, `launch-editor.bat`
+- Done when:
+  - [x] `config/features` says 4.7; runtime rule, README and launcher point at `C:\Godot\Godot_v4.7.2-stable_win64.exe`
+  - [x] All 9 test scripts pass on 4.7.2 headless
+  - [x] `TooltipStyler` still restyles real tooltips on 4.7.2 (`tools/screens/tooltip_screenshot.gd`)
+
 ---
 
 ## P1 — Close preproduction gaps (combat core)

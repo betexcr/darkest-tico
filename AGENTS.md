@@ -27,7 +27,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 
 1. **Verify**
    - `python3 tools/validate_data.py` must exit 0.
-   - If Godot is installed (see [.cursor/rules/godot-runtime.mdc](.cursor/rules/godot-runtime.mdc); cloud agents may download the official 4.6.2 Linux build into their scratchpad, owner-approved 2026-11-07):
+   - If Godot is installed (see [.cursor/rules/godot-runtime.mdc](.cursor/rules/godot-runtime.mdc); cloud agents may download the official 4.7.2 Linux build into their scratchpad, owner-approved 2026-11-07):
      - `godot --headless --path . --import` (first run / new files; generates `.uid` files — commit them)
      - `godot --headless --path . -s tests/smoke_expedition.gd` plays 3 full expeditions; must print `0 failure(s)` and no `SCRIPT ERROR`
      - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`, `tests/test_feedback.gd`, `tests/test_combat_items.gd`, `tests/test_progression.gd`, `tests/test_town_events.gd`
@@ -62,7 +62,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 
 ## 6. Repo facts agents keep re-discovering
 
-- Engine: Godot 4.6, GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`, `TooltipStyler`.
+- Engine: Godot 4.7 (moved from 4.6 on 2026-11-11), GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`, `TooltipStyler`.
 - `GameState` (`scripts/autoload/game_state.gd`) owns all run and campaign state. Save is `user://save.json`, `SAVE_VERSION` in that file. Bump it and add migration in `apply_save_data` when you change the shape.
 - Language: in-game text is **Spanish (Costa Rican)**. Code, comments, and docs are English.
 - Tone guardrails: [docs/08-content-standards-satire.md](docs/08-content-standards-satire.md). Read it before writing any flavor text.

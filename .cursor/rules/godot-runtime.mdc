@@ -1,21 +1,21 @@
 ---
-description: Godot 4.6 executable path on this machine; use for CLI checks and headless runs
+description: Godot 4.7 executable path on this machine; use for CLI checks and headless runs
 alwaysApply: true
 ---
 
 # Godot runtime (Windows)
 
-- **Executable:** `C:\Godot\Godot_v4.6.2-stable_win64.exe`
-- **Project root:** `d:\Code\darkest-tico` (use `--path` with the repo root).
+- **Executable:** `C:\Godot\Godot_v4.7.2-stable_win64.exe`
+- **Project root:** `C:\Code\darkest-tico` (use `--path` with the repo root).
 
 ## When to use
 
 - **Smoke check** (loads project, then exits):  
-  `"C:\Godot\Godot_v4.6.2-stable_win64.exe" --path "d:\Code\darkest-tico" --headless --quit-after 3`
+  `"C:\Godot\Godot_v4.7.2-stable_win64.exe" --path "C:\Code\darkest-tico" --headless --quit-after 3`
 - **Run game** (windowed): same binary with `--path` and optionally `res://scenes/bootstrap/main.tscn` as positional arg if not using `project.godot` main scene.
 - Prefer this path over guessing `godot` on `PATH` when running commands for this repo.
 
 ## Notes
 
-- Match **Godot 4.6** with `project.godot` `config/features` (e.g. `4.6`).
+- Match **Godot 4.7** with `project.godot` `config/features` (`4.7`).
 - If the binary moves, update this rule so agents keep using the correct install.

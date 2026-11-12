@@ -17,6 +17,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-11 — P0-02 — Merged `tender-brown` into `main`; project moved to Godot 4.7
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P0-02 done. P4-12, P4-13, P4-14 are now on `main` (still `review`, owner to look in-game).
+- **Changed:**
+  - Merged `origin/betomm/tender-brown-x04ghq` into `main` (no conflicts).
+  - `project.godot` `config/features` 4.6 → 4.7: the owner's editor (the only install, `C:\Godot\Godot_v4.7.2-stable_win64.exe`) had already made this change.
+  - `.cursor/rules/godot-runtime.mdc`, `README.md`, `launch-editor.bat`: 4.7.2 executable path, project root is now `C:\Code\darkest-tico`.
+  - `AGENTS.md`: engine 4.7; cloud agents download the official 4.7.2 Linux build.
+- **Verified:** Godot 4.7.2 headless `--import` clean; all 9 test scripts 0 failures, no `SCRIPT ERROR`. Ran `tools/screens/tooltip_screenshot.gd` windowed on 4.7.2: hub and battle tooltips still show the P4-14 card, so the engine's tooltip structure (`TooltipPanel` / `TooltipLabel`) is unchanged.
+- **Not verified / risks:** `tools/validate_data.py` **not run**: no Python on the owner's machine. No data files changed in this session, and the merged branch reported 0 errors.
+- **Decisions needed:** none
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-09 (night) — P4-14 — One tooltip design for the whole game
 - **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
 - **Status after session:** P4-14 review · P4-13 review · P4-12 review (entries below). Owner to look at all three in-game.

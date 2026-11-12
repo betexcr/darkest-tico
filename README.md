@@ -6,7 +6,7 @@ Costa Rican gothic roguelike (Darkest Dungeon–style loop). **Design specs** li
 
 ## Requirements
 
-- Godot **4.6.x** (or any **4.x** with Forward+). Download: [godotengine.org](https://godotengine.org/download).
+- Godot **4.7.x** (or any **4.x** with Forward+). Download: [godotengine.org](https://godotengine.org/download).
 
 ## Run
 
@@ -17,10 +17,10 @@ Costa Rican gothic roguelike (Darkest Dungeon–style loop). **Design specs** li
 
 ### Windows: your install path
 
-If Godot is installed at `C:\Godot\Godot_v4.6.2-stable_win64.exe`, you can open this project from a terminal:
+If Godot is installed at `C:\Godot\Godot_v4.7.2-stable_win64.exe`, you can open this project from a terminal:
 
 ```text
-"C:\Godot\Godot_v4.6.2-stable_win64.exe" --path "D:\Code\darkest-tico"
+"C:\Godot\Godot_v4.7.2-stable_win64.exe" --path "C:\Code\darkest-tico"
 ```
 
 Or double-click **`launch-editor.bat`** in this folder (edit the `GODOT` line inside if your path changes).
