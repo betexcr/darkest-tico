@@ -312,6 +312,23 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 ### P4-10 · S · Item icons
 - Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
 
+### P4-12 · S · Pulpería icon tiles + item tooltip card (owner request 2026-11-09)
+- Status: `review` (Claude Code, `betomm/tender-brown-x04ghq`, 2026-11-09; owner to look at it in-game) · Depends: P3-09, P4-10
+- Spec: owner request: the Pulpería shows item icons like the alforja instead of long text rows; a better-designed, opaque item tooltip.
+- Files: `scripts/ui/shop_slot.gd` (new), `scripts/ui/item_tooltip.gd` (new), `scripts/ui/inventory_slot.gd`, `scripts/ui/equip_slot.gd`, `scripts/hacienda/hacienda_hub.gd` + `.tscn` (`ShopGrid` is an `HFlowContainer`), `GameState.item_tooltip_parts`, `tools/screens/shop_screenshot.gd`
+- Done when: [x] store tiles = icon + this week's price (green when cheaper, red when dearer, "cerrado" when an event blocks it); [x] one opaque card (icon, name, category chip, description, one line per effect, where it is used, buy/sell price, hint or warning) for the store, the alforja, equipment slots and the combat alforja; [ ] owner looks at it in-game
+
+### P4-13 · S · Defeated enemies: not selectable, drawn behind the living (owner request 2026-11-09)
+- Status: `review` (Claude Code, `betomm/tender-brown-x04ghq`, 2026-11-09; owner to look at it in-game) · Depends: P4-07
+- Files: `scripts/combat/battle_unit.gd` (`DEAD_Z`, `_apply_dead_look`, `_gui_input`), `scripts/expedition/expedition_screen.gd` (`_on_unit_clicked`), `scenes/expedition/expedition_screen.tscn` (background at z -2), `tests/test_feedback.gd`
+- Done when: [x] a defeated enemy ignores the mouse (no click, no tooltip, no info panel; clicks reach the living enemy next to it); [x] fallen fighters (enemies and heroes) draw behind living ones; [ ] owner looks at it in-game
+
+### P4-14 · S · One tooltip design for the whole game (owner request 2026-11-09)
+- Status: `review` (Claude Code, `betomm/tender-brown-x04ghq`, 2026-11-09; owner to look at it in-game) · Depends: P4-12
+- Spec: owner request: style all tooltips with a better design. Content of skill/status/stress tooltips is still P4-02.
+- Files: `scripts/ui/tooltip_card.gd` (new, shared look), `scripts/autoload/tooltip_styler.gd` (new autoload `TooltipStyler`), `project.godot`, `scripts/ui/item_tooltip.gd`, `scripts/ui/skill_button.gd`, `scripts/ui/equip_slot.gd`, `tools/screens/tooltip_screenshot.gd`
+- Done when: [x] every plain `tooltip_text` tooltip (hub, expedition, status icons, map, option lists) shows as the opaque card, with "Title\nbody" or "Title — body" split into a gold title and wrapped body; [x] skill and item tooltips use the same card; [ ] owner looks at it in-game
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

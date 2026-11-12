@@ -62,9 +62,10 @@ Do this before you stop for **any** reason: task finished, context running out, 
 
 ## 6. Repo facts agents keep re-discovering
 
-- Engine: Godot 4.6, GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`.
+- Engine: Godot 4.6, GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`, `TooltipStyler`.
 - `GameState` (`scripts/autoload/game_state.gd`) owns all run and campaign state. Save is `user://save.json`, `SAVE_VERSION` in that file. Bump it and add migration in `apply_save_data` when you change the shape.
 - Language: in-game text is **Spanish (Costa Rican)**. Code, comments, and docs are English.
 - Tone guardrails: [docs/08-content-standards-satire.md](docs/08-content-standards-satire.md). Read it before writing any flavor text.
+- Tooltips: just set `tooltip_text` ("Title\nbody" or "Title — body"); the `TooltipStyler` autoload draws it as the shared card (`scripts/ui/tooltip_card.gd`). Custom tooltips call `TooltipCard.clear_frame(self)` and return a card from `_make_custom_tooltip`.
 - Art: follow [.cursor/rules/stable-diffusion-assets.mdc](.cursor/rules/stable-diffusion-assets.mdc). Never call SD from game code. Every PNG needs a `.metadata.json`.
 - The Godot path in `.cursor/rules/godot-runtime.mdc` is the owner's Windows machine. Cloud containers usually have no Godot.

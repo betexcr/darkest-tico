@@ -490,18 +490,35 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 	}
 
 
-## Tooltip text for any item: name, description, and what it does.
+## Plain-text tooltip for any item: name, description, and what it does. The item cards
+## (`scripts/ui/item_tooltip.gd`) draw the same facts from `item_tooltip_parts`.
 func item_tooltip(item_id: String) -> String:
+	var p: Dictionary = item_tooltip_parts(item_id)
+	if p.is_empty():
+		return item_id
+	var lines: PackedStringArray = PackedStringArray([str(p["name"]), str(p["description"])])
+	var parts: PackedStringArray = PackedStringArray()
+	if str(p["slot"]) != "":
+		parts.append(str(p["kind"]))
+	parts.append_array(PackedStringArray(p["stats"]))
+	if not parts.is_empty():
+		lines.append(" · ".join(parts))
+	lines.append(str(p["where"]))
+	lines.append("Compra %d ₡ · Venta %d ₡" % [int(p["price"]), int(p["sell"])])
+	return "\n".join(lines)
+
+
+## The facts an item tooltip shows, split so the UI can lay them out:
+## {name, description, kind, slot, stats: Array[String], where, price (list price),
+## now (this week's price, town events included), sell}.
+func item_tooltip_parts(item_id: String) -> Dictionary:
 	var it: Dictionary = get_item(item_id)
 	if it.is_empty():
-		return item_id
-	var lines: PackedStringArray = PackedStringArray([str(it.get("name", item_id)), str(it.get("description", ""))])
+		return {}
 	var labels := {"damage": "Daño", "accuracy": "Precisión", "crit": "Crítico", "dodge": "Esquiva",
 		"speed": "Velocidad", "hp_max": "PV máx.", "prot": "Protección %", "stress_resist": "Resist. estrés %"}
 	var parts: PackedStringArray = PackedStringArray()
 	var slot_names := {"weapon": "Arma", "armor": "Armadura", "accessory": "Accesorio"}
-	if it.has("slot"):
-		parts.append(str(slot_names.get(str(it["slot"]), it["slot"])))
 	for k in it.get("bonus", {}):
 		parts.append("%s %+d" % [labels.get(k, k), int(it["bonus"][k])])
 	if str(it.get("element", "")) != "":
@@ -534,17 +551,23 @@ func item_tooltip(item_id: String) -> String:
 	var ap = it.get("effects", {}).get("applies", null)
 	if ap is Dictionary and str(it.get("target", "")) != "enemy":
 		parts.append("Deja %s" % SE.display_name(str(ap.get("status", ""))).to_lower())
-	if not parts.is_empty():
-		lines.append(" · ".join(parts))
 	var where: String = {
 		"explore": "Fuera de combate", "combat": "Solo en combate (gasta el turno)", "both": "Dentro y fuera de combate (en combate gasta el turno)",
 		"curio": "Se usa en lugares extraños", "equip": "Arrástralo a un héroe para equiparlo",
 	}.get(str(it.get("usable", "")), "")
 	if str(it.get("usable", "")) in ["explore", "both"]:
 		where += " · %d uso(s) por héroe en cada lugar" % int(it.get("uses_per_node", 1))
-	lines.append(where)
-	lines.append("Compra %d ₡ · Venta %d ₡" % [int(it.get("price", 0)), sell_price(item_id)])
-	return "\n".join(lines)
+	return {
+		"name": str(it.get("name", item_id)),
+		"description": str(it.get("description", "")),
+		"kind": str(slot_names.get(str(it.get("slot", "")), it.get("slot", ""))) if it.has("slot") else "Consumible",
+		"slot": str(it.get("slot", "")),
+		"stats": Array(parts),
+		"where": where,
+		"price": int(it.get("price", 0)),
+		"now": item_price(item_id),
+		"sell": sell_price(item_id),
+	}
 
 
 # --- Equipment (P3-11): 1 weapon, 1 armor, 2 accessories per hero -----------------

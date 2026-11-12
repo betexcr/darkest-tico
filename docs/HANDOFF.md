@@ -17,6 +17,58 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-09 (night) — P4-14 — One tooltip design for the whole game
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-14 review · P4-13 review · P4-12 review (entries below). Owner to look at all three in-game.
+- **Changed:**
+  - `scripts/ui/tooltip_card.gd` (new): the shared tooltip look (opaque dark card, warm border, gold title, rule, wrapped body, effect bullets, hint colour for "Clic…" lines). `from_text("Title\nbody")` / `"Title — body"` / plain sentence.
+  - `scripts/autoload/tooltip_styler.gd` (new autoload `TooltipStyler`, registered in `project.godot`): when Godot's default tooltip popup enters the tree, its label is replaced by the card. So **every** `tooltip_text` in the game is styled with no change at the call site; new tooltips need nothing.
+  - `item_tooltip.gd`, `skill_button.gd`, `equip_slot.gd` build on `tooltip_card.gd` (skill effects are one row each).
+  - `tests/test_feedback.gd` (+2 checks), `tools/screens/tooltip_screenshot.gd` (new: hovers 9 controls in hub and battle).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: all 9 test scripts 0 failures, no `SCRIPT ERROR`. Tooltips checked by screenshot with real hovers: hub (sell, Pura Vida, hero row, event), battle (skill, guard, status icon, enemy, map room).
+- **Not verified / risks:**
+  - `TooltipStyler` relies on how Godot 4.6 builds the default tooltip (a `PopupPanel` "TooltipPanel" with one `Label` "TooltipLabel"). If an engine upgrade changes that, tooltips fall back to Godot's default look; `test_feedback` and `tooltip_screenshot.gd` will show it.
+  - Tooltip wording was not changed; some would read better rewritten as "Title\nbody" (P4-02).
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
+## 2026-11-09 (later) — P4-13 — Defeated enemies can't be selected and lie behind the living
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-13 review · P4-12 review (entry below). Owner to look at both in-game.
+- **Changed:**
+  - `scripts/combat/battle_unit.gd`: a fallen fighter gets `z_index = DEAD_Z` (-1) so living sprites draw over it. A defeated enemy also sets `mouse_filter = IGNORE` and drops its tooltip, so clicks reach the living enemy it overlaps. `rest()` restores both for a living fighter.
+  - `scenes/expedition/expedition_screen.tscn`: `BgTexture` and `Darken` at `z_index = -2`, otherwise the fallen would go behind the background.
+  - `scripts/expedition/expedition_screen.gd`: `_on_unit_clicked` ignores defeated enemies (no info panel, no target).
+  - `tests/test_feedback.gd` (+2 checks).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: all 9 test scripts 0 failures, no `SCRIPT ERROR`. Draw order checked by screenshot (a living enemy between two fallen ones).
+- **Not verified / risks:**
+  - Fallen heroes stay clickable on purpose (the click shows the first living hero, as before).
+  - Anything added to the expedition screen below z -1 would hide behind the background.
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
+## 2026-11-09 — P4-12 — Pulpería shows icon tiles; new opaque item tooltip card
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-brown-x04ghq`
+- **Status after session:** P4-12 review (owner to look at it in-game).
+- **Changed:**
+  - `scripts/ui/shop_slot.gd` (new): a store tile is the item's icon with this week's price under it. Click buys. Price is green/red when a town event changes it, "cerrado" when blocked.
+  - `scripts/ui/item_tooltip.gd` (new): the item card (icon, name, category chip, description, one line per effect, where it is used, buy/sell, hint or red warning). Fully opaque. Used by the store, alforja cells (`inventory_slot.gd`, new `tooltip_note`), equipment slots and the combat alforja.
+  - `GameState.item_tooltip_parts(id)`: the tooltip facts as a Dictionary; `item_tooltip(id)` builds the same plain text from it.
+  - `hacienda_hub.tscn`: `ShopGrid` is now an `HFlowContainer` (tiles wrap to the column width).
+  - `tests/test_hub.gd` (+4 checks), `tools/screens/shop_screenshot.gd` (new).
+- **Verified:** `validate_data.py` 0 errors / 0 warnings. Godot 4.6.2 headless: `smoke_expedition`, `test_guard`, `test_status`, `test_hub`, `test_equipment`, `test_feedback`, `test_combat_items`, `test_progression`, `test_town_events`: all 0 failures, no `SCRIPT ERROR`. Store and tooltip checked by screenshot (xvfb, real hover).
+- **Not verified / risks:**
+  - The store area shows about 3 rows of tiles at 1280×720 before scrolling; item names are only in the tooltip now.
+  - `item_tooltip.gd` uses the `GameState` autoload, so a `-s` script must `load()` it at run time, not `preload` it.
+- **Decisions needed:** none.
+- **Next step:** P3-04 skill ranks (Casa Comunal): open `scripts/hacienda/hacienda_hub.gd`; rank purchase gated by `resolve_level`, costs in doc 04 §3.3.
+
+---
+
 ## 2026-11-08 (night) — P3-15 — Town events (Tico versions of every DD one), Modo Pura Vida, Mano vuelta
 - **Agent / branch:** Claude Code (cloud) / `betomm/amazing-clarke-lv3whd`
 - **Status after session:** P3-15 review. The open question from the previous entry is answered: the owner asked what DD does (it blocks), then asked for DD's two exceptions.

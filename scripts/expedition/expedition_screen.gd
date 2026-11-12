@@ -153,6 +153,9 @@ func _clear_enemies() -> void:
 
 
 func _on_unit_clicked(unit) -> void:
+	# Defeated enemies can't be selected or inspected.
+	if not unit.is_hero and unit.is_dead():
+		return
 	if not _pending.is_empty():
 		var side: String = "ally" if unit.is_hero else "enemy"
 		if side == str(_pending["side"]) and _living_units(unit.is_hero).has(unit):
@@ -1062,7 +1065,7 @@ func _show_combat_items(hero: Dictionary) -> void:
 		var b = InventorySlotScript.new()
 		b.setup(id, int(slot["qty"]))
 		b.custom_minimum_size = Vector2(52, 52)
-		b.tooltip_text = GameState.item_tooltip(id) + "\nUsarlo gasta el turno."
+		b.tooltip_note = "Usarlo gasta el turno."
 		b.used.connect(_on_item_pressed)
 		_skills.add_child(b)
 		shown += 1
