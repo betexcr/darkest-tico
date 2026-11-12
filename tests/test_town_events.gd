@@ -72,7 +72,8 @@ func _run() -> void:
 	_check(gs.item_price("gallo_pinto") == 0, "Cosecha de frijoles: consumables free")
 	_check(gs.item_price("machete_cartago") == int(gs.get_item("machete_cartago")["price"]), "…weapons unchanged")
 	gs.draw_town_event("huelga_de_transportistas")
-	_check(gs.item_price("gallo_pinto") == 225, "Huelga de transportistas: gallo pinto 150 -> 225")
+	var gp: int = int(gs.get_item("gallo_pinto")["price"])
+	_check(gs.item_price("gallo_pinto") == int(round(gp * 1.5)), "Huelga de transportistas: gallo pinto %d -> %d" % [gp, gs.item_price("gallo_pinto")])
 	gs.draw_town_event("guino_de_la_pulpera")
 	var acc: String = "escapulario"
 	var full: int = int(gs.get_item(acc)["price"])

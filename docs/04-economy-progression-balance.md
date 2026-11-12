@@ -92,7 +92,7 @@ Primary sources:
 ## 3.1 Provisions
 
 Per mission starting loadout target:
-- Short: 1,200-2,200 colones
+- Short: 1,200-2,200 colones (Sótanos, 2026-11-12: food and candles 1,050 ₡ for the recommended kit, the rest for healing and stress items; see doc 01 §4.6)
 - Medium: 2,200-3,600 colones
 - Long: 3,600-5,400 colones
 

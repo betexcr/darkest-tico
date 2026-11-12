@@ -370,6 +370,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when:
   - [x] 5 tiers from data affect enemy damage/crit, hero stress, loot, surprise and trap disarm (`trap_pct`, used by the traps in P2-01); per-move stress in the dark
   - [x] Faster decay (8 per move), "Apagar la candela", tier shown on the HUD; camp resets to `light_max()`; doc 07 "exhausted party" +4% camp ambush
+  - [x] Owner 2026-11-12: heroes lose accuracy in the dark (`hero_accuracy`: Penumbra −3, Oscuro −6, Negro −10)
 
 ### P1-18 · M · Travel hunger + provisions
 - Status: `review` (Claude Code, `main`, 2026-11-12; owner to try the hunger stop and the provisions prompt) · Depends: P1-16
@@ -378,6 +379,15 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when:
   - [x] Hunger event every 6 moves (eat / share / go hungry); camp meal resets it
   - [x] Hub warns about missing recommended provisions and can buy them
+  - [x] Owner 2026-11-12 asked for a price recommendation: gallo pinto 75 ₡, candela 100 ₡, fósforos 60 ₡ (full Sótanos kit 1,050 ₡ ≈ 30% of a run, DD ratio; doc 04 §3.1)
+
+### P1-19 · S · Tests and tools must not touch the real save
+- Status: `todo` · Depends: —
+- Why: `SaveService._ready` loads and rewrites `user://save.json` on every Godot start, headless tests and the sim included. Two instances at once can read a half-written file; the one that fails starts a new game and saves it over the owner's save. This happened on 2026-11-12 while sims ran in parallel: the dev save went back to week 1.
+- Files: `scripts/autoload/save_service.gd`, maybe `project.godot` (a test feature tag or command-line flag)
+- Done when:
+  - [ ] Running a `-s` script (tests, `tools/sim_combat.gd`, `tools/screens/*`) never writes `user://save.json` (for example, skip save/load when `OS.get_cmdline_args()` has `-s`/`--script`, or use a separate save path)
+  - [ ] A failed load never overwrites the existing file (write to a temp file, then rename; keep a `.bak`)
 
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)

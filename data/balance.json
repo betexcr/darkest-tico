@@ -104,15 +104,15 @@
     "stress": 10
   },
   "light": {
-    "_doc": "Torch light (Luz) ranges 0..max (P1-17, DD torch). tiers: brightest first; a tier applies from its min up to the next one. Per tier: enemy_dmg_pct and enemy_crit (added to enemy attacks), stress_pct (stress heroes take in combat), loot_pct (colones from fights and curios), party_surprised_pct / enemies_surprised_pct (chance a normal fight opens with that side acting first), trap_pct (added to the disarm chance), move_stress and move_stress_all (stress per move to one random hero, or to everyone), low (counts as low light for the camp ambush). snuff: Luz lost when the player puts out the candle. Rules: scripts/domain/light_system.gd.",
+    "_doc": "Torch light (Luz) ranges 0..max (P1-17, DD torch). tiers: brightest first; a tier applies from its min up to the next one. Per tier: hero_accuracy (accuracy points added to hero attacks; each point is combat.hit_per_point), enemy_dmg_pct and enemy_crit (added to enemy attacks), stress_pct (stress heroes take in combat), loot_pct (colones from fights and curios), party_surprised_pct / enemies_surprised_pct (chance a normal fight opens with that side acting first), trap_pct (added to the disarm chance), move_stress and move_stress_all (stress per move to one random hero, or to everyone), low (counts as low light for the camp ambush). snuff: Luz lost when the player puts out the candle. Rules: scripts/domain/light_system.gd.",
     "max": 100,
     "snuff": 25,
     "tiers": [
-      { "id": "radiante", "name": "Radiante", "min": 76, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 0, "enemies_surprised_pct": 15, "trap_pct": 15, "move_stress": 0, "move_stress_all": false, "low": false },
-      { "id": "tenue", "name": "Tenue", "min": 51, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 10, "party_surprised_pct": 5, "enemies_surprised_pct": 10, "trap_pct": 5, "move_stress": 0, "move_stress_all": false, "low": false },
-      { "id": "penumbra", "name": "Penumbra", "min": 26, "enemy_dmg_pct": 5, "enemy_crit": 3, "stress_pct": 10, "loot_pct": 20, "party_surprised_pct": 10, "enemies_surprised_pct": 5, "trap_pct": 0, "move_stress": 0, "move_stress_all": false, "low": true },
-      { "id": "oscuro", "name": "Oscuro", "min": 1, "enemy_dmg_pct": 10, "enemy_crit": 6, "stress_pct": 20, "loot_pct": 35, "party_surprised_pct": 15, "enemies_surprised_pct": 0, "trap_pct": -10, "move_stress": 3, "move_stress_all": false, "low": true },
-      { "id": "negro", "name": "Negro", "min": 0, "enemy_dmg_pct": 20, "enemy_crit": 10, "stress_pct": 30, "loot_pct": 50, "party_surprised_pct": 25, "enemies_surprised_pct": 0, "trap_pct": -20, "move_stress": 3, "move_stress_all": true, "low": true }
+      { "id": "radiante", "name": "Radiante", "min": 76, "hero_accuracy": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 0, "enemies_surprised_pct": 15, "trap_pct": 15, "move_stress": 0, "move_stress_all": false, "low": false },
+      { "id": "tenue", "name": "Tenue", "min": 51, "hero_accuracy": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 10, "party_surprised_pct": 5, "enemies_surprised_pct": 10, "trap_pct": 5, "move_stress": 0, "move_stress_all": false, "low": false },
+      { "id": "penumbra", "name": "Penumbra", "min": 26, "hero_accuracy": -3, "enemy_dmg_pct": 5, "enemy_crit": 3, "stress_pct": 10, "loot_pct": 20, "party_surprised_pct": 10, "enemies_surprised_pct": 5, "trap_pct": 0, "move_stress": 0, "move_stress_all": false, "low": true },
+      { "id": "oscuro", "name": "Oscuro", "min": 1, "hero_accuracy": -6, "enemy_dmg_pct": 10, "enemy_crit": 6, "stress_pct": 20, "loot_pct": 35, "party_surprised_pct": 15, "enemies_surprised_pct": 0, "trap_pct": -10, "move_stress": 3, "move_stress_all": false, "low": true },
+      { "id": "negro", "name": "Negro", "min": 0, "hero_accuracy": -10, "enemy_dmg_pct": 20, "enemy_crit": 10, "stress_pct": 30, "loot_pct": 50, "party_surprised_pct": 25, "enemies_surprised_pct": 0, "trap_pct": -20, "move_stress": 3, "move_stress_all": true, "low": true }
     ]
   }
 }

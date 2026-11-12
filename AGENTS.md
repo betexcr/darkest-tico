@@ -45,7 +45,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 - **Selling:** the Pulpería buys any item back at **half its price** (`data/balance.json` `hub.sell_rate`). Equipped items must be unequipped first.
 - **Items:** outside combat, each hero can use each item `uses_per_node` times per room (per character, not per team). Using an item in combat spends the hero's turn.
 - **Damage outside combat** (owner 2026-11-12): traps and curios use the combat rule (`scripts/domain/hero_damage.gd`): Al Borde, then Golpe de gracia; heroes can die. Hunger and fasting never drop a hero below 1 PV.
-- **Luz** (owner 2026-11-12, DD torch): 5 tiers in `data/balance.json` `light.tiers` (doc 01 §4.5). Darker means more enemy damage and crit, more stress, more loot, more surprises and harder traps.
+- **Luz** (owner 2026-11-12, DD torch): 5 tiers in `data/balance.json` `light.tiers` (doc 01 §4.5). Darker means worse hero accuracy, more enemy damage and crit, more stress, more loot, more surprises and harder traps.
 - **Hunger** (owner 2026-11-12): every 6 moves, 1 gallo pinto per living hero; whoever doesn't eat loses 10% PV (never below 1) and gains 10 stress; a camp meal resets the count (doc 01 §4.6). Regions list recommended `provisions`.
 - **Traps and curios:** data in `data/traps.json` / `data/curios.json` with one outcome vocabulary (`GameState.apply_event_outcome`), checked by the validator. Trap disarm is DD-style: best *trampa* + Luz bonus − difficulty.
 - **Elements** (classic RPG set): fuego, hielo, rayo, agua, tierra, viento, sagrado, oscuridad. **Every enemy has elemental affinities** (`elements`: >1 weak, <1 resists, 0 immune) that fit the monster; enemy magic skills carry an `element`.

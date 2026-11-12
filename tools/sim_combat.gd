@@ -425,7 +425,7 @@ func _attack_score(hero: Dictionary, sk: Dictionary, t: Dictionary) -> float:
 	var el: String = str(hero.get("element", ""))
 	if el != "" and t.get("elements", null) is Dictionary:
 		avg *= float(t["elements"].get(el, 1.0))
-	var acc: int = int(hero.get("accuracy", 0)) + StatusEffectsScript.stat(hero, "accuracy")
+	var acc: int = int(hero.get("accuracy", 0)) + StatusEffectsScript.stat(hero, "accuracy") + load("res://scripts/domain/light_system.gd").val(_gs.mission_light, "hero_accuracy")
 	var dod: int = int(t.get("dodge", 0)) + StatusEffectsScript.stat(t, "dodge")
 	var exp_dmg: float = avg * CombatResolverScript.hit_chance(acc, int(sk.get("skill_accuracy", 0)), dod)
 	var kill: float = 100.0 if avg >= float(t.get("hp", 0)) else 0.0

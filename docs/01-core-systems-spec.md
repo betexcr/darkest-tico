@@ -216,13 +216,15 @@ Implemented (P1-17, owner 2026-11-12: DD torch). Data: `data/balance.json` `ligh
 - Luz runs 0–100. It drops `light_decay_per_move` (8) per move. Candles raise it (candela de sebo +25, fósforos +15), and some enemy skills drain it. "Apagar la candela" lowers it on purpose (−25).
 - Five tiers. Darker is more dangerous and pays more:
 
-| Tier | Luz | Enemy dmg | Enemy crit | Hero stress taken | Loot | Party surprised | Enemies surprised | Trap disarm | Walking |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---|
-| Radiante | 76–100 | — | — | — | — | 0% | 15% | +15 | — |
-| Tenue | 51–75 | — | — | — | +10% | 5% | 10% | +5 | — |
-| Penumbra | 26–50 | +5% | +3 | +10% | +20% | 10% | 5% | — | — |
-| Oscuro | 1–25 | +10% | +6 | +20% | +35% | 15% | — | −10 | +3 stress to one hero per move |
-| Negro | 0 | +20% | +10 | +30% | +50% | 25% | — | −20 | +3 stress to every hero per move |
+| Tier | Luz | Hero accuracy | Enemy dmg | Enemy crit | Hero stress taken | Loot | Party surprised | Enemies surprised | Trap disarm | Walking |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| Radiante | 76–100 | — | — | — | — | — | 0% | 15% | +15 | — |
+| Tenue | 51–75 | — | — | — | — | +10% | 5% | 10% | +5 | — |
+| Penumbra | 26–50 | −3 | +5% | +3 | +10% | +20% | 10% | 5% | — | — |
+| Oscuro | 1–25 | −6 | +10% | +6 | +20% | +35% | 15% | — | −10 | +3 stress to one hero per move |
+| Negro | 0 | −10 | +20% | +10 | +30% | +50% | 25% | — | −20 | +3 stress to every hero per move |
+
+Hero accuracy is in points (owner 2026-11-12); each point is 2% to hit (`combat.hit_per_point`), so Negro is −20% to hit.
 
 - The combat effects read the live Luz, so a skill that drains it mid-fight matters.
 - **Surprise:** when the party is surprised, the enemies all act first in round 1, as in a night ambush. When the enemies are surprised, the heroes all act first. Boss fights and ambushes never roll surprise.
@@ -238,6 +240,7 @@ Implemented (P1-18, owner 2026-11-12: DD hunger checks). Data: `data/balance.jso
 - A hero who doesn't eat loses **10% of max PV (never below 1)** and gains **+10 stress**.
 - A camp meal (§4.4) resets the count.
 - **Provisions:** each region lists recommended provisions (Sótanos: 10 gallo pinto, 3 candelas de sebo). Before leaving, the hacienda warns when the alforja is short and offers to buy what is missing.
+- **Prices** (2026-11-12, DD ratio): gallo pinto 75 ₡, candela de sebo 100 ₡, fósforos 60 ₡. The full Sótanos kit costs 1,050 ₡, about 30% of what an Aprendiz run pays (≈3,500 ₡). Topping up the starter kit (4 gallo pinto, 2 candelas) costs 550 ₡.
 
 ### 4.7 Traps and curios
 

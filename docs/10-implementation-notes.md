@@ -105,3 +105,14 @@ Chains of 3 fights + elite + boss (5,000 per row):
 - In the dark, stress per fight is about 50% higher and deaths roughly triple. It now matters to carry candles, which is the point of the tiers.
 - Smart play still clears 99% even in Negro. Combat difficulty is still P5-02's job; the Luz tiers are a multiplier on it, not a fix.
 - Travel hunger, trap damage and curio curses are not in the sim (P1-15).
+
+With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Negro −10), chains of 3 fights + elite + boss, 5,000 per row:
+
+| Policy | Luz | Boss cleared | Rounds in the boss fight | Top stress before the boss | Fights with a death (elite / boss) |
+|---|---|---:|---:|---:|---:|
+| smart | 40 Penumbra | 99.6% | 8.3 | 30.9 | 1.4% / 2.5% |
+| smart | 0 Negro | 96.9% | 11.6 | 43.8 | 4.3% / 7.3% |
+| basic | 0 Negro | 0.0% | 5.0 | 96.8 | 90% / 100% |
+
+- Missing more makes fights longer (boss 7.4 → 11.6 rounds in Negro), so stress and deaths climb. Careful play now actually loses runs in the dark.
+- 45 smart chains in Negro stalled past 40 rounds (0.9%): healers out-heal what a blind party can hit. Watch for this in P5-02.

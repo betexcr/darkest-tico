@@ -525,7 +525,8 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		GameState.mission_light = maxi(GameState.mission_light - light_cost, 0)
 		_log("%s (bravata) agita la candela para lucirse: Luz -%d." % [hero.get("name", "?"), light_cost], "cc7744")
 	var sk_acc: int = int(skill.get("skill_accuracy", 0))
-	var acc: int = int(hero.get("accuracy", 5)) + StatusEffectsScript.stat(hero, "accuracy")
+	# Luz tiers (owner 2026-11-12): heroes aim worse in the dark.
+	var acc: int = int(hero.get("accuracy", 5)) + StatusEffectsScript.stat(hero, "accuracy") + LightSystemScript.val(GameState.mission_light, "hero_accuracy")
 	var dod: int = int(enemy.get("dodge", 5)) + StatusEffectsScript.stat(enemy, "dodge")
 	var p: float = CombatResolverScript.hit_chance(acc, sk_acc, dod)
 	for ap in _applies_list(skill.get("self_applies", null)):

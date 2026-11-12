@@ -633,7 +633,7 @@ BALANCE_KEYS = {
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).
-LIGHT_TIER_KEYS = ("id", "name", "min", "enemy_dmg_pct", "enemy_crit", "stress_pct", "loot_pct",
+LIGHT_TIER_KEYS = ("id", "name", "min", "hero_accuracy", "enemy_dmg_pct", "enemy_crit", "stress_pct", "loot_pct",
                    "party_surprised_pct", "enemies_surprised_pct", "trap_pct", "move_stress",
                    "move_stress_all", "low")
 

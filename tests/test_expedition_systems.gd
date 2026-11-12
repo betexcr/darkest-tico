@@ -134,8 +134,8 @@ func _test_light(gs) -> void:
 
 	# Surprise: forced through the tier numbers.
 	bal.override("light.tiers", [
-		{"id": "a", "name": "A", "min": 50, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 0, "enemies_surprised_pct": 100, "trap_pct": 0, "move_stress": 0, "move_stress_all": false, "low": false},
-		{"id": "b", "name": "B", "min": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 100, "enemies_surprised_pct": 0, "trap_pct": 0, "move_stress": 4, "move_stress_all": true, "low": true}])
+		{"id": "a", "name": "A", "min": 50, "hero_accuracy": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 0, "enemies_surprised_pct": 100, "trap_pct": 0, "move_stress": 0, "move_stress_all": false, "low": false},
+		{"id": "b", "name": "B", "min": 0, "hero_accuracy": 0, "enemy_dmg_pct": 0, "enemy_crit": 0, "stress_pct": 0, "loot_pct": 0, "party_surprised_pct": 100, "enemies_surprised_pct": 0, "trap_pct": 0, "move_stress": 4, "move_stress_all": true, "low": true}])
 	_check(ls.roll_surprise(80) == "enemies" and ls.roll_surprise(10) == "party", "surprise rolls follow the tier (100% enemies / 100% party)")
 	# Walking in the dark: move_stress to everyone in the all-tier.
 	var start_id: String = gs.current_node_id
@@ -355,5 +355,33 @@ func _test_items(gs) -> void:
 	_check(not cc.active_hero().is_empty(), "a hero is up first (enemies surprised)")
 	cc.use_item("bombeta", {})
 	_check(int(foe["hp"]) == 30 and not se.has(foe, "santiguado") and gs.item_count("bombeta") == 0, "a thrown bombeta is blocked by Santiguado (and uses it up)")
+	# Luz tiers: heroes aim worse in the dark. Force it: a tier with -100 accuracy, no hit floor.
+	var bal = load("res://scripts/domain/balance.gd")
+	var ls = load("res://scripts/domain/light_system.gd")
+	_check(ls.val(100, "hero_accuracy") == 0 and ls.val(0, "hero_accuracy") < ls.val(40, "hero_accuracy") and ls.val(40, "hero_accuracy") < 0, "hero accuracy: 0 at Radiante, %d at Penumbra, %d at Negro" % [ls.val(40, "hero_accuracy"), ls.val(0, "hero_accuracy")])
+	var blind: Dictionary = ls.tier(0).duplicate()
+	blind["min"] = 0
+	blind["hero_accuracy"] = -100
+	bal.override("light.tiers", [blind])
+	bal.override("combat.hit_min", 0.0)
+	gs.mission_light = 0
+	var hero: Dictionary = cc.active_hero()
+	if hero.is_empty():
+		cc._ended = true
+		cc.queue_free()
+		bal.reset()
+		return
+	var atk: Dictionary = {}
+	for sid in hero["skill_ids"]:
+		var sk: Dictionary = gs.hero_skill(hero, str(sid))
+		if str(sk.get("kind", "")) == "attack" and cc.skill_usable(hero, sk):
+			atk = sk
+			break
+	var hp0: int = int(foe["hp"])
+	cc.target_enemy = foe
+	cc.use_skill(atk)
+	_check(not atk.is_empty() and int(foe["hp"]) == hp0, "at -100 accuracy in the dark the hero's %s misses" % atk.get("name", "?"))
+	bal.reset()
+	gs.mission_light = 100
 	cc._ended = true
 	cc.queue_free()

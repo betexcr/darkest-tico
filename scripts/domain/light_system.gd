@@ -59,6 +59,8 @@ static func move_stress(light: int) -> Dictionary:
 ## Tooltip body for the HUD (Spanish).
 static func effects_text(light: int) -> String:
 	var lines: PackedStringArray = PackedStringArray()
+	if val(light, "hero_accuracy") != 0:
+		lines.append("La cuadrilla: %+d precisión." % val(light, "hero_accuracy"))
 	var dmg: int = val(light, "enemy_dmg_pct")
 	var crit: int = val(light, "enemy_crit")
 	if dmg != 0 or crit != 0:

@@ -17,6 +17,29 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (night, 3) — P1-17, P1-18 — Accuracy in the dark, provision prices
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-17 and P1-18 still `review`. New `todo` P1-19 (tests must not touch the real save).
+- **Owner decisions (2026-11-12):**
+  - Heroes lose accuracy in the dark.
+  - The agent picks the provision prices.
+- **Changed:**
+  - **Accuracy:** `light.tiers` gains `hero_accuracy` (Penumbra −3, Oscuro −6, Negro −10; 2% to hit per point). `combat_controller._resolve_hero_attack` reads it from the live Luz; the HUD tooltip lists it; the sim's policy uses it; the validator requires the key.
+  - **Prices (`data/items.json`):** gallo pinto 150 → 75, candela de sebo 200 → 100, fósforos 120 → 60. The full Sótanos kit is 1,050 ₡, about 30% of an Aprendiz run (≈3,500 ₡), which is DD's ratio and fits doc 04 §3.1's 1,200–2,200 ₡ loadout once healing items are added. Topping up the starter kit costs 550 ₡.
+  - **Tests:** `test_town_events` computes the Huelga price from data; `test_expedition_systems` checks the tier values and that a −100-accuracy hero misses (49 checks).
+  - **Docs:** doc 01 §4.5 table and §4.6 prices, doc 04 §3.1, doc 10 sim results, AGENTS.md §4.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2: all 12 test scripts 0 failures, no `SCRIPT ERROR`.
+  - Sim chains (5,000 each): smart play clears 99.6% in Penumbra and 96.9% in Negro (was 99.0%). Boss fights in Negro last 11.6 rounds instead of 7.4.
+- **Not verified / risks:**
+  - **The owner's dev save was reset** (now week 1, 5,000 ₡). Running several Godot instances at once raced on `user://save.json`. One failed to read it, started a new game and saved it (see P1-19). There was no backup.
+  - In Negro, 0.9% of smart chains stall past 40 rounds (healers out-heal a blind party).
+- **Decisions needed:** none.
+- **Next step:** P1-19. In `scripts/autoload/save_service.gd`, skip load/save when Godot runs a `-s` script, and write saves through a temp file + `.bak`. Then P1-08 (architecture doc).
+
+---
+
 ## 2026-11-12 (late night, 2) — P1-16, P1-17, P1-18, P2-01, P2-09 — Expedition systems, DD-style
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-16 done. P1-17, P1-18, P2-01 and P2-09 are in review (the owner should play a run).
