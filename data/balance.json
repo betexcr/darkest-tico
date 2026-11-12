@@ -97,6 +97,12 @@
     "recruit_pool": 3,
     "graveyard_cap": 12
   },
+  "hunger": {
+    "_doc": "Travel hunger (P1-18, DD hunger checks). Every every_moves moves the party stops to eat: 1 gallo pinto per living hero. A hero who doesn't eat loses hp_pct of max PV (never below 1) and gains stress. A camp meal resets the count.",
+    "every_moves": 6,
+    "hp_pct": 10,
+    "stress": 10
+  },
   "light": {
     "_doc": "Torch light (Luz) ranges 0..max (P1-17, DD torch). tiers: brightest first; a tier applies from its min up to the next one. Per tier: enemy_dmg_pct and enemy_crit (added to enemy attacks), stress_pct (stress heroes take in combat), loot_pct (colones from fights and curios), party_surprised_pct / enemies_surprised_pct (chance a normal fight opens with that side acting first), trap_pct (added to the disarm chance), move_stress and move_stress_all (stress per move to one random hero, or to everyone), low (counts as low light for the camp ambush). snuff: Luz lost when the player puts out the candle. Rules: scripts/domain/light_system.gd.",
     "max": 100,

@@ -111,7 +111,8 @@ var mission_nodes_index: Dictionary = {}
 
 var mission_light: int = 100
 
-var mission_food: int = 8
+## Moves since the party last ate (travel hunger, P1-18; a camp meal resets it).
+var moves_since_meal: int = 0
 
 var current_node_id: String = ""
 
@@ -989,7 +990,7 @@ func start_mission(region_path: String = "") -> bool:
 	mission_nodes_index = ExpeditionLoaderScript.node_by_id(r)
 	current_region_id = str(r.get("region_id", ""))
 	mission_light = mini(light_max(), int(r.get("initial_light", light_max())))
-	mission_food = item_count("gallo_pinto")
+	moves_since_meal = 0
 	node_item_uses.clear()
 	current_node_id = str(r.get("start_node", "n0"))
 	objective_node_id = str(r.get("objective_node", ""))
@@ -1149,6 +1150,7 @@ func move_to_node(target_id: String) -> bool:
 	mission_light = maxi(mission_light - decay, 0)
 	current_node_id = target_id
 	node_item_uses.clear()
+	moves_since_meal += 1
 	if not visited_node_ids.has(target_id):
 		visited_node_ids.append(target_id)
 	_apply_low_light_stress_on_travel()
@@ -1171,6 +1173,54 @@ func _apply_low_light_stress_on_travel() -> void:
 	for v in victims:
 		for _x in StressSystemScript.add_stress(v, int(ms["amount"])):
 			pass
+
+
+## Travel hunger (P1-18): time to stop and eat.
+func hunger_due() -> bool:
+	return moves_since_meal >= BalanceScript.int_of("hunger.every_moves")
+
+
+## A hunger stop: `fed` heroes eat one gallo pinto each (capped by what the party carries),
+## the rest go hungry. Resets the count. Returns log lines.
+func travel_meal(fed: int) -> PackedStringArray:
+	var n: int = clampi(fed, 0, mini(item_count("gallo_pinto"), CampingSystemScript.travel_meal_cost(party)))
+	if n > 0:
+		remove_item("gallo_pinto", n)
+	moves_since_meal = 0
+	var logs: PackedStringArray = PackedStringArray()
+	if n > 0:
+		logs.append("Comen %d gallo pinto." % n)
+	logs.append_array(CampingSystemScript.travel_meal(party, n))
+	return logs
+
+
+## Recommended provisions (region "provisions") the inventory is short of:
+## [{id, name, missing, price}] (price = this week's Pulpería price for all of them).
+func missing_provisions(region_path: String = "") -> Array:
+	var r: Dictionary = ExpeditionLoaderScript.load_region(region_path if region_path != "" else selected_mission_region_path)
+	var out: Array = []
+	var prov = r.get("provisions", {})
+	if not prov is Dictionary:
+		return out
+	for iid in prov:
+		var miss: int = int(prov[iid]) - item_count(str(iid))
+		if miss > 0:
+			out.append({"id": str(iid), "name": str(get_item(str(iid)).get("name", iid)), "missing": miss, "price": miss * item_price(str(iid))})
+	return out
+
+
+## Buys every missing recommended provision it can. Returns a message for the hub.
+func buy_missing_provisions(region_path: String = "") -> String:
+	var bought: int = 0
+	var last: String = ""
+	for m in missing_provisions(region_path):
+		for _k in int(m["missing"]):
+			var before: int = item_count(str(m["id"]))
+			last = buy_item(str(m["id"]))
+			if item_count(str(m["id"])) == before:
+				return "Compraste %d provisiones. %s" % [bought, last] if bought > 0 else last
+			bought += 1
+	return "Compraste %d provisiones para el camino." % bought
 
 
 ## "Apagar la candela" (DD: lowering the torch): less Luz for more loot and more danger.

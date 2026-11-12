@@ -4,7 +4,7 @@
   "start_node": "b0",
   "objective_node": "b6",
   "initial_light": 95,
-  "initial_food": 9,
+  "provisions": { "gallo_pinto": 9, "candela_sebo": 3 },
   "light_decay_per_move": 8,
   "objective_reward_colones": 1100,
   "region_level": 1,

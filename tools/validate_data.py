@@ -487,6 +487,19 @@ def main() -> int:
     for e in (items_raw or {}).get("starter_inventory", []):
         if e.get("id") not in items:
             errors.append(f"items.json: starter_inventory references unknown item '{e.get('id')}'")
+    if "gallo_pinto" not in items:
+        errors.append("items.json: 'gallo_pinto' is the food item (camp meal, travel hunger) and must exist")
+    # P1-18: recommended provisions per region (the hub offers to buy what is missing).
+    for rp in sorted((DATA / "regions").glob("*.json")):
+        prov = (load(rp) or {}).get("provisions", {})
+        if not isinstance(prov, dict):
+            errors.append(f"regions/{rp.name}: provisions must be {{item_id: qty}}")
+            continue
+        for iid, qty in prov.items():
+            if iid not in items:
+                errors.append(f"regions/{rp.name}: provisions references unknown item '{iid}'")
+            if not isinstance(qty, int) or qty < 1:
+                errors.append(f"regions/{rp.name}: provisions '{iid}' needs a whole number >= 1")
 
     manifest_path = ROOT / "tools" / "art_manifest.json"
     manifest = load(manifest_path)
@@ -543,6 +556,7 @@ BALANCE_KEYS = {
     "hub.iglesia_backfire_chance": "chance", "hub.iglesia_backfire_stress": "int>=0",
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
     "limits.graveyard_cap": "pos", "light.max": "pos", "light.snuff": "int>=0",
+    "hunger.every_moves": "pos", "hunger.hp_pct": "pct", "hunger.stress": "int>=0",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).

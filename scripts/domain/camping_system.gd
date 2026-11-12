@@ -67,14 +67,14 @@ static func meal_summary(meal: Dictionary) -> String:
 static func apply_meal(meal: Dictionary, party: Array) -> PackedStringArray:
 	var logs: PackedStringArray = PackedStringArray()
 	for h in living(party):
-		_heal_pct(h, int(meal.get("heal_pct", 0)))
+		heal_pct(h, int(meal.get("heal_pct", 0)))
 		if int(meal.get("stress", 0)) != 0:
 			logs.append_array(StressSystemScript.add_stress(h, int(meal["stress"])))
 	return logs
 
 
 ## +pct of max PV (at least 1); negative hurts but hunger never kills or knocks to Al Borde.
-static func _heal_pct(hero: Dictionary, pct: int) -> int:
+static func heal_pct(hero: Dictionary, pct: int) -> int:
 	if pct == 0 or hero.get("dead", false):
 		return 0
 	var hm: int = int(hero.get("hp_max", 1))
@@ -87,6 +87,30 @@ static func _heal_pct(hero: Dictionary, pct: int) -> int:
 	else:
 		hero["hp"] = maxi(before - int(round(hm * -pct / 100.0)), mini(before, 1))
 	return int(hero["hp"]) - before
+
+
+# --- Travel hunger (P1-18) -------------------------------------------------------------
+
+## Food a travel meal needs: one gallo pinto per living hero.
+static func travel_meal_cost(party: Array) -> int:
+	return living(party).size()
+
+
+## A hunger stop: the `fed` living heroes with the lowest share of PV eat; everyone else
+## goes hungry (balance.json "hunger": −hp_pct of max PV, never below 1, and +stress).
+static func travel_meal(party: Array, fed: int) -> PackedStringArray:
+	var logs: PackedStringArray = PackedStringArray()
+	var alive: Array = living(party)
+	alive.sort_custom(func(a, b): return float(a["hp"]) / maxf(float(a["hp_max"]), 1.0) < float(b["hp"]) / maxf(float(b["hp_max"]), 1.0))
+	for k in alive.size():
+		if k < fed:
+			continue
+		var h: Dictionary = alive[k]
+		var lost: int = -heal_pct(h, -BalanceScript.int_of("hunger.hp_pct"))
+		logs.append("%s pasa hambre: -%d PV." % [h.get("name", "?"), lost])
+		logs.append_array(StressSystemScript.add_stress(h, BalanceScript.int_of("hunger.stress")))
+		logs.append("%s: estrés +%d (hambre)." % [h.get("name", "?"), BalanceScript.int_of("hunger.stress")])
+	return logs
 
 
 # --- Respite (camp skills) ------------------------------------------------------------
@@ -150,7 +174,7 @@ static func _apply_effects(hero: Dictionary, eff: Dictionary, sk: Dictionary) ->
 	var logs: PackedStringArray = PackedStringArray()
 	var who: String = str(hero.get("name", "?"))
 	if eff.has("heal_pct"):
-		logs.append("  %s %+d PV." % [who, _heal_pct(hero, int(eff["heal_pct"]))])
+		logs.append("  %s %+d PV." % [who, heal_pct(hero, int(eff["heal_pct"]))])
 	for st in eff.get("cure", []):
 		if str(st) == "all_negative":
 			var gone: PackedStringArray = StatusEffectsScript.remove_all_negative(hero)

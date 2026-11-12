@@ -24,6 +24,7 @@ func _run() -> void:
 	gs.start_mission()
 	_test_hero_damage(gs)
 	_test_light(gs)
+	_test_hunger(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -122,3 +123,55 @@ func _test_light(gs) -> void:
 	_check(camp.ambush_chance(100, false, calm) == 12 and camp.ambush_chance(30, false, calm) == 18, "ambush 12% bright / 18% at Penumbra")
 	_check(camp.ambush_chance(100, false, tired) == 16 and camp.ambush_chance(100, true, tired) == 0, "exhausted party (avg stress 50+) +4%; a watch still makes it 0")
 	gs.mission_light = 100
+
+
+func _test_hunger(gs) -> void:
+	print("Travel hunger (P1-18)")
+	var bal = load("res://scripts/domain/balance.gd")
+	var every: int = bal.int_of("hunger.every_moves")
+	gs.mission_light = 100
+	gs.moves_since_meal = 0
+	var a: String = gs.current_node_id
+	var b: String = str(gs.mission_neighbors()[0])
+	for k in every - 1:
+		gs.move_to_node(b if k % 2 == 0 else a)
+	_check(not gs.hunger_due(), "not hungry after %d moves" % (every - 1))
+	gs.move_to_node(b if gs.current_node_id == a else a)
+	_check(gs.hunger_due(), "hungry after %d moves" % every)
+
+	for p in gs.party:
+		p["hp"] = p["hp_max"]
+		p["stress"] = 0
+	gs.inventory.clear()
+	gs.add_item("gallo_pinto", 6)
+	gs.travel_meal(4)
+	_check(gs.item_count("gallo_pinto") == 2 and not gs.hunger_due(), "everyone eats: 4 gallo pinto, count reset")
+	_check(gs.party.all(func(p): return int(p["hp"]) == int(p["hp_max"]) and int(p["stress"]) == 0), "…and nobody suffers")
+
+	# Short of food: the most hurt eat first; the rest lose PV (never below 1) and gain stress.
+	gs.party[2]["hp"] = 1
+	gs.travel_meal(2)
+	var hungry: Array = gs.party.filter(func(p): return int(p["stress"]) == bal.int_of("hunger.stress"))
+	_check(gs.item_count("gallo_pinto") == 0 and hungry.size() == 2, "2 gallo pinto for 4 heroes: 2 go hungry (+%d stress)" % bal.int_of("hunger.stress"))
+	_check(int(gs.party[2]["stress"]) == 0 and int(gs.party[2]["hp"]) == 1, "the most hurt hero eats first")
+	var h0: Dictionary = hungry[0]
+	_check(int(h0["hp"]) == int(h0["hp_max"]) - int(round(int(h0["hp_max"]) * bal.int_of("hunger.hp_pct") / 100.0)), "hunger costs %d%% of max PV" % bal.int_of("hunger.hp_pct"))
+	var weak := {"name": "Débil", "hp": 1, "hp_max": 30, "stress": 0}
+	load("res://scripts/domain/camping_system.gd").travel_meal([weak], 0)
+	_check(int(weak["hp"]) == 1 and not weak.get("al_borde", false), "hunger never drops a hero below 1 PV")
+	gs.travel_meal(4)
+	_check(gs.item_count("gallo_pinto") == 0, "with no food nobody eats (nothing goes negative)")
+
+	# Provisions: the region's recommended list against the alforja.
+	gs.inventory.clear()
+	gs.add_item("gallo_pinto", 3)
+	var miss: Array = gs.missing_provisions()
+	var gp: Array = miss.filter(func(m): return m["id"] == "gallo_pinto")
+	_check(not gp.is_empty() and int(gp[0]["missing"]) == 7 and int(gp[0]["price"]) == 7 * gs.item_price("gallo_pinto"), "provisions: 7 gallo pinto missing of 10 (%d ₡)" % (int(gp[0]["price"]) if not gp.is_empty() else -1))
+	gs.colones = 100000
+	gs.buy_missing_provisions()
+	_check(gs.missing_provisions().is_empty() and gs.item_count("gallo_pinto") == 10, "buying what is missing fills the recommended list")
+	for p in gs.party:
+		p["hp"] = p["hp_max"]
+		p["stress"] = 0
+	gs.moves_since_meal = 0

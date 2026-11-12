@@ -22,7 +22,7 @@
     {
       "id": "gallo_pinto",
       "name": "Gallo pinto envuelto",
-      "description": "Arroz y frijoles en hoja de plátano. Comida de campamento: la fogata pide 2.",
+      "description": "Arroz y frijoles en hoja de plátano. Cada tanto la cuadrilla para a comer (uno por héroe) y la fogata pide más. Sin comida: hambre.",
       "price": 150,
       "max_stack": 12,
       "uses_per_node": 1,

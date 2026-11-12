@@ -517,7 +517,39 @@ func _on_start_pressed() -> void:
 	if not GameState.party_refusals().is_empty():
 		_hub_status.text = "Héroes de mucha resolución no salen a expediciones fáciles: sube la dificultad o cambia la cuadrilla."
 		return
-	start_mission_requested.emit()
+	var missing: Array = GameState.missing_provisions()
+	if missing.is_empty():
+		start_mission_requested.emit()
+		return
+	_confirm_provisions(missing)
+
+
+## DD-style provisioning (P1-18): warn when the alforja lacks the region's recommended
+## food and candles, and offer to buy what is missing at the Pulpería.
+func _confirm_provisions(missing: Array) -> void:
+	var lines: PackedStringArray = PackedStringArray()
+	var total: int = 0
+	for m in missing:
+		lines.append("· %d × %s (%d ₡)" % [int(m["missing"]), m["name"], int(m["price"])])
+		total += int(m["price"])
+	var dlg := ConfirmationDialog.new()
+	dlg.title = "Provisiones"
+	dlg.dialog_text = "Para esta expedición se recomienda llevar más:\n%s\n\nSin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras." % "\n".join(lines)
+	dlg.ok_button_text = "Salir así"
+	dlg.cancel_button_text = "Volver"
+	dlg.add_button("Comprar lo que falta (%d ₡)" % total, true, "buy")
+	dlg.confirmed.connect(func(): start_mission_requested.emit())
+	dlg.custom_action.connect(func(action: StringName):
+		if action == &"buy":
+			dlg.hide()
+			_say(GameState.buy_missing_provisions())
+	)
+	dlg.visibility_changed.connect(func():
+		if not dlg.visible:
+			dlg.queue_free()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
 
 
 func _on_quit_pressed() -> void:

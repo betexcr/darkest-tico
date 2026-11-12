@@ -685,6 +685,16 @@ func _enter_room() -> void:
 	_mode = Mode.EXPLORE
 	_refresh_all()
 	_show_explore_actions()
+	if GameState.hunger_due():
+		_open_hunger()
+		return
+	_resolve_room()
+
+
+## What the room holds, after any hunger stop.
+func _resolve_room() -> void:
+	var nd: Dictionary = GameState.current_node()
+	var nid: String = GameState.current_node_id
 	if GameState.is_node_cleared(nid):
 		_narrate("%s (despejado)." % nd.get("label", nid))
 		return
@@ -735,6 +745,30 @@ func _on_flee_pressed() -> void:
 	if _mode != Mode.EXPLORE:
 		return
 	_end_expedition("flee", "La cuadrilla vuelve a la hacienda con las manos vacías.")
+
+
+# --- Travel hunger (P1-18) -------------------------------------------------------------
+
+## DD hunger check: time to eat, one gallo pinto per living hero; then the room resolves.
+func _open_hunger() -> void:
+	var need: int = CampingSystemScript.travel_meal_cost(GameState.party)
+	var food: int = GameState.item_count("gallo_pinto")
+	_open_event("Hambre", "La cuadrilla tiene hambre. Comer cuesta %d gallo pinto (uno por héroe); llevan %d. Quien no come pierde %d%% de PV y gana %d de estrés." % [
+		need, food, BalanceScript.int_of("hunger.hp_pct"), BalanceScript.int_of("hunger.stress")])
+	if food >= need:
+		_event_button("Comer (%d gallo pinto)" % need, _hunger_meal.bind(need))
+	elif food > 0:
+		_event_button("Repartir lo que hay (%d de %d comen)" % [food, need], _hunger_meal.bind(food))
+	_event_button("Aguantar el hambre", _hunger_meal.bind(0))
+
+
+func _hunger_meal(fed: int) -> void:
+	for l in GameState.travel_meal(fed):
+		_log_line(l, "cc7744" if fed < CampingSystemScript.travel_meal_cost(GameState.party) else "ffd27a")
+	_close_event()
+	_mode = Mode.EXPLORE
+	_refresh_all()
+	_resolve_room()
 
 
 # --- Events (trap / curio / camp) -----------------------------------------------------
@@ -897,6 +931,8 @@ func _camp_meal() -> void:
 				return
 			if cost > 0:
 				GameState.remove_item("gallo_pinto", cost)
+			# Any camp meal (even a fast) is the party's meal: the hunger count restarts.
+			GameState.moves_since_meal = 0
 			_log_line("%s. %s" % [meal.get("name", ""), meal.get("text", "")], "ffd27a")
 			for l in CampingSystemScript.apply_meal(meal, GameState.party):
 				_log_line(l, "cc7744")

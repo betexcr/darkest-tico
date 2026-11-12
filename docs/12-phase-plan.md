@@ -360,12 +360,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Faster decay (8 per move), "Apagar la candela", tier shown on the HUD; camp resets to `light_max()`; doc 07 "exhausted party" +4% camp ambush
 
 ### P1-18 · M · Travel hunger + provisions
-- Status: `in-progress (Claude Code, main, 2026-11-12)` · Depends: P1-16
+- Status: `review` (Claude Code, `main`, 2026-11-12; owner to try the hunger stop and the provisions prompt) · Depends: P1-16
 - Owner 2026-11-12: every 6 moves the party eats 1 gallo pinto per living hero; a hero who can't eat takes −10% PV (never below 1) and +10 stress; a camp meal resets the count.
 - Files: `data/balance.json` (`hunger.*`), `scripts/domain/camping_system.gd`, `game_state.gd`, `expedition_screen.gd`, `scripts/hacienda/hacienda_hub.gd`, region JSONs (`provisions`)
 - Done when:
-  - [ ] Hunger event every 6 moves (eat / share / go hungry); camp meal resets it
-  - [ ] Hub warns about missing recommended provisions and can buy them
+  - [x] Hunger event every 6 moves (eat / share / go hungry); camp meal resets it
+  - [x] Hub warns about missing recommended provisions and can buy them
 
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
