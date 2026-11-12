@@ -13,6 +13,7 @@ const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
+const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -38,7 +39,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 7
+const SAVE_VERSION := 8
 const ROSTER_CAP := 8
 const PARTY_SIZE := 4
 const RECRUIT_POOL_SIZE := 3
@@ -429,6 +430,41 @@ func get_skill(skill_id: String) -> Dictionary:
 	return _skills_by_id.get(skill_id, {})
 
 
+## The skill as this hero uses it: data from skills.json at the hero's Casa Comunal rank.
+## Combat and the action bar read skills through this, never get_skill() directly.
+func hero_skill(hero: Dictionary, skill_id: String) -> Dictionary:
+	return SkillRanksScript.ranked(get_skill(skill_id), SkillRanksScript.rank(hero, skill_id))
+
+
+# --- Casa Comunal de Oficios (skill ranks, doc 02 §4) --------------------------------
+
+## Price of the hero's next rank in `skill_id` this week (0 at max rank).
+func skill_rank_cost(hero: Dictionary, skill_id: String) -> int:
+	var base: int = SkillRanksScript.next_cost(hero, skill_id)
+	return int(round(base * TownEventsScript.service_mult(active_event(), "casa_comunal")))
+
+
+## "" when the next rank can be bought now; otherwise the reason (Spanish).
+func skill_rank_block_reason(hero: Dictionary, skill_id: String) -> String:
+	if TownEventsScript.is_closed(active_event(), "casa_comunal"):
+		return "La Casa Comunal está cerrada esta semana (%s)." % active_event().get("name", "")
+	return SkillRanksScript.block_reason(hero, skill_id, colones, skill_rank_cost(hero, skill_id))
+
+
+func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
+	var why: String = skill_rank_block_reason(hero, skill_id)
+	var sk_name: String = str(get_skill(skill_id).get("name", skill_id))
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), sk_name, why]
+	var cost: int = skill_rank_cost(hero, skill_id)
+	colones -= cost
+	if not hero.get("skill_ranks") is Dictionary:
+		hero["skill_ranks"] = {}
+	var r: int = SkillRanksScript.rank(hero, skill_id) + 1
+	hero["skill_ranks"][skill_id] = r
+	return "En la Casa Comunal, %s practica %s: ahora es rango %d (-%d ₡)." % [hero.get("name", "?"), sk_name, r, cost]
+
+
 func get_hero_template(hero_id: String) -> Dictionary:
 	return _heroes_by_id.get(hero_id, {})
 
@@ -472,6 +508,7 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"resolve_level": int(template.get("resolve_level", 0)),
 		"resolve_xp": ResolveSystemScript.xp_for_level(int(template.get("resolve_level", 0))),
 		"skill_ids": template.get("skill_ids", []).duplicate(),
+		"skill_ranks": {},
 		"camp_skill_ids": template.get("camp_skill_ids", []).duplicate(),
 		"camp_buffs": [],
 		"al_borde": false,
@@ -1428,6 +1465,17 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["resolve_xp"] = maxi(int(out.get("resolve_xp", ResolveSystemScript.xp_for_level(int(out["resolve_level"])))), 0)
 	if not out.get("camp_skill_ids") is Array or (out["camp_skill_ids"] as Array).is_empty():
 		out["camp_skill_ids"] = t.get("camp_skill_ids", []).duplicate()
+	# v8: Casa Comunal skill ranks (older saves: every skill at rank 1). JSON numbers load as
+	# floats, so ranks are stored back as ints; ranks for skills the hero lacks are dropped.
+	var raw_ranks = out.get("skill_ranks", null)
+	var ranks: Dictionary = {}
+	if raw_ranks is Dictionary:
+		for sid in raw_ranks:
+			if (out["skill_ids"] as Array).has(str(sid)):
+				var r: int = clampi(int(raw_ranks[sid]), 1, SkillRanksScript.max_rank())
+				if r > 1:
+					ranks[str(sid)] = r
+	out["skill_ranks"] = ranks
 	out["camp_buffs"] = []
 	out["underlevel_stress_pct"] = 0
 	recompute_stats(out)
@@ -1561,6 +1609,10 @@ func _apply_event_now(ev: Dictionary) -> PackedStringArray:
 		var vet: Dictionary = _instantiate_hero(_random_template())
 		vet["resolve_level"] = clampi(int(hv.get("level", 6)), 0, ResolveSystemScript.MAX_LEVEL)
 		vet["resolve_xp"] = ResolveSystemScript.xp_for_level(int(vet["resolve_level"]))
+		# Like DD's experienced recruits: skills already trained as far as their level allows.
+		var vr: int = SkillRanksScript.default_rank_for_level(int(vet["resolve_level"]))
+		for sid in vet.get("skill_ids", []):
+			vet["skill_ranks"][str(sid)] = vr
 		vet["hire_price"] = int(hv.get("price", 6000))
 		recompute_stats(vet)
 		recruit_pool.append(vet)

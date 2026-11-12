@@ -16,6 +16,7 @@ const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
+const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -1019,11 +1020,13 @@ func _on_hero_turn(hero: Dictionary) -> void:
 	_turn_equipment = _equipment_of(hero)
 	# One row of icons: the hero's skills, then Guardia and Pasar. Hover = name + description.
 	for sid in hero.get("skill_ids", []):
-		var sk: Dictionary = GameState.get_skill(str(sid))
+		var sk: Dictionary = GameState.hero_skill(hero, str(sid))
 		if sk.is_empty():
 			continue
 		var b = SkillButtonScript.new()
-		b.setup(str(sid), str(sk.get("kind", "attack")), str(sk.get("name", sid)), _skill_tooltip(sk))
+		var rank: int = int(sk.get("rank", 1))
+		b.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank], _skill_tooltip(sk),
+			rank, SkillRanksScript.max_rank())
 		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
 		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
 		_skills.add_child(b)
@@ -1079,19 +1082,7 @@ func _show_combat_items(hero: Dictionary) -> void:
 
 
 func _skill_tooltip(sk: Dictionary) -> String:
-	var parts: PackedStringArray = PackedStringArray()
-	if str(sk.get("kind", "")) == "attack":
-		parts.append("Ataque: %d–%d de daño" % [int(sk.get("damage_min", 0)), int(sk.get("damage_max", 0))])
-	if sk.has("heal_min"):
-		parts.append("Cura %d–%d PV" % [int(sk.get("heal_min", 0)), int(sk.get("heal_max", 0))])
-	var rel: int = int(sk.get("stress_relief", sk.get("self_stress_relief", 0)))
-	if rel > 0:
-		parts.append("Alivia %d de estrés" % rel)
-	var who: String = {"self": "a sí mismo", "ally": "al aliado elegido", "party": "a toda la cuadrilla"}.get(str(sk.get("target", "")), "")
-	if who != "":
-		parts.append("Objetivo: " + who)
-	var desc: String = str(sk.get("description", ""))
-	return "%s\n%s" % [desc, " · ".join(parts)] if desc != "" else " · ".join(parts)
+	return SkillButtonScript.body_for(sk)
 
 
 func _clear_skills() -> void:

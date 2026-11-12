@@ -1,5 +1,5 @@
 {
-  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). Every class needs at least one ally or party skill.",
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill.",
   "skills": [
     {
       "id": "machetazo",
@@ -229,9 +229,10 @@
       "name": "Escudo de Barrio",
       "kind": "buff",
       "target": "ally",
-      "description": "Se planta delante de un compañero: el aliado elegido queda en guardia. Al cuido: el guachimán recibe los golpes dirigidos al aliado por 2 turnos y queda chiva (+20 protección).",
+      "description": "Se planta delante de un compañero: el aliado elegido queda en guardia. Al cuido: el guachimán recibe los golpes dirigidos al aliado por 2 turnos y queda chiva (más protección).",
       "guard_ally": true,
       "guard_turns": 2,
+      "rank_bonus": { "status_mods": 5 },
       "self_applies": {
         "status": "chiva",
         "turns": 3,

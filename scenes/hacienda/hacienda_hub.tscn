@@ -185,6 +185,16 @@ theme_override_constants/h_separation = 3
 theme_override_constants/v_separation = 3
 columns = 12
 
+[node name="SkillsTitle" type="Label" parent="Columns/Right/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 13
+text = "Casa Comunal de Oficios"
+
+[node name="SkillsRow" type="HBoxContainer" parent="Columns/Right/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
 [node name="BtnStart" type="Button" parent="Columns/Right/VBox"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2

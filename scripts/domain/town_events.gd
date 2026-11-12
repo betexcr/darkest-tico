@@ -113,12 +113,12 @@ static func is_blocked(ev: Dictionary, item_id: String) -> bool:
 	return effects(ev).get("blocked_items", []).has(item_id)
 
 
-## service: iglesia | ebais | terminal | pulperia_compra | pulperia_venta
+## service: iglesia | ebais | terminal | pulperia_compra | pulperia_venta | casa_comunal
 static func is_closed(ev: Dictionary, service: String) -> bool:
 	return effects(ev).get("closed", []).has(service)
 
 
-## Price multiplier for a hub service (iglesia, ebais).
+## Price multiplier for a hub service (iglesia, ebais, casa_comunal).
 static func service_mult(ev: Dictionary, service: String) -> float:
 	return maxf(1.0 + float(effects(ev).get("service_pct", {}).get(service, 0)) / 100.0, 0.0)
 
@@ -154,7 +154,7 @@ static func kind_label(ev: Dictionary) -> String:
 
 const CATEGORY_NAMES := {"consumable": "consumibles", "healing": "remedios y vendas", "weapon": "armas", "armor": "armaduras", "accessory": "accesorios"}
 const SERVICE_NAMES := {"iglesia": "Iglesia Vieja", "ebais": "EBAIS", "terminal": "Terminal de Buses",
-	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)"}
+	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "casa_comunal": "Casa Comunal"}
 
 
 static func _pct_text(pct: int) -> String:

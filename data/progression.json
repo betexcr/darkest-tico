@@ -11,6 +11,17 @@
     "underlevel_start_stress": 20,
     "underlevel_stress_pct": 25
   },
+  "_skill_ranks_doc": "Casa Comunal de Oficios (doc 02 §4, doc 04 §3.3). Every hero skill has a rank 1..max_rank, bought one step at a time. costs and min_resolve are indexed by the target rank (index 0 and 1 unused). per_rank is added once for every rank above 1 and only to fields the skill already has: damage_min/damage_max (attacks), skill_accuracy, skill_crit (crit points, attacks only), heal_min/heal_max, stress_relief, status_chance (applies/self_applies chances below 1, capped at 1), status_value (applies/self_applies values above 0). A skill may set rank_bonus in skills.json with the same keys to replace per_rank. Rules: scripts/domain/skill_ranks.gd.",
+  "skill_ranks": {
+    "max_rank": 5,
+    "costs": [0, 0, 300, 900, 1500, 2700],
+    "min_resolve": [0, 0, 1, 2, 3, 4],
+    "per_rank": {
+      "damage_min": 1, "damage_max": 1, "skill_accuracy": 1, "skill_crit": 1,
+      "heal_min": 1, "heal_max": 1, "stress_relief": 1,
+      "status_chance": 0.05, "status_value": 1
+    }
+  },
   "_region_doc": "Each region JSON has a region_level (doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4). It adds to the picked difficulty: expedition level and the hero range move up by region_level (capped at 6), and enemies/pay/XP grow per region level as below.",
   "region_scaling": { "enemy_hp": 0.11, "enemy_dmg": 0.06, "enemy_accuracy": 1, "enemy_resist": 5, "reward": 0.15, "xp": 1 },
   "_difficulty_doc": "level = expedition level shown to the player. Heroes above max_level refuse to go; heroes below min_level are under-leveled (start stress + extra stress taken per level short). xp = Resolve XP each survivor earns on a completed expedition. enemy_hp/enemy_dmg multiply, enemy_accuracy and enemy_resist (status resist points) add; values follow doc 05 §4. reward multiplies pay.",

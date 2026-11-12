@@ -231,10 +231,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Both buildings with activities, slots, and side effects; heroes are busy for the week
 
 ### P3-04 · M · Casa Comunal (skills) + hero XP/resolve level
-- Status: `in-progress` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08): resolve XP/levels + expedition difficulty done (review); skill ranks still todo · Depends: P3-01
-- Spec: `02` §4, `04`, `01` §6.1
-- Files: `data/progression.json`, `scripts/domain/resolve_system.gd`, `scripts/autoload/game_state.gd` (difficulty, under-level penalty, `complete_mission`, save v6), `scripts/hacienda/hacienda_hub.gd` (difficulty picker, level/XP per hero), `tests/test_progression.gd`
-- Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [ ] skill ranks purchasable; [x] per-region level on top of the picker (owner 2026-11-08, Sótanos easiest)
+- Status: `review` (Claude Code, `main`, 2026-11-11): everything built and tested headless; owner to play-test ranks and balance · Depends: P3-01
+- Spec: `02` §4, `04`, `01` §6.1, §6.3
+- Files: `data/progression.json` (`skill_ranks`), `scripts/domain/resolve_system.gd`, `scripts/domain/skill_ranks.gd`, `scripts/autoload/game_state.gd` (difficulty, under-level penalty, `complete_mission`, `hero_skill`, `buy_skill_rank`, save v8), `scripts/hacienda/hacienda_hub.gd` (difficulty picker, level/XP per hero, Casa Comunal row), `scripts/ui/skill_button.gd` (rank pips, `body_for`), `tests/test_progression.gd`, `tools/screens/skills_screenshot.gd`
+- Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [x] skill ranks purchasable; [x] per-region level on top of the picker (owner 2026-11-08, Sótanos easiest)
+- Follow-ups: P3-16 (building upgrade tracks), P3-17 (skill unlocks).
 
 ### P3-05 · M · Taller (equipment) + Feria Nocturna (trinkets)
 - Status: `todo` · Depends: P3-04
@@ -263,6 +264,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: P3-07
 - Spec: `02` §9
 - Done when: [ ] Hub building to swap a hero's 4 camp skills among the class + shared list, and the upgrade tracks from doc 02 §9
+
+### P3-16 · M · Casa Comunal building upgrades
+- Status: `todo` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
+- Spec: `02` §4 (upgrade tracks), `04` §3.3 (discount up to 50% at cap)
+- Done when: [ ] Maestría de Oficio raises the max skill rank (start lower than 5); [ ] Plan de Formación lowers rank prices up to 50%
+
+### P3-17 · S · Unlockable skills
+- Status: `todo` · Depends: classes having more than 4 skills (doc 03)
+- Spec: `02` §4, `04` §3.3 ("Unlock new skill: 1,000 base")
+- Done when: [ ] Classes have extra skills to unlock at the Casa Comunal and pick 4 to take on an expedition
 
 ### P3-14 · S · Level-tiered hub prices
 - Status: `todo` · Depends: P3-04

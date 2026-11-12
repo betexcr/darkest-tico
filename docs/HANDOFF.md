@@ -17,6 +17,44 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-11 (later) — P3-04 — Casa Comunal skill ranks
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P3-04 review (last acceptance box ticked). New todo tasks: P3-16 (Casa Comunal building upgrades), P3-17 (unlockable skills).
+- **Changed:**
+  - Data:
+    - `data/progression.json` `skill_ranks`: ranks 1–5; costs 300/900/1500/2700 (doc 04 §3.3); rank N needs Resolución N−1; generic `per_rank` bonus.
+    - `data/skills.json`: Escudo de Barrio gets `rank_bonus` `{status_mods: 5}`, and its description no longer hard-codes +20.
+    - `data/town_events.json` `_doc`: `casa_comunal` is a service for `closed` and `service_pct`.
+  - `scripts/domain/skill_ranks.gd` (new): rank lookup, `ranked()` copies with bonuses, gates, preview lines, ranks for seasoned heroes.
+  - `GameState`:
+    - New functions `hero_skill`, `skill_rank_cost`, `skill_rank_block_reason`, `buy_skill_rank`.
+    - Heroes get `skill_ranks`. The Veterano event hero arrives with rank 5 skills.
+    - Save v8: v7 and older load at rank 1; ranks are clamped and unknown ids dropped.
+  - Combat:
+    - Hero ripostes use the ranked attack.
+    - Crit adds the skill's `skill_crit`.
+    - The action bar uses `hero_skill`; title "X (rango N)", rank pips, tooltip shows precision, crit, status chances and mods.
+  - UI:
+    - `skill_button.gd`: rank pips, plus a shared `body_for(skill)` tooltip builder that `expedition_screen._skill_tooltip` now calls.
+    - Hub: Casa Comunal row under the inventory for the selected hero. Icon + pips, then "Rango N — X ₡" or "Rango N: Resolución M". Tooltip shows what the next rank adds. The roster tooltip lists ranks.
+  - `tools/validate_data.py`: checks `skill_ranks` and `rank_bonus` keys, and accepts the `casa_comunal` service. `town_events.gd`: service name.
+  - `tests/test_progression.gd`: 28 new skill-rank checks. `tools/screens/skills_screenshot.gd` (new).
+  - Docs: 01 §6.3 (new), 01 §6.1, 02 §4, plan.
+- **Verified:**
+  - `python3 tools/validate_data.py`: 0 errors / 0 warnings.
+  - Godot 4.7.2 headless: all 9 test scripts 0 failures, no errors.
+  - Screenshots (Windows, windowed), checked by eye: hub row for a Resolución 2 hero (gated + buyable buttons, tooltips) and the battle bar with pips (rank 3 Machetazo 6–11, +2 precision, +2% crit).
+- **Not verified / risks:**
+  - Balance: +1/+1 damage per rank is about +20% on a 4–9 attack at rank 5. Prices are doc 04's. Nobody has played it.
+  - The pips are small (5 × 5 px) on the 52 px icons.
+  - A disabled Godot button may not show its tooltip, which is why the resolve gate is written on the button. "Not enough colones" only shows as a greyed-out price.
+- **Decisions needed:**
+  - Are the per-rank numbers right (`progression.json` `skill_ranks.per_rank`)?
+  - Should the four starting classes keep sharing Machetazo as their first skill? Today a rank in it is per hero, so this is only a flavour question, but it predates this task.
+- **Next step:** P1-03 battlefield ranks 1–4 (first `todo` in P1 with deps done; it's L, so split it first). Read doc 01 §2.1 and doc 03 "Position Notation", then add `use_ranks`/`target_ranks` to `data/skills.json` and a pure `scripts/domain/rank_rules.gd`. Combat rules now live in `scripts/combat/combat_controller.gd` (the plan still says `combat_scene.gd`).
+
+---
+
 ## 2026-11-11 — P0-02 — Merged `tender-brown` into `main`; project moved to Godot 4.7
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P0-02 done. P4-12, P4-13, P4-14 are now on `main` (still `review`, owner to look in-game).

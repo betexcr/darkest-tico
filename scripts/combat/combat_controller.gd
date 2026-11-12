@@ -361,7 +361,7 @@ func _finish(victory: bool) -> void:
 
 func _first_skill_of_kind(hero: Dictionary, kind: String) -> Dictionary:
 	for sid in hero.get("skill_ids", []):
-		var sk: Dictionary = GameState.get_skill(str(sid))
+		var sk: Dictionary = GameState.hero_skill(hero, str(sid))
 		if sk.get("kind", "") == kind:
 			return sk
 	return {}
@@ -451,7 +451,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		_enemy_riposte(enemy, hero)
 		return
 	var raw: int = CombatResolverScript.roll_damage(skill) + int(hero.get("dmg_bonus", 0))
-	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)) + StatusEffectsScript.stat(hero, "crit"), 0)
+	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)) + StatusEffectsScript.stat(hero, "crit") + int(skill.get("skill_crit", 0)), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
 	dmg = _scaled_damage(dmg, hero, enemy, skill)
 	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)

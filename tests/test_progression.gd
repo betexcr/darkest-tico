@@ -17,6 +17,97 @@ func _initialize() -> void:
 	_run.call_deferred()
 
 
+## Casa Comunal skill ranks (P3-04): rank math, buying gates, save, veterans, combat lookup.
+func _test_skill_ranks(gs) -> void:
+	print("Skill ranks (Casa Comunal)")
+	var sr = load("res://scripts/domain/skill_ranks.gd")
+	gs.end_mission_abandon()
+	gs.reset_party_from_catalog()
+	gs.active_event_id = ""
+	gs.colones = 10000
+	var campe: Dictionary = gs.party[0]
+	var abuela: Dictionary = gs.party[1]
+	_check(campe["skill_ids"].has("machetazo") and abuela["skill_ids"].has("sopa_milagrosa"), "test heroes: Campesino (Machetazo), Abuela (Sopa Milagrosa)")
+	_check(campe["skill_ids"].all(func(s): return sr.rank(campe, str(s)) == 1), "a new hero has every skill at rank 1")
+	var raw: Dictionary = gs.get_skill("machetazo")
+	var r1: Dictionary = gs.hero_skill(campe, "machetazo")
+	r1.erase("rank")
+	_check(r1 == raw, "rank 1 = the skill exactly as in skills.json")
+
+	var m3: Dictionary = sr.ranked(raw, 3)
+	_check(int(m3["damage_min"]) == int(raw["damage_min"]) + 2 and int(m3["damage_max"]) == int(raw["damage_max"]) + 2, "rank 3 Machetazo: +2/+2 damage")
+	_check(int(m3["skill_accuracy"]) == int(raw.get("skill_accuracy", 0)) + 2 and int(m3["skill_crit"]) == 2, "rank 3 Machetazo: +2 accuracy, +2 crit")
+	_check(not m3.has("heal_min") and int(raw["damage_min"]) == int(gs.get_skill("machetazo")["damage_min"]), "ranking adds no new fields and leaves the catalog untouched")
+	var sopa: Dictionary = gs.get_skill("sopa_milagrosa")
+	var s3: Dictionary = sr.ranked(sopa, 3)
+	_check(int(s3["heal_min"]) == int(sopa["heal_min"]) + 2 and int(s3["heal_max"]) == int(sopa["heal_max"]) + 2 and not s3.has("damage_min"), "rank 3 heal: +2/+2, no damage")
+	_check(int(s3["applies"]["value"]) == int(sopa["applies"]["value"]) + 2, "rank 3: status value +2 (Sobado)")
+	var near: Dictionary = {"id": "x", "kind": "attack", "damage_min": 1, "damage_max": 2, "applies": {"status": "sangrado", "chance": 0.9, "turns": 3, "value": 1}}
+	_check(is_equal_approx(float(sr.ranked(near, 5)["applies"]["chance"]), 1.0), "status chance caps at 100%")
+	_check(is_equal_approx(float(sr.ranked(near, 2)["applies"]["chance"]), 0.95), "status chance +5% per rank")
+	var escudo: Dictionary = gs.get_skill("escudo_de_barrio")
+	var e3: Dictionary = sr.ranked(escudo, 3)
+	_check(int(e3["self_applies"]["mods"]["prot"]) == int(escudo["self_applies"]["mods"]["prot"]) + 10, "rank_bonus override: Escudo de Barrio +5 protection per rank")
+	_check(not e3.has("damage_min") and int(e3["self_applies"]["turns"]) == int(escudo["self_applies"]["turns"]), "override: nothing else changes (no damage, same turns)")
+	_check(not sr.preview_lines(raw, 1).is_empty() and sr.preview_lines(raw, 5).is_empty(), "preview lists the next rank's gains, none at max")
+
+	_check(gs.buy_skill_rank(campe, "machetazo").contains("Resolución 1") and sr.rank(campe, "machetazo") == 1, "Resolución 0 can't buy rank 2")
+	campe["resolve_level"] = 1
+	var before: int = gs.colones
+	gs.buy_skill_rank(campe, "machetazo")
+	_check(sr.rank(campe, "machetazo") == 2 and gs.colones == before - 300, "Resolución 1 buys rank 2 for 300 ₡")
+	_check(gs.skill_rank_block_reason(campe, "machetazo").contains("Resolución 2"), "rank 3 needs Resolución 2")
+	campe["resolve_level"] = 6
+	gs.buy_skill_rank(campe, "machetazo")
+	gs.buy_skill_rank(campe, "machetazo")
+	gs.buy_skill_rank(campe, "machetazo")
+	_check(sr.rank(campe, "machetazo") == 5 and gs.colones == before - 300 - 900 - 1500 - 2700, "ranks 3-5 cost 900 / 1500 / 2700 ₡")
+	var at_max: int = gs.colones
+	_check(gs.buy_skill_rank(campe, "machetazo").contains("máximo") and gs.colones == at_max, "no rank past 5")
+	gs.colones = 100
+	_check(gs.buy_skill_rank(campe, "trabajo_duro").contains("No alcanza") and sr.rank(campe, "trabajo_duro") == 1, "not enough colones: refused")
+	_check(gs.buy_skill_rank(campe, "sopa_milagrosa").contains("No conoce"), "can't train a skill the hero doesn't have")
+	gs.colones = 10000
+	_check(gs.skill_rank_cost(campe, "trabajo_duro") == 300, "no event: rank 2 costs 300")
+	var cc = load("res://scripts/combat/combat_controller.gd").new()
+	var rip: Dictionary = cc._first_skill_of_kind(campe, "attack")
+	_check(int(rip.get("rank", 0)) == 5 and int(rip["damage_min"]) == int(raw["damage_min"]) + 4, "hero ripostes use the ranked attack")
+	cc.free()
+
+	var data: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))
+	gs.apply_save_data(data)
+	var c2: Dictionary = gs.roster.filter(func(h): return int(h["uid"]) == int(campe["uid"]))[0]
+	_check(sr.rank(c2, "machetazo") == 5 and typeof(c2["skill_ranks"]["machetazo"]) == TYPE_INT, "skill ranks survive a save round trip (as ints)")
+	var old: Dictionary = data.duplicate(true)
+	for e in old["roster"]:
+		e.erase("skill_ranks")
+	old["roster"][0]["skill_ranks"] = {"no_existe": 4, "machetazo": 9}
+	gs.apply_save_data(old)
+	var c3: Dictionary = gs.roster.filter(func(h): return int(h["uid"]) == int(campe["uid"]))[0]
+	_check(not c3["skill_ranks"].has("no_existe") and sr.rank(c3, "machetazo") == 5, "unknown skills dropped, ranks clamped to 5")
+	_check(gs.roster.filter(func(h): return int(h["uid"]) != int(campe["uid"])).all(
+		func(h): return h["skill_ranks"].is_empty()), "v7 heroes without skill_ranks load at rank 1")
+
+	gs.draw_town_event("veterano_de_las_bananeras")
+	var vet: Dictionary = gs.recruit_pool[gs.recruit_pool.size() - 1]
+	_check(vet["skill_ids"].all(func(s): return sr.rank(vet, str(s)) == 5), "Veterano (Resolución 6) arrives with rank 5 skills")
+	_check(sr.default_rank_for_level(0) == 1 and sr.default_rank_for_level(2) == 3 and sr.default_rank_for_level(4) == 5, "seasoned-hero ranks: Res 0 -> 1, Res 2 -> 3, Res 4 -> 5")
+	gs.active_event_id = ""
+	var fallen: Dictionary = c3.duplicate(true)
+	fallen["dead"] = true
+	fallen["uid"] = 888
+	gs.graveyard.clear()
+	gs.graveyard.append(fallen)
+	gs.event_flags = {}
+	gs.draw_town_event("dia_de_difuntos")
+	gs.resurrect(888)
+	var back: Array = gs.roster.filter(func(h): return int(h["uid"]) == 888)
+	_check(back.size() == 1 and sr.rank(back[0], "machetazo") == 5, "a resurrected hero keeps their skill ranks")
+	gs.active_event_id = ""
+	gs.event_flags = {}
+	gs.graveyard.clear()
+
+
 func _run() -> void:
 	await process_frame
 	var gs = root.get_node("GameState")
@@ -176,6 +267,8 @@ func _run() -> void:
 	gs.apply_save_data(old)
 	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 4, "v5 save migrates (XP at level floor, class camp skills)")
 	_check(gs.selected_difficulty_id == "aprendiz", "v5 save defaults to Aprendiz")
+
+	_test_skill_ranks(gs)
 
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

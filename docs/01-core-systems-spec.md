@@ -225,7 +225,7 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
   - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 7 / 13 / 21 / 29 / 40 XP.
   - **Mano vuelta** (DD's Helping Hand town event): for that week nobody refuses. Under-leveled heroes still take the penalty.
 - A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.
-- Not built yet: Casa Comunal skill ranks gated by level, and level-tiered treatment prices (doc 02 §4, doc 04 §3.5).
+- Skill ranks gated by level: see §6.3. Not built yet: level-tiered treatment prices (doc 04 §3.5).
 
 ### 6.2 Victory Screen
 
@@ -235,6 +235,32 @@ After a completed expedition (`scripts/expedition/victory_screen.gd`, shown by `
 2. **Page 2:** one card per hero with portrait, Resolve XP gained, a level badge and XP bar, any level-up, a new Quebranto or Virtud, PV and stress. The fallen are greyed out with no XP.
 
 The data comes from `GameState.mission_ledger`, filled during the run, and `GameState.complete_mission()`.
+
+### 6.3 Skill Ranks (Casa Comunal de Oficios)
+
+Implemented (P3-04). Data: `data/progression.json` `skill_ranks` (and an optional `rank_bonus` per skill in `skills.json`); rules: `scripts/domain/skill_ranks.gd`; hub row: `hacienda_hub.gd` `_refresh_skills`.
+
+- Every hero skill has a **rank 1–5**, bought one step at a time in the hub for the selected hero. Gated by resolve level, as in Darkest Dungeon:
+
+| Rank | Needs Resolución | Cost (doc 04 §3.3) |
+|---|---|---|
+| 2 | 1 | 300 ₡ |
+| 3 | 2 | 900 ₡ |
+| 4 | 3 | 1,500 ₡ |
+| 5 | 4 | 2,700 ₡ |
+
+- **Each rank above 1** adds to the numbers the skill already has (`per_rank`):
+  - attacks: +1 min and max damage, +1 accuracy, +1% crit;
+  - heals: +1 min and max;
+  - stress relief: +1;
+  - statuses it applies: +5% chance (capped at 100%) and +1 value (bleed, poison, Sobado…).
+  - Turns, status mods and cures don't change.
+- A skill's own `rank_bonus` replaces `per_rank`. It may use `status_mods` (+N to each numeric status mod per rank). Escudo de Barrio uses it: +5 protection on its Chiva per rank.
+- Combat reads every hero skill through `GameState.hero_skill(hero, id)`, so the action bar, tooltips, attacks, heals and ripostes all use the hero's rank. Rank pips show on the skill icons.
+- Recruits start at rank 1. A seasoned hero from a town event (Veterano de las Bananeras) arrives with every skill at the highest rank their resolve allows. A resurrected hero keeps their ranks. Levels from the idle-class event don't grant ranks.
+- Town events can close the Casa Comunal or change its price with the `casa_comunal` service (`closed`, `service_pct`). No event uses it yet.
+- Save v8 stores `skill_ranks` per hero. Older saves load at rank 1.
+- Not built: unlocking new skills (every class has exactly 4) and the building upgrades from doc 02 §4 (P3-16, P3-17).
 
 ## 7) Balancing Guardrails (Initial)
 

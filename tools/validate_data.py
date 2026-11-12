@@ -142,6 +142,23 @@ def main() -> int:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs xp > 0")
     if not prog.get("difficulties"):
         errors.append("progression.json: no difficulties")
+    # Casa Comunal skill ranks (doc 02 §4, doc 04 §3.3); keys match skill_ranks.gd BONUS_KEYS.
+    rank_keys = {"damage_min", "damage_max", "skill_accuracy", "skill_crit", "heal_min", "heal_max",
+                 "stress_relief", "status_chance", "status_value", "status_mods"}
+    sr = prog.get("skill_ranks", {})
+    max_rank = int(sr.get("max_rank", 0))
+    if max_rank < 2:
+        errors.append("progression.json: skill_ranks.max_rank must be at least 2")
+    costs = sr.get("costs", [])
+    if len(costs) != max_rank + 1 or any(costs[r] <= costs[r - 1] for r in range(3, len(costs))) \
+            or any(int(c) <= 0 for c in costs[2:]):
+        errors.append("progression.json: skill_ranks.costs needs max_rank + 1 entries, rising and > 0 from rank 2")
+    mres = sr.get("min_resolve", [])
+    if len(mres) != max_rank + 1 or mres[2:] != sorted(mres[2:]) or any(not 0 <= int(m) <= 6 for m in mres):
+        errors.append("progression.json: skill_ranks.min_resolve needs max_rank + 1 entries, non-decreasing, 0-6")
+    for k in sr.get("per_rank", {}):
+        if k not in rank_keys:
+            errors.append(f"progression.json: skill_ranks.per_rank unknown key '{k}'")
     # Region levels (doc 05 §4): every region has one, Sótanos is the easiest.
     region_levels = {}
     for rp in sorted((DATA / "regions").glob("*.json")):
@@ -166,7 +183,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "ebais", "terminal", "pulperia_compra", "pulperia_venta"}
+    services = {"iglesia", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal"}
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"
@@ -264,6 +281,9 @@ def main() -> int:
         for c in sk.get("cure", []):
             if c not in status_defs:
                 errors.append(f"skills.json: '{sid}' cures unknown status '{c}'")
+        for k in sk.get("rank_bonus", {}):
+            if k not in rank_keys:
+                errors.append(f"skills.json: '{sid}' rank_bonus unknown key '{k}'")
     res_ids = {c["id"] for c in statuses_raw.get("resist_categories", [])}
     for hid, hero in heroes.items():
         for k in hero.get("status_resist", {}):

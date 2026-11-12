@@ -1,7 +1,8 @@
 extends Control
 
 ## Hacienda hub: Pulpería (items), Iglesia (stress), Terminal de Buses (recruiting),
-## roster with party selection/order and EBAIS healing, and expedition start.
+## roster with party selection/order and EBAIS healing, Casa Comunal (skill ranks of the
+## selected hero), and expedition start.
 
 signal start_mission_requested
 
@@ -11,6 +12,8 @@ const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
+const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -33,6 +36,8 @@ var _shop_filter: String = "todo"
 @onready var _roster_title: Label = $Columns/Right/VBox/RosterTitle
 @onready var _roster_list: VBoxContainer = $Columns/Right/VBox/Scroll/RosterList
 @onready var _btn_start: Button = $Columns/Right/VBox/BtnStart
+@onready var _skills_title: Label = $Columns/Right/VBox/SkillsTitle
+@onready var _skills_row: HBoxContainer = $Columns/Right/VBox/SkillsRow
 
 ## Hero whose equipment is shown (click a name in the roster).
 var _selected: Dictionary = {}
@@ -178,6 +183,7 @@ func _refresh() -> void:
 	_gold.text = "Colones: %d" % GameState.colones
 	_week.text = "Semana: %d" % GameState.week
 	_refresh_equipment()
+	_refresh_skills()
 	for b in _shop_grid.get_children():
 		if not b.is_queued_for_deletion():
 			b.refresh()
@@ -273,6 +279,69 @@ func _refresh_equipment() -> void:
 		_pack_grid.add_child(b)
 
 
+# --- Casa Comunal de Oficios (skill ranks) -------------------------------------------
+
+## The selected hero's 4 skills: icon with rank pips, then "Rango N — X ₡" to train the next rank.
+func _refresh_skills() -> void:
+	for c in _skills_row.get_children():
+		c.queue_free()
+	if _selected.is_empty():
+		_skills_title.text = "Casa Comunal de Oficios"
+		return
+	_skills_title.text = "Casa Comunal de Oficios — habilidades de %s (Resolución %d)" % [
+		_selected.get("name", "—"), int(_selected.get("resolve_level", 0))]
+	var h: Dictionary = _selected
+	for sid in h.get("skill_ids", []):
+		var sk: Dictionary = GameState.hero_skill(h, str(sid))
+		if sk.is_empty():
+			continue
+		var rank: int = int(sk.get("rank", 1))
+		var col := VBoxContainer.new()
+		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		col.add_theme_constant_override("separation", 3)
+		var top := HBoxContainer.new()
+		top.add_theme_constant_override("separation", 6)
+		var icon = SkillButtonScript.new()
+		icon.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank],
+			SkillButtonScript.body_for(sk), rank, SkillRanksScript.max_rank())
+		top.add_child(icon)
+		var nm := Label.new()
+		nm.text = str(sk.get("name", sid))
+		nm.add_theme_font_size_override("font_size", 12)
+		nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		nm.custom_minimum_size = Vector2(60, 0)
+		top.add_child(nm)
+		col.add_child(top)
+		var buy := Button.new()
+		buy.add_theme_font_size_override("font_size", 12)
+		buy.clip_text = true
+		var why: String = GameState.skill_rank_block_reason(h, str(sid))
+		if rank >= SkillRanksScript.max_rank():
+			buy.text = "Rango máx."
+			buy.disabled = true
+			buy.tooltip_text = "%s ya está en el rango más alto." % sk.get("name", sid)
+		else:
+			var cost: int = GameState.skill_rank_cost(h, str(sid))
+			var need: int = SkillRanksScript.min_resolve_for(rank + 1)
+			# Disabled buttons may not show a tooltip, so the resolve gate is in the label itself.
+			if int(h.get("resolve_level", 0)) < need:
+				buy.text = "Rango %d: Resolución %d" % [rank + 1, need]
+			else:
+				buy.text = "Rango %d — %s" % [rank + 1, "gratis" if cost == 0 else "%d ₡" % cost]
+			buy.disabled = why != ""
+			var gain: PackedStringArray = SkillRanksScript.preview_lines(GameState.get_skill(str(sid)), rank)
+			var lines: PackedStringArray = PackedStringArray(["Entrenar %s al rango %d" % [sk.get("name", sid), rank + 1]])
+			if not gain.is_empty():
+				lines.append("Al subir: " + ", ".join(gain))
+			if why != "":
+				lines.append(why)
+			buy.tooltip_text = "\n".join(lines)
+			buy.pressed.connect(func(): _say(GameState.buy_skill_rank(h, str(sid))))
+		col.add_child(buy)
+		_skills_row.add_child(col)
+
+
 func _can_drop_sell(_at: Vector2, data: Variant) -> bool:
 	return data is Dictionary and str(data.get("kind", "")) == "item"
 
@@ -334,7 +403,7 @@ func _roster_row(h: Dictionary) -> Control:
 	var info := Button.new()
 	info.flat = true
 	info.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	info.tooltip_text = "Clic para ver y cambiar su equipo."
+	info.tooltip_text = "Clic para ver su equipo y sus habilidades."
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_font_size_override("font_size", 13)
 	if is_same(h, _selected):
@@ -368,8 +437,11 @@ func _roster_row(h: Dictionary) -> Control:
 		int(h.get("stress", 0)), int(h.get("prot", 0)), int(h.get("dmg_bonus", 0))]
 	# Long lines clip instead of pushing the buttons off-screen; the tooltip has everything.
 	info.clip_text = true
-	info.tooltip_text = "%s\nResolución %d: %s (%s)\nClic para ver y cambiar su equipo." % [
-		info.text, lvl, ResolveSystemScript.level_name(lvl), xp]
+	var ranks: PackedStringArray = PackedStringArray()
+	for sid in h.get("skill_ids", []):
+		ranks.append("%s %d" % [GameState.get_skill(str(sid)).get("name", sid), SkillRanksScript.rank(h, str(sid))])
+	info.tooltip_text = "%s\nResolución %d: %s (%s)\nHabilidades (rango): %s\nClic para ver su equipo y sus habilidades." % [
+		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ", ".join(ranks)]
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):

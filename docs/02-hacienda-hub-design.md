@@ -56,6 +56,13 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
 - Skill rank purchase gated by hero resolve level.
 - Skill unlock costs scale by hero tier and skill archetype.
 
+### Built (P3-04, 2026-11-11)
+
+- Rank purchase is in the hub: a row for the selected hero, with ranks 1–5 gated by resolve level and doc 04 §3.3 prices. Rules are in doc 01 §6.3.
+- Deferred:
+  - The two upgrade tracks (P3-16). They need a building-upgrade system and its materials (§11).
+  - Skill unlocks (P3-17). Every class has exactly 4 skills, all always available.
+
 ## 5) Taller de Herreria y Carretas (Equipment)
 
 ### Upgrade Tracks
