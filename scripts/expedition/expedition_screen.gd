@@ -18,6 +18,7 @@ const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
+const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -749,6 +750,15 @@ func _resolve_event(text: String) -> void:
 	_mode = Mode.EXPLORE
 	_narrate(text)
 	_refresh_all()
+	_check_wipe()
+
+
+## A trap or curio can kill (P1-16): with nobody left standing the expedition is lost.
+func _check_wipe() -> bool:
+	if GameState.living_party_count() > 0:
+		return false
+	_end_expedition("defeat", "La cuadrilla ha caído. La hacienda guarda silencio.")
+	return true
 
 
 ## Best "trampa" resistance in the living party (%): the one who spots it guides the rest.
@@ -955,14 +965,6 @@ func _party_stress(delta: int) -> void:
 				_log_line(l, "cc7744")
 
 
-func _heal_party(amt: int) -> void:
-	for h in GameState.party:
-		if h is Dictionary and not h.get("dead", false):
-			h["hp"] = mini(int(h["hp"]) + amt, int(h["hp_max"]))
-			if int(h["hp"]) > 0:
-				h["al_borde"] = false
-
-
 func _damage_random_hero(amt: int) -> Dictionary:
 	var living: Array = []
 	for h in GameState.party:
@@ -971,7 +973,9 @@ func _damage_random_hero(amt: int) -> Dictionary:
 	if living.is_empty():
 		return {}
 	var h: Dictionary = living[randi() % living.size()]
-	h["hp"] = maxi(int(h["hp"]) - amt, 0)
+	# Same rule as combat (P1-16): Al Borde, then the Golpe de gracia roll.
+	for l in HeroDamageScript.take(h, amt):
+		_log_line(l, "cc4444")
 	return h
 
 

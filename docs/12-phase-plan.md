@@ -343,6 +343,30 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `scripts/domain/stress_system.gd`, `data/statuses.json` (`mental_mods`), `scripts/domain/status_effects.gd`, `scripts/combat/combat_controller.gd`, `scripts/combat/battle_unit.gd`
 - Done when: [x] 7 + 7 with hooks; Paranoia refuses heals/buffs per spec instead of skipping turns; [x] names shown everywhere
 
+### P1-16 · S · Shared hero damage rule outside combat (bug)
+- Status: `done` (Claude Code, `main`, 2026-11-12) · Depends: —
+- Owner 2026-11-12: trap and curio damage follows the combat rule (Al Borde, then the death roll; heroes can die).
+- Files: `scripts/domain/hero_damage.gd` (new), `scripts/combat/combat_controller.gd`, `scripts/expedition/expedition_screen.gd`, `scripts/autoload/game_state.gd`
+- Done when:
+  - [x] Trap and curio damage use the same Al Borde / Golpe de gracia rule as combat; a wipe outside combat ends the expedition
+  - [x] Test in `tests/test_expedition_systems.gd`
+
+### P1-17 · M · Luz tiers (DD torch)
+- Status: `in-progress (Claude Code, main, 2026-11-12)` · Depends: P1-16
+- Owner 2026-11-12: full DD-style tiers (enemy danger, stress, loot, surprise, trap disarm) and "Apagar la candela".
+- Files: `scripts/domain/light_system.gd` (new), `data/balance.json` (`light.*`), `combat_controller.gd`, `expedition_screen.gd`, `game_state.gd`, region JSONs
+- Done when:
+  - [ ] 5 tiers from data affect enemy damage/crit, hero stress, loot, surprise and trap disarm; per-move stress in the dark
+  - [ ] Faster decay (8 per move), "Apagar la candela", tier shown on the HUD; camp resets to `light_max()`
+
+### P1-18 · M · Travel hunger + provisions
+- Status: `todo` · Depends: P1-16
+- Owner 2026-11-12: every 6 moves the party eats 1 gallo pinto per living hero; a hero who can't eat takes −10% PV (never below 1) and +10 stress; a camp meal resets the count.
+- Files: `data/balance.json` (`hunger.*`), `scripts/domain/camping_system.gd`, `game_state.gd`, `expedition_screen.gd`, `scripts/hacienda/hacienda_hub.gd`, region JSONs (`provisions`)
+- Done when:
+  - [ ] Hunger event every 6 moves (eat / share / go hungry); camp meal resets it
+  - [ ] Hub warns about missing recommended provisions and can buy them
+
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)

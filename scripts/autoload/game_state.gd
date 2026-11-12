@@ -16,6 +16,7 @@ const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
+const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -236,8 +237,8 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 	if outcome.has("damage_random") and not living.is_empty():
 		var v: Dictionary = living[randi() % living.size()]
 		var amt: int = int(outcome["damage_random"])
-		v["hp"] = maxi(int(v["hp"]) - amt, 0)
 		logs.append("%s pierde %d PV." % [v.get("name", "?"), amt])
+		logs.append_array(HeroDamageScript.take(v, amt))
 	if outcome.has("colones"):
 		var c = outcome["colones"]
 		var amt_c: int = randi_range(int(c[0]), int(c[1])) if c is Array and c.size() >= 2 else int(c)

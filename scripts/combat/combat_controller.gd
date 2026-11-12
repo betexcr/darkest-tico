@@ -14,6 +14,7 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -742,26 +743,9 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 	if physical and bool(hero.get("guarding", false)):
 		dmg = maxi(int(ceil(dmg * BalanceScript.num("combat.guard_mult"))), 1)
 		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")
-	var nh: int = int(hero["hp"]) - dmg
-	if nh > 0:
-		hero["hp"] = nh
-		return
-	if not hero.get("al_borde", false):
-		hero["al_borde"] = true
-		hero["hp"] = 0
-		_log("%s está Al Borde!" % hero.get("name", "?"), "dd8844")
-		return
-	# Doc 01 §2.4: odds drop with each earlier roll this expedition and with high stress.
-	var chance: float = CombatResolverScript.death_save_chance(hero)
-	hero["borde_checks"] = int(hero.get("borde_checks", 0)) + 1
-	if CombatResolverScript.roll_death_save(chance):
-		# Owner 2026-11-11: surviving keeps them Al Borde at 0 PV; only healing gets them out.
-		_log("%s resiste Al Borde (%d%%)." % [hero.get("name", "?"), int(round(chance * 100))], "dd8844")
-		hero["hp"] = 0
-	else:
-		hero["dead"] = true
-		hero["hp"] = 0
-		_log("%s ha caído." % hero.get("name", "?"), "cc4444")
+	# PV, Al Borde and the Golpe de gracia roll: the rule shared with traps and curios.
+	for line in HeroDamageScript.take(hero, dmg):
+		_log(line, "cc4444" if hero.get("dead", false) else "dd8844")
 
 
 ## Heal a hero; coming back from Al Borde leaves them Convaleciente for the expedition.
