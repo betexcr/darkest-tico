@@ -1,10 +1,14 @@
 {
-  "_doc": "Hero classes. names: Tico names given to recruits of this class. hire_cost: colones at the Terminal de Buses. Every class needs an ally or party skill (AGENTS.md §4).",
+  "_doc": "Hero classes. names: Tico names given to recruits of this class. hire_cost: colones at the Terminal de Buses. Every class needs an ally or party skill (AGENTS.md §4). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
   "heroes": [
     {
       "id": "campesino",
       "name": "Campesino Machetero",
       "class_id": "machetero",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 32,
       "stress_max": 200,
       "speed": 5,
@@ -47,6 +51,11 @@
       "id": "abuela",
       "name": "Abuela Sabia",
       "class_id": "abuela",
+      "ranks": [
+        2,
+        3,
+        4
+      ],
       "hp_max": 26,
       "stress_max": 200,
       "speed": 3,
@@ -88,6 +97,11 @@
       "id": "tecnologo",
       "name": "Tecnólogo Errante",
       "class_id": "tecnologo",
+      "ranks": [
+        2,
+        3,
+        4
+      ],
       "hp_max": 24,
       "stress_max": 200,
       "speed": 6,
@@ -129,6 +143,10 @@
       "id": "montador",
       "name": "Montador de Toros",
       "class_id": "montador",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 34,
       "stress_max": 200,
       "speed": 4,
@@ -170,6 +188,11 @@
       "id": "guachiman",
       "name": "Guachimán Jubilado",
       "class_id": "guachiman",
+      "ranks": [
+        1,
+        2,
+        3
+      ],
       "hp_max": 34,
       "stress_max": 200,
       "speed": 3,
@@ -210,6 +233,10 @@
       "id": "medica_josefina",
       "name": "Médica Josefina",
       "class_id": "medica_josefina",
+      "ranks": [
+        3,
+        4
+      ],
       "hp_max": 24,
       "stress_max": 200,
       "speed": 5,
@@ -250,6 +277,11 @@
       "id": "curandero",
       "name": "Curandero Nicoyano",
       "class_id": "curandero",
+      "ranks": [
+        2,
+        3,
+        4
+      ],
       "hp_max": 26,
       "stress_max": 200,
       "speed": 4,
@@ -290,6 +322,11 @@
       "id": "exorcista",
       "name": "Exorcista de Barrio",
       "class_id": "exorcista",
+      "ranks": [
+        1,
+        2,
+        3
+      ],
       "hp_max": 28,
       "stress_max": 200,
       "speed": 5,

@@ -14,6 +14,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -431,6 +432,11 @@ func _roster_row(h: Dictionary) -> Control:
 		warn = " ⚠ no va a %s" % diff.get("name", "")
 	elif ResolveSystemScript.underlevel(h, diff) > 0:
 		warn = " ⚠ le falta resolución"
+	# Formation (P1-03a): party order = battlefield position; warn outside the class's positions.
+	var ideal: Array = GameState.get_hero_template(str(h.get("hero_id", ""))).get("ranks", [])
+	var ideal_txt: String = FormationScript.ranks_text(ideal) if not ideal.is_empty() else "1–4"
+	if in_party and not ideal.is_empty() and not ideal.map(func(x): return int(x)).has(GameState.party.find(h) + 1):
+		warn += " ⚠ fuera de posición (ideal %s)" % ideal_txt
 	info.text = "%s%s — %s%s\nRes. %d (%s)%s · PV %d/%d · Estrés %d · Prot %d%% · Daño %+d" % [
 		rank, h.get("name", "?"), h.get("class_name", ""), extra, lvl, xp, warn,
 		int(h.get("hp", 0)), int(h.get("hp_max", 0)),
@@ -440,8 +446,8 @@ func _roster_row(h: Dictionary) -> Control:
 	var ranks: PackedStringArray = PackedStringArray()
 	for sid in h.get("skill_ids", []):
 		ranks.append("%s %d" % [GameState.get_skill(str(sid)).get("name", sid), SkillRanksScript.rank(h, str(sid))])
-	info.tooltip_text = "%s\nResolución %d: %s (%s)\nHabilidades (rango): %s\nClic para ver su equipo y sus habilidades." % [
-		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ", ".join(ranks)]
+	info.tooltip_text = "%s\nResolución %d: %s (%s)\nPosiciones ideales en combate: %s (el orden de la cuadrilla es la posición: 1 = adelante)\nHabilidades (rango): %s\nClic para ver su equipo y sus habilidades." % [
+		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ideal_txt, ", ".join(ranks)]
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):

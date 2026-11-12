@@ -14,6 +14,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -473,7 +474,8 @@ func get_hero_template(hero_id: String) -> Dictionary:
 func reset_party_from_catalog() -> void:
 	roster.clear()
 	party.clear()
-	for id in ["campesino", "abuela", "tecnologo", "montador"]:
+	# Formation order (P1-03a): each starting hero stands in one of their class's positions.
+	for id in ["campesino", "montador", "abuela", "tecnologo"]:
 		var t: Dictionary = _heroes_by_id.get(id, {})
 		if not t.is_empty():
 			var h: Dictionary = _instantiate_hero(t)
@@ -1240,8 +1242,11 @@ func build_combat_context_for_node(node_id: String) -> void:
 			counts[str(en["id"])] = int(counts.get(str(en["id"]), 0)) + 1
 			en["name"] = "%s %s" % [en.get("name", "?"), "ABCD"[int(counts[str(en["id"])]) - 1]]
 	_build_single_context(node_id)
-	combat_context["enemies"] = squad
-	combat_context["enemy"] = squad[0]
+	var leader: Dictionary = squad[0]
+	# Formation (P1-03a): each enemy stands by its preferred positions ("ranks"); ties keep
+	# the generator's order, so the leader/boss stays ahead of escorts of the same kind.
+	combat_context["enemies"] = FormationScript.sort_squad(squad)
+	combat_context["enemy"] = leader
 
 
 func _build_single_context(node_id: String) -> void:

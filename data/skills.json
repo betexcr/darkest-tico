@@ -1,5 +1,5 @@
 {
-  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill.",
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill. use_ranks: battlefield positions (1 = front) the hero can use it from; target_ranks (enemy-target skills): enemy positions it can reach. Rules: scripts/domain/formation.gd.",
   "skills": [
     {
       "id": "machetazo",
@@ -11,6 +11,14 @@
       "stress_on_hit_target": 3,
       "stress_on_crit_target": 8,
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "description": "Golpe de machete al enemigo."
     },
     {
@@ -22,6 +30,15 @@
       "skill_accuracy": 2,
       "stress_on_hit_target": 2,
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "description": "Un cucharonazo de palo como los de antes: poco daño, casi nunca falla y puede dejarlo atarantado.",
       "applies": {
         "status": "aturdido",
@@ -38,6 +55,17 @@
       "skill_accuracy": 1,
       "stress_on_hit_target": 2,
       "target": "enemy",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "description": "El dron baja y le pega un corrientazo con un cargador pelado. +25% de daño a fichados.",
       "vs_marked_pct": 25
     },
@@ -50,6 +78,16 @@
       "skill_accuracy": 1,
       "stress_on_hit_target": 3,
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3
+      ],
       "description": "Latigazo con el mecate de enlazar. Puede dejarlo enredado: salado, con menos esquiva.",
       "applies": {
         "status": "salado",
@@ -65,6 +103,12 @@
       "name": "Trabajo Duro",
       "kind": "buff",
       "target": "self",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "stress_relief": 5,
       "description": "Se aguanta el cansancio: alivia su propio estrés. Queda chiva: +15% de daño por 3 turnos.",
       "self_applies": {
@@ -82,6 +126,11 @@
       "heal_min": 2,
       "heal_max": 4,
       "target": "party",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "description": "Una olla para todos: cura a toda la cuadrilla. Deja a todos sobados: +2 PV por turno durante 3 turnos.",
       "applies": {
         "status": "sobado",
@@ -98,6 +147,16 @@
       "skill_accuracy": 2,
       "stress_on_hit_target": 2,
       "target": "enemy",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "target_ranks": [
+        2,
+        3,
+        4
+      ],
       "description": "El dron zumba y pica al enemigo. Preciso. El dron lo deja fichado.",
       "applies": {
         "status": "fichado",
@@ -114,6 +173,14 @@
       "skill_accuracy": -1,
       "stress_on_hit_target": 4,
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "description": "Embestida de montador: fuerte pero imprecisa."
     },
     {
@@ -121,6 +188,14 @@
       "name": "Golpe de Faena",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "damage_min": 6,
       "damage_max": 11,
       "skill_accuracy": -2,
@@ -138,6 +213,11 @@
       "name": "Aguante de Campo",
       "kind": "heal",
       "target": "ally",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
       "heal_min": 3,
       "heal_max": 5,
       "stress_relief": 4,
@@ -148,6 +228,11 @@
       "name": "Regaño Santo",
       "kind": "buff",
       "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "stress_relief": 12,
       "description": "Un regaño de abuela que endereza a cualquiera: alivia mucho estrés al aliado elegido. Le quita el susto.",
       "cure": [
@@ -159,6 +244,11 @@
       "name": "Cataplasma Casero",
       "kind": "heal",
       "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "heal_min": 5,
       "heal_max": 8,
       "description": "Hojas machacadas y fe: cura bien al aliado elegido. Le quita lo salado.",
@@ -171,6 +261,16 @@
       "name": "Exploit Zero-Day",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "damage_min": 6,
       "damage_max": 12,
       "skill_accuracy": -3,
@@ -192,6 +292,11 @@
       "name": "Firewall Humano",
       "kind": "buff",
       "target": "ally",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
       "stress_relief": 8,
       "heal_min": 2,
       "heal_max": 3,
@@ -206,6 +311,13 @@
       "name": "Patada de Corral",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1
+      ],
       "damage_min": 4,
       "damage_max": 8,
       "skill_accuracy": 2,
@@ -222,6 +334,12 @@
       "name": "No Me Tumban",
       "kind": "buff",
       "target": "party",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "stress_relief": 5,
       "description": "Grito de toro que levanta a todos: alivia estrés a toda la cuadrilla. El montador queda respondón por 3 turnos.",
       "self_applies": {
@@ -234,6 +352,16 @@
       "name": "Silbatazo",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3
+      ],
       "damage_min": 2,
       "damage_max": 4,
       "skill_accuracy": 3,
@@ -249,6 +377,14 @@
       "name": "Retén",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "damage_min": 4,
       "damage_max": 7,
       "skill_accuracy": 1,
@@ -260,6 +396,17 @@
       "name": "Ronda Nocturna",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "damage_min": 3,
       "damage_max": 6,
       "skill_accuracy": 2,
@@ -276,10 +423,17 @@
       "name": "Escudo de Barrio",
       "kind": "buff",
       "target": "ally",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
       "description": "Se planta delante de un compañero: el aliado elegido queda en guardia. Al cuido: el guachimán recibe los golpes dirigidos al aliado por 2 turnos y queda chiva (más protección).",
       "guard_ally": true,
       "guard_turns": 2,
-      "rank_bonus": { "status_mods": 5 },
+      "rank_bonus": {
+        "status_mods": 5
+      },
       "self_applies": {
         "status": "chiva",
         "turns": 3,
@@ -293,6 +447,15 @@
       "name": "Bisturí",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "damage_min": 2,
       "damage_max": 5,
       "skill_accuracy": 2,
@@ -309,6 +472,10 @@
       "name": "Triage Urbano",
       "kind": "heal",
       "target": "ally",
+      "use_ranks": [
+        3,
+        4
+      ],
       "heal_min": 6,
       "heal_max": 9,
       "description": "Atención de emergencia: cura mucho al aliado elegido."
@@ -318,6 +485,11 @@
       "name": "Antibiótico de Guardia",
       "kind": "heal",
       "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "heal_min": 2,
       "heal_max": 3,
       "cure": [
@@ -331,6 +503,11 @@
       "name": "Desfibrilar",
       "kind": "heal",
       "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "heal_min": 4,
       "heal_max": 6,
       "stress_relief": 4,
@@ -345,6 +522,17 @@
       "name": "Deuda Espiritual",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "damage_min": 5,
       "damage_max": 9,
       "skill_accuracy": 0,
@@ -365,6 +553,11 @@
       "name": "Rezo de Nicoya",
       "kind": "heal",
       "target": "party",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "heal_min": 1,
       "heal_max": 5,
       "stress_relief": 3,
@@ -375,6 +568,11 @@
       "name": "Humo de Hierbas",
       "kind": "buff",
       "target": "party",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "stress_relief": 6,
       "description": "Humo de copal y hierbas: alivia el estrés de todos. Todos quedan chivas: +8 esquiva por 2 turnos.",
       "applies": {
@@ -390,6 +588,11 @@
       "name": "Limpia de Mal de Ojo",
       "kind": "buff",
       "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
       "stress_relief": 6,
       "cure": [
         "veneno",
@@ -403,6 +606,14 @@
       "name": "Expulsión",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
       "damage_min": 6,
       "damage_max": 10,
       "skill_accuracy": 0,
@@ -419,6 +630,16 @@
       "name": "Liturgia de Hierro",
       "kind": "attack",
       "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3
+      ],
       "damage_min": 4,
       "damage_max": 7,
       "skill_accuracy": 2,
@@ -430,6 +651,12 @@
       "name": "Sal de Protección",
       "kind": "buff",
       "target": "ally",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "grant_guard": true,
       "stress_relief": 3,
       "description": "Un círculo de sal alrededor del aliado elegido: queda en guardia y más tranquilo. Además lo deja santiguado: bloquea el próximo golpe.",
@@ -443,6 +670,12 @@
       "name": "Círculo de Tiza",
       "kind": "buff",
       "target": "party",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
       "stress_relief": 6,
       "description": "Tiza bendita en el piso: alivia el estrés de toda la cuadrilla. Quita el susto a todos.",
       "cure": [

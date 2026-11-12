@@ -296,7 +296,7 @@ text = ""
 
 [node name="Skills" type="HBoxContainer" parent="BottomPanel/Row/Actions"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="Log" type="RichTextLabel" parent="BottomPanel/Row/Actions"]
 layout_mode = 2

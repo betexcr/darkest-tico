@@ -26,7 +26,7 @@ func _test_skill_ranks(gs) -> void:
 	gs.active_event_id = ""
 	gs.colones = 10000
 	var campe: Dictionary = gs.party[0]
-	var abuela: Dictionary = gs.party[1]
+	var abuela: Dictionary = gs.party.filter(func(h): return str(h["hero_id"]) == "abuela")[0]
 	_check(campe["skill_ids"].has("machetazo") and abuela["skill_ids"].has("sopa_milagrosa"), "test heroes: Campesino (Machetazo), Abuela (Sopa Milagrosa)")
 	_check(campe["skill_ids"].all(func(s): return sr.rank(campe, str(s)) == 1), "a new hero has every skill at rank 1")
 	var raw: Dictionary = gs.get_skill("machetazo")
@@ -225,7 +225,7 @@ func _run() -> void:
 	gs.party[3]["dead"] = false
 	for x in gs.party:
 		_check(camp.hero_skills(x).size() == 4, "%s has 4 camp skills" % x.get("class_name", "?"))
-	var tec: Dictionary = gs.party[2]
+	var tec: Dictionary = gs.party.filter(func(h): return str(h["hero_id"]) == "tecnologo")[0]
 	var dron: Dictionary = camp.skill("dron_vigia")
 	var used: Array = []
 	_check(camp.can_use(tec, dron, gs.party, 12, used), "Tecnólogo can use Dron vigía")

@@ -296,6 +296,47 @@ def main() -> int:
         first = hero.get("skill_ids", [None])[0] if hero.get("skill_ids") else None
         if skills.get(first, {}).get("kind") != "attack":
             errors.append(f"heroes.json: hero '{hid}' must start with its basic attack (first skill, kind attack)")
+
+    # Formation (P1-03a): battlefield positions 1-4 (1 = front). See scripts/domain/formation.gd.
+    def positions_ok(v):
+        return isinstance(v, list) and len(v) > 0 and all(isinstance(p, int) and 1 <= p <= 4 for p in v) \
+            and len(set(v)) == len(v)
+
+    for sid, sk in skills.items():
+        if not positions_ok(sk.get("use_ranks")):
+            errors.append(f"skills.json: '{sid}' needs use_ranks (positions 1-4)")
+        if sk.get("target") == "enemy" and not positions_ok(sk.get("target_ranks")):
+            errors.append(f"skills.json: '{sid}' (enemy target) needs target_ranks (positions 1-4)")
+        if sk.get("target") != "enemy" and "target_ranks" in sk:
+            errors.append(f"skills.json: '{sid}' has target_ranks but does not target an enemy")
+    for hid, hero in heroes.items():
+        if not positions_ok(hero.get("ranks")):
+            errors.append(f"heroes.json: '{hid}' needs ranks (preferred positions 1-4)")
+            continue
+        # Never stuck: from one of its own positions the class can hit enemy position 1.
+        if not any(skills.get(s, {}).get("kind") == "attack"
+                   and set(skills[s].get("use_ranks", [])) & set(hero["ranks"])
+                   and 1 in skills[s].get("target_ranks", [])
+                   for s in hero.get("skill_ids", []) if s in skills):
+            errors.append(f"heroes.json: '{hid}' has no attack that reaches enemy position 1 from its own positions")
+    for eid, en in enemies.items():
+        if not positions_ok(en.get("ranks")):
+            errors.append(f"enemies.json: '{eid}' needs ranks (preferred positions 1-4)")
+        reach1 = False
+        for x in en.get("skills", []):
+            where = f"enemies.json: '{eid}.{x.get('id')}'"
+            if "use_ranks" in x and not positions_ok(x["use_ranks"]):
+                errors.append(f"{where} use_ranks must be positions 1-4")
+            if x.get("target", "single") == "party":
+                reach1 = reach1 or "use_ranks" not in x
+                continue
+            if not positions_ok(x.get("target_ranks")):
+                errors.append(f"{where} (single target) needs target_ranks (positions 1-4)")
+            elif 1 in x["target_ranks"] and "use_ranks" not in x:
+                reach1 = True
+        # Never stuck: from any position, the enemy can hit the hero in position 1 (or everyone).
+        if not reach1:
+            errors.append(f"enemies.json: '{eid}' needs a skill usable anywhere that reaches hero position 1 (or a party skill)")
     for hid, hero in heroes.items():
         for k in hero.get("status_resist", {}):
             if k not in res_ids:

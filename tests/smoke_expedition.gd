@@ -59,6 +59,7 @@ func _run() -> void:
 		var rooms_moved: int = 0
 		var hero_turns: int = 0
 		var guards: int = 0
+		var moves: int = 0
 		var max_squad: int = 1
 		var picks: int = 0
 		var info_opened: bool = false
@@ -93,16 +94,30 @@ func _run() -> void:
 							if hero_turns == 2 and not screen._enemy_units.is_empty():
 								screen._on_unit_clicked(screen._enemy_units[0])
 								info_opened = info_opened or screen._enemy_info.visible
-							# Buttons: skills..., Guardia, Pasar. Every 7th turn: Guardia; every 3rd:
-							# the last skill (a support skill); otherwise the first attack. Skills that
-							# need a target wait for a click on a highlighted unit.
-							if hero_turns % 7 == 0 and buttons.size() >= 2:
+							# Buttons: 4 skills, Alforja, Moverse, Guardia, Pasar. Skills out of reach
+							# from the hero's position are disabled (pressed.emit() would ignore that,
+							# so the bot only presses enabled ones). Every 7th turn: Guardia; every
+							# 11th (or when nothing is in reach): Moverse; every 3rd: the last usable skill; otherwise the first
+							# usable one (falling back to Moverse, then Guardia). Skills that need a
+							# target wait for a click on a highlighted unit.
+							var live: Array = buttons.filter(func(b): return not b.is_queued_for_deletion())
+							var skill_btns: Array = live.slice(0, 4).filter(func(b): return not b.disabled)
+							var by_title: Dictionary = {}
+							for b in live:
+								by_title[str(b.get("title"))] = b
+							var move_b = by_title.get("Moverse", null)
+							var can_move: bool = move_b != null and not move_b.disabled
+							if hero_turns % 7 == 0 and by_title.has("Guardia"):
 								guards += 1
-								buttons[buttons.size() - 2].pressed.emit()
-							elif hero_turns % 3 == 0 and buttons.size() >= 3:
-								buttons[buttons.size() - 3].pressed.emit()
+								by_title["Guardia"].pressed.emit()
+							elif (hero_turns % 11 == 0 or skill_btns.is_empty()) and can_move:
+								moves += 1
+								move_b.pressed.emit()
+							elif not skill_btns.is_empty():
+								(skill_btns[-1] if hero_turns % 3 == 0 else skill_btns[0]).pressed.emit()
 							else:
-								buttons[0].pressed.emit()
+								guards += 1
+								by_title["Guardia"].pressed.emit()
 							if not screen._pending.is_empty():
 								picks += 1
 								var heroes: bool = str(screen._pending["side"]) == "ally"
@@ -120,6 +135,7 @@ func _run() -> void:
 			gs.last_expedition_summary = {}
 		_check(max_squad > 1, "fought a squad of up to %d enemies" % max_squad)
 		_check(picks > 0, "chose targets after pressing a skill %d times" % picks)
+		_check(moves > 0 or _finished == "defeat", "used Moverse %d times" % moves)
 		if run == 0:
 			_check(info_opened, "clicking an enemy opens its info panel")
 		screen.queue_free()

@@ -111,7 +111,7 @@ This content spec defines launch biomes, enemy factions, and boss escalation tow
 
 ## 2.6 Sotanos Enemy Roster (approved 2026-11-06)
 
-Vertical slice roster. `id` is the key used in `data/enemies.json` and `assets/enemies/<id>.png`. Ranks follow `03` notation (1 = front).
+Vertical slice roster. `id` is the key used in `data/enemies.json` and `assets/enemies/<id>.png`. Ranks follow `03` notation (1 = front). In data: each enemy's `ranks` and each single-target skill's `target_ranks` in `data/enemies.json` (P1-03a; rules in doc 01 §2.1).
 
 | id | Name | Family | Ranks | Role and gimmick |
 |---|---|---|---|---|

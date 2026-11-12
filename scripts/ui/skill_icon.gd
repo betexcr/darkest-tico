@@ -41,6 +41,7 @@ const GLYPHS := {
 	"sal_de_proteccion": "salt",
 	"circulo_de_tiza": "chalk",
 	"_guard": "shield",
+	"_move": "move",
 	"_pass": "hourglass",
 	"_items": "bag",
 }
@@ -287,6 +288,14 @@ func _g_pill() -> void:
 	_line([0.5, 0.5], [0.7, 0.3], 0.24, Color(0.9, 0.45, 0.4))
 	_circle(0.3, 0.7, 0.12)
 	_circle(0.7, 0.3, 0.12, Color(0.9, 0.45, 0.4))
+
+
+func _g_move() -> void:
+	# Two arrows passing each other: swap places with a neighbour.
+	_line([0.16, 0.36], [0.74, 0.36], 0.07)
+	_poly([[0.70, 0.22], [0.88, 0.36], [0.70, 0.50]])
+	_line([0.84, 0.66], [0.26, 0.66], 0.07)
+	_poly([[0.30, 0.52], [0.12, 0.66], [0.30, 0.80]])
 
 
 func _g_ladle() -> void:

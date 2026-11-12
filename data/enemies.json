@@ -1,9 +1,13 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply).",
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere).",
   "enemies": {
     "espanto": {
       "id": "espanto",
       "name": "Espanto del Sótano",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 45,
       "speed": 4,
       "dodge": 5,
@@ -21,6 +25,10 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Uñas heladas que salen de la pared."
         },
@@ -56,6 +64,11 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -81,6 +94,10 @@
     "sombra_cuadrilla": {
       "id": "sombra_cuadrilla",
       "name": "Sombra de cuadrilla",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 50,
       "speed": 5,
       "dodge": 6,
@@ -98,6 +115,10 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Golpe de azadón oxidado."
         },
@@ -112,6 +133,10 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 20,
           "applies": {
             "status": "sangrado",
@@ -132,6 +157,12 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -162,6 +193,10 @@
     "mayordomo_hundido": {
       "id": "mayordomo_hundido",
       "name": "El Mayordomo Hundido",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 55,
       "speed": 4,
       "dodge": 5,
@@ -179,6 +214,10 @@
           "accuracy": 0,
           "stress": 4,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "El servicio de la casa, en la cabeza."
         },
@@ -217,6 +256,10 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 20,
           "ignores_guard": true,
           "description": "Conoce cada guardia: esta no la frena."
@@ -232,6 +275,12 @@
           "accuracy": 0,
           "stress": 6,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -259,6 +308,10 @@
     "nuboso_spectre": {
       "id": "nuboso_spectre",
       "name": "Espectro de niebla",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 38,
       "speed": 6,
       "dodge": 9,
@@ -276,6 +329,10 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Garras que se hacen niebla al tocar."
         },
@@ -290,6 +347,12 @@
           "accuracy": 0,
           "stress": 5,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": [
             {
@@ -326,6 +389,10 @@
     "cadejo_negro": {
       "id": "cadejo_negro",
       "name": "Cadejo negro",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 48,
       "speed": 7,
       "dodge": 7,
@@ -343,6 +410,10 @@
           "accuracy": 0,
           "stress": 4,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Colmillos del perro del camino.",
           "vs_marked_pct": 40
@@ -379,6 +450,11 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
           "weight": 20,
           "applies": {
             "status": "sangrado",
@@ -404,6 +480,10 @@
     "segua_boss": {
       "id": "segua_boss",
       "name": "La Segua de Niebla",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 85,
       "speed": 6,
       "dodge": 8,
@@ -421,6 +501,10 @@
           "accuracy": 0,
           "stress": 4,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "applies": {
             "status": "aturdido",
@@ -441,6 +525,12 @@
           "accuracy": 0,
           "stress": 15,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "description": "Primero bella, luego calavera.",
           "element": "oscuridad",
@@ -483,6 +573,10 @@
     "peon_penado": {
       "id": "peon_penado",
       "name": "Peón penado",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 52,
       "speed": 3,
       "dodge": 3,
@@ -500,6 +594,11 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
           "weight": 50,
           "description": "Latigazo de cadena herrumbrada."
         },
@@ -514,6 +613,12 @@
           "accuracy": 0,
           "stress": 10,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "description": "Cien años de deuda en una mirada.",
           "element": "oscuridad",
@@ -542,6 +647,10 @@
     "mandador_en_pena": {
       "id": "mandador_en_pena",
       "name": "Mandador en pena",
+      "ranks": [
+        2,
+        3
+      ],
       "hp_max": 40,
       "speed": 5,
       "dodge": 6,
@@ -559,6 +668,11 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
           "weight": 50,
           "applies": {
             "status": "sangrado",
@@ -595,6 +709,12 @@
           "accuracy": 0,
           "stress": 8,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "description": "Le rebaja el alma a uno solo.",
           "element": "oscuridad",
@@ -620,6 +740,11 @@
     "rata_de_troje": {
       "id": "rata_de_troje",
       "name": "Ratas de troje",
+      "ranks": [
+        1,
+        2,
+        3
+      ],
       "hp_max": 34,
       "speed": 8,
       "dodge": 9,
@@ -637,6 +762,10 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Dientes amarillos, rápidos."
         },
@@ -651,6 +780,10 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 20,
           "applies": {
             "status": "veneno",
@@ -675,6 +808,10 @@
     "murcielago_bodega": {
       "id": "murcielago_bodega",
       "name": "Murciélago de bodega",
+      "ranks": [
+        3,
+        4
+      ],
       "hp_max": 30,
       "speed": 9,
       "dodge": 12,
@@ -692,6 +829,12 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 50,
           "description": "Baja en picada y muerde."
         },
@@ -706,6 +849,10 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "sangrado",
@@ -726,6 +873,12 @@
           "accuracy": 0,
           "stress": 4,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "light": -10,
           "description": "Las alas apagan la luz de la cuadrilla.",
@@ -747,6 +900,10 @@
     "monaguillo_porton": {
       "id": "monaguillo_porton",
       "name": "Monaguillo del Portón",
+      "ranks": [
+        3,
+        4
+      ],
       "hp_max": 36,
       "speed": 5,
       "dodge": 6,
@@ -764,6 +921,10 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Golpe de incensario caliente."
         },
@@ -798,6 +959,12 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -824,6 +991,10 @@
     "vigia_porton": {
       "id": "vigia_porton",
       "name": "Vigía del Portón",
+      "ranks": [
+        2,
+        3
+      ],
       "hp_max": 38,
       "speed": 6,
       "dodge": 8,
@@ -841,6 +1012,10 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Cuchillada corta del vigía."
         },
@@ -855,6 +1030,12 @@
           "accuracy": 2,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -898,6 +1079,10 @@
     "susurro_aljibe": {
       "id": "susurro_aljibe",
       "name": "Susurro del aljibe",
+      "ranks": [
+        3,
+        4
+      ],
       "hp_max": 36,
       "speed": 5,
       "dodge": 10,
@@ -915,6 +1100,12 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 50,
           "description": "Una mano fría sale del agua."
         },
@@ -929,6 +1120,10 @@
           "accuracy": 0,
           "stress": 12,
           "target": "single",
+          "target_ranks": [
+            3,
+            4
+          ],
           "weight": 20,
           "description": "Le dice a uno lo que más teme.",
           "element": "agua",
@@ -950,6 +1145,12 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "veneno",
@@ -977,6 +1178,11 @@
     "duende_sotano": {
       "id": "duende_sotano",
       "name": "Duende del sótano",
+      "ranks": [
+        2,
+        3,
+        4
+      ],
       "hp_max": 30,
       "speed": 8,
       "dodge": 14,
@@ -994,6 +1200,10 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "applies": {
             "status": "sangrado",
@@ -1014,6 +1224,12 @@
           "accuracy": 0,
           "stress": 3,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "steal_colones": 60,
           "description": "Se lleva unos colones y se ríe.",
@@ -1034,6 +1250,12 @@
           "accuracy": 0,
           "stress": 6,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",
@@ -1059,6 +1281,10 @@
     "sirviente_ahogado": {
       "id": "sirviente_ahogado",
       "name": "Sirviente ahogado",
+      "ranks": [
+        1,
+        2
+      ],
       "hp_max": 28,
       "speed": 4,
       "dodge": 3,
@@ -1076,6 +1302,10 @@
           "accuracy": 0,
           "stress": 2,
           "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
           "weight": 50,
           "description": "Golpe con bandeja abollada."
         },
@@ -1090,6 +1320,11 @@
           "accuracy": 0,
           "stress": 0,
           "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
           "weight": 20,
           "applies": {
             "status": "aturdido",

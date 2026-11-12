@@ -17,6 +17,7 @@ const InventorySlotScript := preload("res://scripts/ui/inventory_slot.gd")
 const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -498,6 +499,11 @@ func _view_hero(hero: Dictionary) -> void:
 		int(hero.get("stress", 0)), int(hero.get("resolve_level", 0))])
 	lines.append("Prec %d · Crít %d%% · Esq %d" % [int(hero.get("accuracy", 0)), int(hero.get("crit", 0)), int(hero.get("dodge", 0))])
 	lines.append("Vel %d · Prot %d%% · Daño %+d" % [int(hero.get("speed", 0)), int(hero.get("prot", 0)), int(hero.get("dmg_bonus", 0))])
+	# Battlefield position (P1-03a) and the class's preferred ones.
+	var pos: int = FormationScript.position_of(hero, GameState.party)
+	if pos > 0:
+		var ideal: Array = GameState.get_hero_template(str(hero.get("hero_id", ""))).get("ranks", [])
+		lines.append("Posición %d%s" % [pos, " (ideal %s)" % FormationScript.ranks_text(ideal) if not ideal.is_empty() else ""])
 	if str(hero.get("element", "")) != "":
 		lines.append("Arma de %s" % GameState.ELEMENT_NAMES.get(str(hero["element"]), hero["element"]))
 	if bool(hero.get("dead", false)):
@@ -942,11 +948,18 @@ func _update_turn_label() -> void:
 
 # --- Choosing a target after pressing a skill or item -----------------------------
 
-func _living_units(heroes: bool) -> Array:
+## Units the player may click for `action` (default: the pending one): enemies in the
+## skill's reach (target_ranks; hidden ones only if nobody else is), any living hero for
+## ally skills/items, or the acting hero's neighbours for "Moverse".
+func _living_units(heroes: bool, action: Dictionary = {}) -> Array:
+	if action.is_empty():
+		action = _pending
 	if heroes:
+		if bool(action.get("move", false)):
+			var near: Array = _combat.move_options(_combat.active_hero())
+			return _hero_units.filter(func(u): return near.has(u.data))
 		return _hero_units.filter(func(u): return not u.is_dead())
-	# Hidden (agazapado) enemies can't be picked while others are left.
-	var open: Array = _combat.targetable_enemies()
+	var open: Array = _combat.targets_for(action["skill"]) if action.has("skill") else _combat.targetable_enemies()
 	return _enemy_units.filter(func(u): return not u.is_dead() and open.has(u.data))
 
 
@@ -958,8 +971,8 @@ func _begin_pending(action: Dictionary) -> void:
 	if side == "":
 		_execute_pending({}, action)
 		return
-	var options: Array = _living_units(side == "ally")
-	if options.size() <= 1:
+	var options: Array = _living_units(side == "ally", action)
+	if options.size() <= 1 and not bool(action.get("move", false)):
 		_execute_pending(options[0].data if not options.is_empty() else {}, action)
 		return
 	if side == "enemy" and not _selected_enemy.is_empty():
@@ -969,9 +982,12 @@ func _begin_pending(action: Dictionary) -> void:
 				return
 	_pending = action
 	_clear_skills()
-	var what: String = str(action["skill"].get("name", "")) if action.has("skill") else str(GameState.get_item(str(action["item"])).get("name", ""))
-	_turn_label.text = "%s: elige a quién %s (clic en %s; Esc o Cancelar para volver)." % [
-		what, "atacar" if side == "enemy" else "ayudar", "un enemigo" if side == "enemy" else "un héroe"]
+	if bool(action.get("move", false)):
+		_turn_label.text = "Moverse: elige con quién cambiar de lugar (clic en un héroe al lado; Esc o Cancelar para volver)."
+	else:
+		var what: String = str(action["skill"].get("name", "")) if action.has("skill") else str(GameState.get_item(str(action["item"])).get("name", ""))
+		_turn_label.text = "%s: elige a quién %s (clic en %s; Esc o Cancelar para volver)." % [
+			what, "atacar" if side == "enemy" else "ayudar", "un enemigo" if side == "enemy" else "un héroe"]
 	for u in options:
 		u.set_selectable(true)
 	var cancel := Button.new()
@@ -1004,7 +1020,9 @@ func _execute_pending(target: Dictionary, action: Dictionary = {}) -> void:
 		_selected_enemy = target
 		_combat.set_target(target)
 	var ally: Dictionary = target if side == "ally" else {}
-	if action.has("skill"):
+	if bool(action.get("move", false)):
+		_combat.move_hero(target)
+	elif action.has("skill"):
 		_combat.use_skill(action["skill"], ally)
 	else:
 		_combat.use_item(str(action["item"]), ally)
@@ -1018,7 +1036,9 @@ func _on_hero_turn(hero: Dictionary) -> void:
 	_update_turn_label()
 	GameState.equip_turn_hero = hero
 	_turn_equipment = _equipment_of(hero)
-	# One row of icons: the hero's skills, then Guardia and Pasar. Hover = name + description.
+	# One row of icons: the hero's skills, then Alforja, Moverse, Guardia and Pasar.
+	# Hover = name + description. Skills out of reach from this position are greyed out.
+	var blocked: int = 0
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = GameState.hero_skill(hero, str(sid))
 		if sk.is_empty():
@@ -1029,11 +1049,22 @@ func _on_hero_turn(hero: Dictionary) -> void:
 			rank, SkillRanksScript.max_rank())
 		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
 		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
+		if not _combat.skill_usable(hero, sk):
+			b.disabled = true
+			b.modulate = Color(1, 1, 1, 0.35)
+			blocked += 1
 		_skills.add_child(b)
 	var bag_btn = SkillButtonScript.new()
 	bag_btn.setup("_items", "item", "Alforja", "Usar un artículo (agua de pipa, venda, café...). Usarlo gasta el turno.")
 	bag_btn.pressed.connect(_show_combat_items.bind(hero))
 	_skills.add_child(bag_btn)
+	var move_btn = SkillButtonScript.new()
+	move_btn.setup("_move", "guard", "Moverse", "Cambia de lugar con el héroe de al lado (adelante o atrás). Gasta el turno.")
+	move_btn.pressed.connect(func(): _begin_pending({"side": "ally", "move": true}))
+	if _combat.move_options(hero).is_empty():
+		move_btn.disabled = true
+		move_btn.modulate = Color(1, 1, 1, 0.35)
+	_skills.add_child(move_btn)
 	var guard_btn = SkillButtonScript.new()
 	guard_btn.setup("_guard", "guard", "Guardia", "Se cubre: recibe la mitad del daño físico hasta su próximo turno.")
 	guard_btn.pressed.connect(func():
@@ -1050,6 +1081,9 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		_combat.pass_turn()
 	)
 	_skills.add_child(pass_btn)
+	if blocked > 0:
+		_turn_label.text += " Desde la posición %d, %s." % [_combat.position_of(hero),
+			"una habilidad no alcanza" if blocked == 1 else "%d habilidades no alcanzan" % blocked]
 	_refresh_all()
 
 

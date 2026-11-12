@@ -17,6 +17,51 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-11 (late night) — P1-03a — Battlefield positions 1–4 and "Moverse"
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-03a review. P1-03 split into P1-03a (this) and P1-03b (push/pull/shuffle, todo); the owner picked "formation + a Move action" first.
+- **Changed:**
+  - Data:
+    - `heroes.json` `ranks` per class (doc 03).
+    - `skills.json` `use_ranks` on every hero skill, plus `target_ranks` on enemy-target skills.
+    - `enemies.json` `ranks` per enemy (doc 05 §2.6) and `target_ranks` on single-target skills.
+    - `_doc` strings updated.
+  - `scripts/domain/formation.gd` (new, pure): positions count only the living, `at_positions`, `valid_targets`, `can_use`, `neighbours`, `step_toward`, `collapse_order`, `sort_squad`, `ranks_text`. JSON floats are converted to ints.
+  - `combat_controller.gd`:
+    - `current_target(skill)`, `targets_for`, `skill_usable`, `position_of`.
+    - `move_options` / `move_hero` (Moverse).
+    - The enemy AI filters skills by reach and picks targets in reach; with nothing in reach it calls `_enemy_reposition` ("se reacomoda").
+    - `_collapse_ranks` runs at the start and between turns. `_swap_units` and `_sync_rows` keep the data arrays, unit arrays and stage rows in the same order.
+  - `expedition_screen.gd`:
+    - Greyed-out skills, a "Moverse" button, and a turn-label note ("Desde la posición N, X habilidades no alcanzan").
+    - Target picking follows reach, and Moverse offers only neighbours.
+    - The hero card shows "Posición N (ideal …)".
+  - `skill_button.gd`: buttons are now 46 px (8 buttons didn't fit at 52 and pushed the map off-screen); the tooltip line reads "Desde posición …, alcanza …". `skill_icon.gd` has a `move` glyph.
+  - `GameState`:
+    - Squads are sorted by enemy `ranks` (`build_combat_context_for_node`, which ambushes also use).
+    - The starting party is now Campesino, Montador, Abuela, Tecnólogo, so every hero starts in their class's positions.
+  - Hub: "⚠ fuera de posición (ideal …)" on party rows, plus a positions line in the tooltip.
+  - `tools/validate_data.py`: position fields, plus the two no-stall invariants (every class reaches enemy position 1, every enemy reaches hero position 1 from anywhere).
+  - Tests:
+    - `tests/test_formation.gd` (new, 34 checks).
+    - Smoke bot presses only enabled buttons, moves when nothing is in reach or every 11th turn, and checks that it moved.
+    - Two class-specific party lookups in `test_progression` / `progression_screenshot` now find heroes by id.
+  - `tools/screens/formation_screenshot.gd` (new). Docs: 01 §2.1, 03, 05 §2.6, AGENTS.md §1 (verify list) and §4 (Formation rule).
+- **Verified:**
+  - `python3 tools/validate_data.py` 0 errors / 0 warnings.
+  - Godot 4.7.2 headless: all 10 test scripts 0 failures, no errors.
+  - Screenshots checked: hub warning, greyed-out bar + tooltips, Moverse prompt (only the neighbour highlighted), collapse (fallen Peón moved to the back).
+- **Not verified / risks:**
+  - Balance: the smoke bot won 2/3, 1/3 and 2/3 across three runs after the change, vs about 2/3 before. The bot plays badly and nobody has played a fight by hand.
+  - The tooltip on a greyed-out button shows only sometimes. The turn label always says how many skills don't reach.
+  - Enemy skills can be used from any position (only their reach is limited). That is deliberate: back-line enemies collapse forward and would otherwise stall.
+- **Decisions needed:**
+  - Are the per-skill positions right? The table is in this session's plan and in `data/skills.json`. For example, the Médica's Bisturí reaches 1–2 from 2–4, and Corrientazo reaches 1–4.
+  - DD keeps enemy corpses in place; we collapse them (doc 01 says "collapse"). OK?
+- **Next step:** P1-05 (spec-accurate Al Borde and crit stress, no deps): read doc 01 §2.4, then `combat_controller._apply_damage_to_hero`. P1-03b (push/pull) can wait until the owner has played P1-03a.
+
+---
+
 ## 2026-11-11 (night) — P2-08 — Each class has its own basic attack
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P2-08 review. This answers the Machetazo question in the entry below: the owner wants one basic attack per class.

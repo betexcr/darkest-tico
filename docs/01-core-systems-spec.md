@@ -32,6 +32,28 @@ This document formalizes the gameplay loop and systemic rules for the Tico Gothi
   - Target position constraints.
   - Status conditions (stun, daze, immobilize).
 
+Implemented (P1-03a). Rules: `scripts/domain/formation.gd`; combat: `combat_controller.gd`. In-game text says **posición** ("rango" is the Casa Comunal skill level).
+
+- **Position:** 1 + the number of living units ahead on the same side. Position 1 is nearest the middle of the stage. The party's order in the hub is its starting formation.
+- **Collapse:** between turns, the fallen move to the back of their side, in data and on the stage. The last living enemy is always in position 1.
+- **Hero skills** (`data/skills.json`):
+  - `use_ranks`: the positions the hero can use the skill from.
+  - Enemy-target skills also have `target_ranks`, the enemy positions they reach.
+  - Unusable skills are greyed out on the action bar, and the turn text says how many don't reach. Tooltips show "Desde posición 1–2, alcanza 1–2".
+  - Ally and party skills only check `use_ranks`.
+- **Moverse:** an action-bar button that swaps the acting hero with a living neighbour (forward or back). It spends the turn.
+- **Enemies** (`data/enemies.json`):
+  - `ranks` are their preferred positions (doc 05 §2.6). Squads are sorted by them when a fight starts; ties keep the generator's order, so the leader or boss stays in front.
+  - Single-target skills have `target_ranks`. They may be used from any position unless the skill sets `use_ranks`.
+  - The AI picks only among usable skills, then a hero in reach (Fichado preferred, Agazapado avoided).
+  - Al cuido and Abnegación redirects ignore position.
+  - With nothing in reach, the enemy **se reacomoda**: one step toward its preferred positions.
+- **No stalled fights** (validator):
+  - Every class has an attack that reaches enemy position 1 from one of its own positions.
+  - Every enemy can hit hero position 1, or the whole party, from anywhere.
+- **Hub:** each hero row warns "⚠ fuera de posición (ideal 1–2)" when the hero stands outside their class's positions. The hero card in the expedition shows "Posición N (ideal …)".
+- **Not built yet (P1-03b):** skills that push or pull, enemy shuffles, and a status that stops moving.
+
 ### 2.2 Turn Order
 
 - Initiative roll each round:

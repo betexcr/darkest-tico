@@ -7,9 +7,10 @@ const SkillIconScript := preload("res://scripts/ui/skill_icon.gd")
 const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
-const SIZE := Vector2(52, 52)
+const FormationScript := preload("res://scripts/domain/formation.gd")
+const SIZE := Vector2(46, 46)
 ## How an effects line starts (see `body_for`).
-const EFFECT_PREFIXES := ["Ataque:", "Cura ", "Alivia ", "Objetivo:"]
+const EFFECT_PREFIXES := ["Ataque:", "Cura ", "Alivia ", "Objetivo:", "Desde posición"]
 
 var title: String = ""
 var body: String = ""
@@ -89,6 +90,12 @@ static func body_for(sk: Dictionary) -> String:
 	var who: String = {"self": "a sí mismo", "ally": "al aliado elegido", "party": "a toda la cuadrilla"}.get(str(sk.get("target", "")), "")
 	if who != "":
 		parts.append("Objetivo: " + who)
+	# Battlefield positions (P1-03a): where it is used from and which enemy positions it reaches.
+	if sk.has("use_ranks"):
+		var where: String = "Desde posición %s" % FormationScript.ranks_text(FormationScript.use_ranks(sk))
+		if sk.has("target_ranks"):
+			where += ", alcanza %s" % FormationScript.ranks_text(FormationScript.target_ranks(sk))
+		parts.append(where)
 	var desc: String = str(sk.get("description", ""))
 	return "%s\n%s" % [desc, " · ".join(parts)] if desc != "" else " · ".join(parts)
 

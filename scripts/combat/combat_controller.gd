@@ -10,6 +10,7 @@ const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 ## A hero is waiting for the player's choice.
 signal hero_turn_started(hero: Dictionary)
@@ -20,8 +21,10 @@ signal logged(text: String, color: String)
 signal enemy_changed
 signal combat_over(victory: bool)
 
+## Heroes in formation order (index 0 = position 1), index-aligned with hero_units.
+## Positions count only the living; the dead are moved to the back (_collapse_ranks).
 var party: Array = []
-## Enemy squad (1-4), index-aligned with enemy_units; index 0 = front rank.
+## Enemy squad (1-4), index-aligned with enemy_units; index 0 = front (position 1).
 var enemies: Array = []
 ## Enemy the player's attacks and enemy-target items hit (click an enemy to change).
 var target_enemy: Dictionary = {}
@@ -50,13 +53,35 @@ func active_hero() -> Dictionary:
 	return {}
 
 
-## The chosen target if it can still be hit, else the front-most enemy that can
-## (hidden/agazapado enemies only when nobody else is left).
-func current_target() -> Dictionary:
-	var open: Array = StatusEffectsScript.targetable(enemies)
+## The chosen target if `skill` can still hit it, else the front-most enemy it can reach
+## (target_ranks; hidden/agazapado enemies only when nobody else in reach is left).
+## With no skill: any enemy (items, markers, the victory check).
+func current_target(skill: Dictionary = {}) -> Dictionary:
+	var open: Array = FormationScript.valid_targets(skill, enemies)
 	if not target_enemy.is_empty() and open.has(target_enemy):
 		return target_enemy
 	return open[0] if not open.is_empty() else {}
+
+
+## Enemies `skill` can hit right now (its target_ranks), front first.
+func targets_for(skill: Dictionary) -> Array:
+	return FormationScript.valid_targets(skill, enemies)
+
+
+## Whether `hero` can use `skill` from where they stand (use_ranks), and an enemy-target
+## skill has someone in reach (target_ranks).
+func skill_usable(hero: Dictionary, skill: Dictionary) -> bool:
+	return FormationScript.can_use(skill, hero, party, enemies, hits_enemy(skill))
+
+
+static func hits_enemy(skill: Dictionary) -> bool:
+	return str(skill.get("target", "enemy" if str(skill.get("kind", "")) == "attack" else "self")) == "enemy"
+
+
+## Battlefield position (1-4) of a hero or enemy; 0 if dead.
+func position_of(unit: Dictionary) -> int:
+	var p: int = FormationScript.position_of(unit, party)
+	return p if p > 0 else FormationScript.position_of(unit, enemies)
 
 
 ## Enemies a single-target attack may pick right now.
@@ -100,6 +125,7 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 			for ss in h.get("start_status", []):
 				_try_apply(h, ss, false, "")
 	_refresh_markers()
+	_collapse_ranks()
 	_start_round()
 
 
@@ -122,7 +148,7 @@ func use_skill(skill: Dictionary, ally: Dictionary = {}) -> void:
 		return
 	await _unit_for_hero(hero).play_action("attack" if kind == "attack" else "cast")
 	if kind == "attack":
-		_resolve_hero_attack(hero, skill, current_target())
+		_resolve_hero_attack(hero, skill, current_target(skill))
 	else:
 		_resolve_support(hero, skill, ally)
 	await _after_action(enemy_before, party_before)
@@ -193,6 +219,30 @@ func pass_turn() -> void:
 	_awaiting_hero = false
 	_log("%s espera." % hero.get("name", "?"), "")
 	_turn_index += 1
+	_process_turn()
+
+
+## Heroes the acting hero can swap places with ("Moverse": the living neighbours).
+func move_options(hero: Dictionary) -> Array:
+	return FormationScript.neighbours(hero, party)
+
+
+## "Moverse": the acting hero swaps places with an adjacent hero. Spends the turn.
+func move_hero(other: Dictionary) -> void:
+	var hero: Dictionary = active_hero()
+	if hero.is_empty() or not move_options(hero).has(other):
+		return
+	_awaiting_hero = false
+	_busy = true
+	_swap_units(party, hero_units, hero, other)
+	_log("%s pasa a la posición %d (%s, a la %d)." % [hero.get("name", "?"), FormationScript.position_of(hero, party),
+		other.get("name", "?"), FormationScript.position_of(other, party)], "88aacc")
+	_refresh_units()
+	await get_tree().create_timer(0.25).timeout
+	_busy = false
+	_turn_index += 1
+	if _check_end():
+		return
 	_process_turn()
 
 
@@ -270,6 +320,8 @@ func _process_turn() -> void:
 	if _check_end():
 		return
 	while _turn_index < _turn_queue.size():
+		# Between turns (no animation snapshot pending): the fallen go to the back.
+		_collapse_ranks()
 		var step: Dictionary = _turn_queue[_turn_index]
 		if step["kind"] == "enemy":
 			var foe: Dictionary = step["actor"]
@@ -505,11 +557,16 @@ func _elemental(dmg: int, element: String, target: Dictionary) -> int:
 	return int(round(dmg * mult))
 
 
-## Basic attack or a special, chosen by "weight" (data/enemies.json).
+## Basic attack or a special, chosen by "weight" (data/enemies.json), among the skills
+## usable from the enemy's position with a hero in reach. {} when none is.
 func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
-	var list: Array = enemy.get("skills", [])
+	var all: Array = enemy.get("skills", [])
+	if all.is_empty():
+		all = [{"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}]
+	var list: Array = all.filter(func(s): return FormationScript.can_use(s, enemy, enemies, party,
+		str(s.get("target", "single")) != "party"))
 	if list.is_empty():
-		return {"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}
+		return {}
 	var total: float = 0.0
 	for s in list:
 		total += float(s.get("weight", 20))
@@ -519,6 +576,18 @@ func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
 		if roll <= 0.0:
 			return s
 	return list[0]
+
+
+## Nothing in reach: the enemy steps one position toward its preferred ones (its "ranks").
+func _enemy_reposition(enemy: Dictionary) -> void:
+	var other: Dictionary = FormationScript.step_toward(enemy, enemies, enemy.get("ranks", []))
+	if other.is_empty():
+		_log("%s no alcanza a nadie y espera." % enemy.get("name", "?"), "999999")
+		return
+	_swap_units(enemies, enemy_units, enemy, other)
+	_log("%s no alcanza a nadie y se reacomoda (posición %d)." % [enemy.get("name", "?"), FormationScript.position_of(enemy, enemies)], "999999")
+	_refresh_units()
+	await get_tree().create_timer(0.3).timeout
 
 
 func _enemy_turn(enemy: Dictionary) -> void:
@@ -543,11 +612,15 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	if living.is_empty():
 		return
 	var skill: Dictionary = _pick_enemy_skill(enemy)
+	if skill.is_empty():
+		await _enemy_reposition(enemy)
+		return
 	var magical: bool = str(skill.get("type", "physical")) == "magical"
 	var single: bool = str(skill.get("target", "single")) != "party"
 	var targets: Array = living
 	if single:
-		var pick: Dictionary = StatusEffectsScript.pick_target(living)
+		# Only heroes in the skill's reach (target_ranks); Fichado preferred, Agazapado avoided.
+		var pick: Dictionary = StatusEffectsScript.pick_target(FormationScript.at_positions(party, FormationScript.target_ranks(skill)))
 		# Al cuido: the guardian steps in front of single-target attacks.
 		var guard: Dictionary = StatusEffectsScript.guardian_of(pick, party)
 		if not guard.is_empty():
@@ -736,6 +809,65 @@ func _living_heroes() -> int:
 		if h is Dictionary and not h.get("dead", false):
 			n += 1
 	return n
+
+
+# --- Formation on the stage ---------------------------------------------------------
+
+## Swap two units of one side in the data array, the unit array and the stage row.
+func _swap_units(side: Array, units: Array, a: Dictionary, b: Dictionary) -> void:
+	var ia: int = -1
+	var ib: int = -1
+	for k in side.size():
+		if is_same(side[k], a):
+			ia = k
+		elif is_same(side[k], b):
+			ib = k
+	if ia < 0 or ib < 0:
+		return
+	side[ia] = b
+	side[ib] = a
+	if ia < units.size() and ib < units.size():
+		var tmp = units[ia]
+		units[ia] = units[ib]
+		units[ib] = tmp
+	_sync_rows()
+
+
+## The fallen move to the back of their side (data, units and stage), keeping order.
+func _collapse_ranks() -> void:
+	_collapse_side(party, hero_units)
+	_collapse_side(enemies, enemy_units)
+
+
+func _collapse_side(side: Array, units: Array) -> void:
+	var order: Array = FormationScript.collapse_order(side)
+	var changed: bool = false
+	for k in order.size():
+		changed = changed or int(order[k]) != k
+	if not changed:
+		return
+	var new_side: Array = order.map(func(i): return side[i])
+	var new_units: Array = order.map(func(i): return units[i] if i < units.size() else null)
+	for k in side.size():
+		side[k] = new_side[k]
+	if units.size() == side.size():
+		for k in units.size():
+			units[k] = new_units[k]
+	_sync_rows()
+
+
+## Stage rows follow the arrays: heroes from the middle outward (child k = position k+1);
+## enemies are laid out in reverse (the last child is nearest the middle).
+func _sync_rows() -> void:
+	for k in hero_units.size():
+		var u = hero_units[k]
+		if u != null and u.get_parent() != null:
+			u.get_parent().move_child(u, k)
+	var n: int = enemy_units.size()
+	for k in n:
+		var u = enemy_units[k]
+		if u != null and u.get_parent() != null:
+			u.get_parent().move_child(u, n - 1 - k)
 
 
 # --- Stage helpers ----------------------------------------------------------------

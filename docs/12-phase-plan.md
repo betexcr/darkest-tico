@@ -87,14 +87,23 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [ ] Validator checks hand-authored `enemy_ids` (generated squads use the pools, which are checked)
 
 ### P1-03 · L→ split · Battlefield ranks 1–4
-- Status: `todo` · Depends: P1-02
-- Spec: `01` §2.1, `03` "Position Notation"
-- Files: `data/skills.json` (`use_ranks`, `target_ranks`), `data/heroes.json` (default rank), `scripts/domain/rank_rules.gd` (new, pure), `scripts/combat/combat_scene.gd`
+- Split 2026-11-11 (owner: formation + a Move action first, push/pull later) into P1-03a and P1-03b.
+
+### P1-03a · M · Formation: positions 1–4, rank-limited skills, collapse, "Moverse"
+- Status: `review` (Claude Code, `main`, 2026-11-11; owner to play a few fights and check balance) · Depends: P1-02
+- Spec: `01` §2.1, `03` "Position Notation", `05` §2.6 (enemy ranks)
+- Files: `data/skills.json` (`use_ranks`, `target_ranks`), `data/heroes.json` (`ranks`), `data/enemies.json` (`ranks`, skill `target_ranks`), `scripts/domain/formation.gd` (new, pure), `scripts/combat/combat_controller.gd`, `scripts/expedition/expedition_screen.gd`, `scripts/ui/skill_button.gd`, `scripts/ui/skill_icon.gd`, `scripts/autoload/game_state.gd` (squad order), `scripts/hacienda/hacienda_hub.gd` (position hints), `tools/validate_data.py`, `tests/test_formation.gd`, `tests/smoke_expedition.gd`
 - Done when:
-  - [ ] Each side has ranks 1–4; skills disabled when user/target rank invalid
-  - [ ] Dead units collapse ranks forward
-  - [ ] Hub or pre-mission screen lets the player order the party
-  - [ ] Unit tests for rank_rules (if P1-01 done)
+  - [x] Each side has positions 1–4; skills disabled when the user's or target's position is invalid; enemy AI follows the same limits
+  - [x] Dead units collapse forward (data and stage)
+  - [x] "Moverse": swap with an adjacent hero, spends the turn; enemies with nothing in reach "se reacomodan"
+  - [x] Hub lets the player order the party (↑/↓, since P3-01); now also hints each class's positions
+  - [x] Unit tests (`tests/test_formation.gd`)
+
+### P1-03b · M · Push, pull and shuffle effects
+- Status: `todo` · Depends: P1-03a
+- Spec: `03` (Retén "pull enemy forward", Patada de Corral "push and stun chance"), `01` §2.5 (Control: stun, pull, push, root)
+- Done when: [ ] skills can push/pull enemies and heroes by N positions; [ ] enemy skills that shuffle the party; [ ] a status that stops moving (root) and its resist
 
 ### P1-04 · M · Status effect engine
 - Status: `review` (all in, tested headless; needs a human playtest) · Depends: P1-02
@@ -168,7 +177,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] ≥30 events tagged for `sotanos`, Spanish text, tone-reviewed against `08`
 
 ### P2-03 · M · Classes 5–8
-- Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints wait for P1-03) · Depends: P1-03, P1-04
+- Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints added in P1-03a) · Depends: P1-03, P1-04
 - Spec: `03`. **Owner confirmed 2026-11-06:** classes 3 Guachimán Jubilado, 5 Médica Josefina, 6 Curandero Nicoyano, 9 Exorcista de Barrio.
 - Files: `data/heroes.json`, `data/skills.json`, `assets/portraits/`
 - Done when:

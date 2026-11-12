@@ -32,7 +32,7 @@ func _run() -> void:
 	var feast = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion())[0]
 	feast.pressed.emit()
 	await process_frame
-	var tec: Dictionary = gs.party[2]
+	var tec: Dictionary = gs.party.filter(func(h): return str(h["hero_id"]) == "tecnologo")[0]
 	screen._camp_use(tec, load("res://scripts/domain/camping_system.gd").skill("dron_vigia"), {})
 	await _snap(out_dir, "camp.png")
 	# Victory: a finished expedition with loot, a fallen hero, a new Quebranto and a level-up.

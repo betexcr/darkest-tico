@@ -12,7 +12,7 @@ Role model follows DD tactical ranks and FF-style clarity.
 
 ## Position Notation
 
-- Starting rank preference shown as `[usable ranks]`.
+- Starting rank preference shown as `[usable ranks]` (battlefield positions, 1 = front). In data: `ranks` per class in `data/heroes.json`, and `use_ranks` / `target_ranks` per skill in `data/skills.json` (P1-03a; rules in doc 01 §2.1).
 - Skills listed as short identity anchors, not full balance sheets.
 - **Basic attack** (owner 2026-11-11): every class has its own, with the weapon its battle sprite holds. It is the class's first skill in `data/heroes.json`, and no two classes share a skill.
 
