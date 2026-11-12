@@ -159,8 +159,62 @@ func _run() -> void:
 	for id in ["sangrado", "veneno", "aturdido", "espabilado", "salado", "fichado", "susto", "chiva", "encarrerado",
 			"cuidado", "cuidando", "respondon", "sobado", "santiguado", "agazapado", "al_borde", "convaleciente"]:
 		_check(d.has(id) and str(d[id].get("name", "")) != "", "status '%s' is defined (%s)" % [id, d.get(id, {}).get("name", "?")])
+	_test_death_and_crits()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
+
+
+## P1-05: Al Borde death roll (doc 01 §2.4, §3.4), damage formula (§2.3), crit stress.
+func _test_death_and_crits() -> void:
+	print("Al Borde and crits (P1-05)")
+	var cr = load("res://scripts/domain/combat_resolver.gd")
+	var stress = load("res://scripts/domain/stress_system.gd")
+	var h := {"name": "H", "hp": 0, "al_borde": true, "stress": 0, "status_resist": {"golpe_de_gracia": 67}}
+	_check(is_equal_approx(cr.death_save_chance(h), 0.67), "death roll: 67% base")
+	h["borde_checks"] = 2
+	_check(is_equal_approx(cr.death_save_chance(h), 0.51), "-8 per earlier roll this expedition (2 rolls: 51%)")
+	h["stress"] = 120
+	_check(is_equal_approx(cr.death_save_chance(h), 0.41), "-10 at 100+ stress (41%)")
+	h["stress"] = 160
+	_check(is_equal_approx(cr.death_save_chance(h), 0.31), "-20 at 150+ stress (31%)")
+	_check(is_equal_approx(cr.death_save_chance(h, true), 0.01), "Colapso: another -30 (1%)")
+	h["borde_checks"] = 20
+	_check(cr.death_save_chance(h) == 0.0, "never below 0%")
+	_check(is_equal_approx(cr.death_save_chance({"status_resist": {"golpe_de_gracia": 100}}), 0.87), "capped at 87%")
+
+	_check(cr.final_damage(10) == 10 and cr.final_damage(10, 0, 0, 1.0, true) == 15, "damage: no mods = raw; crit x1.5")
+	_check(cr.final_damage(10, 20) == 12 and cr.final_damage(10, 0, 50) == 5, "damage: +20% attack, 50% protection")
+	_check(cr.final_damage(10, 0, 0, 1.5) == 15 and cr.final_damage(10, 0, 0, 0.0) == 0, "damage: elemental weakness / immunity")
+	_check(cr.final_damage(1, 0, 80) == 1 and cr.final_damage(0) == 0, "damage: a hit does at least 1; 0 stays 0")
+	_check(cr.final_damage(10, 0, 95) == 2, "protection capped at 80%")
+
+	var cc = load("res://scripts/combat/combat_controller.gd").new()
+	var survived: Dictionary = {}
+	for i in 60:
+		var t := {"name": "S", "hp": 0, "hp_max": 20, "al_borde": true, "stress": 0, "status_resist": {"golpe_de_gracia": 87}}
+		cc._apply_damage_to_hero(t, 5)
+		if not bool(t.get("dead", false)):
+			survived = t
+			break
+	_check(not survived.is_empty() and bool(survived["al_borde"]) and int(survived["hp"]) == 0 and int(survived["borde_checks"]) == 1,
+		"surviving the death roll keeps the hero Al Borde at 0 PV (owner 2026-11-11)")
+	var doomed := {"name": "D", "hp": 0, "hp_max": 20, "al_borde": true, "status_resist": {"golpe_de_gracia": 0}}
+	cc._apply_damage_to_hero(doomed, 5)
+	_check(bool(doomed.get("dead", false)), "0% death roll: the hero falls")
+	var col := {"name": "C", "hp": 0, "hp_max": 20, "al_borde": true, "stress": 199, "status_resist": {"golpe_de_gracia": 20}}
+	stress.add_stress(col, 10)
+	_check(bool(col.get("dead", false)), "Colapso while Al Borde with a low roll (20-20-30 → 0%): dies")
+	var col2 := {"name": "C2", "hp": 10, "hp_max": 20, "stress": 195}
+	stress.add_stress(col2, 10)
+	_check(bool(col2.get("al_borde", false)) and int(col2["hp"]) == 0 and not bool(col2.get("dead", false)), "Colapso above 0 PV: drops to Al Borde")
+
+	var a := {"name": "A", "hp": 10, "stress": 10}
+	var b := {"name": "B", "hp": 10, "stress": 5}
+	var gone := {"name": "X", "hp": 0, "stress": 50, "dead": true}
+	cc.party = [a, b, gone]
+	cc._crit_relief()
+	_check(int(a["stress"]) == 7 and int(b["stress"]) == 2 and int(gone["stress"]) == 50, "a hero's crit relieves 3 stress for every living hero")
+	cc.free()
 
 
 ## Reads one item from data/items.json without the GameState autoload.

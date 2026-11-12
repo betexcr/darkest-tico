@@ -1,5 +1,5 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere).",
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0).",
   "enemies": {
     "espanto": {
       "id": "espanto",
@@ -201,6 +201,7 @@
       "speed": 4,
       "dodge": 5,
       "accuracy": 9,
+      "crit": 8,
       "skills": [
         {
           "id": "bandeja_de_plata",
@@ -397,6 +398,7 @@
       "speed": 7,
       "dodge": 7,
       "accuracy": 8,
+      "crit": 8,
       "skills": [
         {
           "id": "mordida_de_cadejo",
@@ -488,6 +490,7 @@
       "speed": 6,
       "dodge": 8,
       "accuracy": 10,
+      "crit": 8,
       "skills": [
         {
           "id": "coz_de_la_segua",

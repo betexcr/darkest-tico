@@ -17,6 +17,39 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 — P1-05 — Spec-accurate Al Borde and crit stress
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-05 review. Owner decisions 2026-11-11: surviving the death roll stays Al Borde at 0 PV; crits work as in Darkest Dungeon.
+- **Changed:**
+  - `scripts/domain/combat_resolver.gd`:
+    - `death_save_chance(hero, collapse)`: Golpe de gracia %, −8 per earlier roll this expedition, −10/−20 at 100/150 stress, −30 on a Colapso.
+    - `final_damage(raw, atk%, prot%, element, crit)`, `crit_chance`.
+    - Constants (move to data in P1-06).
+  - `combat_controller.gd`:
+    - Surviving keeps the hero Al Borde at 0 PV, and the log shows the %.
+    - A hero's crit relieves 3 stress for the party (it used to add +5 to the critter).
+    - Enemies crit: 5% base, `crit` in data. A crit deals ×1.5 damage and +10 stress, with a "¡Crítico!" popup and log line.
+    - Enemy `prot` goes through `final_damage`; hero protection uses it too.
+  - `stress_system.gd` Colapso: uses the −30 roll; surviving stays Al Borde with stress 170.
+  - `expedition_screen.gd`: an Al Borde hero's info panel shows the survival %.
+  - `data/enemies.json`: `crit: 8` on the Mayordomo, the Cadejo and the Segua; `_doc`.
+  - Tests:
+    - `test_status.gd`: 17 checks (odds, cap, survive, die, Colapso, damage formula, party relief).
+    - `test_formation.gd`: enemy crits in a real fight.
+    - `formation_screenshot.gd`: enemy crit + Al Borde panel shots.
+  - Docs: 01 §2.3, §2.4, §3.4; AGENTS.md §4.
+- **Verified:**
+  - `validate_data.py` 0 errors.
+  - Godot 4.7.2: all 10 test scripts 0 failures, no errors.
+  - Screenshots checked: crit popup −11 / +12 stress; the info panel shows 54% for a Montador with one earlier roll and 110 stress.
+- **Not verified / risks:**
+  - Deadlier, as intended: the smoke bot won 2/6 expeditions (it was about half after P1-03a).
+  - Balance pass is P5-02; the numbers are in `CombatResolver` until P1-06.
+- **Decisions needed:** none.
+- **Next step:** P1-03b (push/pull/shuffle, Amarrado, reorder between fights). The plan is in this session's plan file and in `docs/12-phase-plan.md` P1-03b. Start in `scripts/domain/formation.gd` (`move_by`, `move_to`, `can_move`).
+
+---
+
 ## 2026-11-11 (late night) — P1-03a — Battlefield positions 1–4 and "Moverse"
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-03a review. P1-03 split into P1-03a (this) and P1-03b (push/pull/shuffle, todo); the owner picked "formation + a Move action" first.

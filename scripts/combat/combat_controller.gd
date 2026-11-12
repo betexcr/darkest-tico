@@ -5,6 +5,7 @@ extends Node
 ## The screen owns the stage units and reacts to the signals below.
 
 const COLOR_MISS := Color(0.85, 0.85, 0.85)
+const COLOR_CRIT := Color(1.0, 0.82, 0.3)
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
@@ -507,6 +508,9 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
 	dmg = _scaled_damage(dmg, hero, enemy, skill)
 	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
+	var eprot: int = int(enemy.get("prot", 0)) + StatusEffectsScript.stat(enemy, "prot")
+	if eprot > 0:
+		dmg = CombatResolverScript.final_damage(dmg, 0, eprot)
 	if crit:
 		enemy["_crit_hit"] = true
 	if StatusEffectsScript.use_aegis(enemy):
@@ -529,7 +533,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		_log("  %s: estrés +%d (costo)" % [hero.get("name", "?"), cost], "aa88cc")
 	if crit:
 		_log("%s — %s a %s ¡CRÍTICO! %d" % [hero.get("name", "?"), skill.get("name", "?"), enemy.get("name", "?"), dmg], "ddbb55")
-		_log_all(StressSystemScript.add_stress(hero, 5))
+		_crit_relief()
 	else:
 		_log("%s — %s a %s: %d" % [hero.get("name", "?"), skill.get("name", "?"), enemy.get("name", "?"), dmg], "")
 
@@ -659,14 +663,23 @@ func _enemy_turn(enemy: Dictionary) -> void:
 				await _hero_riposte(t, enemy)
 			continue
 		var dmg: int = randi_range(int(dmg_range[0]), int(dmg_range[1]))
+		var crit: bool = CombatResolverScript.roll_crit(int(enemy.get("crit", CombatResolverScript.ENEMY_BASE_CRIT)) + StatusEffectsScript.stat(enemy, "crit"))
+		dmg = CombatResolverScript.resolve_attack_damage(dmg, crit)
 		# Expedition difficulty (data/progression.json enemy_dmg).
 		dmg = int(round(dmg * float(enemy.get("dmg_mult", 1.0))))
 		dmg = _scaled_damage(dmg, enemy, t, skill)
 		dmg = _elemental(dmg, str(skill.get("element", "")), t)
+		if crit:
+			_log("  ¡CRÍTICO de %s!" % enemy.get("name", "?"), "ddbb55")
+			var cu = _unit_for_hero(t)
+			if cu != null:
+				cu.float_text("¡Crítico!", COLOR_CRIT)
 		if dmg > 0:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
-		var stress: int = int(round(int(skill.get("stress", 0)) * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
+		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
+		var base_stress: int = int(skill.get("stress", 0)) + (CombatResolverScript.ENEMY_CRIT_STRESS if crit else 0)
+		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):
 			_log_all(StressSystemScript.add_stress(t, stress))
@@ -702,7 +715,7 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 		return
 	var prot: int = clampi(int(hero.get("prot", 0)) + StatusEffectsScript.stat(hero, "prot"), 0, 80)
 	if physical and prot > 0:
-		dmg = maxi(int(round(dmg * (1.0 - prot / 100.0))), 1)
+		dmg = CombatResolverScript.final_damage(dmg, 0, prot)
 	if physical and bool(hero.get("guarding", false)):
 		dmg = maxi(int(ceil(dmg / 2.0)), 1)
 		_log("%s bloquea con su guardia: daño reducido a %d." % [hero.get("name", "?"), dmg], "88aacc")
@@ -715,12 +728,13 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 		hero["hp"] = 0
 		_log("%s está Al Borde!" % hero.get("name", "?"), "dd8844")
 		return
+	# Doc 01 §2.4: odds drop with each earlier roll this expedition and with high stress.
+	var chance: float = CombatResolverScript.death_save_chance(hero)
 	hero["borde_checks"] = int(hero.get("borde_checks", 0)) + 1
-	if CombatResolverScript.roll_death_save(StatusEffectsScript.deathblow_chance(hero)):
-		_log("%s resiste Al Borde." % hero.get("name", "?"), "")
-		hero["hp"] = 1
-		hero["al_borde"] = false
-		hero["convaleciente"] = true
+	if CombatResolverScript.roll_death_save(chance):
+		# Owner 2026-11-11: surviving keeps them Al Borde at 0 PV; only healing gets them out.
+		_log("%s resiste Al Borde (%d%%)." % [hero.get("name", "?"), int(round(chance * 100))], "dd8844")
+		hero["hp"] = 0
 	else:
 		hero["dead"] = true
 		hero["hp"] = 0
@@ -744,6 +758,14 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 	if StatusEffectsScript.has(target, "fichado"):
 		pct += int(skill.get("vs_marked_pct", 0))
 	return maxi(int(round(dmg * (1.0 + pct / 100.0))), 1) if dmg > 0 else dmg
+
+
+## A hero's crit calms the whole party a little (doc 01 §2.3 stress shock, DD-style).
+func _crit_relief() -> void:
+	for h in party:
+		if h is Dictionary and not h.get("dead", false) and int(h.get("stress", 0)) > 0:
+			_log_all(StressSystemScript.add_stress(h, -CombatResolverScript.CRIT_PARTY_RELIEF))
+	_log("  El crítico anima a la cuadrilla: estrés -%d a todos." % CombatResolverScript.CRIT_PARTY_RELIEF, "88bb88")
 
 
 func _stress_after_mods(hero: Dictionary, stress: int) -> int:

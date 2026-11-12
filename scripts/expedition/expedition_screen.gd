@@ -284,6 +284,9 @@ func _show_hero_info(h: Dictionary) -> void:
 	if bool(h.get("dead", false)):
 		lines.append("Caído.")
 	else:
+		if bool(h.get("al_borde", false)):
+			# Doc 01 §2.4: the odds of surviving the next hit (drop with each roll and high stress).
+			lines.append("[color=#dd8844]Al Borde: sobrevive al próximo golpe con [b]%d%%[/b].[/color]" % int(round(CombatResolver.death_save_chance(h) * 100)))
 		lines.append(_effects_bbcode(h))
 		lines.append(_resist_bbcode(h, true))
 	_enemy_info_body.text = "\n".join(lines)

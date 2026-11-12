@@ -153,6 +153,21 @@ func _test_combat(fm) -> void:
 			hit.append(fm.position_of(cc.party[k], cc.party))
 	_check(not hit.is_empty() and hit.all(func(p): return p == 4), "an enemy skill with reach 4 only hits position 4 (hit: %s)" % str(hit))
 
+	# P1-05: enemies crit (x1.5 and a +10 stress shock on the hero hit). Skill stress is 0, so
+	# any stress gained here comes from a crit.
+	var crits: Array = [0]
+	var count_crit := func(text: String, _c: String): if text.contains("CRÍTICO de"): crits[0] += 1
+	cc.logged.connect(count_crit)
+	foe["crit"] = 100
+	foe["skills"] = [{"id": "test3", "name": "Prueba", "type": "physical", "damage": [2, 2], "accuracy": 200, "target": "single", "stress": 0}]
+	var stress_before: int = cc.party.reduce(func(acc, h): return acc + int(h["stress"]), 0)
+	for i in 10:
+		await cc._enemy_turn(foe)
+	var stress_after: int = cc.party.reduce(func(acc, h): return acc + int(h["stress"]), 0)
+	cc.logged.disconnect(count_crit)
+	foe.erase("crit")
+	_check(crits[0] > 0 and stress_after > stress_before, "enemy crits happen (%d in 10) and shock the hero hit (+%d stress)" % [crits[0], stress_after - stress_before])
+
 	# Nothing in reach: the enemy steps toward its preferred positions instead.
 	foe["skills"] = [{"id": "test2", "name": "Prueba", "type": "physical", "damage": [1, 1], "target": "single", "use_ranks": [3, 4], "target_ranks": [1]}]
 	foe["ranks"] = [3, 4]

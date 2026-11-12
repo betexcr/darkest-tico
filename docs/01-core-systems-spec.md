@@ -76,6 +76,12 @@ Implemented (P1-03a). Rules: `scripts/domain/formation.gd`; combat: `combat_cont
   - `rawDamage = random(skillMin, skillMax) * (1 + atkMods)`
   - `finalDamage = rawDamage * defenseMultipliers * resistMultipliers`
 
+Implemented (P1-05) in `scripts/domain/combat_resolver.gd`:
+- `final_damage(raw, atk%, prot%, element, crit)`: crit ×1.5, attack mods, protection (capped 80%; heroes from gear and buffs, enemies from an optional `prot`), elemental multiplier. A hit does at least 1, and immunity gives 0.
+- **Crits** (owner 2026-11-11, Darkest Dungeon style):
+  - A hero's crit relieves 3 stress for every living hero.
+  - Enemies crit too: 5% base, or `crit` in `enemies.json` (bosses 8). An enemy crit deals ×1.5 damage and +10 stress to the hero hit (after stress resist and stress mods).
+
 ### 2.4 Death's Door Equivalent
 
 - At 0 HP hero enters `Al Borde`.
@@ -84,6 +90,14 @@ Implemented (P1-03a). Rules: `scripts/domain/formation.gd`; combat: `combat_cont
   - Reduced by prior `Al Borde` checks in same mission.
   - Reduced by high stress and doom-type debuffs.
 - Failed save -> hero death.
+
+Implemented (P1-05, `CombatResolver.death_save_chance`):
+- **Survival chance** = the hero's "Golpe de gracia" resistance (67 base; Quebranto/Virtud mods; cap 87)
+  - minus 8 for each earlier roll this expedition (`borde_checks`, reset at week end);
+  - minus 10 at 100+ stress, or minus 20 at 150+;
+  - minus 30 more on a Colapso.
+- **Surviving keeps the hero Al Borde at 0 PV** (owner 2026-11-11). Only healing gets them out, and they then stay Convaleciente for the expedition.
+- The info panel of an Al Borde hero shows the current odds.
 
 ### 2.5 Status Types
 
@@ -138,6 +152,8 @@ Seven `Virtud` breakthroughs (stress drops to 40):
 - At 200 stress, hero suffers `Colapso`.
 - If above 0 HP: drops to `Al Borde`.
 - If already at `Al Borde`: immediate death check with severe penalty.
+
+Implemented (P1-05): a −30 penalty on top of the usual ones (§2.4). Surviving keeps the hero Al Borde with stress 170.
 
 ## 4) Expedition Map Structure
 

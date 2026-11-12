@@ -115,13 +115,13 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [ ] Move / Shuffle (needs formation ranks, P1-03)
   - [ ] Art for the new status icons (letter badges until then)
 ### P1-05 · S · Spec-accurate Al Borde and crit stress
-- Status: `todo` · Depends: —
-- Spec: `01` §2.3–2.4, §3.4
-- Files: `scripts/domain/combat_resolver.gd`, `scripts/combat/combat_scene.gd`
+- Status: `review` (Claude Code, `main`, 2026-11-11; owner to feel the new death odds and crits in a few fights) · Depends: —
+- Spec: `01` §2.3–2.4, §3.4. Owner 2026-11-11: surviving the death roll stays Al Borde at 0 PV; DD-style crit stress (hero crit relieves the party, enemy crits shock the hero hit).
+- Files: `scripts/domain/combat_resolver.gd`, `scripts/combat/combat_controller.gd`, `scripts/domain/stress_system.gd`
 - Done when:
-  - [ ] Death save chance drops for each prior Al Borde check in the same mission and for high stress
-  - [ ] Crits apply "stress shock" to the target side
-  - [ ] Damage formula includes `atkMods` / defense multipliers (0 by default)
+  - [x] Death save chance drops for each prior Al Borde check in the same mission and for high stress
+  - [x] Crits apply "stress shock" to the target side
+  - [x] Damage formula includes `atkMods` / defense multipliers (0 by default)
 
 ### P1-06 · S · Balance constants to data
 - Status: `todo` · Depends: P1-05

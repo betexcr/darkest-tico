@@ -105,5 +105,22 @@ func _run() -> void:
 	cc._refresh_units()
 	await create_timer(0.4).timeout
 	await _shot("collapse")
+	# P1-05: an enemy crit (log + popup) and an Al Borde hero's death-roll odds.
+	var foe: Dictionary = cc.enemies[0]
+	foe["crit"] = 100
+	for i in 12:
+		await cc._enemy_turn(foe)
+		if screen._log.get_parsed_text().contains("CRÍTICO de"):
+			break
+	await _shot("enemy_crit")
+	var h: Dictionary = cc.party[1]
+	h["hp"] = 0
+	h["al_borde"] = true
+	h["borde_checks"] = 1
+	h["stress"] = 110
+	cc._refresh_units()
+	screen._show_hero_info(h)
+	await create_timer(0.3).timeout
+	await _shot("al_borde_info")
 	print("saved to ", _out)
 	quit(0)

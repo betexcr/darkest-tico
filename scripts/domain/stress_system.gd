@@ -8,6 +8,8 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 
 const THRESHOLD_RESOLVE := 100
 const THRESHOLD_COLAPSO := 200
+## Stress left after surviving a Colapso while Al Borde (doc 01 §3.4; moves to data in P1-06).
+const COLAPSO_SURVIVE_STRESS := 170
 
 const QUEBRANTO_CHANCE := 0.75
 ## Town events shift the Virtud chance for one expedition (+0.15 Fiesta patronal, -0.15 Se viene
@@ -123,12 +125,14 @@ static func _apply_colapso(hero: Dictionary) -> PackedStringArray:
 		hero["hp"] = 0
 		logs.append("%s cae a Al Borde por el colapso." % hero.get("name", "?"))
 		return logs
+	# Doc 01 §3.4: already Al Borde -> death roll with a severe penalty. Surviving keeps them
+	# Al Borde at 0 PV (owner 2026-11-11) with stress just below the collapse line.
+	var chance: float = CombatResolverScript.death_save_chance(hero, true)
 	hero["borde_checks"] = int(hero.get("borde_checks", 0)) + 1
-	if CombatResolverScript.roll_death_save(StatusEffectsScript.deathblow_chance(hero)):
-		hero["hp"] = 1
-		hero["al_borde"] = false
-		hero["stress"] = 80
-		logs.append("%s se aferra a la vida tras el colapso." % hero.get("name", "?"))
+	if CombatResolverScript.roll_death_save(chance):
+		hero["hp"] = 0
+		hero["stress"] = COLAPSO_SURVIVE_STRESS
+		logs.append("%s se aferra a la vida tras el colapso (%d%%)." % [hero.get("name", "?"), int(round(chance * 100))])
 	else:
 		hero["dead"] = true
 		hero["hp"] = 0
