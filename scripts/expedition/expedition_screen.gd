@@ -201,6 +201,8 @@ func _refresh_all() -> void:
 	var light_tip: String = "Luz %d · %s
 %s" % [lux, LightSystemScript.tier_name(lux), LightSystemScript.effects_text(lux)]
 	_light_label.tooltip_text = light_tip
+	# Labels ignore the mouse by default; the Luz tooltip needs hover.
+	_light_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	_light_bar.tooltip_text = light_tip
 	_view_hero(_viewed_hero)
 	_refresh_inventory()

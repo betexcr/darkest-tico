@@ -17,6 +17,56 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (late night, 2) — P1-16, P1-17, P1-18, P2-01, P2-09 — Expedition systems, DD-style
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-16 done. P1-17, P1-18, P2-01 and P2-09 are in review (the owner should play a run).
+- **Owner decisions (2026-11-12):**
+  - Damage outside combat uses the combat rule (heroes can die).
+  - Travel hunger every 6 moves, −10% PV (floor 1) and +10 stress.
+  - Full DD-style Luz tiers.
+- **Changed:**
+  - **P1-16 (the bug):** `scripts/domain/hero_damage.gd` now holds the PV rule: Al Borde, then Golpe de gracia. Combat, traps and curios all use it. Before, trap and curio damage left heroes at 0 PV without Al Borde. A wipe outside combat ends the expedition.
+  - **P1-17 Luz:**
+    - `data/balance.json` `light.tiers` and `scripts/domain/light_system.gd`.
+    - Effects: enemy damage and crit, hero stress taken (live in combat), loot, the surprise roll (`combat_context.surprise`; heroes or enemies act first in round 1), trap disarm, and stress per move in Oscuro/Negro.
+    - Decay is 8 per move. New "Apagar la candela" button; the tier and a tooltip on the HUD.
+    - Camp resets Luz to `light_max()`. The ambush counts low light as Penumbra or darker and gets doc 07's exhausted +4%.
+    - The region `low_light_*` fields are gone.
+  - **P1-18 Hunger:**
+    - A hunger stop before the room resolves: eat, share what there is, or go hungry. Short of food, the most hurt eat first.
+    - A camp meal resets the count. The dead `mission_food` is gone.
+    - Regions list `provisions`. The hub warns before leaving short and can buy what is missing.
+  - **P2-01 Traps:**
+    - `data/traps.json` and `scripts/domain/trap_rules.gd`.
+    - Disarm works as in DD: best *trampa* + Luz bonus − difficulty. The plain base chance was dropped, because the starting Tecnólogo's trampa 60 made every trap trivial.
+    - Pasar con cuidado costs 10 Luz and still springs 30% of the time.
+    - The generator sets `trap_id`. The Bosque gets Raíces traicioneras.
+  - **P2-09 Curios:**
+    - Doc 07's bad outcomes: curse, mimic ambush, Susto, Fiebre (stands in for disease), noise ambush.
+    - `GameState.apply_curio_outcome` became `apply_event_outcome`, with `damage_party`, `applies`, `buff`/`debuff`, `ambush`.
+    - Curses show red with their source. Thrown items respect Santiguado.
+  - **Validator:** checks the Luz tiers, hunger keys, camp ambush keys, provisions, traps, every curio/trap outcome and the region references.
+  - **Tests:** new `tests/test_expedition_systems.gd` (47 checks). `test_progression` uses the new ambush signature.
+  - **Sim:** `tools/sim_combat.gd` rolls surprise and has `--light N`. The results are in doc 10.
+  - **Screenshots:** `tools/screens/expedition_events_screenshot.gd` (hunger, trap, Luz tooltip, provisions).
+  - **Docs:** doc 01 §4.4–4.7, doc 07 §3/§4/§6, doc 10 (Luz, sim rerun), AGENTS.md §4.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2: all 12 test scripts 0 failures, no `SCRIPT ERROR`. The smoke bot passes hunger stops and traps.
+  - The 4 screenshots were checked by eye.
+  - Sim at full light matches P1-07 within noise. In Negro, stress is about 50% higher and deaths about 3×.
+- **Not verified / risks:**
+  - Nobody has played a full run yet. The new numbers (tiers, hunger, trap difficulty) are first guesses.
+  - The provisions purchase was only tested through `GameState.buy_missing_provisions`, not by clicking the dialog.
+  - Surprise in the dark can now give enemies the first round in any normal fight.
+  - Statuses from traps (Sangrado, Amarrado) wait for the next fight to tick.
+- **Decisions needed:**
+  - (1) The Sótanos provisions (10 gallo pinto + 3 candelas, about 1,650 ₡ when starting from the starter kit). Is that too expensive at 150 ₡ a gallo pinto?
+  - (2) Should Penumbra and darker also lower hero accuracy (DD does)? It's left out for now.
+- **Next step:** P1-08 (technical architecture doc): create `docs/13-architecture.md` (save schema and versioning, hub → map → combat flow, status engine, data file schemas, now including traps/light/hunger) and link it from `docs/README.md`. Alternatively, P1-15 can now model hunger, traps and curios in the sim's chain mode.
+
+---
+
 ## 2026-11-12 (late night) — P1-07 — Combat Monte Carlo sim
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-07 done. New follow-up task P1-15 (expedition sim with camp, items and room events).
