@@ -71,7 +71,7 @@ func _run() -> void:
 	gs.equip(gs.party[2], "lentes_del_abuelo")
 	_check(gs.party_can_scout(), "Lentes del abuelo on any party member enables scouting")
 	var before_c: int = gs.colones
-	var logs: PackedStringArray = gs.apply_curio_outcome(gs.get_curio("caja_abuelo")["key_outcome"])
+	var logs: PackedStringArray = gs.apply_event_outcome(gs.get_curio("caja_abuelo")["key_outcome"])
 	var gained: int = gs.colones - before_c
 	var gear_found: bool = gs.inventory.any(func(sl): return gs.is_equipment(str(sl["id"])))
 	_check(gained >= 250 and gained <= 700, "caja del abuelo: random 250-700 colones (got %d)" % gained)

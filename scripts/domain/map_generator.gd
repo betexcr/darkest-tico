@@ -153,6 +153,9 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 				nd["reward_colones"] = _range(BalanceScript.req(gen, "elite_reward_colones", "region generator"), rng)
 			"curio":
 				nd["curio_id"] = _pick(gen.get("curios", []), rng)
+			"trap":
+				if not Array(gen.get("traps", [])).is_empty():
+					nd["trap_id"] = _pick(gen.get("traps", []), rng)
 			"boss":
 				nd["is_boss"] = true
 				nd["enemy_id"] = str(gen.get("boss_enemy_id", "espanto"))

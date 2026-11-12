@@ -98,6 +98,7 @@
       "arbol_amarillo",
       "radio_vieja"
     ],
+    "traps": ["vigas_inestables", "alambre_de_pua", "escalera_resbalosa", "piso_hundido"],
     "squad_size": [
       1,
       3

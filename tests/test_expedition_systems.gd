@@ -25,6 +25,7 @@ func _run() -> void:
 	_test_hero_damage(gs)
 	_test_light(gs)
 	_test_hunger(gs)
+	await _test_traps(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -56,7 +57,7 @@ func _test_hero_damage(gs) -> void:
 	for other in gs.party.slice(1):
 		other["dead"] = true
 	v["hp"] = 2
-	gs.apply_curio_outcome({"damage_random": 6})
+	gs.apply_event_outcome({"damage_random": 6})
 	_check(int(v["hp"]) == 0 and bool(v.get("al_borde", false)), "curio damage to 0 PV makes the hero Al Borde")
 	for other in gs.party:
 		other["dead"] = false
@@ -175,3 +176,71 @@ func _test_hunger(gs) -> void:
 		p["hp"] = p["hp_max"]
 		p["stress"] = 0
 	gs.moves_since_meal = 0
+
+
+func _test_traps(gs) -> void:
+	print("Traps (P2-01)")
+	var tr = load("res://scripts/domain/trap_rules.gd")
+	var ls = load("res://scripts/domain/light_system.gd")
+	var se = load("res://scripts/domain/status_effects.gd")
+	var trap: Dictionary = tr.get_trap("alambre_de_pua")
+	_check(not trap.is_empty(), "alambre_de_pua is in traps.json")
+	var best: int = 0
+	for h in gs.party:
+		best = maxi(best, se.resist_value(h, "trampa"))
+	var bright: int = tr.disarm_chance(trap, gs.party, 100)
+	var dark: int = tr.disarm_chance(trap, gs.party, 0)
+	_check(bright == clampi(best + ls.val(100, "trap_pct") - int(trap["difficulty"]), tr.num("disarm_min"), tr.num("disarm_max")), "disarm = best trampa %d + Luz %+d - difficulty %d -> %d%%" % [best, ls.val(100, "trap_pct"), int(trap["difficulty"]), bright])
+	_check(dark < bright, "darker is harder to disarm (%d%% at Negro)" % dark)
+	_check(tr.disarm_chance({"difficulty": -999}, gs.party, 100) == tr.num("disarm_max") and tr.disarm_chance({"difficulty": 999}, gs.party, 0) == tr.num("disarm_min"), "disarm chance is clamped")
+
+	# Springing: alambre bleeds the hero it cuts; piso hundido roots them (resists off).
+	var resists: Array = gs.party.map(func(p): return p.get("status_resist", {}))
+	for p in gs.party:
+		p["hp"] = p["hp_max"]
+		p["status_resist"] = {}
+		se.clear(p)
+	gs.apply_event_outcome(trap["effects"])
+	var cut: Array = gs.party.filter(func(p): return int(p["hp"]) < int(p["hp_max"]))
+	_check(cut.size() == 1 and se.has(cut[0], "sangrado"), "Alambre de púas: one hero loses PV and bleeds")
+	for p in gs.party:
+		p["hp"] = p["hp_max"]
+		se.clear(p)
+	gs.apply_event_outcome(tr.get_trap("piso_hundido")["effects"])
+	_check(gs.party.filter(func(p): return se.has(p, "amarrado")).size() == 1, "Piso hundido: one hero is Amarrado")
+	for k in gs.party.size():
+		gs.party[k]["hp"] = gs.party[k]["hp_max"]
+		gs.party[k]["status_resist"] = resists[k]
+		se.clear(gs.party[k])
+
+	# The generator gives trap rooms a trap_id (try seeds until a map has a trap room).
+	var mg = load("res://scripts/domain/map_generator.gd")
+	var region: Dictionary = load("res://scripts/domain/expedition_loader.gd").load_region("res://data/regions/sotanos.json")
+	var gen_trap: Dictionary = {}
+	for sd in 40:
+		for n in mg.generate(region, sd)["nodes"]:
+			if str(n.get("type", "")) == "trap":
+				gen_trap = n
+		if not gen_trap.is_empty():
+			break
+	_check(not gen_trap.is_empty() and region["generator"]["traps"].has(str(gen_trap.get("trap_id", ""))), "generated trap rooms carry a trap_id from the region list (%s)" % gen_trap.get("trap_id", "?"))
+	# The real trap event: "Pasar con cuidado" costs Luz (trigger chance forced to 0).
+	var trap_id: String = "sim_trap"
+	gs.mission_nodes_index[trap_id] = {"id": trap_id, "type": "trap", "trap_id": "vigas_inestables", "label": "Vigas inestables"}
+	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	gs.current_node_id = trap_id
+	gs.mission_light = 100
+	var saved: int = tr.data()["careful_trigger_pct"]
+	tr.data()["careful_trigger_pct"] = 0
+	screen._open_trap()
+	var buttons: Array = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion())
+	_check(buttons.size() == 2 and str(buttons[0].text).begins_with("Desarmar") and str(buttons[1].text).begins_with("Pasar con cuidado"), "trap event offers Desarmar and Pasar con cuidado")
+	buttons[1].pressed.emit()
+	_check(gs.mission_light == 100 - tr.num("careful_light") and gs.is_node_cleared(trap_id), "Pasar con cuidado: -%d Luz, room cleared" % tr.num("careful_light"))
+	tr.data()["careful_trigger_pct"] = saved
+	gs.mission_nodes_index.erase(trap_id)
+	screen.queue_free()
+	await process_frame
+	gs.mission_light = 100

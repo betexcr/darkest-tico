@@ -1,0 +1,50 @@
+{
+  "_doc": "Trap rooms (doc 07 §4, P2-01). Rules: scripts/domain/trap_rules.gd. Choices: Desarmar (DD trap disarm: chance = the party's best 'trampa' value (the class's trap skill) + the Luz tier's trap_pct − the trap's difficulty, clamped disarm_min..disarm_max; success clears the room and relieves disarm_relief stress for whoever spotted it, failure springs the trap) or Pasar con cuidado (costs careful_light Luz, then springs the trap with careful_trigger_pct). effects use the event outcome keys (GameState.apply_event_outcome): damage_random, damage_party, stress_party, applies {status, turns, value, mods, party}, debuff/buff {name, mods, fights, party}, ambush. Damage follows the combat rule (Al Borde, then Golpe de gracia).",
+  "disarm_min": 5,
+  "disarm_max": 95,
+  "disarm_relief": 5,
+  "careful_light": 10,
+  "careful_trigger_pct": 30,
+  "traps": [
+    {
+      "id": "vigas_inestables",
+      "name": "Vigas inestables",
+      "text": "Las vigas del techo crujen con cada paso. Una mala pisada y se viene todo abajo.",
+      "difficulty": 15,
+      "fail_text": "¡Se vino el techo encima! Polvo, astillas y un golpe seco.",
+      "effects": { "damage_random": 6, "stress_party": 5 }
+    },
+    {
+      "id": "alambre_de_pua",
+      "name": "Alambre de púas",
+      "text": "Alambre de púas oxidado, tendido a la altura de las canillas. En lo oscuro casi no se ve.",
+      "difficulty": 5,
+      "fail_text": "El alambre muerde la pierna de alguien y no la suelta fácil.",
+      "effects": { "damage_random": 3, "applies": { "status": "sangrado", "turns": 3, "value": 2 } }
+    },
+    {
+      "id": "escalera_resbalosa",
+      "name": "Escalera resbalosa",
+      "text": "Escalones de piedra cubiertos de lama. Bajan hacia lo oscuro.",
+      "difficulty": 0,
+      "fail_text": "¡Resbalón y al suelo! Alguien queda golpeado y torpe.",
+      "effects": { "damage_random": 4, "applies": { "status": "salado", "turns": 3, "mods": { "dodge": -5 } } }
+    },
+    {
+      "id": "raices_traicioneras",
+      "name": "Raíces traicioneras",
+      "text": "Raíces gruesas cruzan el sendero bajo el musgo. Algunas parecen moverse.",
+      "difficulty": 5,
+      "fail_text": "Una raíz se enrosca en el tobillo de alguien y lo bota de cara.",
+      "effects": { "damage_random": 3, "applies": { "status": "amarrado", "turns": 2 } }
+    },
+    {
+      "id": "piso_hundido",
+      "name": "Piso hundido",
+      "text": "Las tablas del piso ceden bajo el peso. Abajo se oye correr agua.",
+      "difficulty": 10,
+      "fail_text": "Alguien se hunde hasta la rodilla y queda atascado entre las tablas.",
+      "effects": { "damage_random": 5, "applies": { "status": "amarrado", "turns": 2 } }
+    }
+  ]
+}

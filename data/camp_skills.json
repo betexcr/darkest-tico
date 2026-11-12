@@ -1,7 +1,8 @@
 {
-  "_doc": "Camping (docs/01 §4.4, doc 07 §6). Rules: scripts/domain/camping_system.gd. target: self | ally (one companion, not the user) | others (every companion) | party (everyone). effects: stress (+/-), heal_pct (% of max PV), cure (status ids; 'all_negative' clears every negative), buff {mods, fights} (same mods as statuses: accuracy, dodge, speed, crit, prot, dmg_pct, stress_pct). self_effects also hit the user. prevent_ambush stops the night ambush. ambush: base_pct, + low_light_pct when Luz is Penumbra or darker, + exhausted_pct when the living party's average stress is at least exhausted_stress.",
+  "_doc": "Camping (docs/01 §4.4, doc 07 §6). Rules: scripts/domain/camping_system.gd. target: self | ally (one companion, not the user) | others (every companion) | party (everyone). effects: stress (+/-), heal_pct (% of max PV), cure (status ids; 'all_negative' clears every negative), buff {mods, fights} (same mods as statuses: accuracy, dodge, speed, crit, prot, dmg_pct, stress_pct). self_effects also hit the user. prevent_ambush stops the night ambush. no_firewood_relief: stress relieved by warming up at a fogata with no firewood left. ambush: base_pct, + low_light_pct when Luz is Penumbra or darker, + exhausted_pct when the living party's average stress is at least exhausted_stress.",
   "respite_points": 12,
   "firewood_per_expedition": 1,
+  "no_firewood_relief": 3,
   "ambush": { "base_pct": 12, "low_light_pct": 6, "exhausted_pct": 4, "exhausted_stress": 50, "enemy_count": [2, 3] },
   "meals": [
     { "id": "festin", "name": "Festín", "food": 4, "heal_pct": 25, "stress": -10, "text": "Gallo pinto, natilla y cafecito. Hasta cantan." },

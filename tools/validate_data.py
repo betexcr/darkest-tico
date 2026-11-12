@@ -109,6 +109,8 @@ def main() -> int:
                 if mk not in stat_keys:
                     errors.append(f"{where}: unknown stat '{mk}' in buff mods")
 
+    if not isinstance(camp_raw.get("no_firewood_relief"), int) or camp_raw["no_firewood_relief"] < 0:
+        errors.append("camp_skills.json: no_firewood_relief must be a whole number >= 0")
     amb = camp_raw.get("ambush", {})
     for k in ("base_pct", "low_light_pct", "exhausted_pct", "exhausted_stress"):
         if not isinstance(amb.get(k), int) or amb.get(k) < 0:
@@ -487,6 +489,77 @@ def main() -> int:
     for e in (items_raw or {}).get("starter_inventory", []):
         if e.get("id") not in items:
             errors.append(f"items.json: starter_inventory references unknown item '{e.get('id')}'")
+    # P2-01 / P2-09: event outcomes (curios.json, traps.json) use one vocabulary
+    # (GameState.apply_event_outcome); every key, status, stat and item must exist.
+    outcome_keys = {"heal_party", "stress_party", "colones", "damage_random", "damage_party", "add_item",
+                    "reveal_neighbors", "reveal_map", "random_equipment", "applies", "buff", "debuff",
+                    "ambush", "weight", "text"}
+
+    def check_outcome(where: str, o) -> None:
+        if not isinstance(o, dict):
+            errors.append(f"{where}: outcome must be an object")
+            return
+        for k in o:
+            if k not in outcome_keys:
+                errors.append(f"{where}: unknown outcome key '{k}'")
+        check_applies(where, o.get("applies"))
+        for bk in ("buff", "debuff"):
+            b = o.get(bk)
+            if b is None:
+                continue
+            if not b.get("name") or not b.get("mods") or not isinstance(b.get("fights"), int) or b["fights"] < 1:
+                errors.append(f"{where}: {bk} needs name, mods and fights >= 1")
+            for mk in b.get("mods", {}):
+                if mk not in stat_keys:
+                    errors.append(f"{where}: unknown stat '{mk}' in {bk} mods")
+        amb = o.get("ambush")
+        if amb is not None and amb is not True and not (isinstance(amb, list) and len(amb) == 2 and 1 <= amb[0] <= amb[1] <= 4):
+            errors.append(f"{where}: ambush must be true or [min, max] enemies (1-4)")
+        add = o.get("add_item")
+        if add is not None and add.get("id") not in items:
+            errors.append(f"{where}: add_item references unknown item '{add.get('id')}'")
+
+    curios_raw = load(DATA / "curios.json") or {}
+    curio_ids = set()
+    for c in curios_raw.get("curios", []):
+        where = f"curios.json: '{c.get('id')}'"
+        curio_ids.add(c.get("id"))
+        if c.get("key_item") and c["key_item"] not in items:
+            errors.append(f"{where}: key_item '{c['key_item']}' is not an item")
+        if c.get("key_item"):
+            check_outcome(where + " key_outcome", c.get("key_outcome", {}))
+        if not c.get("blind"):
+            errors.append(f"{where}: needs a blind outcome table")
+        for k, o in enumerate(c.get("blind", [])):
+            check_outcome(f"{where} blind[{k}]", o)
+    traps_raw = load(DATA / "traps.json") or {}
+    trap_ids = set()
+    for k in ("disarm_min", "disarm_max", "disarm_relief", "careful_light", "careful_trigger_pct"):
+        if not isinstance(traps_raw.get(k), int) or not 0 <= traps_raw[k] <= 100:
+            errors.append(f"traps.json: '{k}' must be a whole number 0-100")
+    for t in traps_raw.get("traps", []):
+        where = f"traps.json: '{t.get('id')}'"
+        if t.get("id") in trap_ids:
+            errors.append(f"{where}: duplicate id")
+        trap_ids.add(t.get("id"))
+        for f in ("name", "text", "fail_text"):
+            if not t.get(f):
+                errors.append(f"{where}: needs '{f}'")
+        if not isinstance(t.get("difficulty"), int) or not 0 <= t["difficulty"] <= 100:
+            errors.append(f"{where}: difficulty must be a whole number 0-100")
+        check_outcome(where + " effects", t.get("effects", {}))
+    for rp in sorted((DATA / "regions").glob("*.json")):
+        reg = load(rp) or {}
+        gen = reg.get("generator") or {}
+        for cid in gen.get("curios", []):
+            if cid not in curio_ids:
+                errors.append(f"regions/{rp.name}: generator.curios references unknown curio '{cid}'")
+        for tid in gen.get("traps", []):
+            if tid not in trap_ids:
+                errors.append(f"regions/{rp.name}: generator.traps references unknown trap '{tid}'")
+        for n in reg.get("nodes", []):
+            if n.get("type") == "trap" and n.get("trap_id") not in trap_ids:
+                errors.append(f"regions/{rp.name}: trap node '{n.get('id')}' needs a known trap_id")
     if "gallo_pinto" not in items:
         errors.append("items.json: 'gallo_pinto' is the food item (camp meal, travel hunger) and must exist")
     # P1-18: recommended provisions per region (the hub offers to buy what is missing).

@@ -10,7 +10,7 @@
   "region_level": 1,
   "nodes": [
     { "id": "b0", "type": "safe", "label": "Sendero de musgo" },
-    { "id": "b1", "type": "trap", "label": "Raíces traicioneras" },
+    { "id": "b1", "type": "trap", "label": "Raíces traicioneras", "trap_id": "raices_traicioneras" },
     { "id": "b2", "type": "combat", "label": "Claro brumoso", "enemy_id": "nuboso_spectre", "reward_colones": 380, "is_elite": false },
     { "id": "b3", "type": "curio", "label": "Piedra con petroglifo" },
     { "id": "b4", "type": "combat", "label": "Barranco oculto", "enemy_id": "cadejo_negro", "reward_colones": 520, "is_elite": true },

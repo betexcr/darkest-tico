@@ -18,9 +18,9 @@ const EquipSlotScript := preload("res://scripts/ui/equip_slot.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
-const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -817,37 +817,39 @@ func _check_wipe() -> bool:
 	return true
 
 
-## Best "trampa" resistance in the living party (%): the one who spots it guides the rest.
-func _trap_sense() -> int:
-	var best: int = 0
-	for h in GameState.party:
-		if h is Dictionary and not h.get("dead", false):
-			best = maxi(best, StatusEffectsScript.resist_value(h, "trampa"))
-	return best
-
-
+## Trap rooms (P2-01, doc 07 §4; data/traps.json): disarm it, or cross carefully and spend Luz.
 func _open_trap() -> void:
-	_open_event("Trampa", "%s. Elige cómo pasar." % GameState.current_node().get("label", "Algo cruje"))
-	var sense: int = _trap_sense()
-	_event_button("Con cuidado", func():
-		if randi() % 100 < sense:
-			_resolve_event("Alguien vio la trampa a tiempo (Trampas %d%%). Pasaron sin incidentes." % sense)
-		elif randf() < 0.25:
-			_party_stress(5)
-			_resolve_event("Aun así resbalaron. +5 estrés a la cuadrilla.")
+	var trap: Dictionary = TrapRulesScript.get_trap(str(GameState.current_node().get("trap_id", "")))
+	if trap.is_empty():
+		trap = TrapRulesScript.get_trap(str(TrapRulesScript.data().get("traps", [{}])[0].get("id", "")))
+	var chance: int = TrapRulesScript.disarm_chance(trap, GameState.party, GameState.mission_light)
+	var spotter: Dictionary = TrapRulesScript.spotter(GameState.party)
+	var careful_light: int = TrapRulesScript.num("careful_light")
+	var careful_pct: int = TrapRulesScript.num("careful_trigger_pct")
+	_open_event(str(trap.get("name", "Trampa")), "%s
+
+%s la vio primero. Desarmarla: %d%% (Luz %s). Si falla, la trampa salta." % [
+		trap.get("text", ""), spotter.get("name", "Alguien"), chance, LightSystemScript.tier_name(GameState.mission_light)])
+	_event_button("Desarmar (%d%%)" % chance, func():
+		if randi() % 100 < chance:
+			var relief: int = TrapRulesScript.num("disarm_relief")
+			for l in StressSystemScript.add_stress(spotter, -relief):
+				_log_line(l, "88bb88")
+			_resolve_event("%s desarma la trampa. ¡Qué nivel! (-%d estrés)" % [spotter.get("name", "Alguien"), relief])
 		else:
-			_resolve_event("Pasaron sin incidentes.")
+			_spring_trap(trap)
 	)
-	_event_button("A la rápida", func():
-		if randi() % 100 < sense / 2:
-			_resolve_event("Saltaron la trampa sin pensarlo (Trampas %d%%)." % sense)
-		elif randf() < 0.45:
-			var who: Dictionary = _damage_random_hero(4)
-			_resolve_event("¡Caída! %s pierde 4 PV." % who.get("name", "Alguien"))
+	_event_button("Pasar con cuidado (-%d Luz, %d%% de que salte)" % [careful_light, careful_pct], func():
+		GameState.mission_light = maxi(GameState.mission_light - careful_light, 0)
+		if randi() % 100 < careful_pct:
+			_spring_trap(trap)
 		else:
-			_party_stress(2)
-			_resolve_event("Llegaron vivos, pero sudando. +2 estrés.")
+			_resolve_event("Pasan despacio, tanteando cada paso. La trampa no salta (-%d Luz)." % careful_light)
 	)
+
+
+func _spring_trap(trap: Dictionary) -> void:
+	_apply_outcome(str(trap.get("fail_text", "¡La trampa salta!")), trap.get("effects", {}))
 
 
 func _open_curio() -> void:
@@ -882,9 +884,23 @@ func _open_curio() -> void:
 
 
 func _curio_result(text: String, outcome: Dictionary) -> void:
-	var logs: PackedStringArray = GameState.apply_curio_outcome(outcome)
-	for l in logs:
+	_apply_outcome(text, outcome)
+
+
+## An event outcome (curio or trap): effects, then either an ambush fight or the room clears.
+func _apply_outcome(text: String, outcome: Dictionary) -> void:
+	for l in GameState.apply_event_outcome(outcome):
 		_log_line(l, "cc9944")
+	if _check_wipe():
+		return
+	var amb = outcome.get("ambush", null)
+	if amb != null and amb != false:
+		_close_event()
+		_narrate(text)
+		GameState.ledger_add("ambushes")
+		GameState.build_ambush_context(GameState.current_node_id, amb if amb is Array else [])
+		_start_combat_from_context(GameState.current_node_id)
+		return
 	_resolve_event(text)
 
 
@@ -892,9 +908,10 @@ func _open_camp() -> void:
 	var nid: String = GameState.current_node_id
 	if not GameState.can_camp_at(nid):
 		_open_event("Fogata de trocha", "No queda leña para acampar. Solo pueden calentarse las manos.")
-		_event_button("Calentarse (-3 estrés)", func():
-			_party_stress(-3)
-			_resolve_event("Un respiro corto. -3 estrés.")
+		var warm: int = int(BalanceScript.req(CampingSystemScript.data(), "no_firewood_relief", "camp_skills.json"))
+		_event_button("Calentarse (-%d estrés)" % warm, func():
+			_party_stress(-warm)
+			_resolve_event("Un respiro corto. -%d estrés." % warm)
 		)
 		return
 	_open_event("Fogata de trocha", "Leña: %d. Acampar gasta una: comen, usan habilidades de campamento (%d puntos de respiro) y duermen. La Luz vuelve a %d, pero la noche puede traer una emboscada." % [
@@ -1020,20 +1037,6 @@ func _party_stress(delta: int) -> void:
 		if h is Dictionary and not h.get("dead", false):
 			for l in StressSystemScript.add_stress(h, delta):
 				_log_line(l, "cc7744")
-
-
-func _damage_random_hero(amt: int) -> Dictionary:
-	var living: Array = []
-	for h in GameState.party:
-		if h is Dictionary and not h.get("dead", false):
-			living.append(h)
-	if living.is_empty():
-		return {}
-	var h: Dictionary = living[randi() % living.size()]
-	# Same rule as combat (P1-16): Al Borde, then the Golpe de gracia roll.
-	for l in HeroDamageScript.take(h, amt):
-		_log_line(l, "cc4444")
-	return h
 
 
 # --- Combat -----------------------------------------------------------------------
@@ -1270,7 +1273,8 @@ func _on_combat_over(victory: bool) -> void:
 	GameState.mark_node_cleared(_combat_node_id)
 	GameState.ledger_add("fights")
 	if _combat_is_ambush:
-		_log_line("Repelieron la emboscada. Amanece.", "66aa66")
+		var at_camp: bool = str(nd.get("type", "")) == "camp"
+		_log_line("Repelieron la emboscada.%s" % (" Amanece." if at_camp else ""), "66aa66")
 	else:
 		var pay: int = GameState.combat_reward(_combat_node_id)
 		GameState.colones += pay

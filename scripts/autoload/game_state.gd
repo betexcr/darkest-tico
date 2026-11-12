@@ -17,6 +17,8 @@ const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 
 
@@ -218,13 +220,17 @@ func get_curio(curio_id: String) -> Dictionary:
 	return _curios_by_id.get(curio_id, {})
 
 
-## Applies a curio outcome (data/curios.json) to the party/mission. Returns log lines.
-func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
+## Applies an event outcome (curios.json, traps.json) to the party/mission. Returns log
+## lines. Damage follows the combat rule (HeroDamage). An "ambush" key is left to the
+## expedition screen, which starts the fight after this.
+func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 	var logs: PackedStringArray = PackedStringArray()
 	var living: Array = []
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):
 			living.append(h)
+	# The hero a single-target effect lands on (the same one for damage and its status).
+	var victim: Dictionary = living[randi() % living.size()] if not living.is_empty() else {}
 	if outcome.has("heal_party"):
 		for h in living:
 			h["hp"] = mini(int(h["hp"]) + int(outcome["heal_party"]), int(h["hp_max"]))
@@ -236,11 +242,31 @@ func apply_curio_outcome(outcome: Dictionary) -> PackedStringArray:
 		for h in living:
 			logs.append_array(StressSystemScript.add_stress(h, int(outcome["stress_party"])))
 		logs.append("Estrés %+d a la cuadrilla." % int(outcome["stress_party"]))
-	if outcome.has("damage_random") and not living.is_empty():
-		var v: Dictionary = living[randi() % living.size()]
+	if outcome.has("damage_random") and not victim.is_empty():
 		var amt: int = int(outcome["damage_random"])
-		logs.append("%s pierde %d PV." % [v.get("name", "?"), amt])
-		logs.append_array(HeroDamageScript.take(v, amt))
+		logs.append("%s pierde %d PV." % [victim.get("name", "?"), amt])
+		logs.append_array(HeroDamageScript.take(victim, amt))
+	if outcome.has("damage_party"):
+		for h in living:
+			logs.append("%s pierde %d PV." % [h.get("name", "?"), int(outcome["damage_party"])])
+			logs.append_array(HeroDamageScript.take(h, int(outcome["damage_party"])))
+	var ap = outcome.get("applies", null)
+	if ap is Dictionary and not victim.is_empty():
+		var opts: Dictionary = {}
+		if ap.has("mods"):
+			opts["mods"] = ap["mods"]
+		for h in (living if bool(ap.get("party", false)) else [victim]):
+			var msg: String = StatusEffectsScript.apply(h, str(ap.get("status", "")), int(ap.get("turns", 0)), int(ap.get("value", 0)), opts)
+			if msg != "":
+				logs.append(msg)
+	# Mission-long (until N fights pass) buffs and curses, kept with the camp buffs.
+	for key in ["buff", "debuff"]:
+		var b = outcome.get(key, null)
+		if b is Dictionary and not victim.is_empty():
+			var fights: int = int(BalanceScript.req(b, "fights", "event %s" % key))
+			for h in (living if bool(b.get("party", false)) else [victim]):
+				CampingSystemScript.add_buff(h, "evento", str(b.get("name", "")), b.get("mods", {}), fights)
+				logs.append("%s: %s (%s) por %d peleas." % [h.get("name", "?"), b.get("name", ""), CampingSystemScript.mods_text(b.get("mods", {})), fights])
 	if outcome.has("colones"):
 		var c = outcome["colones"]
 		var amt_c: int = randi_range(int(c[0]), int(c[1])) if c is Array and c.size() >= 2 else int(c)
@@ -987,6 +1013,8 @@ func start_mission(region_path: String = "") -> bool:
 	for n in r.get("nodes", []):
 		if n is Dictionary and n.has("curio_id"):
 			n["label"] = str(get_curio(str(n["curio_id"])).get("name", n.get("label", "")))
+		if n is Dictionary and n.has("trap_id"):
+			n["label"] = str(TrapRulesScript.get_trap(str(n["trap_id"])).get("name", n.get("label", "")))
 	mission_nodes_index = ExpeditionLoaderScript.node_by_id(r)
 	current_region_id = str(r.get("region_id", ""))
 	mission_light = mini(light_max(), int(r.get("initial_light", light_max())))
@@ -1428,10 +1456,12 @@ func complete_mission() -> Dictionary:
 
 
 ## Night ambush at a camp (doc 07 §6): 2–3 monsters from the region's pool, no payout.
-func build_ambush_context(node_id: String) -> void:
+## A surprise fight in `node_id` (night ambush, or an event outcome "ambush"): region
+## monsters that act first in round 1 and pay nothing. `count` [min, max] overrides the camp's.
+func build_ambush_context(node_id: String, count: Array = []) -> void:
 	var gen: Dictionary = mission_region_data.get("generator", {})
 	var pool: Array = gen.get("enemy_pool", ["espanto"])
-	var cnt: Array = CampingSystemScript.data().get("ambush", {}).get("enemy_count", [2, 3])
+	var cnt: Array = count if count.size() == 2 else CampingSystemScript.data().get("ambush", {}).get("enemy_count", [2, 3])
 	var n: int = randi_range(int(cnt[0]), int(cnt[1]))
 	var ids: Array = []
 	for _k in n:

@@ -161,13 +161,15 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
 Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30–40 events.
 
 ### P2-01 · M · Data-driven events (traps/curios/camp)
-- Status: `in-progress` · Depends: P1-06 · Curios are data-driven now (`data/curios.json`, key items, blind outcome tables). Traps and camp are still hard-coded in `expedition_screen.gd`.
+- Status: `review` (Claude Code, `main`, 2026-11-12; owner to try the new trap choices) · Depends: P1-06
+- Curios: `data/curios.json` (key items, blind outcome tables). Traps: `data/traps.json` + `scripts/domain/trap_rules.gd` (DD disarm: best trampa + Luz − difficulty; "Pasar con cuidado" costs Luz). Camp: `data/camp_skills.json` (meals, respite, ambush, no-firewood relief). Curios and traps share one outcome vocabulary (`GameState.apply_event_outcome`), checked by the validator. The old "Con cuidado / A la rápida" trap was replaced on purpose (owner 2026-11-12, DD-style), so the old behaviour is not kept.
 - Spec: `07`, `01` §4
-- Files: `data/events.json` (new), `scripts/domain/event_resolver.gd` (new), `scripts/expedition/expedition_map.gd`
+- Files: `data/traps.json` (new), `scripts/domain/trap_rules.gd` (new), `scripts/expedition/expedition_screen.gd`, `scripts/domain/map_generator.gd`, `tools/validate_data.py`
 - Done when:
-  - [ ] Trap/curio/camp choices and outcomes come from JSON (no hard-coded `_trap_fast`/`_curio_touch` etc.)
-  - [ ] Nodes reference `event_id` or an event pool; validator checks references
-  - [ ] Existing behavior preserved as the first entries
+  - [x] Trap/curio/camp choices and outcomes come from JSON (no hard-coded `_trap_fast`/`_curio_touch` etc.)
+  - [x] Nodes reference `trap_id` / `curio_id` (generator pools per region); validator checks references
+  - [x] ~~Existing behavior preserved as the first entries~~ replaced by the DD-style traps (owner 2026-11-12)
+  - [ ] `humo_infernal` (doc 07's mid-combat smoke) — needs combat environment hooks; later
 
 ### P2-02 · M · 30–40 Sótanos event variants
 - Status: `todo` · Depends: P2-01
