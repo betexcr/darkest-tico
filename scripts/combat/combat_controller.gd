@@ -36,6 +36,9 @@ var enemy_units: Array = []
 var is_elite: bool = false
 var is_boss: bool = false
 var is_ambush: bool = false
+## No pauses between steps (headless sim, tools/sim_combat.gd). With stub units whose
+## play_* calls return at once, every action then resolves synchronously.
+var instant: bool = false
 
 ## Forced moves from this action's hits ({unit, skill}), applied after the animations.
 var _queued_moves: Array = []
@@ -245,7 +248,7 @@ func move_hero(other: Dictionary) -> void:
 	_log("%s pasa a la posición %d (%s, a la %d)." % [hero.get("name", "?"), FormationScript.position_of(hero, party),
 		other.get("name", "?"), FormationScript.position_of(other, party)], "88aacc")
 	_refresh_units()
-	await get_tree().create_timer(0.25).timeout
+	await _pause(0.25)
 	_busy = false
 	_turn_index += 1
 	if _check_end():
@@ -336,7 +339,7 @@ func _process_turn() -> void:
 			if not foe.get("dead", false):
 				actor_changed.emit("Turno: %s" % foe.get("name", "?"))
 				_set_active(foe)
-				await get_tree().create_timer(0.35).timeout
+				await _pause(0.35)
 				await _enemy_turn(foe)
 				_turn_index += 1
 				if _check_end():
@@ -365,12 +368,12 @@ func _process_turn() -> void:
 				return
 		if hero.get("dead", false) or bool(tk["skip"]):
 			_refresh_units()
-			await get_tree().create_timer(0.5).timeout
+			await _pause(0.5)
 			_turn_index += 1
 			continue
 		if StressSystemScript.hero_turn_blocked(hero):
 			_log("%s no actúa (cobardía)." % hero.get("name", "?"), "cc7744")
-			await get_tree().create_timer(0.6).timeout
+			await _pause(0.6)
 			_turn_index += 1
 			if _check_end():
 				return
@@ -380,6 +383,13 @@ func _process_turn() -> void:
 		hero_turn_started.emit(hero)
 		return
 	_start_round()
+
+
+## Beat between steps so the player can follow the fight; skipped when `instant`.
+func _pause(seconds: float) -> void:
+	if instant:
+		return
+	await get_tree().create_timer(seconds).timeout
 
 
 func _check_end() -> bool:
@@ -413,7 +423,7 @@ func _finish(victory: bool) -> void:
 		_log("Victoria. Cae el último enemigo.", "66aa66")
 	else:
 		_log("Derrota. La hacienda guarda silencio.", "aa4444")
-	await get_tree().create_timer(1.0).timeout
+	await _pause(1.0)
 	combat_over.emit(victory)
 
 
@@ -601,7 +611,7 @@ func _enemy_reposition(enemy: Dictionary) -> void:
 	_swap_units(enemies, enemy_units, enemy, other)
 	_log("%s no alcanza a nadie y se reacomoda (posición %d)." % [enemy.get("name", "?"), FormationScript.position_of(enemy, enemies)], "999999")
 	_refresh_units()
-	await get_tree().create_timer(0.3).timeout
+	await _pause(0.3)
 
 
 func _enemy_turn(enemy: Dictionary) -> void:
@@ -920,7 +930,7 @@ func _force_move(unit: Dictionary, skill: Dictionary) -> void:
 		u.float_text(word, COLOR_MOVE)
 	_refresh_units()
 	_refresh_markers()
-	await get_tree().create_timer(0.25).timeout
+	await _pause(0.25)
 
 
 ## Put `side` (and its index-aligned units) in `new_order`, then sync the stage row.

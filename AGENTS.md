@@ -70,4 +70,5 @@ Do this before you stop for **any** reason: task finished, context running out, 
 - Tone guardrails: [docs/08-content-standards-satire.md](docs/08-content-standards-satire.md). Read it before writing any flavor text.
 - Tooltips: just set `tooltip_text` ("Title\nbody" or "Title — body"); the `TooltipStyler` autoload draws it as the shared card (`scripts/ui/tooltip_card.gd`). Custom tooltips call `TooltipCard.clear_frame(self)` and return a card from `_make_custom_tooltip`.
 - Art: follow [.cursor/rules/stable-diffusion-assets.mdc](.cursor/rules/stable-diffusion-assets.mdc). Never call SD from game code. Every PNG needs a `.metadata.json`.
+- Balance experiments: `godot --headless --path . -s tools/sim_combat.gd -- --runs 10000 [--chain 3] [--set path=value]` plays the real combat controller headless (doc 10 "Combat sim"). Rerun it after changing combat numbers.
 - The Godot path in `.cursor/rules/godot-runtime.mdc` is the owner's Windows machine. Cloud containers usually have no Godot.

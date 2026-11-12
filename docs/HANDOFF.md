@@ -17,6 +17,32 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (late night) — P1-07 — Combat Monte Carlo sim
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-07 done. New follow-up task P1-15 (expedition sim with camp, items and room events).
+- **Changed:**
+  - **`tools/sim_combat.gd` (new):** a headless Godot sim, not the Python mirror the plan named. It drives the real combat controller with stub stage units, so it can't drift from the rules.
+    - Options: `--runs`, `--node combat|elite|boss|all`, `--policy smart|basic`, `--chain N` (N fights + elite + boss, carried over, no recovery), `--set path=value` (Balance overrides), `--difficulty`, `--seed`, `--log`.
+    - Prints markdown tables: per room kind, per room leader, per chain step.
+    - About 100 fights a second.
+  - **`combat_controller.gd`:** new `instant` flag. The seven animation timers go through `_pause()`, which returns at once when `instant` is set. With the flag off (the game and the tests), behaviour is unchanged.
+  - **`docs/10-implementation-notes.md`:** "Combat sim (P1-07)" section with how to run it, the Sótanos results (10k per row) and the findings.
+  - **`AGENTS.md` §6:** a line on how to run the sim.
+  - **Plan:** P1-07 done; P1-15 added.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2: all 11 test scripts 0 failures, no `SCRIPT ERROR`.
+  - Four 10k sim runs (fresh and chain × smart and basic) finished with no errors.
+- **Not verified / risks:**
+  - The hero policies are heuristics. `smart` is close to an upper bound and `basic` to a lower bound for a real player.
+  - The chain mode leaves out camp, items, traps, curios, light and hunger (that is P1-15).
+- **Decisions needed:**
+  - (1) Is the headless GDScript sim acceptable in place of the planned `tools/sim_combat.py`? The default taken: yes, because a Python mirror of about 1,000 lines of controller rules would drift.
+  - (2) Findings for P5-02 (doc 10): smart play wins every fresh fight (100.0% rounded) and 99.8% of 5-fight chains with no recovery. Healing outpaces damage (Abuela's Sopa Milagrosa and Cataplasma). Quebrantos almost never happen from combat alone. Cadejo negro gives about twice the stress of the other elite. Should combat be tuned harder now, or wait for P5-02 as planned?
+- **Next step:** P1-08 (technical architecture doc). Create `docs/13-architecture.md` covering save schema and versioning (`GameState` `SAVE_VERSION`/`apply_save_data`), the encounter flow (hub → map → combat → map, `expedition_screen.gd` `_start_combat`), the status engine (`status_effects.gd` + `data/statuses.json`) and the data file schemas. Link it from `docs/README.md`.
+
+---
+
 ## 2026-11-12 (night) — P1-06 — Balance constants to data/balance.json
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-06 review. Owner 2026-11-12: the tunable limits moved too; party size 4 stays in code.

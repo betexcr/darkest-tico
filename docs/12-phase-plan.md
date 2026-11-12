@@ -132,12 +132,12 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [x] No magic balance numbers left in `scripts/domain/` (enforced by `tools/validate_data.py`)
 
 ### P1-07 · M · Combat Monte Carlo sim
-- Status: `todo` · Depends: P1-06
+- Status: `done` (Claude Code, `main`, 2026-11-12) · Depends: P1-06
 - Spec: `04`, `06` Phase 1 "combat simulation sheet"
-- Files: `tools/sim_combat.py` (new; reads `data/*.json`, mirrors resolver math)
+- Files: `tools/sim_combat.gd` (new). It is a headless Godot script, not the planned Python mirror. It runs the real `combat_controller.gd` (new `instant` flag) with stub units, so the rules can't drift. Options: `--chain`, `--policy`, `--set` (Balance overrides).
 - Done when:
-  - [ ] Prints win rate, average turns, and stress delta per party-vs-node over N=10k runs
-  - [ ] Results for Sótanos written to `docs/10-implementation-notes.md`
+  - [x] Prints win rate, average turns, and stress delta per party-vs-node over N=10k runs
+  - [x] Results for Sótanos written to `docs/10-implementation-notes.md`
 
 ### P1-08 · S · Technical architecture doc
 - Status: `todo` · Depends: P1-02, P1-04
@@ -342,6 +342,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `01` §3.3
 - Files: `scripts/domain/stress_system.gd`, `data/statuses.json` (`mental_mods`), `scripts/domain/status_effects.gd`, `scripts/combat/combat_controller.gd`, `scripts/combat/battle_unit.gd`
 - Done when: [x] 7 + 7 with hooks; Paranoia refuses heals/buffs per spec instead of skipping turns; [x] names shown everywhere
+
+### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
+- Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
+- Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
+- Files: `tools/sim_combat.gd`
+- Why: P1-07's `--chain` covers fights only, with no camp, potions, traps, curios, light or hunger. So it can't measure mission success yet, and P5-02 needs that.
+- Done when:
+  - [ ] Chains follow a generated map path (rooms in order) with the starting provisions
+  - [ ] The policy uses heal and stress items and camps once
+  - [ ] Prints the mission success rate, for comparison with the 55–70% target
 
 ### P4-10 · S · Item icons
 - Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
