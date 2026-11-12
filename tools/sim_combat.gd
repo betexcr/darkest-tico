@@ -19,6 +19,7 @@ extends SceneTree
 ##   --set PATH=VALUE    Balance override, repeatable (e.g. --set combat.hit_base=0.8)
 ##   --chain N           expedition mode: N normal fights, then the elite, then the boss, with
 ##                       nothing healed in between (see _run_chains)
+##   --light N           play every fight at this Luz (default: the region's starting Luz)
 ##   --log               print the combat log of the first fight of each room kind / chain
 ##
 ## Without --chain, every fight starts from the fresh starting party (full PV, 0 stress, no
@@ -48,7 +49,7 @@ var _template: Array = []
 var _light0: int = 0
 var _rng := RandomNumberGenerator.new()
 var _opts := {"runs": 10000, "node": "all", "policy": "smart", "seed": 1, "chain": 0,
-	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "set": [], "log": false}
+	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false}
 var _log_on: bool = false
 
 
@@ -117,7 +118,7 @@ func _run() -> void:
 		quit(1)
 		return
 	_template = _gs.party.duplicate(true)
-	_light0 = int(_gs.mission_light)
+	_light0 = int(_gs.mission_light) if int(_opts["light"]) < 0 else int(_opts["light"])
 	_cc = load(CONTROLLER_PATH).new()
 	_cc.instant = true
 	root.add_child(_cc)
@@ -129,8 +130,9 @@ func _run() -> void:
 		("chains of %d fights + elite + boss" % chain) if chain > 0 else "fights per room kind",
 		_opts["policy"], int(_opts["seed"]),
 		(", overrides " + ", ".join(PackedStringArray(_opts["set"]))) if not _opts["set"].is_empty() else ""])
-	print("Party (formation order): %s. Difficulty: %s.\n" % [
-		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))), _gs.selected_difficulty_id])
+	print("Party (formation order): %s. Difficulty: %s. Luz %d (%s).\n" % [
+		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))), _gs.selected_difficulty_id,
+		_light0, load("res://scripts/domain/light_system.gd").tier_name(_light0)])
 	var t0: int = Time.get_ticks_msec()
 	if chain > 0:
 		_run_chains(chain)
@@ -210,7 +212,7 @@ func _parse_args() -> void:
 		var flag: String = a[k]
 		var val: String = a[k + 1] if k + 1 < a.size() else ""
 		match flag:
-			"--runs", "--seed", "--chain":
+			"--runs", "--seed", "--chain", "--light":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
 			"--node", "--policy", "--region", "--difficulty":

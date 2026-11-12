@@ -87,3 +87,21 @@ Chains of 3 fights, then the elite, then the boss. PV, stress, deaths and Al Bor
   - Vigía del portón and Mandador en pena cost the most PV and deaths among normal enemies.
   - Rata de troje is the softest.
 - **Stalls:** 5 smart chains (0.05%) went past 40 rounds, likely healers out-healing a weak last enemy. Not seen with fresh parties.
+
+### Rerun after the Luz tiers (2026-11-12, P1-17)
+
+`--light N` plays every fight at a fixed Luz; without it, fights use the region's starting Luz (100 = Radiante). At full light the results match the tables above within noise, so the shared damage rule (P1-16) didn't change combat.
+
+Chains of 3 fights + elite + boss (5,000 per row):
+
+| Policy | Luz | Boss cleared | Top stress before the boss | Party stress + in fight 1 | Fights with a death (elite / boss) |
+|---|---|---:|---:|---:|---:|
+| smart | 100 Radiante | 99.8% | 23.9 | 22.9 | 1.1% / 2.1% |
+| smart | 40 Penumbra | 99.8% | 27.5 | 25.5 | 1.5% / 2.1% |
+| smart | 0 Negro | 99.0% | 36.6 | 33.9 | 2.9% / 4.6% |
+| basic | 100 Radiante | 3.1% | 54.6 | 34.9 | 66% / 99% |
+| basic | 0 Negro | 0.9% | 75.6 | 52.2 | 78% / 99.5% |
+
+- In the dark, stress per fight is about 50% higher and deaths roughly triple. It now matters to carry candles, which is the point of the tiers.
+- Smart play still clears 99% even in Negro. Combat difficulty is still P5-02's job; the Luz tiers are a multiplier on it, not a fix.
+- Travel hunger, trap damage and curio curses are not in the sim (P1-15).
