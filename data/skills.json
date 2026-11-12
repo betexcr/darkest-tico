@@ -1,5 +1,5 @@
 {
-  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill. use_ranks: battlefield positions (1 = front) the hero can use it from; target_ranks (enemy-target skills): enemy positions it can reach. Rules: scripts/domain/formation.gd.",
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill. use_ranks: battlefield positions (1 = front) the hero can use it from; target_ranks (enemy-target skills): enemy positions it can reach. Rules: scripts/domain/formation.gd. move_target N (enemy-target skills): moves the enemy hit N positions (negative = toward the front, positive = toward the back); shuffle_target true: to a random position. Resisted with status_resist.movimiento; Amarrado units can't be moved.",
   "skills": [
     {
       "id": "machetazo",
@@ -322,12 +322,13 @@
       "damage_max": 8,
       "skill_accuracy": 2,
       "stress_on_hit_target": 3,
-      "description": "Patada rápida y certera de corral. Puede dejarlo atarantado.",
+      "description": "Patada rápida y certera de corral: lo manda una posición para atrás y puede dejarlo atarantado.",
       "applies": {
         "status": "aturdido",
         "chance": 0.3,
         "turns": 1
-      }
+      },
+      "move_target": 1
     },
     {
       "id": "no_me_tumban",
@@ -382,14 +383,15 @@
         2
       ],
       "target_ranks": [
-        1,
-        2
+        2,
+        3
       ],
       "damage_min": 4,
       "damage_max": 7,
       "skill_accuracy": 1,
-      "description": "Le cierra el paso al enemigo a punta de bastón. +40% de daño a fichados.",
-      "vs_marked_pct": 40
+      "description": "Le echa el bastón al que está atrás y lo jala hacia adelante. +40% de daño a fichados.",
+      "vs_marked_pct": 40,
+      "move_target": -1
     },
     {
       "id": "ronda_nocturna",

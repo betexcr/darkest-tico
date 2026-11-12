@@ -1,5 +1,5 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0).",
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento.",
   "enemies": {
     "espanto": {
       "id": "espanto",
@@ -88,7 +88,8 @@
         "aturdido": 30,
         "veneno": 60,
         "sangrado": 90,
-        "salado": 30
+        "salado": 30,
+        "movimiento": 30
       }
     },
     "sombra_cuadrilla": {
@@ -164,13 +165,20 @@
             4
           ],
           "weight": 20,
-          "applies": {
-            "status": "aturdido",
-            "chance": 0.35,
-            "turns": 1,
-            "value": 0
-          },
-          "description": "La sombra se echa encima y no deja moverse.",
+          "applies": [
+            {
+              "status": "aturdido",
+              "chance": 0.35,
+              "turns": 1,
+              "value": 0
+            },
+            {
+              "status": "amarrado",
+              "chance": 0.5,
+              "turns": 2
+            }
+          ],
+          "description": "La sombra se echa encima y no deja moverse: puede atarantarlo y dejarlo amarrado.",
           "element": "oscuridad",
           "self_applies": {
             "status": "agazapado",
@@ -187,7 +195,8 @@
         "aturdido": 30,
         "veneno": 50,
         "sangrado": 70,
-        "salado": 30
+        "salado": 30,
+        "movimiento": 50
       }
     },
     "mayordomo_hundido": {
@@ -303,7 +312,8 @@
         "aturdido": 60,
         "veneno": 50,
         "sangrado": 40,
-        "salado": 40
+        "salado": 40,
+        "movimiento": 60
       }
     },
     "nuboso_spectre": {
@@ -384,7 +394,8 @@
         "aturdido": 30,
         "veneno": 70,
         "sangrado": 90,
-        "salado": 20
+        "salado": 20,
+        "movimiento": 30
       }
     },
     "cadejo_negro": {
@@ -476,7 +487,8 @@
         "aturdido": 30,
         "veneno": 40,
         "sangrado": 20,
-        "salado": 30
+        "salado": 30,
+        "movimiento": 50
       }
     },
     "segua_boss": {
@@ -570,7 +582,8 @@
         "aturdido": 60,
         "veneno": 40,
         "sangrado": 30,
-        "salado": 40
+        "salado": 40,
+        "movimiento": 60
       }
     },
     "peon_penado": {
@@ -603,7 +616,8 @@
             3
           ],
           "weight": 50,
-          "description": "Latigazo de cadena herrumbrada."
+          "description": "Latigazo de cadena herrumbrada que lo arrastra hacia adelante.",
+          "move_target": -1
         },
         {
           "id": "rencor_del_peon",
@@ -644,7 +658,8 @@
         "aturdido": 20,
         "veneno": 30,
         "sangrado": 30,
-        "salado": 20
+        "salado": 20,
+        "movimiento": 40
       }
     },
     "mandador_en_pena": {
@@ -737,7 +752,8 @@
         "aturdido": 40,
         "veneno": 40,
         "sangrado": 50,
-        "salado": 40
+        "salado": 40,
+        "movimiento": 30
       }
     },
     "rata_de_troje": {
@@ -805,7 +821,8 @@
         "aturdido": 10,
         "veneno": 70,
         "sangrado": 10,
-        "salado": 20
+        "salado": 20,
+        "movimiento": 10
       }
     },
     "murcielago_bodega": {
@@ -897,7 +914,8 @@
         "aturdido": 20,
         "veneno": 30,
         "sangrado": 10,
-        "salado": 20
+        "salado": 20,
+        "movimiento": 20
       }
     },
     "monaguillo_porton": {
@@ -988,7 +1006,8 @@
         "aturdido": 30,
         "veneno": 30,
         "sangrado": 30,
-        "salado": 50
+        "salado": 50,
+        "movimiento": 20
       }
     },
     "vigia_porton": {
@@ -1076,7 +1095,8 @@
         "aturdido": 40,
         "veneno": 30,
         "sangrado": 20,
-        "salado": 30
+        "salado": 30,
+        "movimiento": 30
       }
     },
     "susurro_aljibe": {
@@ -1175,7 +1195,8 @@
         "aturdido": 30,
         "veneno": 60,
         "sangrado": 70,
-        "salado": 40
+        "salado": 40,
+        "movimiento": 40
       }
     },
     "duende_sotano": {
@@ -1266,8 +1287,9 @@
             "turns": 1,
             "value": 0
           },
-          "description": "Esconde las cosas y confunde la cabeza.",
-          "element": "tierra"
+          "description": "Esconde las cosas y confunde la cabeza: el héroe termina en otro lugar de la fila.",
+          "element": "tierra",
+          "shuffle_target": true
         }
       ],
       "elements": {
@@ -1278,7 +1300,8 @@
         "aturdido": 20,
         "veneno": 40,
         "sangrado": 20,
-        "salado": 60
+        "salado": 60,
+        "movimiento": 30
       }
     },
     "sirviente_ahogado": {
@@ -1348,7 +1371,8 @@
         "aturdido": 20,
         "veneno": 60,
         "sangrado": 40,
-        "salado": 20
+        "salado": 20,
+        "movimiento": 20
       }
     }
   }

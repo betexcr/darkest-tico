@@ -109,6 +109,33 @@ static func step_toward(unit: Dictionary, side: Array, preferred: Array) -> Dict
 	return {}
 
 
+## Whether a unit can change position at all (alive and not Amarrado).
+static func can_move(unit: Dictionary) -> bool:
+	return is_alive(unit) and not StatusEffectsScript.has(unit, "amarrado")
+
+
+## New order of `side` after `unit` moves `delta` positions (negative = toward the front,
+## positive = toward the back), clamped to the living positions. The others shift to make
+## room (Darkest Dungeon style: insert, not swap). The dead stay at the back.
+static func move_by(side: Array, unit: Dictionary, delta: int) -> Array:
+	var p: int = position_of(unit, side)
+	if p == 0:
+		return side.duplicate()
+	return move_to(side, unit, p + delta)
+
+
+## New order of `side` with `unit` at position `pos` (clamped to 1..living count).
+static func move_to(side: Array, unit: Dictionary, pos: int) -> Array:
+	var alive: Array = living(side)
+	var dead: Array = side.filter(func(u): return not is_alive(u))
+	var k: int = _index_of(alive, unit)
+	if k < 0:
+		return side.duplicate()
+	alive.remove_at(k)
+	alive.insert(clampi(pos, 1, alive.size() + 1) - 1, unit)
+	return alive + dead
+
+
 ## Swap two units in `side` (same Array object, in place). Returns false if either is missing.
 static func swap(side: Array, a: Dictionary, b: Dictionary) -> bool:
 	var ia: int = _index_of(side, a)

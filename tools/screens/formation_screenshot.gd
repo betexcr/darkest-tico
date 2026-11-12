@@ -122,5 +122,18 @@ func _run() -> void:
 	screen._show_hero_info(h)
 	await create_timer(0.3).timeout
 	await _shot("al_borde_info")
+	screen._hide_enemy_info()
+	# P1-03b: a push on the front enemy, an Amarrado hero, and the out-of-combat reorder buttons.
+	for e in cc.enemies:
+		e["status_resist"]["movimiento"] = 0
+	await cc._force_move(cc.enemies[0], {"move_target": 1})
+	load("res://scripts/domain/status_effects.gd").apply(cc.party[2], "amarrado", 2, 0, {"ignore_resist": true})
+	cc._refresh_units()
+	await create_timer(0.1).timeout
+	await _shot("push_amarrado")
+	screen._mode = screen.Mode.EXPLORE
+	screen._view_hero(cc.party[2])
+	await create_timer(0.2).timeout
+	await _shot("reorder_buttons")
 	print("saved to ", _out)
 	quit(0)

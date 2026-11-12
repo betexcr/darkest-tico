@@ -44,7 +44,8 @@
         "salado": 30,
         "susto": 30,
         "golpe_de_gracia": 67,
-        "trampa": 40
+        "trampa": 40,
+        "movimiento": 40
       }
     },
     {
@@ -90,7 +91,8 @@
         "salado": 50,
         "susto": 50,
         "golpe_de_gracia": 67,
-        "trampa": 10
+        "trampa": 10,
+        "movimiento": 30
       }
     },
     {
@@ -136,7 +138,8 @@
         "salado": 40,
         "susto": 20,
         "golpe_de_gracia": 67,
-        "trampa": 60
+        "trampa": 60,
+        "movimiento": 20
       }
     },
     {
@@ -181,7 +184,8 @@
         "salado": 30,
         "susto": 30,
         "golpe_de_gracia": 72,
-        "trampa": 20
+        "trampa": 20,
+        "movimiento": 60
       }
     },
     {
@@ -226,7 +230,8 @@
         "salado": 40,
         "susto": 40,
         "golpe_de_gracia": 67,
-        "trampa": 50
+        "trampa": 50,
+        "movimiento": 50
       }
     },
     {
@@ -270,7 +275,8 @@
         "salado": 40,
         "susto": 30,
         "golpe_de_gracia": 67,
-        "trampa": 20
+        "trampa": 20,
+        "movimiento": 20
       }
     },
     {
@@ -315,7 +321,8 @@
         "salado": 50,
         "susto": 50,
         "golpe_de_gracia": 67,
-        "trampa": 30
+        "trampa": 30,
+        "movimiento": 30
       }
     },
     {
@@ -360,7 +367,8 @@
         "salado": 60,
         "susto": 70,
         "golpe_de_gracia": 67,
-        "trampa": 20
+        "trampa": 20,
+        "movimiento": 40
       }
     }
   ]

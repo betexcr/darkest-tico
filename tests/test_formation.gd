@@ -66,6 +66,20 @@ func _test_rules(fm) -> void:
 	_check(fm.sort_squad([back, boss, esc]) == [boss, esc, back], "squads sort by preferred position, ties keep order")
 	_check(fm.ranks_text([1, 2]) == "1–2" and fm.ranks_text([2.0, 3.0, 4.0]) == "2–4" and fm.ranks_text([1, 3]) == "1, 3", "ranks_text")
 
+	# P1-03b: forced moves shift the others (insert, not swap); the dead stay at the back.
+	var p1 := {"name": "p1"}
+	var p2 := {"name": "p2"}
+	var p3 := {"name": "p3"}
+	var px := {"name": "px", "dead": true}
+	var line: Array = [p1, p2, p3, px]
+	_check(fm.move_by(line, p1, 2) == [p2, p3, p1, px], "move_by +2: p1 goes to position 3, the others step up")
+	_check(fm.move_by(line, p3, -1) == [p1, p3, p2, px], "move_by -1: pulled one forward")
+	_check(fm.move_by(line, p2, 9) == [p1, p3, p2, px] and fm.move_by(line, p1, -5) == line, "moves clamp to the living positions")
+	_check(fm.move_to(line, p3, 1) == [p3, p1, p2, px], "move_to position 1")
+	var se2 = load("res://scripts/domain/status_effects.gd")
+	se2.apply(p2, "amarrado", 2, 0, {"ignore_resist": true})
+	_check(not fm.can_move(p2) and fm.can_move(p1) and not fm.can_move(px), "Amarrado (and the dead) can't move")
+
 
 func _test_combat(fm) -> void:
 	print("Combat (controller + stage)")
@@ -176,8 +190,77 @@ func _test_combat(fm) -> void:
 	_check(pos0 == 1 and fm.position_of(foe, cc.enemies) == 2, "out of reach: the enemy se reacomoda (position %d -> %d)" % [pos0, fm.position_of(foe, cc.enemies)])
 	_check(_rows_match(screen, cc), "rows follow the enemy's step")
 	foe["skills"] = saved_skills
+
+	await _test_forced_moves(fm, gs, screen, cc)
 	screen.queue_free()
 	await process_frame
+
+
+## P1-03b: push, pull, shuffle, Amarrado, resist, and fixing the formation out of combat.
+func _test_forced_moves(fm, gs, screen, cc) -> void:
+	print("Forced moves (P1-03b)")
+	var se = load("res://scripts/domain/status_effects.gd")
+	for e in cc.enemies + cc.party:
+		e["status_resist"]["movimiento"] = 0
+		e["hp"] = maxi(int(e["hp"]), 1) if e.get("dead", false) else 999
+		e["hp_max"] = maxi(int(e.get("hp_max", 1)), int(e["hp"]))
+	var e1: Dictionary = cc.enemies[0]
+	var e2: Dictionary = cc.enemies[1]
+	await cc._force_move(e1, {"move_target": 1})
+	_check(fm.position_of(e1, cc.enemies) == 2 and fm.position_of(e2, cc.enemies) == 1, "a push sends the front enemy back one; the next steps up")
+	_check(_rows_match(screen, cc), "rows follow the push")
+	await cc._force_move(e1, {"move_target": -1})
+	_check(fm.position_of(e1, cc.enemies) == 1, "a pull brings it forward again")
+	e1["status_resist"]["movimiento"] = 100
+	await cc._force_move(e1, {"move_target": 1})
+	_check(fm.position_of(e1, cc.enemies) == 1, "Empujones 100%: it doesn't move")
+	e1["status_resist"]["movimiento"] = 0
+	se.apply(e1, "amarrado", 2, 0, {"ignore_resist": true})
+	await cc._force_move(e1, {"move_target": 1})
+	_check(fm.position_of(e1, cc.enemies) == 1, "Amarrado: forced moves fail")
+	se.remove(e1, "amarrado")
+
+	# A real hero skill: Patada de Corral (push 1) from the Montador.
+	var mont: Dictionary = cc.party.filter(func(h): return str(h["hero_id"]) == "montador")[0]
+	var patada: Dictionary = gs.hero_skill(mont, "patada_de_corral").duplicate(true)
+	patada["skill_accuracy"] = 200
+	patada.erase("applies")
+	cc._resolve_hero_attack(mont, patada, e1)
+	await cc._apply_queued_moves()
+	_check(fm.position_of(e1, cc.enemies) == 2, "Patada de Corral pushes the enemy it hits back one position")
+	var body: String = load("res://scripts/ui/skill_button.gd").body_for(gs.hero_skill(mont, "patada_de_corral"))
+	var body2: String = load("res://scripts/ui/skill_button.gd").body_for(gs.get_skill("reten"))
+	_check(body.contains("Lo empuja 1 posición hacia atrás") and body2.contains("Lo jala 1 posición hacia adelante"), "tooltips say who gets pushed or pulled")
+	_check(_rows_match(screen, cc), "rows follow the Patada")
+
+	# Enemy skills on heroes: Cadenazo drags forward, Travesura shuffles.
+	var h2: Dictionary = cc.party[1]
+	await cc._force_move(h2, {"move_target": -1})
+	_check(fm.position_of(h2, cc.party) == 1 and _rows_match(screen, cc), "Cadenazo-style pull drags a hero to position 1")
+	var hs: Dictionary = cc.party[2]
+	var p0: int = fm.position_of(hs, cc.party)
+	await cc._force_move(hs, {"shuffle_target": true})
+	_check(fm.position_of(hs, cc.party) != p0 and _rows_match(screen, cc), "a shuffle puts the hero somewhere else (%d -> %d)" % [p0, fm.position_of(hs, cc.party)])
+
+	# Amarrado blocks Moverse both ways.
+	var a0: Dictionary = cc.party[0]
+	var a1: Dictionary = cc.party[1]
+	se.apply(a1, "amarrado", 2, 0, {"ignore_resist": true})
+	_check(not cc.move_options(a0).has(a1), "nobody can swap places with an Amarrado hero")
+	_check(cc.move_options(a1).is_empty(), "an Amarrado hero can't use Moverse")
+	se.remove(a1, "amarrado")
+	_check(se.resist_chance({"status_resist": {"movimiento": 40}}, "amarrado") == 40, "Amarrado is resisted with Empujones (movimiento)")
+
+	# Out of combat: "← Adelante" / "Atrás →" on the hero card.
+	screen._mode = screen.Mode.EXPLORE
+	var first: Dictionary = gs.party[0]
+	screen._reorder_party(first, 1)
+	_check(fm.position_of(first, gs.party) == 2 and _rows_match(screen, cc), "Atrás → moves the hero back one (party, units and row)")
+	screen._reorder_party(first, -1)
+	_check(fm.position_of(first, gs.party) == 1, "← Adelante moves it forward again")
+	screen._mode = screen.Mode.COMBAT
+	screen._reorder_party(first, 1)
+	_check(fm.position_of(first, gs.party) == 1, "the card buttons do nothing in combat")
 
 
 ## hero_units / enemy_units line up with the data arrays and with the stage rows

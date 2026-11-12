@@ -58,6 +58,8 @@ var _mode: int = Mode.EXPLORE
 var _hero_units: Array = []
 var _enemy_units: Array = []
 var _viewed_hero: Dictionary = {}
+## "← Adelante" / "Atrás →" on the hero card: fix the formation between fights (P1-03b).
+var _formation_row: HBoxContainer
 var _combat_node_id: String = ""
 ## While choosing a target after pressing a skill/item: {"side": "enemy"|"ally",
 ## "skill": Dictionary} or {"side": ..., "item": String}. Empty when not choosing.
@@ -93,6 +95,7 @@ func _ready() -> void:
 	_combat.enemy_changed.connect(_refresh_all)
 	_combat.combat_over.connect(_on_combat_over)
 	_build_equip_row()
+	_build_formation_row()
 	$Stage/EnemyInfo/VBox/Head/Close.pressed.connect(_hide_enemy_info)
 	_show_page(false)
 	_view_hero(_first_living_hero())
@@ -407,6 +410,14 @@ func _enemy_skill_summary(sk: Dictionary) -> String:
 		parts.append("+%d%% a fichados" % int(sk["vs_marked_pct"]))
 	if bool(sk.get("ignores_guard", false)):
 		parts.append("ignora la guardia")
+	# Reach (P1-03a) and forced moves (P1-03b).
+	if str(sk.get("target", "single")) != "party":
+		parts.append("alcanza %s" % FormationScript.ranks_text(FormationScript.target_ranks(sk)))
+	var mt: int = int(sk.get("move_target", 0))
+	if mt != 0:
+		parts.append("jala %d adelante" % -mt if mt < 0 else "empuja %d atrás" % mt)
+	if bool(sk.get("shuffle_target", false)):
+		parts.append("revuelve la posición")
 	if int(sk.get("light", 0)) != 0:
 		parts.append("luz %+d" % int(sk["light"]))
 	if int(sk.get("steal_colones", 0)) > 0:
@@ -460,6 +471,47 @@ func _build_equip_row() -> void:
 	$BottomPanel/Row/HeroInfo.add_child(row)
 
 
+## Between fights the player can fix the formation (fights, Moverse and enemy shoves leave it
+## changed). In combat the card hides these: "Moverse" on the action bar does it there.
+func _build_formation_row() -> void:
+	_formation_row = HBoxContainer.new()
+	_formation_row.add_theme_constant_override("separation", 4)
+	for spec in [[-1, "← Adelante", "Pasar una posición hacia adelante (más cerca de los enemigos)."],
+			[1, "Atrás →", "Pasar una posición hacia atrás."]]:
+		var b := Button.new()
+		b.text = spec[1]
+		b.tooltip_text = spec[2]
+		b.add_theme_font_size_override("font_size", 12)
+		b.focus_mode = Control.FOCUS_NONE
+		var delta: int = spec[0]
+		b.pressed.connect(func(): _reorder_party(_viewed_hero, delta))
+		_formation_row.add_child(b)
+	$BottomPanel/Row/HeroInfo.add_child(_formation_row)
+
+
+## Moves a hero one position in the formation outside combat (data, units and stage row).
+func _reorder_party(hero: Dictionary, delta: int) -> void:
+	if _mode == Mode.COMBAT or hero.is_empty() or hero.get("dead", false):
+		return
+	var before: int = FormationScript.position_of(hero, GameState.party)
+	var order: Array = FormationScript.move_by(GameState.party, hero, delta)
+	var units: Array = []
+	for h in order:
+		for u in _hero_units:
+			if is_same(u.data, h):
+				units.append(u)
+	if units.size() != order.size():
+		return
+	for k in order.size():
+		GameState.party[k] = order[k]
+		_hero_units[k] = units[k]
+		_hero_row.move_child(units[k], k)
+	var after: int = FormationScript.position_of(hero, GameState.party)
+	if after != before:
+		_log_line("%s pasa a la posición %d." % [hero.get("name", "?"), after], "88aacc")
+	_refresh_all()
+
+
 func _on_equipment_changed(message: String) -> void:
 	if message != "":
 		_log_line(message, "aaaaaa")
@@ -492,6 +544,13 @@ func _view_hero(hero: Dictionary) -> void:
 		var u = _hero_units[k]
 		if _mode != Mode.COMBAT:
 			u.set_active(is_same(u.data, hero))
+	if _formation_row != null:
+		var pos: int = FormationScript.position_of(hero, GameState.party) if not hero.is_empty() else 0
+		var n: int = FormationScript.living(GameState.party).size()
+		_formation_row.visible = _mode != Mode.COMBAT and pos > 0
+		if _formation_row.get_child_count() == 2:
+			_formation_row.get_child(0).disabled = pos <= 1
+			_formation_row.get_child(1).disabled = pos >= n
 	if hero.is_empty():
 		return
 	var p: String = "res://assets/portraits/%s.png" % str(hero.get("hero_id", ""))

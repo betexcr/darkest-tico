@@ -90,6 +90,14 @@ static func body_for(sk: Dictionary) -> String:
 	var who: String = {"self": "a sí mismo", "ally": "al aliado elegido", "party": "a toda la cuadrilla"}.get(str(sk.get("target", "")), "")
 	if who != "":
 		parts.append("Objetivo: " + who)
+	# Forced moves (P1-03b).
+	var mt: int = int(sk.get("move_target", 0))
+	if mt < 0:
+		parts.append("Lo jala %d posición%s hacia adelante" % [-mt, "" if mt == -1 else "es"])
+	elif mt > 0:
+		parts.append("Lo empuja %d posición%s hacia atrás" % [mt, "" if mt == 1 else "es"])
+	if bool(sk.get("shuffle_target", false)):
+		parts.append("Lo revuelve a otra posición")
 	# Battlefield positions (P1-03a): where it is used from and which enemy positions it reaches.
 	if sk.has("use_ranks"):
 		var where: String = "Desde posición %s" % FormationScript.ranks_text(FormationScript.use_ranks(sk))

@@ -255,8 +255,9 @@ def main() -> int:
         known_el = {"fuego", "hielo", "rayo", "agua", "tierra", "viento", "sagrado", "oscuridad"}
         if not en.get("elements"):
             errors.append(f"enemies.json: '{eid}' needs elemental affinities (owner rule)")
+        cat_ids = {c["id"] for c in statuses_raw.get("resist_categories", [])}
         for st in (en.get("status_resist") or {}):
-            if st not in ailments:
+            if st not in ailments and st not in cat_ids:
                 errors.append(f"enemies.json: '{eid}' resists unknown status '{st}'")
         for e in en.get("elements", {}):
             if e not in known_el:
@@ -296,6 +297,29 @@ def main() -> int:
         first = hero.get("skill_ids", [None])[0] if hero.get("skill_ids") else None
         if skills.get(first, {}).get("kind") != "attack":
             errors.append(f"heroes.json: hero '{hid}' must start with its basic attack (first skill, kind attack)")
+
+    # Forced moves (P1-03b): move_target / shuffle_target only on skills that hit one unit on
+    # the other side; status "resist" aliases must name a resist category.
+    cat_ids_all = {c["id"] for c in statuses_raw.get("resist_categories", [])}
+    for sid_, st_ in status_defs.items():
+        if "resist" in st_ and st_["resist"] not in cat_ids_all:
+            errors.append(f"statuses.json: '{sid_}' resist alias '{st_['resist']}' is not a resist category")
+
+    def check_moves(where: str, x: dict, single: bool) -> None:
+        if "move_target" in x:
+            mt = x["move_target"]
+            if not isinstance(mt, int) or isinstance(mt, bool) or mt == 0 or not -3 <= mt <= 3:
+                errors.append(f"{where}: move_target must be a non-zero int in -3..3")
+        if "shuffle_target" in x and not isinstance(x["shuffle_target"], bool):
+            errors.append(f"{where}: shuffle_target must be true/false")
+        if ("move_target" in x or x.get("shuffle_target")) and not single:
+            errors.append(f"{where}: move_target/shuffle_target only on single-target skills that hit the other side")
+
+    for sid_, sk_ in skills.items():
+        check_moves(f"skills.json: '{sid_}'", sk_, sk_.get("target") == "enemy")
+    for eid_, en_ in enemies.items():
+        for x in en_.get("skills", []):
+            check_moves(f"enemies.json: '{eid_}.{x.get('id')}'", x, x.get("target", "single") != "party")
 
     # Formation (P1-03a): battlefield positions 1-4 (1 = front). See scripts/domain/formation.gd.
     def positions_ok(v):

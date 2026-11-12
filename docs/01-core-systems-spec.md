@@ -52,7 +52,20 @@ Implemented (P1-03a). Rules: `scripts/domain/formation.gd`; combat: `combat_cont
   - Every class has an attack that reaches enemy position 1 from one of its own positions.
   - Every enemy can hit hero position 1, or the whole party, from anywhere.
 - **Hub:** each hero row warns "⚠ fuera de posición (ideal 1–2)" when the hero stands outside their class's positions. The hero card in the expedition shows "Posición N (ideal …)".
-- **Not built yet (P1-03b):** skills that push or pull, enemy shuffles, and a status that stops moving.
+- **Forced moves (P1-03b):**
+  - A single-target skill may have `move_target: N`: the unit hit moves N positions on its side, negative toward the front, positive toward the back. The others shift to make room.
+  - `shuffle_target: true` sends the unit hit to a random other position.
+  - Moves happen after the hit (if the unit is still alive), shown as "¡Empujado!", "¡Jalado!" or "¡Revuelto!".
+  - They are resisted with **Empujones** (`status_resist.movimiento`).
+  - Current content:
+    - Retén pulls an enemy from position 2–3 one forward.
+    - Patada de Corral pushes one back.
+    - The Peón penado's Cadenazo drags a hero forward.
+    - The Duende's Travesura shuffles the hero hit.
+- **Amarrado** (root, from the Sombra de cuadrilla's Sombra que pesa):
+  - The unit can't move: no Moverse, nobody can swap with it, no forced moves, and enemies can't "reacomodarse".
+  - It is resisted with Empujones (the `resist: "movimiento"` alias in `statuses.json`).
+- **Between fights:** the formation carries over from fight to fight. Outside combat, the hero card has "← Adelante" / "Atrás →" to fix it.
 
 ### 2.2 Turn Order
 
@@ -102,7 +115,7 @@ Implemented (P1-05, `CombatResolver.death_save_chance`):
 ### 2.5 Status Types
 
 - Damage-over-time: bleed, burn, rot.
-- Control: stun, pull, push, root.
+- Control: stun, pull, push, root. (Stun: Atarantado. Pull, push and shuffle: `move_target` / `shuffle_target`. Root: Amarrado. See §2.1.)
 - Utility: mark, guard, riposte, stealth, taunt.
 - Mental: fear, paranoia, panic spikes.
 

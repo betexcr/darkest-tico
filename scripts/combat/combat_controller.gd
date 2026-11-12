@@ -6,6 +6,7 @@ extends Node
 
 const COLOR_MISS := Color(0.85, 0.85, 0.85)
 const COLOR_CRIT := Color(1.0, 0.82, 0.3)
+const COLOR_MOVE := Color(0.55, 0.75, 0.9)
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
@@ -35,6 +36,8 @@ var is_elite: bool = false
 var is_boss: bool = false
 var is_ambush: bool = false
 
+## Forced moves from this action's hits ({unit, skill}), applied after the animations.
+var _queued_moves: Array = []
 var _round: int = 0
 var _turn_queue: Array = []
 var _turn_index: int = 0
@@ -225,7 +228,9 @@ func pass_turn() -> void:
 
 ## Heroes the acting hero can swap places with ("Moverse": the living neighbours).
 func move_options(hero: Dictionary) -> Array:
-	return FormationScript.neighbours(hero, party)
+	if not FormationScript.can_move(hero):
+		return []
+	return FormationScript.neighbours(hero, party).filter(func(h): return FormationScript.can_move(h))
 
 
 ## "Moverse": the acting hero swaps places with an adjacent hero. Spends the turn.
@@ -266,6 +271,7 @@ func spend_turn_on_equipment() -> void:
 func _after_action(enemy_before: Array, party_before: Array) -> void:
 	await _animate_enemy_changes(enemy_before)
 	await _animate_party_changes(party_before)
+	await _apply_queued_moves()
 	_busy = false
 	_turn_index += 1
 	if _check_end():
@@ -526,6 +532,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		# Weapon effects (items.json "on_hit").
 		for ap in hero.get("on_hit", []):
 			_try_apply(enemy, ap, crit, "")
+		_queue_move(enemy, skill)
 	_enemy_riposte(enemy, hero)
 	var cost: int = int(skill.get("self_stress", 0))
 	if cost > 0:
@@ -585,6 +592,8 @@ func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
 ## Nothing in reach: the enemy steps one position toward its preferred ones (its "ranks").
 func _enemy_reposition(enemy: Dictionary) -> void:
 	var other: Dictionary = FormationScript.step_toward(enemy, enemies, enemy.get("ranks", []))
+	if not FormationScript.can_move(enemy) or (not other.is_empty() and not FormationScript.can_move(other)):
+		other = {}
 	if other.is_empty():
 		_log("%s no alcanza a nadie y espera." % enemy.get("name", "?"), "999999")
 		return
@@ -689,6 +698,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		if not t.get("dead", false):
 			for ap in _applies_list(skill.get("applies", null)):
 				_try_apply(t, ap, false, "  ")
+			if single:
+				_queue_move(t, skill)
 		if single:
 			await _hero_riposte(t, enemy)
 	for ap in _applies_list(skill.get("self_applies", null)):
@@ -703,6 +714,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		GameState.colones -= taken
 		_log("Se llevó %d colones." % taken, "aa8866")
 	await _animate_party_changes(party_before)
+	await _apply_queued_moves()
 
 
 ## `physical`: protection and Guard apply. `direct`: a hit from an attack (Santiguado can
@@ -852,6 +864,78 @@ func _swap_units(side: Array, units: Array, a: Dictionary, b: Dictionary) -> voi
 		var tmp = units[ia]
 		units[ia] = units[ib]
 		units[ib] = tmp
+	_sync_rows()
+
+
+## Push / pull / shuffle (P1-03b): remember the hit; it is applied after the animations.
+func _queue_move(unit: Dictionary, skill: Dictionary) -> void:
+	if int(skill.get("move_target", 0)) != 0 or bool(skill.get("shuffle_target", false)):
+		_queued_moves.append({"unit": unit, "skill": skill})
+
+
+func _apply_queued_moves() -> void:
+	var moves: Array = _queued_moves
+	_queued_moves = []
+	for m in moves:
+		await _force_move(m["unit"], m["skill"])
+
+
+## Moves a unit that was hit: move_target N positions (negative = front) or shuffle_target
+## (random position). Amarrado units don't move; "movimiento" (Empujones) resists.
+func _force_move(unit: Dictionary, skill: Dictionary) -> void:
+	if not FormationScript.is_alive(unit):
+		return
+	var is_hero: bool = party.any(func(h): return is_same(h, unit))
+	var side: Array = party if is_hero else enemies
+	var units: Array = hero_units if is_hero else enemy_units
+	var who: String = str(unit.get("name", "?"))
+	var u = _unit_for_hero(unit) if is_hero else _unit_for_enemy(unit)
+	var alive: int = FormationScript.living(side).size()
+	var before: int = FormationScript.position_of(unit, side)
+	var shuffle: bool = bool(skill.get("shuffle_target", false))
+	var delta: int = int(skill.get("move_target", 0))
+	var target_pos: int = before + delta
+	if shuffle:
+		if alive <= 1:
+			return
+		var spots: Array = range(1, alive + 1).filter(func(p): return p != before)
+		target_pos = int(spots[randi() % spots.size()])
+	target_pos = clampi(target_pos, 1, alive)
+	if target_pos == before:
+		return
+	if StatusEffectsScript.has(unit, "amarrado"):
+		_log("  %s está amarrado: no se mueve." % who, "999999")
+		return
+	var r: int = StatusEffectsScript.resist_chance(unit, "movimiento")
+	if r > 0 and randi() % 100 < r:
+		_log("  %s aguanta el empujón y no se mueve." % who, "999999")
+		if u != null:
+			u.float_text("Aguanta", COLOR_MISS)
+		return
+	_reorder_side(side, units, FormationScript.move_to(side, unit, target_pos))
+	var word: String = "¡Revuelto!" if shuffle else ("¡Jalado!" if target_pos < before else "¡Empujado!")
+	_log("  %s pasa a la posición %d (%s)." % [who, target_pos, word.trim_prefix("¡").trim_suffix("!").to_lower()], "88aacc")
+	if u != null:
+		u.float_text(word, COLOR_MOVE)
+	_refresh_units()
+	_refresh_markers()
+	await get_tree().create_timer(0.25).timeout
+
+
+## Put `side` (and its index-aligned units) in `new_order`, then sync the stage row.
+func _reorder_side(side: Array, units: Array, new_order: Array) -> void:
+	var new_units: Array = []
+	for d in new_order:
+		var idx: int = -1
+		for k in side.size():
+			if is_same(side[k], d):
+				idx = k
+		new_units.append(units[idx] if idx >= 0 and idx < units.size() else null)
+	for k in side.size():
+		side[k] = new_order[k]
+	if units.size() == side.size():
+		for k in units.size():
+			units[k] = new_units[k]
 	_sync_rows()
 
 

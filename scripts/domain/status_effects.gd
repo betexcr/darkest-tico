@@ -131,8 +131,11 @@ static func entries(unit: Dictionary) -> Array:
 static func resist_chance(unit: Dictionary, status: String) -> int:
 	var r: int = 0
 	var table = unit.get("status_resist", {})
+	# A status may be resisted with another category's value (statuses.json "resist"),
+	# e.g. Amarrado with "movimiento" (Empujones).
+	var key: String = str(def(status).get("resist", status)) if defs().has(status) else status
 	if table is Dictionary:
-		r = int(table.get(status, 0))
+		r = int(table.get(key, 0))
 	if status == "aturdido":
 		r += stack_count(unit, "espabilado") * int(data().get("espabilado_stun_resist", 50))
 	return clampi(r, 0, 100)

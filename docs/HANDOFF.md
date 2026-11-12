@@ -17,6 +17,41 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (later) — P1-03b — Push, pull, shuffle, Amarrado, and fixing the formation between fights
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-03b review. P1-03 is now fully built (a and b both in review).
+- **Changed:**
+  - `scripts/domain/formation.gd`: `can_move` (alive and not Amarrado), plus `move_by` / `move_to`. These insert rather than swap, so the others shift, and the dead stay at the back.
+  - `combat_controller.gd`:
+    - Hits queue their forced moves (`_queue_move`). `_apply_queued_moves` runs after the hit animations, because the snapshots are index-based.
+    - `_force_move` handles Amarrado, the Empujones roll, the log and the popup. `_reorder_side` keeps data, units and stage rows aligned.
+    - `move_options` and `_enemy_reposition` respect Amarrado.
+  - Data:
+    - `statuses.json`: Amarrado status (`resist: "movimiento"` alias) and an Empujones (`movimiento`) resist category.
+    - Empujones values for every class and enemy.
+    - Retén (reaches 2–3, pulls 1), Patada de Corral (pushes 1), Cadenazo (pulls a hero 1), Travesura (shuffle), Sombra que pesa (+50% Amarrado 2 turns). Descriptions and `_doc` strings updated.
+  - `status_effects.gd`: the `resist` alias in `resist_chance`.
+  - UI:
+    - Skill tooltips: "Lo empuja / Lo jala / Lo revuelve".
+    - Enemy info: reach and moves.
+    - Hero card: "← Adelante / Atrás →" outside combat (`_reorder_party`).
+  - `tools/validate_data.py`: `move_target` / `shuffle_target` rules, `resist` aliases, and enemy resist keys may be categories.
+  - `tools/art_manifest.json`: `status_amarrado` queued, not generated. The validator warns about it, and an "M" letter badge shows until then.
+  - Tests: `test_formation.gd` (now 56 checks), with screenshots in `formation_screenshot.gd`.
+  - Docs: 01 §2.1, §2.5; 03; AGENTS.md §4.
+- **Verified:**
+  - `validate_data.py` 0 errors, 1 warning (the icon above).
+  - Godot 4.7.2: all 10 test scripts 0 failures, no errors.
+  - Screenshots checked: the push popup and log, the enemies re-laid out, the Amarrado badge, and the reorder buttons on the hero card.
+- **Not verified / risks:**
+  - Balance of the push/pull content and of the Empujones values.
+  - The smoke bot won 1/3 this run (deadlier since P1-05).
+  - The Amarrado icon needs `python tools/sd_local.py --only status_amarrado` on a machine with the SD model.
+- **Decisions needed:** none.
+- **Next step:** P1-06 (balance constants to data, now unblocked by P1-05). Create `data/balance.json` and move `CombatResolver` and `StressSystem` constants into it. The numbers to move are listed at the top of `scripts/domain/combat_resolver.gd`.
+
+---
+
 ## 2026-11-12 — P1-05 — Spec-accurate Al Borde and crit stress
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-05 review. Owner decisions 2026-11-11: surviving the death roll stays Al Borde at 0 PV; crits work as in Darkest Dungeon.

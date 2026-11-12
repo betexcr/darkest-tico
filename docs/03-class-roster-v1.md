@@ -38,7 +38,7 @@ Role model follows DD tactical ranks and FF-style clarity.
   - `Mecatazo` (basic attack): lash with the lasso rope; may tangle (Salado, less dodge).
   - `Entrada Brava`: taunt + prot buff.
   - `Monta Firme`: gains riposte when hit.
-  - `Patada de Corral`: push and stun chance.
+  - `Patada de Corral`: push and stun chance. (Built, P1-03b: `move_target: 1`.)
   - `No Me Tumban`: death-save buff.
 
 ## 3) Guachiman Jubilado
@@ -50,7 +50,7 @@ Role model follows DD tactical ranks and FF-style clarity.
   - `Silbatazo`: enemy accuracy down.
   - `Escudo de Barrio`: guard + block stacks.
   - `Ronda Nocturna`: reveals stealth and marks.
-  - `Reten`: pull enemy forward.
+  - `Reten`: pull enemy forward. (Built, P1-03b: reaches enemy positions 2–3, `move_target: -1`.)
 
 ## 4) Abuela Sabia
 

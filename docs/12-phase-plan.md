@@ -101,9 +101,9 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [x] Unit tests (`tests/test_formation.gd`)
 
 ### P1-03b · M · Push, pull and shuffle effects
-- Status: `todo` · Depends: P1-03a
+- Status: `review` (Claude Code, `main`, 2026-11-12; owner to try Retén / Patada and the Duende in a fight) · Depends: P1-03a
 - Spec: `03` (Retén "pull enemy forward", Patada de Corral "push and stun chance"), `01` §2.5 (Control: stun, pull, push, root)
-- Done when: [ ] skills can push/pull enemies and heroes by N positions; [ ] enemy skills that shuffle the party; [ ] a status that stops moving (root) and its resist
+- Done when: [x] skills can push/pull enemies and heroes by N positions; [x] enemy skills that shuffle the party; [x] a status that stops moving (root: Amarrado) and its resist (Empujones); [x] fix the formation between fights (hero card)
 
 ### P1-04 · M · Status effect engine
 - Status: `review` (all in, tested headless; needs a human playtest) · Depends: P1-02

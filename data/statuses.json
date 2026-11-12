@@ -1,5 +1,5 @@
 {
-  "_doc": "Combat status effects (owner request 2026-11-08: all Darkest Dungeon status effects, Tico names). Rules live in scripts/domain/status_effects.gd. Stored on a unit as unit.statuses[id] = {stacks: [{turns, value, mods}], ...}. kind: negative effects can be resisted (unit.status_resist[id] = % chance) and cured; positive ones cannot be resisted. stacks: each application adds its own stack (DoTs, buffs, debuffs); otherwise a new application refreshes the single one. Not implemented yet: Move/Shuffle (need formation ranks, plan P1-03); Daze is PvP-only in the original.",
+  "_doc": "Combat status effects (owner request 2026-11-08: all Darkest Dungeon status effects, Tico names). Rules live in scripts/domain/status_effects.gd. Stored on a unit as unit.statuses[id] = {stacks: [{turns, value, mods}], ...}. kind: negative effects can be resisted (unit.status_resist[id] = % chance) and cured; positive ones cannot be resisted. stacks: each application adds its own stack (DoTs, buffs, debuffs); otherwise a new application refreshes the single one. Moves (P1-03b): skills with move_target / shuffle_target move the unit hit; it resists with status_resist.movimiento ('Empujones'). A status may set resist: <category> to be resisted with another category's value (Amarrado uses movimiento). Daze is PvP-only in the original.",
   "default_turns": 3,
   "crit_dot_turns": 5,
   "statuses": {
@@ -124,6 +124,15 @@
       "letter": "~",
       "description": "Escondido: no lo pueden atacar con golpes a un solo objetivo mientras haya otros blancos. Se descubre al atacar."
     },
+    "amarrado": {
+      "name": "Amarrado",
+      "kind": "negative",
+      "stacks": false,
+      "color": "#6b4a2b",
+      "letter": "M",
+      "resist": "movimiento",
+      "description": "Bien amarrado: no puede moverse ni cambiar de lugar, y nadie lo puede empujar, jalar ni revolver."
+    },
     "guardia": {
       "name": "En guardia",
       "kind": "positive",
@@ -210,6 +219,11 @@
       "id": "salado",
       "name": "Salado",
       "icon": "salado"
+    },
+    {
+      "id": "movimiento",
+      "name": "Empujones",
+      "icon": "movimiento"
     },
     {
       "id": "susto",
