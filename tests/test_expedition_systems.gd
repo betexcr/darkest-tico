@@ -26,9 +26,50 @@ func _run() -> void:
 	_test_light(gs)
 	_test_hunger(gs)
 	await _test_traps(gs)
+	await _test_curios(gs)
+	_test_items(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
+
+
+## Stand-in for BattleUnit (the combat controller in instant mode, as in tools/sim_combat.gd).
+class StubUnit extends RefCounted:
+	const COLOR_STRESS := Color.WHITE
+	var data: Dictionary
+
+	func _init(d: Dictionary) -> void:
+		data = d
+
+	func play_action(_k: String = "") -> void:
+		pass
+
+	func play_hurt(_a: int = 0, _c: bool = false) -> void:
+		pass
+
+	func play_death(_a: int = 0, _c: bool = false) -> void:
+		pass
+
+	func play_heal(_a: int = 0, _s: int = 0) -> void:
+		pass
+
+	func float_text(_t: String = "", _c: Color = Color.WHITE) -> void:
+		pass
+
+	func refresh() -> void:
+		pass
+
+	func set_active(_on: bool = false) -> void:
+		pass
+
+	func set_targeted(_on: bool = false) -> void:
+		pass
+
+	func is_dead() -> bool:
+		return bool(data.get("dead", false))
+
+	func get_parent():
+		return null
 
 
 func _hero(hp: int = 10) -> Dictionary:
@@ -244,3 +285,75 @@ func _test_traps(gs) -> void:
 	screen.queue_free()
 	await process_frame
 	gs.mission_light = 100
+
+
+func _test_curios(gs) -> void:
+	print("Curios per doc 07 (P2-09)")
+	var se = load("res://scripts/domain/status_effects.gd")
+	var camp = load("res://scripts/domain/camping_system.gd")
+	var altar: Dictionary = gs.get_curio("altar_roto")
+	var curse: Dictionary = altar["blind"].filter(func(o): return o.has("debuff"))[0]
+	for p in gs.party:
+		p["camp_buffs"] = []
+		p["stress"] = 0
+	var acc0: int = se.stat(gs.party[0], "accuracy")
+	gs.apply_event_outcome(curse)
+	_check(gs.party.all(func(p): return p["camp_buffs"].size() == 1 and str(p["camp_buffs"][0]["name"]) == "Maldición del altar"), "Altar roto (blind): the whole party is cursed")
+	_check(se.stat(gs.party[0], "accuracy") == acc0 - 5 and str(gs.party[0]["camp_buffs"][0]["from"]) == "lugar extraño", "the curse counts in combat stats (-5 precisión) and says where it came from")
+	_check(camp.is_debuff(gs.party[0]["camp_buffs"][0]["mods"]) and not camp.is_debuff({"stress_pct": -10}), "a curse is shown as a debuff; less stress taken is a buff")
+	for k in 3:
+		for p in gs.party:
+			camp.tick_fight(p)
+	_check(gs.party.all(func(p): return p["camp_buffs"].is_empty()), "the curse wears off after 3 fights")
+
+	var fever: Dictionary = gs.get_curio("arbol_amarillo")["blind"].filter(func(o): return o.has("debuff"))[0]
+	gs.apply_event_outcome(fever)
+	_check(gs.party.filter(func(p): return not p["camp_buffs"].is_empty()).size() == 1, "Árbol amarillo (blind): one hero gets Fiebre")
+	for p in gs.party:
+		p["camp_buffs"] = []
+		p["hp"] = p["hp_max"]
+		p["status_resist"] = {}
+	var pozo: Dictionary = gs.get_curio("pozo_seco")["blind"].filter(func(o): return o.has("applies"))[0]
+	gs.apply_event_outcome(pozo)
+	var fell: Array = gs.party.filter(func(p): return int(p["hp"]) < int(p["hp_max"]))
+	_check(fell.size() == 1 and se.has(fell[0], "susto"), "Pozo seco (blind): the one who falls gets Susto")
+	gs.reset_party_from_catalog()
+	gs.start_mission()
+
+	# Ambush outcomes (caja, radio) start a fight in which the enemies act first.
+	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	gs.mission_nodes_index["sim_curio"] = {"id": "sim_curio", "type": "curio", "curio_id": "caja_abuelo", "label": "Caja del abuelo"}
+	gs.current_node_id = "sim_curio"
+	var caja_bad: Dictionary = gs.get_curio("caja_abuelo")["blind"].filter(func(o): return o.has("ambush"))[0]
+	screen._apply_outcome(str(caja_bad["text"]), caja_bad)
+	var n: int = gs.combat_context.get("enemies", []).size()
+	_check(int(screen._mode) == 2 and bool(gs.combat_context.get("is_ambush", false)) and n >= 1 and n <= 2, "Caja del abuelo (blind): an ambush of %d enemies, enemies first" % n)
+	_check(screen._combat.is_ambush, "the fight opens as an ambush")
+	screen.queue_free()
+	for i in 5:
+		await process_frame
+	gs.mission_nodes_index.erase("sim_curio")
+
+
+func _test_items(gs) -> void:
+	print("Items (P2-09)")
+	gs.reset_party_from_catalog()
+	gs.start_mission()
+	gs.inventory.clear()
+	gs.add_item("bombeta", 1)
+	var se = load("res://scripts/domain/status_effects.gd")
+	var cc = load("res://scripts/combat/combat_controller.gd").new()
+	cc.instant = true
+	root.add_child(cc)
+	var foe := {"id": "x", "name": "Bicho", "hp": 30, "hp_max": 30, "speed": -50, "dodge": 0, "accuracy": 0, "ranks": [1, 2, 3, 4],
+		"skills": [{"name": "Nada", "basic": true, "damage": [0, 0], "target_ranks": [1, 2, 3, 4]}]}
+	se.apply(foe, "santiguado", 0, 1, {"ignore_resist": true})
+	var party: Array = gs.party
+	cc.start(party, [foe], party.map(func(h): return StubUnit.new(h)), [StubUnit.new(foe)], false, false, false, true)
+	_check(not cc.active_hero().is_empty(), "a hero is up first (enemies surprised)")
+	cc.use_item("bombeta", {})
+	_check(int(foe["hp"]) == 30 and not se.has(foe, "santiguado") and gs.item_count("bombeta") == 0, "a thrown bombeta is blocked by Santiguado (and uses it up)")
+	cc._ended = true
+	cc.queue_free()

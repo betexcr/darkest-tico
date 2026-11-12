@@ -1,5 +1,5 @@
 {
-  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item). colones may be a number or a [min, max] range.",
+  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
   "curios": [
     {
       "id": "altar_roto",
@@ -14,8 +14,9 @@
       "blind": [
         {
           "weight": 50,
-          "text": "Rezan sin fe. Algo responde desde abajo.",
-          "stress_party": 8
+          "text": "Rezan sin fe. Algo responde desde abajo, y se les pega.",
+          "stress_party": 8,
+          "debuff": { "name": "Maldición del altar", "mods": { "accuracy": -5, "stress_pct": 10 }, "fights": 3, "party": true }
         },
         {
           "weight": 50,
@@ -45,8 +46,8 @@
         },
         {
           "weight": 50,
-          "text": "El candado tenía una trampa de clavos.",
-          "damage_random": 5
+          "text": "¡La caja tenía dueño! Algo sale de adentro, y no viene solo.",
+          "ambush": [1, 2]
         }
       ]
     },
@@ -67,9 +68,10 @@
         },
         {
           "weight": 60,
-          "text": "Alguien se asoma de más y cae al fondo.",
+          "text": "Alguien se asoma de más y cae al fondo. Allá abajo algo le respira en la nuca.",
           "damage_random": 6,
-          "stress_party": 4
+          "stress_party": 4,
+          "applies": { "status": "susto", "turns": 3, "value": 4 }
         }
       ]
     },
@@ -81,7 +83,8 @@
       "key_text": "Una limpia con ruda bajo el árbol. El aire se vuelve dulce.",
       "key_outcome": {
         "stress_party": -10,
-        "heal_party": 3
+        "heal_party": 3,
+        "buff": { "name": "Limpia de ruda", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
       },
       "blind": [
         {
@@ -91,8 +94,9 @@
         },
         {
           "weight": 40,
-          "text": "El polen marea y enferma.",
-          "damage_random": 4
+          "text": "El polen marea y enferma. A alguien le sube la fiebre.",
+          "damage_random": 4,
+          "debuff": { "name": "Fiebre del árbol", "mods": { "speed": -2, "dodge": -5 }, "fights": 4 }
         }
       ]
     },
@@ -113,8 +117,9 @@
         },
         {
           "weight": 50,
-          "text": "El ruido despierta algo. Todos se tensan.",
-          "stress_party": 6
+          "text": "El ruido despierta algo. Ya vienen por el pasillo.",
+          "stress_party": 6,
+          "ambush": [1, 2]
         }
       ]
     }

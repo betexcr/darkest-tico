@@ -1,10 +1,11 @@
 # Implementation notes (runtime tuning)
 
-## Luz / Oscuridad (slice 1)
+## Luz / Oscuridad (P1-17)
 
-- **Decay:** Each move between nodes reduces `mission_light` by `light_decay_per_move` from the active region JSON (default **5** per step in [data/regions/sotanos.json](data/regions/sotanos.json)).
-- **Low-light stress:** After a move, if `mission_light` is **below** `low_light_threshold` (default **40**), **one random living hero** gains `low_light_stress` (default **3**) stress, clamped to `stress_max`.
-- Source of truth for intent: [01-core-systems-spec.md](01-core-systems-spec.md) (expedition / pressure meter).
+- **Decay:** each move between rooms lowers `mission_light` by the region's `light_decay_per_move` (8 in Sótanos and Bosque since 2026-11-12; it was 5, which never got below 40 on a Sótanos map). Town events can change it (`light_decay_pct`).
+- **Tiers:** `data/balance.json` `light.tiers` (Radiante, Tenue, Penumbra, Oscuro, Negro), read by `scripts/domain/light_system.gd`. They change enemy damage and crit, hero stress taken, loot, surprise and trap disarming. Walking in Oscuro or Negro adds stress per move. Table and rules: [01-core-systems-spec.md](01-core-systems-spec.md) §4.5.
+- **Apagar la candela:** an explore button, −25 Luz (`light.snuff`).
+- The old region fields `low_light_threshold` / `low_light_stress` are gone. "Low light" now means Penumbra or darker.
 
 ## Combat sim (P1-07)
 

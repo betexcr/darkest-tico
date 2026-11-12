@@ -193,6 +193,10 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 		"enemy":
 			var tgt: Dictionary = current_target()
 			var dmg: int = _elemental(ItemEffectsScript.damage_roll(item), str(item.get("effects", {}).get("element", "")), tgt)
+			if dmg > 0 and not tgt.is_empty() and StatusEffectsScript.use_aegis(tgt):
+				# Santiguado blocks a thrown item like any other hit.
+				_log("¡%s se santiguó: no le hace nada!" % tgt.get("name", "?"), "e6e0c8")
+				dmg = 0
 			if dmg > 0 and not tgt.is_empty():
 				_apply_damage_to_enemy(tgt, dmg)
 				_log("%s recibe %d de daño." % [tgt.get("name", "?"), dmg], "ddbb55")

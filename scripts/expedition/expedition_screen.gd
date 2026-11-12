@@ -335,8 +335,9 @@ func _effects_bbcode(u: Dictionary) -> String:
 	for b in camp:
 		var n: int = int(b.get("fights", 0))
 		var when: String = "toda la expedición" if n >= 99 else "%d pelea%s" % [n, "" if n == 1 else "s"]
-		out.append("[color=#ffd27a][b]%s[/b][/color] [color=#bbbbbb](%s, %s)[/color] [%s]" % [
-			str(b.get("name", "?")), str(b.get("from", "fogata")), when,
+		var bad: bool = CampingSystemScript.is_debuff(b.get("mods", {}))
+		out.append("[color=#%s][b]%s[/b][/color] [color=#bbbbbb](%s, %s)[/color] [%s]" % [
+			"e07a6a" if bad else "ffd27a", str(b.get("name", "?")), str(b.get("from", "fogata")), when,
 			CampingSystemScript.mods_text(b.get("mods", {}))])
 	for e in list:
 		var id: String = str(e["id"])
@@ -894,7 +895,7 @@ func _apply_outcome(text: String, outcome: Dictionary) -> void:
 	if _check_wipe():
 		return
 	var amb = outcome.get("ambush", null)
-	if amb != null and amb != false:
+	if amb is Array or (amb is bool and amb):
 		_close_event()
 		_narrate(text)
 		GameState.ledger_add("ambushes")

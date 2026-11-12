@@ -194,10 +194,20 @@ static func _apply_effects(hero: Dictionary, eff: Dictionary, sk: Dictionary) ->
 
 # --- Camp buffs -------------------------------------------------------------------------
 
-static func add_buff(hero: Dictionary, source: String, name: String, mods: Dictionary, fights: int) -> void:
+## `from`: where it came from, shown on the hero card ("fogata", "lugar extraño", "trampa"…).
+static func add_buff(hero: Dictionary, source: String, name: String, mods: Dictionary, fights: int, from: String = "fogata") -> void:
 	if not hero.get("camp_buffs", null) is Array:
 		hero["camp_buffs"] = []
-	hero["camp_buffs"].append({"source": source, "name": name, "mods": mods.duplicate(), "fights": fights})
+	hero["camp_buffs"].append({"source": source, "from": from, "name": name, "mods": mods.duplicate(), "fights": fights})
+
+
+## A curse rather than a blessing: the mods hurt more than they help (stress_pct counts
+## the other way round: more stress taken is bad).
+static func is_debuff(mods: Dictionary) -> bool:
+	var score: int = 0
+	for k in mods:
+		score += -int(mods[k]) if str(k) == "stress_pct" else int(mods[k])
+	return score < 0
 
 
 ## One fight is over: every camp buff loses a fight; spent ones are removed.

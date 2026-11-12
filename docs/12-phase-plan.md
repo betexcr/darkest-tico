@@ -229,6 +229,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ## P3 — Hacienda baseline (campaign loop)
 
+### P2-09 · M · Curios per doc 07 + item and camp fixes
+- Status: `review` (Claude Code, `main`, 2026-11-12; owner to try the new bad outcomes) · Depends: P2-01
+- Spec: `07` §3, §6
+- Files: `data/curios.json`, `scripts/autoload/game_state.gd` (`apply_event_outcome`), `scripts/domain/camping_system.gd`, `scripts/combat/combat_controller.gd`, `scripts/expedition/expedition_screen.gd`
+- Done when:
+  - [x] Bad blind outcomes per doc 07: Maldición del altar (curse), the caja's ambush (mimic), Susto from the pozo, Fiebre del árbol (disease stand-in), the radio's noise ambush; Limpia de ruda buff with the key item
+  - [x] Event curses/blessings live with the camp buffs (counted down per fight), shown red/gold with their source
+  - [x] Thrown items respect Santiguado; camp ambush gets doc 07's exhausted +4%
+  - [ ] Real diseases (P3-06 Clínica) replace the Fiebre stand-in
+
 ### P3-01 · M · Weekly tick + roster lifecycle
 - Status: `review` (done 2026-11-07: `GameState.end_of_expedition_week()` — +1 week after every expedition, fallen heroes removed for good, Al Borde cleared, recruits rotate; roster up to 8, party of 4 chosen and ordered in the hub; save v5 with v4 migration; `tests/test_hub.gd`) · Depends: —
 - Spec: `02` §1, §12

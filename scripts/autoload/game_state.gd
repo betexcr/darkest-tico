@@ -265,7 +265,7 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 		if b is Dictionary and not victim.is_empty():
 			var fights: int = int(BalanceScript.req(b, "fights", "event %s" % key))
 			for h in (living if bool(b.get("party", false)) else [victim]):
-				CampingSystemScript.add_buff(h, "evento", str(b.get("name", "")), b.get("mods", {}), fights)
+				CampingSystemScript.add_buff(h, "evento", str(b.get("name", "")), b.get("mods", {}), fights, "lugar extraño")
 				logs.append("%s: %s (%s) por %d peleas." % [h.get("name", "?"), b.get("name", ""), CampingSystemScript.mods_text(b.get("mods", {})), fights])
 	if outcome.has("colones"):
 		var c = outcome["colones"]

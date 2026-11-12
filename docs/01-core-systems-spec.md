@@ -202,11 +202,51 @@ Implemented (P3-07). Data: `data/camp_skills.json`; rules: `scripts/domain/campi
 
 - Each expedition carries **1 leña** (`firewood_per_expedition`, or region `firewood`). Camping in a Fogata room spends it; the party may also walk on and come back later.
 - Camp phase:
-  1. **Meal** in gallo pinto (cost listed for 4 heroes, scaled down with fewer living): Festín 4 (+25% PV, −10 stress), Comida completa 2 (+10% PV), Media ración 1 (no effect), Ayuno 0 (−20% PV, never below 1; +15 stress).
+  1. **Meal** in gallo pinto (cost listed for 4 heroes, scaled down with fewer living): Festín 4 (+25% PV, −10 stress), Comida completa 2 (+10% PV), Media ración 1 (no effect), Ayuno 0 (−20% PV, never below 1; +15 stress). Any meal resets the travel hunger count (§4.6).
   2. **Respite: 12 points.** Each hero carries 4 camp skills (`camp_skill_ids`: 2 of the class + 2 shared). Each hero may use each of their skills once per camp. Targets: self, one companion, every companion, or the whole party. Effects: stress, % PV, cures, and buffs that last **4 fights** (same stat keys as statuses).
-  3. **Night ambush:** 12% base, +6% if Luz was under the low-light threshold, 0% if a watch skill was used (Dron vigía, Guardia de corral, Ronda con foco, Vigilia de oración). The ambush is a fight against 2–3 region monsters in which the enemies act first in round 1. It pays nothing.
-- After sleeping, Luz resets to 100.
+  3. **Night ambush:** 12% base, +6% if Luz is Penumbra or darker (§4.5), +4% if the living party's average stress is 50 or more (doc 07 §6 "exhausted"), 0% if a watch skill was used (Dron vigía, Guardia de corral, Ronda con foco, Vigilia de oración). The ambush is a fight against 2–3 region monsters in which the enemies act first in round 1. It pays nothing.
+- After sleeping, Luz resets to its maximum (`light.max`).
+- With no firewood left, the party can only warm their hands (`no_firewood_relief` stress).
 - Guardabosques del Arenal (swapping and learning camp skills, doc 02 §9) is not built yet.
+
+### 4.5 Luz (light) tiers
+
+Implemented (P1-17, owner 2026-11-12: DD torch). Data: `data/balance.json` `light`; rules: `scripts/domain/light_system.gd`.
+
+- Luz runs 0–100. It drops `light_decay_per_move` (8) per move. Candles raise it (candela de sebo +25, fósforos +15), and some enemy skills drain it. "Apagar la candela" lowers it on purpose (−25).
+- Five tiers. Darker is more dangerous and pays more:
+
+| Tier | Luz | Enemy dmg | Enemy crit | Hero stress taken | Loot | Party surprised | Enemies surprised | Trap disarm | Walking |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| Radiante | 76–100 | — | — | — | — | 0% | 15% | +15 | — |
+| Tenue | 51–75 | — | — | — | +10% | 5% | 10% | +5 | — |
+| Penumbra | 26–50 | +5% | +3 | +10% | +20% | 10% | 5% | — | — |
+| Oscuro | 1–25 | +10% | +6 | +20% | +35% | 15% | — | −10 | +3 stress to one hero per move |
+| Negro | 0 | +20% | +10 | +30% | +50% | 25% | — | −20 | +3 stress to every hero per move |
+
+- The combat effects read the live Luz, so a skill that drains it mid-fight matters.
+- **Surprise:** when the party is surprised, the enemies all act first in round 1, as in a night ambush. When the enemies are surprised, the heroes all act first. Boss fights and ambushes never roll surprise.
+- **Loot** multiplies the colones from fights and curios.
+- **Penumbra and darker** count as low light for the camp ambush.
+
+### 4.6 Travel hunger
+
+Implemented (P1-18, owner 2026-11-12: DD hunger checks). Data: `data/balance.json` `hunger`, region `provisions`; rules: `scripts/domain/camping_system.gd` (`travel_meal`).
+
+- Every **6 moves** the party stops to eat: **1 gallo pinto per living hero**. The choices are eat, share what there is, or go hungry.
+- Short of food, the most hurt heroes eat first.
+- A hero who doesn't eat loses **10% of max PV (never below 1)** and gains **+10 stress**.
+- A camp meal (§4.4) resets the count.
+- **Provisions:** each region lists recommended provisions (Sótanos: 10 gallo pinto, 3 candelas de sebo). Before leaving, the hacienda warns when the alforja is short and offers to buy what is missing.
+
+### 4.7 Traps and curios
+
+Implemented (P2-01, P2-09). Data: `data/traps.json`, `data/curios.json`. Both use the same outcome vocabulary (`GameState.apply_event_outcome`): damage, stress, statuses, curses and blessings that last some fights, loot, map reveals, ambushes.
+
+- **Damage outside combat follows the combat rule** (owner 2026-11-12): a hero who drops to 0 PV is Al Borde, and a hit while Al Borde rolls Golpe de gracia and can kill. If nobody is left standing, the expedition is lost. Hunger and fasting never kill.
+- **Traps (DD disarm):**
+  - **Desarmar:** chance = the party's best *trampa* value (each class's trap skill) + the Luz tier's bonus − the trap's difficulty, clamped 5–95%. Success clears the room and calms whoever spotted the trap. Failure springs it.
+  - **Pasar con cuidado:** costs 10 Luz, and the trap still springs 30% of the time.
 
 ## 5) Mission and Objective System
 
