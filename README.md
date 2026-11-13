@@ -43,7 +43,7 @@ Or double-click **`launch-editor.bat`** in this folder (edit the `GODOT` line in
 - **Hacienda hub**: roster summary, **Iniciar expedición** → point-to-point **map** (luz, comida, nodos).
 - **Expedición**: region JSON under `data/regions/`; trap/curio/camp/objective stubs; combat hands off to combat scene with per-node enemies.
 - **Combat**: 4v1, initiative per round, HP/stress, **Al Borde** at 0 HP; rewards during expeditions come from node JSON (hub-only “arcade” combat removed when not on mission).
-- **Save**: `user://save.json` (colones, week, party). Mid-expedition state is **not** persisted (abandon on load).
+- **Save**: `user://save.json` (colones, week, party), previous save kept as `save.json.bak`. Mid-expedition state is **not** persisted (abandon on load). Headless `-s` scripts (tests, tools) never read or write it.
 
 ## Art
 

@@ -17,6 +17,29 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (night, 4) — P1-19 — Tests and tools no longer touch the real save
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-19 `done`. New `todo` P1-20 (smoke expedition sometimes runs out of frames).
+- **Changed:**
+  - `scripts/autoload/save_service.gd`:
+    - `is_script_run()` (`-s`/`--script` on the command line, or the main loop has a script) turns saving off: tests, the sim and screenshot tools start from `reset_party_from_catalog()` and never read or write `user://save.json`.
+    - `save_to()` writes `save.json.tmp`, reads it back, moves the previous good save to `save.json.bak`, then renames the temp file into place.
+    - `load_from()` copies an unreadable save to `save.broken-<unix time>.json` and loads the `.bak` instead; a broken save never becomes the backup.
+    - `save_path` is a var so tests can use a scratch folder; JSON is parsed with `JSON.parse()` (no engine error spam on a broken file).
+  - `tests/test_save.gd` (new, 17 checks).
+  - AGENTS.md (verify list, §6 save note), README save line.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2: all 13 test scripts 0 failures, no `SCRIPT ERROR`; the real save's md5 was the same before and after the suite, the sim and 8 more smoke runs.
+  - One normal headless game start loaded the owner's save, wrote it back and left `save.json.bak` (same campaign: week 1, 5,000 ₡; only hero defaults filled in by `apply_save_data`).
+- **Not verified / risks:**
+  - The smoke expedition failed once in 27 runs: one fight outlasted the bot's 3000-frame cap (P1-20). It isn't from this change; both before and after, the bot played the catalog party.
+  - Tests used to start from whatever was in the owner's save; they now start from a fresh catalog party. All of them pass that way.
+- **Decisions needed:** none.
+- **Next step:** P1-08 (architecture doc), or P1-20 if the smoke flake gets in the way.
+
+---
+
 ## 2026-11-12 (night, 3) — P1-17, P1-18 — Accuracy in the dark, provision prices
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-17 and P1-18 still `review`. New `todo` P1-19 (tests must not touch the real save).

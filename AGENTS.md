@@ -30,7 +30,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
    - If Godot is installed (see [.cursor/rules/godot-runtime.mdc](.cursor/rules/godot-runtime.mdc); cloud agents may download the official 4.7.2 Linux build into their scratchpad, owner-approved 2026-11-07):
      - `godot --headless --path . --import` (first run / new files; generates `.uid` files — commit them)
      - `godot --headless --path . -s tests/smoke_expedition.gd` plays 3 full expeditions; must print `0 failure(s)` and no `SCRIPT ERROR`
-     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`, `tests/test_feedback.gd`, `tests/test_combat_items.gd`, `tests/test_progression.gd`, `tests/test_town_events.gd`, `tests/test_formation.gd`, `tests/test_balance.gd`, `tests/test_expedition_systems.gd`
+     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`, `tests/test_feedback.gd`, `tests/test_combat_items.gd`, `tests/test_progression.gd`, `tests/test_town_events.gd`, `tests/test_formation.gd`, `tests/test_balance.gd`, `tests/test_expedition_systems.gd`, `tests/test_save.gd`
    - If you could not verify something (for example, no Godot in a cloud container), **say so explicitly** in the handoff.
 2. **Update the plan**: set your task's status to `done`, `review` (works but needs a human check), `blocked — <why>`, or leave it `in-progress` with a note. Tick any finished acceptance checkboxes.
 3. **Write the handoff entry**: add it at the **top** of [docs/HANDOFF.md](docs/HANDOFF.md) using the template there. The **Next step** line must be specific enough that a fresh agent can act on it without reading the conversation.
@@ -69,7 +69,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 ## 6. Repo facts agents keep re-discovering
 
 - Engine: Godot 4.7 (moved from 4.6 on 2026-11-11), GDScript, Forward+. Main scene `scenes/bootstrap/main.tscn`. Autoloads: `GameState`, `SaveService`, `TooltipStyler`.
-- `GameState` (`scripts/autoload/game_state.gd`) owns all run and campaign state. Save is `user://save.json`, `SAVE_VERSION` in that file. Bump it and add migration in `apply_save_data` when you change the shape.
+- `GameState` (`scripts/autoload/game_state.gd`) owns all run and campaign state. Save is `user://save.json`, `SAVE_VERSION` in that file. Bump it and add migration in `apply_save_data` when you change the shape. `SaveService` (P1-19) is off while a `-s` script runs (tests, sim and screenshot tools start from a fresh catalog party and never touch the owner's save), writes through a temp file + `save.json.bak`, and copies an unreadable save aside (`save.broken-<time>.json`) before loading the `.bak`.
 - Language: in-game text is **Spanish (Costa Rican)**. Code, comments, and docs are English.
 - Tone guardrails: [docs/08-content-standards-satire.md](docs/08-content-standards-satire.md). Read it before writing any flavor text.
 - Tooltips: just set `tooltip_text` ("Title\nbody" or "Title — body"); the `TooltipStyler` autoload draws it as the shared card (`scripts/ui/tooltip_card.gd`). Custom tooltips call `TooltipCard.clear_frame(self)` and return a card from `_make_custom_tooltip`.

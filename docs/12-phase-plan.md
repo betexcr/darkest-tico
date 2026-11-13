@@ -382,12 +382,20 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Owner 2026-11-12 asked for a price recommendation: gallo pinto 75 ₡, candela 100 ₡, fósforos 60 ₡ (full Sótanos kit 1,050 ₡ ≈ 30% of a run, DD ratio; doc 04 §3.1)
 
 ### P1-19 · S · Tests and tools must not touch the real save
-- Status: `todo` · Depends: —
+- Status: `done` · Depends: —
 - Why: `SaveService._ready` loads and rewrites `user://save.json` on every Godot start, headless tests and the sim included. Two instances at once can read a half-written file; the one that fails starts a new game and saves it over the owner's save. This happened on 2026-11-12 while sims ran in parallel: the dev save went back to week 1.
 - Files: `scripts/autoload/save_service.gd`, maybe `project.godot` (a test feature tag or command-line flag)
 - Done when:
-  - [ ] Running a `-s` script (tests, `tools/sim_combat.gd`, `tools/screens/*`) never writes `user://save.json` (for example, skip save/load when `OS.get_cmdline_args()` has `-s`/`--script`, or use a separate save path)
-  - [ ] A failed load never overwrites the existing file (write to a temp file, then rename; keep a `.bak`)
+  - [x] Running a `-s` script (tests, `tools/sim_combat.gd`, `tools/screens/*`) never writes `user://save.json` (for example, skip save/load when `OS.get_cmdline_args()` has `-s`/`--script`, or use a separate save path)
+  - [x] A failed load never overwrites the existing file (write to a temp file, then rename; keep a `.bak`)
+  - [x] `tests/test_save.gd` (17 checks); the real save's md5 is unchanged after the whole suite
+
+### P1-20 · S · Smoke expedition sometimes runs out of frames
+- Status: `todo` · Depends: —
+- Why: `tests/smoke_expedition.gd` stops after `MAX_STEPS` (3000 frames). About 1 run in 27 (2026-11-12) has a fight that doesn't end in time ("expedition ended () after 4 moves, 288 hero turns"); normal runs already reach ~250 hero turns. Fights got longer with hero accuracy in the dark (P1-17), and the bot plays badly (it often presses the first skill).
+- Files: `tests/smoke_expedition.gd`
+- Done when:
+  - [ ] The smoke passes 30 runs in a row (raise `MAX_STEPS`, cap a fight's rounds in the bot, or seed `randi`), and still fails when an expedition really hangs
 
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
