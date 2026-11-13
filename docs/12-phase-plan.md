@@ -147,11 +147,11 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [x] Documents save schema + versioning, encounter flow (hub → map → combat → map), status engine, data file schemas (`docs/13-architecture.md`, also covers the map generator per doc 06)
 
 ### P1-09 · S · Paper/headless playtest + Phase 1 sign-off
-- Status: `todo` · Depends: P1-03, P1-04, P1-07
+- Status: `review` (headless playtest recorded 2026-11-12; owner to read doc 09 §5 and decide the Phase 1 exit) · Depends: P1-03, P1-04, P1-07
 - Spec: `09`, `06` Phase 1 exit criteria
 - Files: `docs/09-paper-prototype-playtest.md` (notes section)
 - Done when:
-  - [ ] One recorded playtest (human or sim-based) with notes
+  - [x] One recorded playtest (human or sim-based) with notes (`tools/playtest_campaign.gd`, 48 expeditions; doc 09 §5, raw output in `docs/playtests/`)
   - [ ] Owner marks Phase 1 exit criteria met → set **Current phase** to P2 (status `review` until owner confirms)
 
 ---

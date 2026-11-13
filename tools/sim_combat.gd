@@ -37,13 +37,11 @@ const BalanceScript := preload("res://scripts/domain/balance.gd")
 
 ## A fight still going after this many rounds counts as a loss (a stall).
 const MAX_ROUNDS := 40
-## Smart policy: heal an ally below this share of PV (or Al Borde)…
-const HEAL_BELOW := 0.4
-## …and calm one at or above this stress.
-const CALM_AT := 50
+const SimPolicyScript := preload("res://tools/sim_policy.gd")
 
 var _gs
 var _cc
+var _policy
 var _gen: Dictionary = {}
 var _template: Array = []
 var _light0: int = 0
@@ -123,6 +121,8 @@ func _run() -> void:
 	_cc.instant = true
 	root.add_child(_cc)
 	_cc.logged.connect(func(t, _c): if _log_on: print("    " + str(t)))
+	# Hero choices: tools/sim_policy.gd (shared with tools/playtest_campaign.gd).
+	_policy = SimPolicyScript.new(_cc, _gs, str(_opts["policy"]))
 
 	var chain: int = int(_opts["chain"])
 	print("## Combat sim — %s, %d %s, policy %s, seed %d%s\n" % [
@@ -317,119 +317,7 @@ func _note_borde(party: Array, before: Dictionary, seen: Dictionary) -> void:
 # --- Hero policy ----------------------------------------------------------------------
 
 func _act(hero: Dictionary) -> void:
-	var usable: Array = []
-	for sid in hero.get("skill_ids", []):
-		var sk: Dictionary = _gs.hero_skill(hero, str(sid))
-		if not sk.is_empty() and _cc.skill_usable(hero, sk):
-			usable.append(sk)
-	if _opts["policy"] == "smart" and _smart_support(hero, usable):
-		return
-	var best: Dictionary = {}
-	var best_t: Dictionary = {}
-	var best_score: float = -1.0
-	for sk in usable:
-		if str(sk.get("kind", "")) != "attack":
-			continue
-		if _opts["policy"] == "basic":
-			best = sk
-			best_t = _cc.current_target(sk)
-			break
-		for t in _cc.targets_for(sk):
-			var s: float = _attack_score(hero, sk, t)
-			if s > best_score:
-				best_score = s
-				best = sk
-				best_t = t
-	if not best.is_empty():
-		_cc.target_enemy = best_t
-		_cc.use_skill(best)
-		return
-	if _opts["policy"] == "smart":
-		# Nothing to hit: any support skill that does something beats standing still.
-		for sk in usable:
-			var who: Dictionary = _support_target(hero, sk)
-			if not who.is_empty():
-				_cc.use_skill(sk, who)
-				return
-	if usable.is_empty() or _opts["policy"] == "basic":
-		var moves: Array = _cc.move_options(hero)
-		if not moves.is_empty():
-			_cc.move_hero(moves[0])
-			return
-	_cc.guard()
-
-
-## Heal the worst-hurt ally, calm the most stressed one, or open with a buff. True if acted.
-func _smart_support(hero: Dictionary, usable: Array) -> bool:
-	var living: Array = _cc.party.filter(func(h): return not h.get("dead", false))
-	var hurt: Dictionary = {}
-	for h in living:
-		if hurt.is_empty() or _hurt_key(h) < _hurt_key(hurt):
-			hurt = h
-	if not hurt.is_empty() and (bool(hurt.get("al_borde", false)) or float(hurt["hp"]) / float(hurt["hp_max"]) < HEAL_BELOW):
-		for sk in usable:
-			if int(sk.get("heal_min", 0)) > 0 and _reaches(sk, hero, hurt):
-				_cc.use_skill(sk, hurt)
-				return true
-	var tense: Dictionary = {}
-	for h in living:
-		if tense.is_empty() or int(h.get("stress", 0)) > int(tense.get("stress", 0)):
-			tense = h
-	if not tense.is_empty() and int(tense.get("stress", 0)) >= CALM_AT:
-		for sk in usable:
-			if str(sk.get("kind", "")) != "attack" and int(sk.get("stress_relief", 0)) > 0 and _reaches(sk, hero, tense):
-				_cc.use_skill(sk, tense)
-				return true
-	if int(_cc._round) == 1:
-		for sk in usable:
-			if str(sk.get("kind", "")) == "buff" and str(sk.get("target", "self")) in ["self", "party"]:
-				var ap = sk.get("self_applies", sk.get("applies", null))
-				if ap is Dictionary and not StatusEffectsScript.has(hero, str(ap.get("status", ""))):
-					_cc.use_skill(sk, hero)
-					return true
-	return false
-
-
-## Al Borde first, then the lowest share of PV.
-func _hurt_key(h: Dictionary) -> float:
-	return -1.0 if bool(h.get("al_borde", false)) else float(h["hp"]) / float(maxi(int(h["hp_max"]), 1))
-
-
-func _reaches(sk: Dictionary, hero: Dictionary, ally: Dictionary) -> bool:
-	match str(sk.get("target", "self")):
-		"party", "ally":
-			return true
-		_:
-			return is_same(hero, ally)
-
-
-## Who a support skill would help right now ({} if nobody needs it).
-func _support_target(hero: Dictionary, sk: Dictionary) -> Dictionary:
-	if str(sk.get("kind", "")) == "attack":
-		return {}
-	for h in _cc.party:
-		if h.get("dead", false) or not _reaches(sk, hero, h):
-			continue
-		if int(sk.get("heal_min", 0)) > 0 and int(h["hp"]) < int(h["hp_max"]):
-			return h
-		if int(sk.get("stress_relief", 0)) > 0 and int(h.get("stress", 0)) > 0:
-			return h
-	return {}
-
-
-## Expected damage of `sk` on `t`; a likely kill is worth more, then the weaker target.
-func _attack_score(hero: Dictionary, sk: Dictionary, t: Dictionary) -> float:
-	var avg: float = (int(sk.get("damage_min", 1)) + int(sk.get("damage_max", sk.get("damage_min", 1)))) / 2.0 + int(hero.get("dmg_bonus", 0))
-	if StatusEffectsScript.has(t, "fichado"):
-		avg *= 1.0 + int(sk.get("vs_marked_pct", 0)) / 100.0
-	var el: String = str(hero.get("element", ""))
-	if el != "" and t.get("elements", null) is Dictionary:
-		avg *= float(t["elements"].get(el, 1.0))
-	var acc: int = int(hero.get("accuracy", 0)) + StatusEffectsScript.stat(hero, "accuracy") + load("res://scripts/domain/light_system.gd").val(_gs.mission_light, "hero_accuracy")
-	var dod: int = int(t.get("dodge", 0)) + StatusEffectsScript.stat(t, "dodge")
-	var exp_dmg: float = avg * CombatResolverScript.hit_chance(acc, int(sk.get("skill_accuracy", 0)), dod)
-	var kill: float = 100.0 if avg >= float(t.get("hp", 0)) else 0.0
-	return exp_dmg + kill - float(t.get("hp", 0)) * 0.01
+	_policy.act(hero)
 
 
 # --- Stats ------------------------------------------------------------------------------

@@ -17,6 +17,36 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (night, 6) — P1-09 — Headless campaign playtest
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-09 `review`. The owner reads doc 09 §5 and decides whether Phase 1's exit criteria are met.
+- **Changed:**
+  - `tools/sim_policy.gd` (new): the sim's smart/basic hero policy, shared. It adds `use_items` (a healing item for an ally Al Borde) and per-class action counts.
+  - `tools/sim_combat.gd` uses it (same results: 200 chains, 100.0% cleared, 0.02 heroes lost, as before).
+  - `tools/playtest_campaign.gd` (new):
+    - plays whole campaigns through the real expedition screen with a careful-player bot (hub services, provisions, ranks, difficulty step-up, exploration, items, events, camp, smart combat);
+    - prints per-week tables and a summary.
+  - `docs/playtests/2026-11-12-campaign-{full,direct}.md`: raw output of 2 × 3 campaigns × 8 weeks.
+  - Doc 09 §5: playtest notes, the doc 09 success criteria, the Phase 1 exit criteria and 5 balance questions for P5-02.
+  - AGENTS.md §6 mentions the tool.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Both playtest runs finished with no `SCRIPT ERROR` and no stuck expedition (544 s and 254 s). They ran in parallel, which P1-19 makes safe.
+  - Only tools and docs changed, so the test suite was not rerun.
+- **Findings (details in doc 09 §5):**
+  - 46 of 48 expeditions cleared.
+  - The economy isn't tight: colones grow to 21–41k by week 8.
+  - Stress rarely reaches 100.
+  - Full exploration needs about 16 gallo pinto, not 10.
+  - Healer-heavy parties stall.
+  - Heroes reach Veterano by week 4–6.
+- **Decisions needed:**
+  - Phase 1 sign-off (set **Current phase** to P2?).
+  - The 5 balance questions at the end of doc 09 §5.
+- **Next step:** if the owner signs off Phase 1, set **Current phase** to P2 in the plan and continue with the first `todo` P2 task. Otherwise, P1-20 (smoke frame-cap flake) or P1-15 (expedition sim; `tools/playtest_campaign.gd` already covers much of it, so consider cutting or narrowing P1-15).
+
+---
+
 ## 2026-11-12 (night, 5) — P1-08 — Technical architecture doc
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-08 `done`.
