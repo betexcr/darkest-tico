@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-12 (night, 5) — P1-08 — Technical architecture doc
+- **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
+- **Status after session:** P1-08 `done`.
+- **Changed:**
+  - `docs/13-architecture.md` (new), checked against the code:
+    - layers and autoloads;
+    - save system: file, when it's written, P1-19 safety, schema, v3→v9 history, how to bump;
+    - encounter flow: `start_mission`, map generator, room loop, building a fight, the combat controller's rounds, turns, damage and end, back to the hub;
+    - status engine: storage, apply, tick, `stat`, lifetime;
+    - data files: what each holds and who loads it, the outcome vocabulary;
+    - tests and tools.
+  - `docs/README.md` index links it.
+- **Verified:** `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon). Docs only; no code changed.
+- **Not verified / risks:** the doc describes the code as of `e93a3b7`; it will drift. Update it when the save shape, the flow or the status engine change.
+- **Decisions needed:** none.
+- **Next step:** P1-09 (paper/headless playtest + Phase 1 sign-off) if its dependencies are done; otherwise P1-20 (smoke frame-cap flake) or P1-15 (expedition sim).
+
+---
+
 ## 2026-11-12 (night, 4) — P1-19 — Tests and tools no longer touch the real save
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-19 `done`. New `todo` P1-20 (smoke expedition sometimes runs out of frames).

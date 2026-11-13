@@ -140,11 +140,11 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
   - [x] Results for Sótanos written to `docs/10-implementation-notes.md`
 
 ### P1-08 · S · Technical architecture doc
-- Status: `todo` · Depends: P1-02, P1-04
+- Status: `done` · Depends: P1-02, P1-04
 - Spec: `06` Phase 1 deliverables
 - Files: `docs/13-architecture.md` (new), `docs/README.md`
 - Done when:
-  - [ ] Documents save schema + versioning, encounter flow (hub → map → combat → map), status engine, data file schemas
+  - [x] Documents save schema + versioning, encounter flow (hub → map → combat → map), status engine, data file schemas (`docs/13-architecture.md`, also covers the map generator per doc 06)
 
 ### P1-09 · S · Paper/headless playtest + Phase 1 sign-off
 - Status: `todo` · Depends: P1-03, P1-04, P1-07
