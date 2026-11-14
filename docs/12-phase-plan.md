@@ -531,7 +531,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6, doc 10): longest fight 58 → 23 rounds in the standard playtest; all 96 expeditions cleared, so the game is easier for the bot than before. One boss fight still reached 23 rounds.
 
 ### P5-02c · M · Stress pass
-- Status: `todo` · Depends: P5-02b · Spec: `01` §3, `04` §4
+- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02b · Spec: `01` §3, `04` §4
 - Levers, one at a time: (1) lower the free in-combat `stress_relief` in `data/skills.json` (*No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas*, *Regaño Santo*); (2) an `enemy_stress` multiplier per difficulty in `data/progression.json`; (3) enemy basic-attack `stress` in `data/enemies.json`.
 - Done when (full route): [ ] top stress at the end 60–80 [ ] a resolve check in about 1 of 3 expeditions [ ] party average back at the hub 30–50
 

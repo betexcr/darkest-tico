@@ -147,6 +147,10 @@ def main() -> int:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs 0 <= min_level <= level <= max_level <= 6")
         if int(d.get("xp", 0)) <= 0:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs xp > 0")
+        for k in ("enemy_hp", "enemy_dmg", "enemy_stress", "reward"):
+            v = d.get(k)
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
+                errors.append(f"progression.json: difficulty '{d.get('id')}' needs {k} > 0")
     if not prog.get("difficulties"):
         errors.append("progression.json: no difficulties")
     # Casa Comunal skill ranks (doc 02 §4, doc 04 §3.3); keys match skill_ranks.gd BONUS_KEYS.

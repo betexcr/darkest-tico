@@ -1339,6 +1339,7 @@ func build_combat_context_for_node(node_id: String) -> void:
 		en["dead"] = false
 		en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
 		en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
+		en["stress_mult"] = float(mission_difficulty.get("enemy_stress", 1.0))
 		# Tougher tiers resist ailments more (doc 05 §4: +10% Veterano, +20% Campeón).
 		var er: int = int(mission_difficulty.get("enemy_resist", 0))
 		if er != 0 and en.get("status_resist", null) is Dictionary:

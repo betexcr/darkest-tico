@@ -747,7 +747,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
 		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
-		var base_stress: int = int(skill.get("stress", 0)) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
+		# The skill's own stress grows with the expedition difficulty (progression.json enemy_stress).
+		var base_stress: int = int(round(int(skill.get("stress", 0)) * float(enemy.get("stress_mult", 1.0)))) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
 		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):

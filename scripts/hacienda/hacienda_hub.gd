@@ -143,9 +143,9 @@ func _refresh_difficulty_labels() -> void:
 	for i in diffs.size():
 		var e: Dictionary = GameState.selected_expedition(str(diffs[i].get("id", "")))
 		_difficulty_option.set_item_text(i, "%s (nivel %d)" % [e.get("name", "?"), int(e.get("level", 1))])
-		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño; paga x%.2f." % [
+		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño, x%.2f estrés; paga x%.2f." % [
 			int(e.get("min_level", 0)), int(e.get("max_level", 6)), int(e.get("xp", 0)),
-			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("reward", 1.0))])
+			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("enemy_stress", 1.0)), float(e.get("reward", 1.0))])
 
 
 func _try_optional_hub_ambient() -> void:
