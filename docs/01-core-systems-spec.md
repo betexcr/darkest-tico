@@ -134,7 +134,7 @@ Implemented (P1-05, `CombatResolver.death_save_chance`):
 **Dragging fights** (P5-02b, owner 2026-11-14; Darkest Dungeon's stall penalty). A party that heals faster than the enemy hits could stay in a fight forever, so long fights wear everyone down:
 
 - At the start of every round from round 8 on (round 12 against a boss), each living hero gains 4 stress, and 2 more for every round after that: 4, 6, 8, 10…
-- Light and stress buffs change the amount like any other stress, and it can cause a resolve check or a Colapso.
+- Light and stress buffs change the amount like any other stress, and it can cause a resolve check or a Colapso (§3.4: a hero already at 200 collapses, and a second Colapso in the fight is a death roll).
 - The log warns one round before it starts ("La pelea se está alargando…").
 - Numbers: `data/balance.json` `combat.drag_round`, `drag_round_boss`, `drag_stress`, `drag_stress_step`. Rule: `StressSystem.drag_stress`, applied in `combat_controller.gd` `_start_round()`.
 
@@ -175,6 +175,11 @@ Seven `Virtud` breakthroughs (stress drops to 40):
 - If already at `Al Borde`: immediate death check with severe penalty.
 
 Implemented (P1-05): a −30 penalty on top of the usual ones (§2.4). Surviving keeps the hero Al Borde with stress 170.
+
+Two additions (P5-02b), so that a dragging fight always ends:
+
+- **A second Colapso in the same fight is a death roll**, even if a companion healed the hero out of Al Borde in between. Without this, two heroes could revive each other every round. The mark clears when the fight ends.
+- **Dragging stress on a hero already at 200 is a Colapso.** Other stress at 200 does nothing more, as before.
 
 ## 4) Expedition Map Structure
 

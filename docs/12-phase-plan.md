@@ -519,9 +519,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6): with a spending bot the bank stays at 5–12k through week 16, so the economy was not the problem. The game is still too easy (93 of 96 cleared), stress is held under 50 by free relief skills, and the longest stalls came from Campesinos healing, not only from healer-heavy parties.
 
 ### P5-02b · S · Dragging-fight stress
-- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §3
-- From round `combat.drag_round` on, every living hero gains `combat.drag_stress`, plus `combat.drag_stress_step` per extra round (start with 8 / 4 / 2). Rule in `scripts/domain/stress_system.gd`, called from `_start_round()` in `scripts/combat/combat_controller.gd`; keys in `data/balance.json` and `BALANCE_KEYS`; checks in `tests/test_balance.gd`; doc 01 §3.1 and AGENTS.md §4.
-- Done when: [ ] with `--party abuela,abuela,abuela,curandero` no fight passes 20 rounds [ ] `tools/sim_combat.gd` reports 0 chains past 40 rounds
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-14; owner to feel a long fight: does the warning read clearly, and are 8 and 12 rounds the right moments?) · Depends: P5-02a · Spec: `01` §3
+- From round `combat.drag_round` (8; `combat.drag_round_boss` 12 against a boss) every living hero gains `combat.drag_stress` (4) at the start of the round, plus `combat.drag_stress_step` (2) per round after. Rule in `scripts/domain/stress_system.gd` (`drag_stress`, `apply_drag`), called from `_start_round()` in `scripts/combat/combat_controller.gd`.
+- Also in this task:
+  - A second Colapso in the same fight is a death roll, and dragging stress on a hero already at 200 is a Colapso (doc 01 §3.4). Without it two heroes revived each other for ever.
+  - The boss threshold (12) is separate because boss fights average 7–10 rounds.
+  - `tools/sim_policy.gd`: the smart bot plays to finish once a fight is about to drag. `tools/sim_combat.gd`: `--party` and `--log-long N`. `tools/playtest_campaign.gd`: the bot retreats after losing two heroes on the expedition, not whenever two or fewer are alive.
+- Done when:
+  - [x] With `--party abuela,abuela,abuela,curandero` no fight passes 20 rounds (longest 12; with three Campesinos and an Abuela, 13)
+  - [x] `tools/sim_combat.gd` reports 0 chains past 40 rounds (starting party and both stall-prone parties, 10,000 chains each)
+- Result (doc 09 §6, doc 10): longest fight 58 → 23 rounds in the standard playtest; all 96 expeditions cleared, so the game is easier for the bot than before. One boss fight still reached 23 rounds.
 
 ### P5-02c · M · Stress pass
 - Status: `todo` · Depends: P5-02b · Spec: `01` §3, `04` §4

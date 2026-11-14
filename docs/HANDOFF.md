@@ -17,6 +17,31 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-14 (2) — P5-02b — Dragging-fight stress; a second Colapso in a fight is a death roll
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02b `review`. P5-02c (stress pass) is next.
+- **Changed:**
+  - `data/balance.json` `combat.drag_round` 8, `drag_round_boss` 12, `drag_stress` 4, `drag_stress_step` 2; `BALANCE_KEYS` in the validator.
+  - `scripts/domain/stress_system.gd`: `drag_stress`, `apply_drag`; `_apply_colapso` marks `collapsed_this_fight`, and a second Colapso in the fight is a death roll.
+  - `scripts/combat/combat_controller.gd`: `_apply_drag_stress()` in `_start_round()` (log lines and "+N estrés" over the heroes); the mark is cleared at the start and end of a fight.
+  - `tests/test_balance.gd`: 10 new checks.
+  - Tools: the smart bot plays to finish a dragging fight (`tools/sim_policy.gd`); `tools/sim_combat.gd` has `--party` and `--log-long N`; the campaign bot retreats after losing two heroes on the expedition.
+  - Docs: 01 §3.1 and §3.4, 09 §6, 10, AGENTS.md §4 and §6; `docs/playtests/2026-11-14-drag-{full,direct}.md`.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR`.
+  - Sim, 10,000 chains each: 0 chains past 40 rounds for the starting party (99.2% cleared, was 99.8%), 3 Abuelas + Curandero (97.6%) and 3 Campesinos + Abuela (89.2%).
+  - Playtest, 3 × 16 weeks per route: 96 of 96 cleared, longest fight 23 rounds (was 58). Forced stall-prone parties: longest 13 and 12.
+- **Not verified / risks:**
+  - The two saved playtest runs were made before the second-Colapso rule. It only matters in fights past about 30 rounds, and none got there, so I did not rerun them.
+  - The second-Colapso rule also applies outside dragging fights: a hero who collapses, is healed up and reaches 200 again in the same fight now rolls for death. That was almost impossible to reach before.
+  - How the warning and the stress numbers feel in a real fight needs the owner.
+- **Decisions needed:**
+  - The plan said one threshold; I added a later one for bosses (round 12), because boss fights average 7–10 rounds. Say if bosses should use round 8 too.
+- **Next step:** P5-02c: lower `stress_relief` on *No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas* and *Regaño Santo* in `data/skills.json`, rerun `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compare with `docs/playtests/2026-11-14-drag-*.md`. Targets: top stress at the end 60–80, a resolve check in about 1 of 3 expeditions, party average back at the hub 30–50.
+
+---
+
 ## 2026-11-14 — P5-02a — Balance pass planned; playtest bot spends like a player; 16-week baselines
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
 - **Status after session:** P5-02a `review`. P5-02 is split into P5-02a–f (plan and owner decisions in the phase plan); P5-02b is next.

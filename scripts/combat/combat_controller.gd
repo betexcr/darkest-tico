@@ -123,6 +123,9 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	_round = 0
 	_ended = false
 	_busy = false
+	for h in party:
+		if h is Dictionary:
+			h.erase("collapsed_this_fight")
 	var tier := ""
 	if note != "":
 		tier = note + " "
@@ -322,7 +325,7 @@ func _apply_drag_stress() -> void:
 		if not (h is Dictionary) or h.get("dead", false):
 			continue
 		var before: int = int(h.get("stress", 0))
-		_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, drag)))
+		_log_all(StressSystemScript.apply_drag(h, _stress_after_mods(h, drag)))
 		var up: int = int(h.get("stress", 0)) - before
 		if up > 0:
 			_log("  %s: estrés +%d" % [h.get("name", "?"), up], "aa88cc")
@@ -452,6 +455,7 @@ func _finish(victory: bool) -> void:
 	for h in party:
 		if h is Dictionary:
 			h["guarding"] = false
+			h.erase("collapsed_this_fight")
 			StatusEffectsScript.clear(h)
 			# Camp buffs last a number of fights (P3-07).
 			CampingSystemScript.tick_fight(h)

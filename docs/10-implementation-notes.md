@@ -116,3 +116,19 @@ With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Ne
 
 - Missing more makes fights longer (boss 7.4 → 11.6 rounds in Negro), so stress and deaths climb. Careful play now actually loses runs in the dark.
 - 45 smart chains in Negro stalled past 40 rounds (0.9%): healers out-heal what a blind party can hit. Watch for this in P5-02.
+
+### Rerun with dragging-fight stress (2026-11-14, P5-02b)
+
+`--party a,b,c,d` plays another class mix; `--log-long N` prints the first fight that passes N rounds, which is how the stall below was found. Chains of 3 fights + elite + boss, 10,000 per row, smart policy, Aprendiz:
+
+| Party | Dragging stress | Boss cleared | Rounds in the boss fight | Top stress after the boss | Chains past 40 rounds |
+|---|---|---:|---:|---:|---:|
+| Starting party | off | 99.8% | 7.4 | 28.3 | 5 |
+| Starting party | on | 99.2% | 7.3 | 31.2 | 0 |
+| 3 Abuelas + Curandero | on | 97.6% | 12.7 | 70.9 | 0 |
+| 3 Campesinos + Abuela | on | 89.2% | 12.5 | 68.0 | 0 |
+
+- The rule costs the starting party almost nothing, because its fights last 4–7 rounds. Slow parties pay for it in stress: about 70 on the top hero after the boss, against 31.
+- **Why fights stalled.** The log of a 41-round boss fight showed the same loop every round: a hero collapses at 200 stress and drops to Al Borde, a companion heals them back up, and the next stress collapses them again. Nobody died and nobody attacked. A second Colapso in the same fight is now a death roll (doc 01 §3.4).
+- **The smart policy changed too.** Once a fight is about to drag it stops calming, heals only a hero Al Borde or under 25% PV, and attacks. Before that it spent every turn healing and calming while one self-healing enemy was left, which is what a player would not do. With the rule off the policy plays as before.
+

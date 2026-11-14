@@ -102,11 +102,17 @@ static func _apply_colapso(hero: Dictionary) -> PackedStringArray:
 	logs.append("%s: ¡Colapso mental!" % hero.get("name", "?"))
 	if hero.get("dead", false):
 		return logs
-	if not hero.get("al_borde", false):
+	# The first Colapso of a fight drops the hero to Al Borde. A second one in the same fight
+	# is a death roll even if someone healed them back up in between (P5-02b): otherwise two
+	# heroes can revive each other for ever. The combat controller clears the mark.
+	if not hero.get("al_borde", false) and not hero.get("collapsed_this_fight", false):
 		hero["al_borde"] = true
 		hero["hp"] = 0
+		hero["collapsed_this_fight"] = true
 		logs.append("%s cae a Al Borde por el colapso." % hero.get("name", "?"))
 		return logs
+	hero["al_borde"] = true
+	hero["collapsed_this_fight"] = true
 	# Doc 01 §3.4: already Al Borde -> death roll with a severe penalty. Surviving keeps them
 	# Al Borde at 0 PV (owner 2026-11-11) with stress just below the collapse line.
 	var chance: float = CombatResolverScript.death_save_chance(hero, true)
@@ -202,6 +208,14 @@ static func drag_stress(round_no: int, boss: bool = false) -> int:
 	if round_no < first:
 		return 0
 	return BalanceScript.int_of("combat.drag_stress") + BalanceScript.int_of("combat.drag_stress_step") * (round_no - first)
+
+
+## Gives one hero the round's dragging stress. A hero already at the stress cap can't take
+## more, so for them it is a Colapso straight away (add_stress only fires one on the way up).
+static func apply_drag(hero: Dictionary, amount: int) -> PackedStringArray:
+	if amount > 0 and not hero.get("dead", false) and int(hero.get("stress", 0)) >= BalanceScript.int_of("stress.colapso"):
+		return _apply_colapso(hero)
+	return add_stress(hero, amount)
 
 
 ## Start of each combat round: Esperanza calms allies, Vigor regenerates HP.

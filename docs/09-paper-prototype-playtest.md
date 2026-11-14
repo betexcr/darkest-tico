@@ -149,3 +149,20 @@ Both wipes came late, in Veterano week 7 and Campeón week 8. Each was a long fi
 - **Full exploration runs short of food.** 51% of hunger stops on the full route, in 35 of 48 expeditions.
 - **Stalls are not only a healer problem.** The two longest fights (51 and 58 rounds, both against the boss on Campeón) had one Abuela with two or three Campesinos, who heal with *Aguante de Campo*. One of them ended in a wipe. Bosses pass 8 rounds in 27 of 94 fights.
 
+### After dragging-fight stress (P5-02b)
+
+Same runs with the rule on (doc 01 §3.1) and a bot that plays to finish once a fight drags. Raw output: [playtests/2026-11-14-drag-full.md](playtests/2026-11-14-drag-full.md) and [playtests/2026-11-14-drag-direct.md](playtests/2026-11-14-drag-direct.md).
+
+| | Full: before | Full: after | Direct: before | Direct: after |
+|---|---:|---:|---:|---:|
+| Expeditions cleared | 47 / 48 | 48 / 48 | 46 / 48 | 48 / 48 |
+| Avg rounds against the boss | 10.1 | 6.8 | 7.6 | 7.5 |
+| Boss fights over 8 rounds | 19 of 47 | 5 of 48 | 8 of 47 | 13 of 48 |
+| Longest fight | 58 | 23 | 51 | 17 |
+| Heroes lost per expedition | 0.15 | 0.06 | 0.21 | 0.00 |
+| Stress coming back (party average) | 24 | 20 | 14 | 18 |
+
+- **The stalls are gone.** No fight passed 23 rounds. With the two stall-prone parties forced for 16 weeks (`--party campesino,campesino,campesino,abuela` and `--party abuela,abuela,abuela,curandero`, direct route), the longest fights were 13 and 12 rounds, and all 96 expeditions were cleared.
+- **The game got easier for the bot, not harder.** Both losses in the baseline were stalled boss fights. Finishing a fight is simply better play than healing through it, so the clear rate is now 96 of 96. Difficulty is the job of P5-02c and P5-02f.
+- **The first try failed, and why.** With the rule on and the old bot, a level-1 party was wiped in a 22-round normal fight: the bot kept healing and calming while the dragging stress piled up. A player who doesn't attack in a dragging fight will lose it. That is the rule working, and the log warns one round ahead.
+
