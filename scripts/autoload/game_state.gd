@@ -44,7 +44,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 9
+const SAVE_VERSION := 10
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -1597,7 +1597,9 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 		out["equipment"] = {}
 	# v6: resolve XP and camp skills (older saves: XP at the floor of their level, class loadout).
 	out["resolve_level"] = clampi(int(out.get("resolve_level", 0)), 0, ResolveSystemScript.MAX_LEVEL)
-	out["resolve_xp"] = maxi(int(out.get("resolve_xp", ResolveSystemScript.xp_for_level(int(out["resolve_level"])))), 0)
+	# v10 (P5-02d): the XP curve got longer. A hero keeps their level: XP is never below the
+	# level's threshold, so the next expedition can't take a level away.
+	out["resolve_xp"] = maxi(int(out.get("resolve_xp", 0)), ResolveSystemScript.xp_for_level(int(out["resolve_level"])))
 	if not out.get("camp_skill_ids") is Array or (out["camp_skill_ids"] as Array).is_empty():
 		out["camp_skill_ids"] = t.get("camp_skill_ids", []).duplicate()
 	# v8: Casa Comunal skill ranks (older saves: every skill at rank 1). JSON numbers load as

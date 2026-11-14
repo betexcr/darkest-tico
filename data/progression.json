@@ -2,9 +2,10 @@
   "_doc": "Hero resolve level (0-6) and expedition difficulty. Rules: scripts/domain/resolve_system.gd. Spec: docs/01-core-systems-spec.md §6.",
   "resolve": {
     "level_names": ["Novato", "Aprendiz", "Baquiano", "Veterano", "Maestro", "Campeón", "Leyenda"],
-    "xp_thresholds": [0, 2, 8, 14, 24, 36, 48],
+    "_xp_doc": "Cumulative resolve XP to reach each level. P5-02d (owner 2026-11-14): the Darkest Dungeon curve, where 2 / 8 / 14 / 24 / 36 / 48 is what each level costs, not the running total. With 4 / 8 / 16 XP per expedition a hero outgrows Aprendiz after 6 expeditions and Veterano after 8 more.",
+    "xp_thresholds": [0, 2, 10, 24, 48, 84, 132],
     "_radiant_doc": "Modo Pura Vida (DD Radiant mode, picked in the hub): a faster XP curve and heroes accept expeditions up to radiant_extra_levels below their range.",
-    "xp_thresholds_radiant": [0, 2, 7, 13, 21, 29, 40],
+    "xp_thresholds_radiant": [0, 2, 8, 19, 38, 67, 106],
     "radiant_extra_levels": 2,
     "_resist_doc": "Status resistance points (%) gained per resolve level (resist_categories in statuses.json).",
     "resist_per_level": { "aturdido": 10, "veneno": 10, "sangrado": 10, "salado": 10, "trampa": 5 },

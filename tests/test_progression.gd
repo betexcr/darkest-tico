@@ -176,17 +176,17 @@ func _run() -> void:
 	_check(int(a["stress"]) == 0 and int(b["stress"]) == 30, "Esperanza calms the others, not itself")
 
 	print("Resolve level")
-	_check(rs.level_for_xp(0) == 0 and rs.level_for_xp(2) == 1 and rs.level_for_xp(8) == 2 and rs.level_for_xp(48) == 6, "XP thresholds 0/2/8/…/48")
+	_check(rs.level_for_xp(0) == 0 and rs.level_for_xp(2) == 1 and rs.level_for_xp(9) == 1 and rs.level_for_xp(10) == 2 and rs.level_for_xp(24) == 3 and rs.level_for_xp(83) == 4 and rs.level_for_xp(84) == 5 and rs.level_for_xp(132) == 6, "XP thresholds 0/2/10/24/48/84/132 (DD curve, P5-02d)")
 	gs.reset_party_from_catalog()
 	gs.reset_inventory_to_starter()
 	var hero: Dictionary = gs.party[0]
 	var stun0: int = int(hero["status_resist"].get("aturdido", 0))
-	var res: Dictionary = rs.grant_xp(hero, 8)
+	var res: Dictionary = rs.grant_xp(hero, 10)
 	gs.recompute_stats(hero)
-	_check(int(res["level_before"]) == 0 and int(res["level_after"]) == 2, "8 XP: Resolución 0 -> 2")
+	_check(int(res["level_before"]) == 0 and int(res["level_after"]) == 2, "10 XP: Resolución 0 -> 2")
 	_check(int(hero["status_resist"].get("aturdido", 0)) == stun0 + 20, "+10 pct stun resist per level (%d -> %d)" % [stun0, int(hero["status_resist"].get("aturdido", 0))])
 	var pr: Dictionary = rs.progress(hero)
-	_check(int(pr["current"]) == 0 and int(pr["needed"]) == 6, "progress 0/6 toward level 3")
+	_check(int(pr["current"]) == 0 and int(pr["needed"]) == 14, "progress 0/14 toward level 3")
 	var base_v: Dictionary = rs.expedition("veterano", 0)
 	_check(int(base_v["level"]) == 3 and is_equal_approx(float(base_v["enemy_hp"]), 1.22) and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, x1.22 PV, +10 resist (doc 05)")
 	var bosque: Dictionary = rs.expedition("aprendiz", 1)
@@ -292,6 +292,19 @@ func _run() -> void:
 	gs.apply_save_data(old)
 	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 4, "v5 save migrates (XP at level floor, class camp skills)")
 	_check(gs.selected_difficulty_id == "aprendiz", "v5 save defaults to Aprendiz")
+	# v9 -> v10 (P5-02d): the curve got longer; a saved hero keeps the level they had.
+	var v9: Dictionary = data.duplicate(true)
+	v9["version"] = 9
+	v9["roster"][1]["resolve_level"] = 3
+	v9["roster"][1]["resolve_xp"] = 14
+	v9["roster"][2]["resolve_level"] = 2
+	v9["roster"][2]["resolve_xp"] = 13
+	gs.apply_save_data(v9)
+	_check(int(gs.roster[1]["resolve_level"]) == 3 and int(gs.roster[1]["resolve_xp"]) == rs.xp_for_level(3), "v9 save: a Resolución 3 hero with 14 XP keeps the level, XP raised to %d" % rs.xp_for_level(3))
+	_check(int(gs.roster[2]["resolve_level"]) == 2 and int(gs.roster[2]["resolve_xp"]) == 13, "v9 save: XP already above the new threshold is kept")
+	rs.grant_xp(gs.roster[1], 1)
+	_check(int(gs.roster[1]["resolve_level"]) == 3, "…and the next XP doesn't take the level away")
+	gs.apply_save_data(data)
 
 	_test_skill_ranks(gs)
 

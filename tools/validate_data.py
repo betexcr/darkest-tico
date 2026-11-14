@@ -137,6 +137,9 @@ def main() -> int:
     thr = prog.get("resolve", {}).get("xp_thresholds", [])
     if len(thr) != 7 or thr != sorted(thr) or (thr and thr[0] != 0):
         errors.append("progression.json: xp_thresholds must be 7 rising values starting at 0")
+    rad = prog.get("resolve", {}).get("xp_thresholds_radiant", [])
+    if len(rad) != 7 or rad != sorted(rad) or (rad and rad[0] != 0) or (len(thr) == 7 and any(r > t for r, t in zip(rad, thr))):
+        errors.append("progression.json: xp_thresholds_radiant must be 7 rising values starting at 0, none above xp_thresholds")
     if len(prog.get("resolve", {}).get("level_names", [])) != 7:
         errors.append("progression.json: level_names needs 7 names (levels 0-6)")
     for k in prog.get("resolve", {}).get("resist_per_level", {}):

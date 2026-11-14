@@ -312,7 +312,7 @@ Grade impacts loot roll quality and town event weighting.
 
 Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/domain/resolve_system.gd`.
 
-- Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 8 / 14 / 24 / 36 / 48.
+- Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 10 / 24 / 48 / 84 / 132 (P5-02d, owner 2026-11-14: the Darkest Dungeon curve, where each level costs 2 / 8 / 14 / 24 / 36 / 48 more than the last). At 4 / 8 / 16 XP per expedition a hero outgrows Aprendiz after 6 expeditions and Veterano after 8 more. Save v10 keeps every saved hero at the level they had.
 - **Resolve XP is earned only by completing an expedition** (killing the boss). Fleeing or a wipe gives none, and the fallen get none.
 - Each level adds **+10% resistance** to Atarantado, Veneno, Sangrado and Salado, and **+5%** to Trampas.
 - **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy scaling follows doc 05 §4:
@@ -329,7 +329,7 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
   - The hub shows the combined level on each difficulty and the region's offset in the region list. The validator requires Sótanos to have the lowest `region_level`.
 
 - A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party (same rule as Darkest Dungeon). Two exceptions, also from DD:
-  - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 7 / 13 / 21 / 29 / 40 XP.
+  - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 8 / 19 / 38 / 67 / 106 XP (about 20% less).
   - **Mano vuelta** (DD's Helping Hand town event): for that week nobody refuses. Under-leveled heroes still take the penalty.
 - A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.
 - Skill ranks gated by level: see §6.3. Not built yet: level-tiered treatment prices (doc 04 §3.5).

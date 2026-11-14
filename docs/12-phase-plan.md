@@ -534,9 +534,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02b · Spec: `01` §3, `04` §4
 - Levers, one at a time: (1) lower the free in-combat `stress_relief` in `data/skills.json` (*No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas*, *Regaño Santo*); (2) an `enemy_stress` multiplier per difficulty in `data/progression.json`; (3) enemy basic-attack `stress` in `data/enemies.json`.
 - Done when (full route): [ ] top stress at the end 60–80 [ ] a resolve check in about 1 of 3 expeditions [ ] party average back at the hub 30–50
+- Note (2026-11-14): on hold until P5-02d and P5-02e are in. The first try (relief on the four skills cut to 2 / 3 / 3 / 8) changed nothing on the direct route (stress back at the hub 18) and far too much on the full route (44, with 30 of 42 expeditions cleared). Half of the full route's hunger stops are short of food, and each one costs every unfed hero 10 stress and 10% PV, so the food kits have to be right before the stress numbers can be set. The `enemy_stress` multiplier per difficulty is in (`progression.json`, all 1.0 for now).
 
 ### P5-02d · S · Darkest Dungeon XP curve
-- Status: `todo` · Depends: P5-02a · Spec: `01` §6.1
+- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §6.1
 - `xp_thresholds` `[0, 2, 10, 24, 48, 84, 132]`, Pura Vida about 20% lower; XP per expedition stays 4 / 8 / 16. Bump `SAVE_VERSION` and raise each saved hero's XP to the new threshold of their level, so nobody loses a level.
 - Done when: [ ] Veterano around week 7 and Campeón around week 15 in the playtest [ ] `tests/test_progression.gd` and `tests/test_save.gd` cover the curve and the migration [ ] doc 01 §6.1 updated
 

@@ -37,7 +37,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 
 | Key | Contents |
 |---|---|
-| `version` | `GameState.SAVE_VERSION` (9) |
+| `version` | `GameState.SAVE_VERSION` (10) |
 | `colones`, `week` | Campaign money and week |
 | `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`) |
 | `party_uids` | The expedition party in formation order (position 1 first) |
@@ -61,6 +61,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | v7 | Modo Pura Vida and town events |
 | v8 | Casa Comunal skill ranks; older saves start every skill at rank 1 |
 | v9 | A hero's `skill_ids` always follow the class; a rank in a replaced skill moves to the new skill in the same slot |
+| v10 | Longer XP curve (P5-02d). Same shape; on load a hero's `resolve_xp` is raised to the threshold of their `resolve_level`, so nobody loses a level |
 
 `_sanitize_runtime_hero()` fills hero fields added after a save was written, so new hero keys don't need a version bump on their own. Change the version when a key is renamed or its meaning changes:
 1. Bump `SAVE_VERSION`.
