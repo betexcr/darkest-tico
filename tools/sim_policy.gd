@@ -7,17 +7,24 @@ extends RefCounted
 ##          stressed one (CALM_AT), open with a self/party buff, else the attack with the best
 ##          expected damage (a likely kill first). With `use_items`, a hero who can't heal an
 ##          ally in trouble uses a healing item from the alforja instead.
+##          Once the fight drags (the round before combat.drag_round and after, P5-02b) it
+##          plays to finish: nobody calms, only a hero Al Borde or under FINISH_HEAL_BELOW of
+##          PV is healed, and everyone else attacks. Calming costs more turns than the
+##          dragging stress gives back.
 ##   basic: the first usable attack on the current target.
 ## Nothing to hit: smart uses any support skill that helps, then Moverse, then Guardia.
 
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 
 ## Smart policy: heal an ally below this share of PV (or Al Borde)…
 const HEAL_BELOW := 0.4
 ## …and calm one at or above this stress.
 const CALM_AT := 50
+## Once the fight drags: heal only below this share of PV (or Al Borde).
+const FINISH_HEAL_BELOW := 0.25
 
 var cc  ## CombatController
 var gs  ## GameState
@@ -92,7 +99,8 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 	for h in living:
 		if hurt.is_empty() or _hurt_key(h) < _hurt_key(hurt):
 			hurt = h
-	if not hurt.is_empty() and (bool(hurt.get("al_borde", false)) or float(hurt["hp"]) / float(hurt["hp_max"]) < HEAL_BELOW):
+	var finishing: bool = _finishing()
+	if not hurt.is_empty() and (bool(hurt.get("al_borde", false)) or float(hurt["hp"]) / float(hurt["hp_max"]) < (FINISH_HEAL_BELOW if finishing else HEAL_BELOW)):
 		for sk in usable:
 			if int(sk.get("heal_min", 0)) > 0 and _reaches(sk, hero, hurt):
 				_count(hero, str(sk.get("name", "?")))
@@ -108,7 +116,7 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 	for h in living:
 		if tense.is_empty() or int(h.get("stress", 0)) > int(tense.get("stress", 0)):
 			tense = h
-	if not tense.is_empty() and int(tense.get("stress", 0)) >= CALM_AT:
+	if not finishing and not tense.is_empty() and int(tense.get("stress", 0)) >= CALM_AT:
 		for sk in usable:
 			if str(sk.get("kind", "")) != "attack" and int(sk.get("stress_relief", 0)) > 0 and _reaches(sk, hero, tense):
 				_count(hero, str(sk.get("name", "?")))
@@ -123,6 +131,11 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 					cc.use_skill(sk, hero)
 					return true
 	return false
+
+
+## The fight is dragging, or will next round (P5-02b): time to finish it.
+func _finishing() -> bool:
+	return StressSystemScript.drag_stress(int(cc._round) + 1, bool(cc.is_boss)) > 0
 
 
 ## The biggest heal in the alforja that works in combat on an ally ("" if none).

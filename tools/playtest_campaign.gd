@@ -417,6 +417,7 @@ func _expedition(row: Dictionary) -> void:
 	screen._combat.combat_over.connect(on_over)
 	var moves: int = 0
 	var steps: int = 0
+	var started_with: int = _gs.living_party_count()
 	var room_done: String = ""
 	while _finished == "" and steps < MAX_STEPS:
 		steps += 1
@@ -426,7 +427,7 @@ func _expedition(row: Dictionary) -> void:
 				if room_done != _gs.current_node_id:
 					room_done = _gs.current_node_id
 					row["items_used"] += _use_items_between_rooms()
-				if _gs.living_party_count() <= 2 and _gs.current_node_id != _gs.objective_node_id:
+				if _gs.living_party_count() <= started_with - 2 and _gs.current_node_id != _gs.objective_node_id:
 					row["fled"] = true
 					screen._on_flee_pressed()
 					continue

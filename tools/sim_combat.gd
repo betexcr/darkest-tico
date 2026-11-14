@@ -21,6 +21,9 @@ extends SceneTree
 ##                       nothing healed in between (see _run_chains)
 ##   --light N           play every fight at this Luz (default: the region's starting Luz)
 ##   --log               print the combat log of the first fight of each room kind / chain
+##   --log-long N        print the combat log of the first fight that passes N rounds
+##   --party a,b,c,d     hero ids (data/heroes.json) in formation order, instead of the
+##                       starting party
 ##
 ## Without --chain, every fight starts from the fresh starting party (full PV, 0 stress, no
 ## items used, no camp buffs), as at the first room of a new game. Squads are drawn the way
@@ -47,8 +50,11 @@ var _template: Array = []
 var _light0: int = 0
 var _rng := RandomNumberGenerator.new()
 var _opts := {"runs": 10000, "node": "all", "policy": "smart", "seed": 1, "chain": 0,
-	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false}
+	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false, "log-long": 0, "party": []}
 var _log_on: bool = false
+## --log-long: the current fight's log, printed once if the fight runs long.
+var _buffer: PackedStringArray = PackedStringArray()
+var _long_printed: bool = false
 
 
 ## Stand-in for BattleUnit: same calls, no drawing, returns at once.
@@ -105,6 +111,19 @@ func _run() -> void:
 			BalanceScript.override(parts[0], JSON.parse_string(parts[1]))
 	_gs = root.get_node("GameState")
 	_gs.reset_party_from_catalog()
+	if not _opts["party"].is_empty():
+		_gs.roster.clear()
+		_gs.party.clear()
+		for id in _opts["party"]:
+			var t: Dictionary = _gs.get_hero_template(str(id))
+			if t.is_empty():
+				push_error("sim_combat: --party has no hero '%s' in data/heroes.json" % id)
+				quit(1)
+				return
+			var h: Dictionary = _gs._instantiate_hero(t)
+			h["uid"] = _gs._take_uid()
+			_gs.roster.append(h)
+			_gs.party.append(h)
 	_gs.selected_difficulty_id = str(_opts["difficulty"])
 	if not _gs.start_mission(str(_opts["region"])):
 		push_error("sim_combat: could not start a mission in %s" % _opts["region"])
@@ -120,7 +139,11 @@ func _run() -> void:
 	_cc = load(CONTROLLER_PATH).new()
 	_cc.instant = true
 	root.add_child(_cc)
-	_cc.logged.connect(func(t, _c): if _log_on: print("    " + str(t)))
+	_cc.logged.connect(func(t, _c):
+		if _log_on:
+			print("    " + str(t))
+		elif int(_opts["log-long"]) > 0 and not _long_printed:
+			_buffer.append("    " + str(t)))
 	# Hero choices: tools/sim_policy.gd (shared with tools/playtest_campaign.gd).
 	_policy = SimPolicyScript.new(_cc, _gs, str(_opts["policy"]))
 
@@ -212,7 +235,10 @@ func _parse_args() -> void:
 		var flag: String = a[k]
 		var val: String = a[k + 1] if k + 1 < a.size() else ""
 		match flag:
-			"--runs", "--seed", "--chain", "--light":
+			"--party":
+				_opts["party"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
+				k += 1
+			"--runs", "--seed", "--chain", "--light", "--log-long":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
 			"--node", "--policy", "--region", "--difficulty":
@@ -262,6 +288,7 @@ func _fight(kind: String, party: Array) -> Dictionary:
 		stress0 += int(h.get("stress", 0))
 		hp0 += int(h.get("hp", 0))
 		hpmax += int(h.get("hp_max", 1))
+	_buffer.clear()
 	var won: Array = [false]
 	var on_over := func(v: bool): won[0] = v
 	_cc.combat_over.connect(on_over)
@@ -287,6 +314,11 @@ func _fight(kind: String, party: Array) -> Dictionary:
 	_cc.combat_over.disconnect(on_over)
 	if stalled:
 		_cc._ended = true
+	if int(_opts["log-long"]) > 0 and not _long_printed and int(_cc._round) > int(_opts["log-long"]):
+		_long_printed = true
+		print("### First %s fight over %d rounds (%d rounds, %s)\n" % [kind, int(_opts["log-long"]), int(_cc._round), "stalled" if stalled else ("won" if won[0] else "lost")])
+		print("\n".join(_buffer))
+		print("")
 	var r := {"leader": str(nd["enemy_ids"][0]), "won": won[0] and not stalled, "stalled": stalled,
 		"rounds": int(_cc._round), "actions": actions, "stress": 0, "max_stress": 0, "deaths": 0,
 		"borde": went_borde.size(), "breaks": 0, "hp_lost": 0.0}
