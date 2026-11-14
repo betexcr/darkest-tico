@@ -194,6 +194,16 @@ static func find_protector(target: Dictionary, party: Array) -> Dictionary:
 	return {}
 
 
+## Dragging fights (P5-02b, Darkest Dungeon's stall penalty): the stress every living hero
+## gains at the start of round `round_no`. 0 before combat.drag_round (drag_round_boss in a
+## boss fight); from then on drag_stress, plus drag_stress_step per round after the first.
+static func drag_stress(round_no: int, boss: bool = false) -> int:
+	var first: int = BalanceScript.int_of("combat.drag_round_boss" if boss else "combat.drag_round")
+	if round_no < first:
+		return 0
+	return BalanceScript.int_of("combat.drag_stress") + BalanceScript.int_of("combat.drag_stress_step") * (round_no - first)
+
+
 ## Start of each combat round: Esperanza calms allies, Vigor regenerates HP.
 static func round_start_effects(party: Array) -> PackedStringArray:
 	var logs: PackedStringArray = PackedStringArray()

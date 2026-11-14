@@ -129,6 +129,14 @@ Implemented (P1-05, `CombatResolver.death_save_chance`):
   - Ambushes and traps.
   - Low light state.
   - Horror events and failed curios.
+  - Fights that drag on (below).
+
+**Dragging fights** (P5-02b, owner 2026-11-14; Darkest Dungeon's stall penalty). A party that heals faster than the enemy hits could stay in a fight forever, so long fights wear everyone down:
+
+- At the start of every round from round 8 on (round 12 against a boss), each living hero gains 4 stress, and 2 more for every round after that: 4, 6, 8, 10…
+- Light and stress buffs change the amount like any other stress, and it can cause a resolve check or a Colapso.
+- The log warns one round before it starts ("La pelea se está alargando…").
+- Numbers: `data/balance.json` `combat.drag_round`, `drag_round_boss`, `drag_stress`, `drag_stress_step`. Rule: `StressSystem.drag_stress`, applied in `combat_controller.gd` `_start_round()`.
 
 ### 3.2 Resolve Check at 100
 

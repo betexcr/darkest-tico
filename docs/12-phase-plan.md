@@ -519,7 +519,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6): with a spending bot the bank stays at 5–12k through week 16, so the economy was not the problem. The game is still too easy (93 of 96 cleared), stress is held under 50 by free relief skills, and the longest stalls came from Campesinos healing, not only from healer-heavy parties.
 
 ### P5-02b · S · Dragging-fight stress
-- Status: `todo` · Depends: P5-02a · Spec: `01` §3
+- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §3
 - From round `combat.drag_round` on, every living hero gains `combat.drag_stress`, plus `combat.drag_stress_step` per extra round (start with 8 / 4 / 2). Rule in `scripts/domain/stress_system.gd`, called from `_start_round()` in `scripts/combat/combat_controller.gd`; keys in `data/balance.json` and `BALANCE_KEYS`; checks in `tests/test_balance.gd`; doc 01 §3.1 and AGENTS.md §4.
 - Done when: [ ] with `--party abuela,abuela,abuela,curandero` no fight passes 20 rounds [ ] `tools/sim_combat.gd` reports 0 chains past 40 rounds
 

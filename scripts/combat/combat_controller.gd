@@ -301,9 +301,33 @@ func _start_round() -> void:
 	if _round > 1:
 		# Virtudes Esperanza (calms companions) and Vigor (regains PV) at the top of each round.
 		_log_all(StressSystemScript.round_start_effects(party))
+	_apply_drag_stress()
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
+
+
+## Dragging fights (P5-02b): from combat.drag_round on, every round wears the party down a
+## little more, so a party that out-heals the enemy can't sit in a fight forever. A hero
+## who breaks or collapses here is handled like any other stress (_process_turn checks the end).
+func _apply_drag_stress() -> void:
+	var drag: int = StressSystemScript.drag_stress(_round, is_boss)
+	if drag <= 0:
+		if StressSystemScript.drag_stress(_round + 1, is_boss) > 0:
+			_log("La pelea se está alargando: la cuadrilla empieza a desesperarse.", "aa88cc")
+		return
+	_log("La pelea se alarga y los nervios no dan más.", "aa88cc")
+	for k in party.size():
+		var h = party[k]
+		if not (h is Dictionary) or h.get("dead", false):
+			continue
+		var before: int = int(h.get("stress", 0))
+		_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, drag)))
+		var up: int = int(h.get("stress", 0)) - before
+		if up > 0:
+			_log("  %s: estrés +%d" % [h.get("name", "?"), up], "aa88cc")
+			if k < hero_units.size():
+				hero_units[k].float_text("+%d estrés" % up, hero_units[k].COLOR_STRESS)
 
 
 func _roll_initiative_queue() -> void:
