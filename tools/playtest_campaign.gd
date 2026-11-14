@@ -13,13 +13,22 @@ extends SceneTree
 ##                     through the camp (default full)
 ##   --difficulty ID   starting difficulty: aprendiz | veterano | campeon (default aprendiz);
 ##                     the bot moves up when a hero refuses (too seasoned)
+##   --set path=value  override a data/balance.json number for this run (repeatable), as in
+##                     tools/sim_combat.gd
+##   --party a,b,c,d   force the class mix (hero ids from data/heroes.json): every campaign
+##                     starts with exactly these four, nobody else is hired, and a hero who
+##                     dies is replaced by one of the same class for its hire cost
 ##
-## The player bot:
-##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), takes the 4
-##        least stressed, orders them by their class's preferred position, heals them at the
-##        EBAIS, pays the Iglesia when the party's average stress ≥ IGLESIA_AT, buys the region's
-##        missing provisions, tops up agua de pipa and vendas, and after a won expedition buys
-##        one Casa Comunal rank. It always keeps RESERVE colones.
+## The player bot (P5-02a: it spends like a player):
+##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), preferring
+##        a recruit who isn't a second healer; takes the 4 least stressed with at most one
+##        dedicated healer (a class with a heal skill that never stands in position 1), orders
+##        them by their class's preferred position, heals them at the EBAIS, pays the Iglesia
+##        when the party's average stress ≥ IGLESIA_AT, buys the region's missing provisions,
+##        tops up agua de pipa and vendas, carries one café chorreado per hero at ≥ STRESS_ITEM_AT
+##        stress, then buys upgrades cheapest first until the colones run out: Casa Comunal
+##        ranks, and one piece of equipment per hero a week for an empty slot (the dearest it
+##        can afford). It always keeps RESERVE colones.
 ##   Expedition: between rooms uses healing items under half PV, stress items at ≥ 50 stress
 ##        and a candle below Tenue; flees when 2 heroes are down; eats when hungry; disarms
 ##        traps at ≥ 50% (else passes with care); uses a curio's key item, else examines it;
@@ -36,13 +45,19 @@ const MAX_STEPS := 60000
 const RESERVE := 1000
 const HIRE_SPARE_AT := 4000
 const IGLESIA_AT := 30
-const RANK_AT := 2500
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
+const STRESS_ITEM := "cafe_chorreado"
+const STRESS_ITEM_AT := 50
+const EQUIP_SLOTS := ["weapon", "armor", "accessory1", "accessory2"]
+## Hub spending by sink, in the order the report prints it.
+const SINKS := ["provisions", "heal_items", "stress_items", "ebais", "iglesia", "ranks", "gear", "hires"]
+const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
+	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires"}
 
 var _gs
 var _loader
 var _scene: PackedScene
-var _opts := {"campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz"}
+var _opts := {"campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": []}
 var _finished: String = ""
 var _uses: Dictionary = {}
 var _all_rows: Array = []
@@ -58,11 +73,22 @@ func _run() -> void:
 	await process_frame
 	_parse_args()
 	seed(int(_opts["seed"]))
+	for kv in _opts["set"]:
+		var parts: PackedStringArray = str(kv).split("=", true, 1)
+		if parts.size() == 2:
+			BalanceScript.override(parts[0], JSON.parse_string(parts[1]))
 	_gs = root.get_node("GameState")
+	for id in _opts["party"]:
+		if _gs.get_hero_template(str(id)).is_empty():
+			push_error("playtest_campaign: --party has no hero '%s' in data/heroes.json" % id)
+			quit(1)
+			return
 	_loader = load("res://scripts/domain/expedition_loader.gd")
 	_scene = load("res://scenes/expedition/expedition_screen.tscn")
-	print("## Campaign playtest — %d campaign(s) × %d weeks, route %s, %s, seed %d\n" % [
-		int(_opts["campaigns"]), int(_opts["weeks"]), _opts["route"], _opts["difficulty"], int(_opts["seed"])])
+	print("## Campaign playtest — %d campaign(s) × %d weeks, route %s, %s, seed %d%s%s\n" % [
+		int(_opts["campaigns"]), int(_opts["weeks"]), _opts["route"], _opts["difficulty"], int(_opts["seed"]),
+		(", party " + "/".join(PackedStringArray(_opts["party"]))) if not _opts["party"].is_empty() else "",
+		(", overrides " + ", ".join(PackedStringArray(_opts["set"]))) if not _opts["set"].is_empty() else ""])
 	var t0: int = Time.get_ticks_msec()
 	for c in int(_opts["campaigns"]):
 		_new_campaign()
@@ -94,6 +120,12 @@ func _parse_args() -> void:
 			"--route", "--difficulty":
 				_opts[flag.trim_prefix("--")] = val
 				k += 1
+			"--set":
+				_opts["set"].append(val)
+				k += 1
+			"--party":
+				_opts["party"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
+				k += 1
 			_:
 				push_warning("playtest_campaign: unknown option %s" % flag)
 		k += 1
@@ -108,6 +140,19 @@ func _new_campaign() -> void:
 	_gs.active_event_id = ""
 	_gs.event_flags = {}
 	_gs.selected_difficulty_id = str(_opts["difficulty"])
+	if not _opts["party"].is_empty():
+		_gs.roster.clear()
+		_gs.party.clear()
+		for id in _opts["party"]:
+			_add_forced_hero(str(id))
+
+
+## --party: a fresh hero of that class joins the roster (no recruit pool involved).
+func _add_forced_hero(hero_id: String) -> Dictionary:
+	var h: Dictionary = _gs._instantiate_hero(_gs.get_hero_template(hero_id))
+	h["uid"] = _gs._take_uid()
+	_gs.roster.append(h)
+	return h
 
 
 # --- One week: hub, expedition, back ----------------------------------------------------
@@ -120,6 +165,7 @@ func _play_week() -> Dictionary:
 	var lvl: Array = _gs.party.map(func(h): return int(h.get("resolve_level", 0)))
 	row["party"] = "/".join(PackedStringArray(_gs.party.map(func(h): return _short(str(h.get("class_name", "?"))))))
 	row["levels"] = "/".join(PackedStringArray(lvl.map(func(x): return str(x)))) + ", " + str(_gs.selected_difficulty_id)
+	row["difficulty"] = str(_gs.selected_difficulty_id)
 	await _expedition(row)
 	# What main.gd does when the party is back.
 	_gs.last_expedition_summary = {}
@@ -131,21 +177,53 @@ func _play_week() -> Dictionary:
 
 func _hub(row: Dictionary) -> void:
 	var c0: int = _gs.colones
-	var log: PackedStringArray = PackedStringArray()
+	for k in SINKS:
+		row[k] = 0
 	# Hire to 4 living heroes; spares when rich.
-	while _living_roster().size() < 4 or (_living_roster().size() < 6 and _gs.colones >= HIRE_SPARE_AT):
-		var idx: int = _cheapest_recruit()
-		if idx < 0:
-			break
-		var msg: String = _gs.hire_recruit(idx)
-		if not msg.contains("se une"):
-			break
-		log.append(msg)
-	row["hired"] = log.size()
-	# Party: the 4 least stressed, in their classes' preferred order.
+	var hired: int = 0
+	if not _opts["party"].is_empty():
+		# Forced class mix: replace the fallen with the same class, hire nobody else.
+		for id in _opts["party"]:
+			var want: int = _opts["party"].count(id)
+			while _living_roster().filter(func(h): return str(h.get("hero_id", "")) == str(id)).size() < want:
+				var cost: int = int(_gs.get_hero_template(str(id)).get("hire_cost", 0))
+				if _gs.colones < cost:
+					break
+				_gs.colones -= cost
+				_add_forced_hero(str(id))
+				hired += 1
+	else:
+		while _living_roster().size() < 4 or (_living_roster().size() < 6 and _gs.colones >= HIRE_SPARE_AT):
+			var idx: int = _pick_recruit()
+			if idx < 0:
+				break
+			var msg: String = _gs.hire_recruit(idx)
+			if not msg.contains("se une"):
+				break
+			hired += 1
+	row["hired"] = hired
+	row["hires"] = c0 - _gs.colones
+	# Party: the 4 least stressed, at most one dedicated healer, in their classes' preferred order.
 	var pool: Array = _living_roster()
 	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
-	var chosen: Array = pool.slice(0, 4)
+	var chosen: Array = []
+	if _opts["party"].is_empty():
+		var has_healer: bool = false
+		for h in pool:
+			if chosen.size() >= 4:
+				break
+			if _is_healer(h):
+				if has_healer:
+					continue
+				has_healer = true
+			chosen.append(h)
+		for h in pool:
+			if chosen.size() >= 4:
+				break
+			if not chosen.has(h):
+				chosen.append(h)
+	else:
+		chosen = pool.slice(0, 4)
 	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
 	_gs.party = chosen
 	# Seasoned heroes refuse easy expeditions (doc 01 §6): take the easiest one nobody refuses.
@@ -154,54 +232,139 @@ func _hub(row: Dictionary) -> void:
 		if _gs.party_refusals(str(d["id"])).is_empty():
 			_gs.selected_difficulty_id = str(d["id"])
 			break
-	var spent_heal: int = 0
+	var mark: int = _gs.colones
 	for h in chosen:
 		var cost: int = _gs.heal_cost(h)
 		if cost > 0 and _gs.colones - cost >= RESERVE:
 			_gs.heal_hero(h)
-			spent_heal += cost
-	row["ebais"] = spent_heal
+	row["ebais"] = mark - _gs.colones
 	var avg_stress: float = 0.0
 	for h in chosen:
 		avg_stress += int(h.get("stress", 0))
 	avg_stress /= maxf(chosen.size(), 1.0)
-	row["iglesia"] = 0
+	row["stress_start"] = avg_stress
+	mark = _gs.colones
 	if avg_stress >= IGLESIA_AT and _gs.colones - _gs.iglesia_cost() >= RESERVE:
-		row["iglesia"] = _gs.iglesia_cost()
 		_gs.iglesia_misa_rapida()
-	var before_prov: int = _gs.colones
+	row["iglesia"] = mark - _gs.colones
+	mark = _gs.colones
 	if not _gs.missing_provisions().is_empty():
 		_gs.buy_missing_provisions()
-	row["provisions"] = before_prov - _gs.colones
-	var before_items: int = _gs.colones
+	row["provisions"] = mark - _gs.colones
+	mark = _gs.colones
 	for id in HEAL_ITEMS:
-		while _gs.item_count(id) < int(HEAL_ITEMS[id]) and _gs.colones - _gs.item_price(id) >= RESERVE:
-			var had: int = _gs.item_count(id)
-			_gs.buy_item(id)
-			if _gs.item_count(id) == had:
-				break
-	row["heal_items"] = before_items - _gs.colones
-	row["rank"] = ""
-	if _last_result() == "objective" and _gs.colones >= RANK_AT:
-		var best_h: Dictionary = {}
-		var best_s: String = ""
-		var best_c: int = 0
+		_stock(id, int(HEAL_ITEMS[id]))
+	row["heal_items"] = mark - _gs.colones
+	# One café per hero who leaves tense (the bot drinks it between rooms at ≥ 50 stress).
+	mark = _gs.colones
+	_stock(STRESS_ITEM, chosen.filter(func(h): return int(h.get("stress", 0)) >= STRESS_ITEM_AT).size())
+	row["stress_items"] = mark - _gs.colones
+	# Upgrades, cheapest first: the next Casa Comunal rank of any skill, or one piece of
+	# equipment per hero a week (the dearest the bot can afford for the first empty slot).
+	row["gear"] = 0
+	row["gear_n"] = 0
+	row["ranks"] = 0
+	row["ranks_n"] = 0
+	var geared: Array = []
+	while true:
+		var rank_h: Dictionary = {}
+		var rank_s: String = ""
+		var rank_c: int = 0
 		for h in chosen:
 			for sid in h.get("skill_ids", []):
 				if _gs.skill_rank_block_reason(h, str(sid)) == "":
 					var c: int = _gs.skill_rank_cost(h, str(sid))
-					if best_s == "" or c < best_c:
-						best_h = h
-						best_s = str(sid)
-						best_c = c
-		if best_s != "" and _gs.colones - best_c >= RESERVE:
-			_gs.buy_skill_rank(best_h, best_s)
-			row["rank"] = "%s %s" % [_short(str(best_h.get("class_name", ""))), _gs.get_skill(best_s).get("name", best_s)]
+					if _gs.colones - c >= RESERVE and (rank_s == "" or c < rank_c):
+						rank_h = h
+						rank_s = str(sid)
+						rank_c = c
+		var gear_h: Dictionary = {}
+		var gear_id: String = ""
+		var gear_slot: String = ""
+		for h in chosen:
+			if geared.has(h):
+				continue
+			var pick: Array = _gear_for(h)
+			if not pick.is_empty() and (gear_id == "" or _gs.item_price(pick[0]) < _gs.item_price(gear_id)):
+				gear_h = h
+				gear_id = pick[0]
+				gear_slot = pick[1]
+		if rank_s == "" and gear_id == "":
+			break
+		mark = _gs.colones
+		if gear_id == "" or (rank_s != "" and rank_c <= _gs.item_price(gear_id)):
+			_gs.buy_skill_rank(rank_h, rank_s)
+			if _gs.colones == mark:
+				break
+			row["ranks_n"] += 1
+			row["ranks"] += mark - _gs.colones
+		else:
+			geared.append(gear_h)
+			_gs.buy_item(gear_id)
+			if _gs.colones == mark:
+				continue
+			if _gs.equip(gear_h, gear_id, gear_slot) != "":
+				_gs.sell_item(gear_id)
+				continue
+			row["gear_n"] += 1
+			row["gear"] += mark - _gs.colones
 	row["hub_spent"] = c0 - _gs.colones
 
 
-func _last_result() -> String:
-	return str(_all_rows[-1].get("result", "")) if not _all_rows.is_empty() else ""
+## Buys `id` until the alforja holds `want` of it (keeping RESERVE).
+func _stock(id: String, want: int) -> void:
+	while _gs.item_count(id) < want and _gs.colones - _gs.item_price(id) >= RESERVE:
+		var had: int = _gs.item_count(id)
+		_gs.buy_item(id)
+		if _gs.item_count(id) == had:
+			break
+
+
+## [item id, slot]: the dearest piece of equipment the bot can afford for the hero's first
+## empty slot (weapon, armor, then accessories; never the same accessory twice). [] if none.
+func _gear_for(h: Dictionary) -> Array:
+	var eq: Dictionary = h.get("equipment", {}) if h.get("equipment") is Dictionary else {}
+	for slot in EQUIP_SLOTS:
+		if str(eq.get(slot, "")) != "":
+			continue
+		var best: String = ""
+		for id in _gs.all_item_ids():
+			var sid: String = str(id)
+			if not _gs.is_equipment(sid) or not _gs.slots_for(sid).has(slot) or eq.values().has(sid):
+				continue
+			if _gs.item_count(sid) > 0 or _gs.buy_block_reason(sid) != "" or _gs.colones - _gs.item_price(sid) < RESERVE:
+				continue
+			if best == "" or _gs.item_price(sid) > _gs.item_price(best):
+				best = sid
+		return [best, slot] if best != "" else []
+	return []
+
+
+## A dedicated healer: the class has a heal skill and never stands in position 1.
+func _is_healer(h: Dictionary) -> bool:
+	if _pref_rank(h) <= 1:
+		return false
+	for sid in h.get("skill_ids", []):
+		if str(_gs.get_skill(str(sid)).get("kind", "")) == "heal":
+			return true
+	return false
+
+
+## The cheapest recruit the bot can pay for; one who isn't a second healer when there is a choice.
+func _pick_recruit() -> int:
+	var has_healer: bool = _living_roster().any(func(h): return _is_healer(h))
+	var best: int = -1
+	var best_key: Array = []
+	for k in _gs.recruit_pool.size():
+		var r: Dictionary = _gs.recruit_pool[k]
+		var c: int = _gs.hire_cost(r)
+		if c > _gs.colones:
+			continue
+		var key: Array = [1 if (has_healer and _is_healer(r)) else 0, c]
+		if best < 0 or key < best_key:
+			best = k
+			best_key = key
+	return best
 
 
 func _living_roster() -> Array:
@@ -294,13 +457,18 @@ func _expedition(row: Dictionary) -> void:
 	var deaths: int = 0
 	var breaks: PackedStringArray = PackedStringArray()
 	var max_stress: int = 0
+	var sum_stress: int = 0
 	for h in _gs.party:
 		if h.get("dead", false):
 			deaths += 1
+		else:
+			sum_stress += int(h.get("stress", 0))
 		max_stress = maxi(max_stress, int(h.get("stress", 0)))
 		var now: String = str(h.get("affliction_id", "")) + "|" + str(h.get("virtud_id", ""))
 		if now != str(snap.get(int(h["uid"]), now)):
 			breaks.append(str(h.get("affliction_id", "")) if str(h.get("affliction_id", "")) != "" else "+" + str(h.get("virtud_id", "")))
+	# Stress the survivors bring back to the hub.
+	row["stress_end"] = float(sum_stress) / maxf(_gs.party.size() - deaths, 1.0)
 	row["deaths"] = deaths
 	row["max_stress"] = max_stress
 	row["breaks"] = ", ".join(breaks)
@@ -515,18 +683,26 @@ func _camp_skill(screen) -> bool:
 
 func _print_campaign(c: int, rows: Array) -> void:
 	print("### Campaign %d\n" % c)
-	print("| Wk | Party (levels, difficulty) | Town event | Hub ₡ (prov / EBAIS / Iglesia) | Result | Rooms | Moves | Fights (rounds) | Deaths | Top stress | Breaks | Hunger (short) | Traps D/C | Loot ₡ | ₡ after |")
+	print("| Wk | Party (levels, difficulty) | Town event | Hub ₡ (prov / items / EBAIS / Iglesia / ranks / gear / hires) | Result | Rooms | Moves | Fights (rounds) | Deaths | Stress avg / top | Breaks | Hunger (short) | Traps D/C | Loot ₡ | ₡ after |")
 	print("|---:|---|---|---|---|---:|---:|---|---:|---:|---|---|---|---:|---:|")
 	for r in rows:
 		var f: Array = r.get("fights", [])
 		var fr: PackedStringArray = PackedStringArray(f.map(func(x): return "%s%d%s" % [str(x["kind"])[0].to_upper() if x["kind"] != "combat" else "", int(x["rounds"]), "" if x["won"] else "✗"]))
-		print("| %d | %s (%s) | %s | %d (%d / %d / %d)%s | %s%s | %d/%d | %d | %s | %d | %d | %s | %d (%d) | %d/%d | %d | %d |" % [
+		var bought: PackedStringArray = PackedStringArray()
+		if int(r.get("hired", 0)) > 0:
+			bought.append("hired %d" % int(r["hired"]))
+		if int(r.get("ranks_n", 0)) > 0:
+			bought.append("%d rank(s)" % int(r["ranks_n"]))
+		if int(r.get("gear_n", 0)) > 0:
+			bought.append("%d gear" % int(r["gear_n"]))
+		print("| %d | %s (%s) | %s | %d (%d / %d / %d / %d / %d / %d / %d)%s | %s%s | %d/%d | %d | %s | %d | %.0f / %d | %s | %d (%d) | %d/%d | %d | %d |" % [
 			int(r["week"]), r.get("party", ""), r.get("levels", ""), r.get("event", ""), int(r.get("hub_spent", 0)),
-			int(r.get("provisions", 0)), int(r.get("ebais", 0)), int(r.get("iglesia", 0)),
-			((" + hired %d" % int(r["hired"])) if int(r.get("hired", 0)) > 0 else "") + ((" + rank " + str(r["rank"])) if str(r.get("rank", "")) != "" else ""),
+			int(r.get("provisions", 0)), int(r.get("heal_items", 0)) + int(r.get("stress_items", 0)), int(r.get("ebais", 0)),
+			int(r.get("iglesia", 0)), int(r.get("ranks", 0)), int(r.get("gear", 0)), int(r.get("hires", 0)),
+			(": " + ", ".join(bought)) if not bought.is_empty() else "",
 			r.get("result", "?"), " (camped)" if r.get("camped", false) else "",
 			int(r.get("rooms_seen", 0)), int(r.get("rooms_total", 0)), int(r.get("moves", 0)),
-			" ".join(fr), int(r.get("deaths", 0)), int(r.get("max_stress", 0)), r.get("breaks", ""),
+			" ".join(fr), int(r.get("deaths", 0)), float(r.get("stress_end", 0.0)), int(r.get("max_stress", 0)), r.get("breaks", ""),
 			int(r.get("hunger", 0)), int(r.get("unfed", 0)), int(r.get("disarmed", 0)), int(r.get("careful", 0)),
 			int(r.get("loot", 0)), int(r.get("colones_end", 0))])
 	print("")
@@ -549,6 +725,9 @@ func _print_summary() -> void:
 	print("- Results: %s" % ", ".join(PackedStringArray(res.keys().map(func(k): return "%s %d" % [k, res[k]]))))
 	print("- Deaths per expedition: %.2f. Quebrantos/Virtudes per expedition: %.2f. Moves per expedition: %.1f. Camped in %d." % [
 		float(deaths) / n, float(breaks) / n, float(moves) / n, camped])
+	_print_difficulty_table()
+	_print_stress_and_food()
+	_print_economy()
 	var kinds: Dictionary = {}
 	for f in _all_fights:
 		var k: String = str(f["kind"])
@@ -579,3 +758,87 @@ func _print_summary() -> void:
 			total += int(e[1])
 		print("- %s (%d actions): %s" % [cls, total, ", ".join(PackedStringArray(arr.slice(0, 3).map(func(e): return "%s %d%%" % [e[0], roundi(100.0 * e[1] / maxi(total, 1))])))])
 	print("")
+
+
+## Clear rate per difficulty (the owner's bands, P5-02) and when each campaign first moved up.
+func _print_difficulty_table() -> void:
+	var by: Dictionary = {}
+	var first: Dictionary = {}
+	for r in _all_rows:
+		var d: String = str(r.get("difficulty", "?"))
+		if not by.has(d):
+			by[d] = {"n": 0, "won": 0, "deaths": 0, "breaks": 0, "top": 0}
+			first[d] = {}
+		by[d]["n"] += 1
+		by[d]["won"] += 1 if str(r.get("result", "")) == "objective" else 0
+		by[d]["deaths"] += int(r.get("deaths", 0))
+		by[d]["breaks"] += 0 if str(r.get("breaks", "")) == "" else str(r["breaks"]).split(", ").size()
+		by[d]["top"] += int(r.get("max_stress", 0))
+		if not first[d].has(r["campaign"]):
+			first[d][r["campaign"]] = int(r["week"])
+	print("\n| Difficulty | Expeditions | Cleared | Deaths / exp. | Quebrantos+Virtudes / exp. | Avg top stress | First week (per campaign) |")
+	print("|---|---:|---:|---:|---:|---:|---|")
+	for d in by:
+		var s: Dictionary = by[d]
+		var m: float = maxf(s["n"], 1.0)
+		print("| %s | %d | %.0f%% | %.2f | %.2f | %.0f | %s |" % [d, s["n"], 100.0 * s["won"] / m, s["deaths"] / m, s["breaks"] / m, s["top"] / m,
+			", ".join(PackedStringArray(first[d].values().map(func(w): return str(w))))])
+
+
+func _print_stress_and_food() -> void:
+	var n: float = maxf(_all_rows.size(), 1.0)
+	var avg_end: float = 0.0
+	var top: float = 0.0
+	var start: float = 0.0
+	var over: int = 0
+	var hunger: int = 0
+	var unfed: int = 0
+	var short_runs: int = 0
+	for r in _all_rows:
+		avg_end += float(r.get("stress_end", 0.0))
+		top += int(r.get("max_stress", 0))
+		start += float(r.get("stress_start", 0.0))
+		over += 1 if int(r.get("max_stress", 0)) >= BalanceScript.int_of("stress.resolve_threshold") else 0
+		hunger += int(r.get("hunger", 0))
+		unfed += int(r.get("unfed", 0))
+		short_runs += 1 if int(r.get("unfed", 0)) > 0 else 0
+	print("\n- Stress: the party leaves the hub at %.0f on average and comes back at %.0f (top hero %.0f). Expeditions where someone reached %d: %d of %d." % [
+		start / n, avg_end / n, top / n, BalanceScript.int_of("stress.resolve_threshold"), over, _all_rows.size()])
+	print("- Food: %d hunger stops, %d of them short of gallo pinto (%.0f%%), in %d of %d expeditions." % [
+		hunger, unfed, 100.0 * unfed / maxf(hunger, 1.0), short_runs, _all_rows.size()])
+
+
+## Colones in and out per week, by sink, and what each campaign had in the bank.
+func _print_economy() -> void:
+	var n: float = maxf(_all_rows.size(), 1.0)
+	var loot: int = 0
+	var spent: int = 0
+	var sink: Dictionary = {}
+	for r in _all_rows:
+		loot += int(r.get("loot", 0))
+		spent += int(r.get("hub_spent", 0))
+		for k in SINKS:
+			sink[k] = int(sink.get(k, 0)) + int(r.get(k, 0))
+	print("\n| Colones per week | Avg ₡ | Share of spending |")
+	print("|---|---:|---:|")
+	print("| Loot (fights, curios, objective) | %.0f | |" % (loot / n))
+	for k in SINKS:
+		print("| %s | %.0f | %.0f%% |" % [SINK_NAMES[k], sink[k] / n, 100.0 * sink[k] / maxf(spent, 1.0)])
+	print("| **All hub spending** | %.0f | %.0f%% of loot |" % [spent / n, 100.0 * spent / maxf(loot, 1.0)])
+	var bank: Dictionary = {}
+	for r in _all_rows:
+		if not bank.has(r["campaign"]):
+			bank[r["campaign"]] = {}
+		bank[r["campaign"]][int(r["week"])] = int(r.get("colones_end", 0))
+	var lines: PackedStringArray = PackedStringArray()
+	for c in bank:
+		var weeks: Array = bank[c].keys()
+		weeks.sort()
+		var marks: PackedStringArray = PackedStringArray()
+		for w in [4, 8, 12, 16, 24, 32]:
+			if bank[c].has(w):
+				marks.append("wk %d: %d" % [w, bank[c][w]])
+		if not weeks.is_empty() and not [4, 8, 12, 16, 24, 32].has(weeks[-1]):
+			marks.append("wk %d: %d" % [weeks[-1], bank[c][weeks[-1]]])
+		lines.append("campaign %d — %s" % [c, ", ".join(marks)])
+	print("\n- Colones in the bank: %s." % "; ".join(lines))

@@ -497,8 +497,50 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: P3-01
 - Done when: [ ] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
-### P5-02 · M · Balance pass to 55–70% mission success
-- Status: `todo` · Depends: P1-07, P2-*, P5-01
+### P5-02 · L→ split · Balance pass on the P1-09 playtest findings
+- Status: split into P5-02a–f (owner 2026-11-14: pulled ahead of P2 and P5-01 to fix the six findings in doc 09 §5). Do them in order; each one ends in `review` for an owner playtest.
+- Owner decisions (2026-11-14):
+  - Clear rate for the careful bot: about 85–90% on Aprendiz, 70–80% on Veterano, 55–70% on Campeón. The doc 06 target of 55–70% applies to the hardest tier, since the bot plays near-perfectly.
+  - Healer stall: dragging-fight stress (Darkest Dungeon's stall penalty).
+  - Progression: Darkest Dungeon curve (XP thresholds become per-level costs).
+  - Provisions: two recommended kits, short run and full exploration.
+- Every task reruns `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compares with the P5-02a baseline in `docs/playtests/`.
+
+### P5-02a · M · Measurement first: a playtest bot that spends like a player
+- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P1-09
+- Why: part of the "loose economy" in doc 09 §5 is the bot. It bought one skill rank a week and no equipment, so prices can't be tuned against it.
+- Files: `tools/playtest_campaign.gd`, `docs/playtests/`, doc 09. No game data changes.
+- Done when:
+  - [ ] `--set path=value` (balance.json overrides, as in `tools/sim_combat.gd`) and `--party id,id,id,id` (forced class mix)
+  - [ ] The bot takes at most 1 dedicated healer unless `--party` is given
+  - [ ] The bot buys every affordable skill rank, equipment for empty slots, and stress items for heroes at 50+ stress
+  - [ ] The report shows stress on returning to the hub, colones by sink, and the clear rate per difficulty
+  - [ ] Baseline of 3 campaigns × 16 weeks on both routes saved in `docs/playtests/`
+
+### P5-02b · S · Dragging-fight stress
+- Status: `todo` · Depends: P5-02a · Spec: `01` §3
+- From round `combat.drag_round` on, every living hero gains `combat.drag_stress`, plus `combat.drag_stress_step` per extra round (start with 8 / 4 / 2). Rule in `scripts/domain/stress_system.gd`, called from `_start_round()` in `scripts/combat/combat_controller.gd`; keys in `data/balance.json` and `BALANCE_KEYS`; checks in `tests/test_balance.gd`; doc 01 §3.1 and AGENTS.md §4.
+- Done when: [ ] with `--party abuela,abuela,abuela,curandero` no fight passes 20 rounds [ ] `tools/sim_combat.gd` reports 0 chains past 40 rounds
+
+### P5-02c · M · Stress pass
+- Status: `todo` · Depends: P5-02b · Spec: `01` §3, `04` §4
+- Levers, one at a time: (1) lower the free in-combat `stress_relief` in `data/skills.json` (*No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas*, *Regaño Santo*); (2) an `enemy_stress` multiplier per difficulty in `data/progression.json`; (3) enemy basic-attack `stress` in `data/enemies.json`.
+- Done when (full route): [ ] top stress at the end 60–80 [ ] a resolve check in about 1 of 3 expeditions [ ] party average back at the hub 30–50
+
+### P5-02d · S · Darkest Dungeon XP curve
+- Status: `todo` · Depends: P5-02a · Spec: `01` §6.1
+- `xp_thresholds` `[0, 2, 10, 24, 48, 84, 132]`, Pura Vida about 20% lower; XP per expedition stays 4 / 8 / 16. Bump `SAVE_VERSION` and raise each saved hero's XP to the new threshold of their level, so nobody loses a level.
+- Done when: [ ] Veterano around week 7 and Campeón around week 15 in the playtest [ ] `tests/test_progression.gd` and `tests/test_save.gd` cover the curve and the migration [ ] doc 01 §6.1 updated
+
+### P5-02e · M · Two provision kits
+- Status: `todo` · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
+- Region `provisions` becomes `{ "short": {...}, "full": {...} }` (Sótanos: 10 and 16 gallo pinto). `GameState.missing_provisions` / `buy_missing_provisions` take the kit; the hub prompt offers "Vuelta corta" and "Explorar todo" with prices; the validator requires both; the bot buys by `--route`.
+- Done when: [ ] full-route hunger stops short of food fall from about half to under 10% [ ] `tests/test_hub.gd` covers both kits
+
+### P5-02f · M · Economy and clear-rate tuning
+- Status: `todo` · Depends: P5-02c, P5-02d, P5-02e
+- Economy levers: room, elite, boss and objective rewards in `data/regions/sotanos.json`; difficulty `reward` in `progression.json`; `hub.iglesia_cost`, `hub.heal_cost_per_hp`. Clear-rate levers: per-difficulty `enemy_hp` / `enemy_dmg`, `enemies.boss_hp_mult`, heal amounts on *Sopa Milagrosa* and *Cataplasma Casero*.
+- Done when: [ ] colones after week 8 between 8k and 15k with the spending bot, weekly spending 60–80% of loot [ ] clear rates in the owner's bands [ ] before/after tables in doc 09 and doc 10
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5
