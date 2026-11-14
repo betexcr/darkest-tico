@@ -108,3 +108,44 @@ Both wipes came late, in Veterano week 7 and Campeón week 8. Each was a long fi
 3. Heroes reach Veterano by week 4–6 and Campeón by week 7–8. Decide whether progression is too fast.
 4. Decide whether recommended provisions should assume full exploration (about 16 gallo pinto).
 5. Give healer-heavy parties a way to end fights (or heal less), so they don't stall.
+
+## 6) Baseline for the balance pass — 2026-11-14, a bot that spends (P5-02a)
+
+**Why a new baseline.** The bot in §5 bought one skill rank a week and no equipment, so its "colones grow to 21–41k" said little about the game. The bot now spends like a player: it buys every skill rank and one piece of equipment per hero a week (cheapest first), carries a café for a tense hero, and takes at most one dedicated healer. `tools/playtest_campaign.gd` also has `--set path=value` and `--party id,id,id,id`. No game data changed.
+
+**Runs.** 3 campaigns × 16 weeks on each route (96 expeditions), seed 1. Raw output: [playtests/2026-11-14-baseline-full.md](playtests/2026-11-14-baseline-full.md) and [playtests/2026-11-14-baseline-direct.md](playtests/2026-11-14-baseline-direct.md). Every task of the balance pass (P5-02b–f) compares with these.
+
+| | Full route | Direct route |
+|---|---:|---:|
+| Expeditions cleared | 47 / 48 | 46 / 48 |
+| Cleared on Aprendiz / Veterano / Campeón | 100% / 100% / 95% | 100% / 100% / 92% |
+| Expeditions on Aprendiz / Veterano / Campeón | 15 / 13 / 20 | 13 / 10 / 25 |
+| First week on Veterano / Campeón | 5 / 8 | 5–6 / 8–9 |
+| Heroes lost per expedition | 0.15 | 0.21 |
+| Stress leaving the hub / coming back (party average) | 20 / 24 | 11 / 14 |
+| Top hero's stress at the end | 39 | 28 |
+| Expeditions with a resolve check | 3 of 48 | 2 of 48 |
+| Hunger stops (short of food) | 109 (56, in 35 expeditions) | 8 (0) |
+| Avg rounds: normal / elite / boss | 4.2 / 4.8 / 10.1 | 4.2 / 5.2 / 7.6 |
+| Boss fights over 8 rounds (longest) | 19 of 47 (58) | 8 of 47 (51) |
+| Loot per week | 6,953 ₡ | 5,622 ₡ |
+| Hub spending per week | 6,692 ₡ (96% of loot) | 5,391 ₡ (96% of loot) |
+| Of it: skill ranks / equipment / provisions | 58% / 15% / 14% | 65% / 16% / 7% |
+| Colones after week 8 | 6.9–10.7k | 7.6–9.9k |
+| Colones after week 16 | 5.2–11.9k | 5.2–10.9k |
+
+### What changed from §5
+
+- **The economy is not loose when the player buys upgrades.** Skill ranks and equipment take 96% of the loot, and the bank stays at 5–12k through week 16. That is already inside the P5-02f target (8–15k after week 8). What remains for P5-02f:
+  - The Iglesia and stress items get almost no colones (0–3% of spending), because stress is low.
+  - Skill ranks end. A party's 16 skills cost 86,400 ₡ to max, about 25 weeks at this rate; after that the money has nowhere to go until the Taller and the Clínica exist (P3-05, P3-06).
+- **The upgrades make the game easier still.** Deaths per expedition are about the same as in §5, with twice as many Campeón expeditions.
+
+### What stayed
+
+- **Too easy.** 93 of 96 cleared; Aprendiz and Veterano never lost. The owner's bands are 85–90% / 70–80% / 55–70%.
+- **Stress is held under 50 for free.** The top hero ends at 45–49 in 19 of 96 expeditions and above 50 in only 8. The bot calms anyone who reaches 50 with a skill that costs nothing (*No Me Tumban* is 30–34% of the Montador's turns, *Regaño Santo* 12–26% of the Abuela's), so stress never climbs from there. A resolve check came up in 5 of 96 expeditions.
+- **Levelling is fast.** Veterano in week 5, Campeón in week 8, every campaign.
+- **Full exploration runs short of food.** 51% of hunger stops on the full route, in 35 of 48 expeditions.
+- **Stalls are not only a healer problem.** The two longest fights (51 and 58 rounds, both against the boss on Campeón) had one Abuela with two or three Campesinos, who heal with *Aguante de Campo*. One of them ended in a wipe. Bosses pass 8 rounds in 27 of 94 fights.
+

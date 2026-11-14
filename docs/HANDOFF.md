@@ -17,25 +17,31 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-14 — P5-02a — Balance pass planned; playtest bot now spends like a player (baselines running)
+## 2026-11-14 — P5-02a — Balance pass planned; playtest bot spends like a player; 16-week baselines
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
-- **Status after session:** P5-02a `in-progress`. P5-02 is split into P5-02a–f (plan and owner decisions in the phase plan).
+- **Status after session:** P5-02a `review`. P5-02 is split into P5-02a–f (plan and owner decisions in the phase plan); P5-02b is next.
 - **Changed:**
   - `docs/12-phase-plan.md`: P5-02 split into six tasks, with the owner's four decisions of 2026-11-14.
   - `tools/playtest_campaign.gd`:
     - `--set path=value` and `--party id,id,id,id`;
     - the bot takes at most one dedicated healer, and buys skill ranks, equipment and stress items;
     - the report adds stress on returning to the hub, a clear-rate table per difficulty, food, and colones by sink.
-  - AGENTS.md §6: the tool's new options.
+  - `docs/playtests/2026-11-14-baseline-{full,direct}.md`: 3 campaigns × 16 weeks per route.
+  - Doc 09 §6: the baseline table and what it changes. AGENTS.md §6: the tool's new options.
 - **Verified:**
   - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
   - Godot 4.7.2 Linux (downloaded into the scratchpad): all 12 test scripts print `0 failure(s)`, no `SCRIPT ERROR`.
-  - Short playtest runs with and without `--party` / `--set` finish cleanly.
+  - Both baseline runs finished with no `SCRIPT ERROR` and no stuck expedition (675 s and 421 s, run in parallel).
+- **Findings (doc 09 §6):**
+  - With a spending bot the bank stays at 5–12k through week 16. The economy was not loose; the old bot just didn't buy anything.
+  - Still too easy: 93 of 96 cleared, Aprendiz and Veterano never lost.
+  - Stress is held under 50 by free relief skills; 5 of 96 expeditions had a resolve check.
+  - The two longest fights (51 and 58 rounds) had Campesinos healing with *Aguante de Campo*, so stalls are not only a healer-party problem.
 - **Not verified / risks:**
-  - `tests/smoke_expedition.gd` failed 2 of 6 runs with the P1-20 flake ("expedition ended () after 4 moves"); no game code changed in this task.
-  - The 16-week baselines (both routes) were still running at this commit; they are not in `docs/playtests/` yet.
+  - `tests/smoke_expedition.gd` failed 2 of 6 runs with the P1-20 flake ("expedition ended () after 4 moves"). No game code changed in this task, and the baselines were running on the same CPU.
+  - The bot buys the dearest equipment it can afford, not the best for the class; a human would choose better.
 - **Decisions needed:** none.
-- **Next step:** P5-02a: run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16 --route full` and `--route direct`, save the output as `docs/playtests/2026-11-14-baseline-{full,direct}.md`, write the findings as doc 09 §6, tick the task's boxes and set it to `review`. Then P5-02b (dragging-fight stress).
+- **Next step:** P5-02b: add `combat.drag_round` / `drag_stress` / `drag_stress_step` to `data/balance.json` and `BALANCE_KEYS`, write the rule in `scripts/domain/stress_system.gd`, call it from `_start_round()` in `scripts/combat/combat_controller.gd`, then rerun the playtest with `--party campesino,campesino,campesino,abuela` and `--party abuela,abuela,abuela,curandero`.
 
 ---
 

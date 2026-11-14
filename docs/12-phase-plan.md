@@ -507,15 +507,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Every task reruns `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compares with the P5-02a baseline in `docs/playtests/`.
 
 ### P5-02a · M · Measurement first: a playtest bot that spends like a player
-- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P1-09
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-14; owner to check that the bot's shopping is how a player would spend) · Depends: P1-09
 - Why: part of the "loose economy" in doc 09 §5 is the bot. It bought one skill rank a week and no equipment, so prices can't be tuned against it.
 - Files: `tools/playtest_campaign.gd`, `docs/playtests/`, doc 09. No game data changes.
 - Done when:
-  - [ ] `--set path=value` (balance.json overrides, as in `tools/sim_combat.gd`) and `--party id,id,id,id` (forced class mix)
-  - [ ] The bot takes at most 1 dedicated healer unless `--party` is given
-  - [ ] The bot buys every affordable skill rank, equipment for empty slots, and stress items for heroes at 50+ stress
-  - [ ] The report shows stress on returning to the hub, colones by sink, and the clear rate per difficulty
-  - [ ] Baseline of 3 campaigns × 16 weeks on both routes saved in `docs/playtests/`
+  - [x] `--set path=value` (balance.json overrides, as in `tools/sim_combat.gd`) and `--party id,id,id,id` (forced class mix)
+  - [x] The bot takes at most 1 dedicated healer unless `--party` is given
+  - [x] The bot buys every affordable skill rank, equipment for empty slots, and stress items for heroes at 50+ stress
+  - [x] The report shows stress on returning to the hub, colones by sink, and the clear rate per difficulty
+  - [x] Baseline of 3 campaigns × 16 weeks on both routes saved in `docs/playtests/`
+- Result (doc 09 §6): with a spending bot the bank stays at 5–12k through week 16, so the economy was not the problem. The game is still too easy (93 of 96 cleared), stress is held under 50 by free relief skills, and the longest stalls came from Campesinos healing, not only from healer-heavy parties.
 
 ### P5-02b · S · Dragging-fight stress
 - Status: `todo` · Depends: P5-02a · Spec: `01` §3
@@ -540,7 +541,8 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 ### P5-02f · M · Economy and clear-rate tuning
 - Status: `todo` · Depends: P5-02c, P5-02d, P5-02e
 - Economy levers: room, elite, boss and objective rewards in `data/regions/sotanos.json`; difficulty `reward` in `progression.json`; `hub.iglesia_cost`, `hub.heal_cost_per_hp`. Clear-rate levers: per-difficulty `enemy_hp` / `enemy_dmg`, `enemies.boss_hp_mult`, heal amounts on *Sopa Milagrosa* and *Cataplasma Casero*.
-- Done when: [ ] colones after week 8 between 8k and 15k with the spending bot, weekly spending 60–80% of loot [ ] clear rates in the owner's bands [ ] before/after tables in doc 09 and doc 10
+- Baseline (doc 09 §6): colones after week 8 are already 7–11k and spending is 96% of loot, nearly all of it skill ranks. So the economy work here is to check the bank again after P5-02c–e, and to make stress relief (Iglesia, stress items) a real cost; loot only needs cutting if the bank leaves the band.
+- Done when: [ ] colones after week 8 between 8k and 15k with the spending bot [ ] the Iglesia and stress items take at least 10% of weekly spending [ ] clear rates in the owner's bands [ ] before/after tables in doc 09 and doc 10
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

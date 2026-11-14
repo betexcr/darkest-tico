@@ -798,7 +798,8 @@ func _print_stress_and_food() -> void:
 		avg_end += float(r.get("stress_end", 0.0))
 		top += int(r.get("max_stress", 0))
 		start += float(r.get("stress_start", 0.0))
-		over += 1 if int(r.get("max_stress", 0)) >= BalanceScript.int_of("stress.resolve_threshold") else 0
+		# A Virtud drops stress back to 40, so count the breaks too, not only the stress at the end.
+		over += 1 if int(r.get("max_stress", 0)) >= BalanceScript.int_of("stress.resolve_threshold") or str(r.get("breaks", "")) != "" else 0
 		hunger += int(r.get("hunger", 0))
 		unfed += int(r.get("unfed", 0))
 		short_runs += 1 if int(r.get("unfed", 0)) > 0 else 0
