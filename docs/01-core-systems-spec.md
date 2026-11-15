@@ -252,7 +252,10 @@ Implemented (P1-18, owner 2026-11-12: DD hunger checks). Data: `data/balance.jso
 - Short of food, the most hurt heroes eat first.
 - A hero who doesn't eat loses **10% of max PV (never below 1)** and gains **+10 stress**.
 - A camp meal (§4.4) resets the count.
-- **Provisions:** each region lists recommended provisions (Sótanos: 10 gallo pinto, 3 candelas de sebo). Before leaving, the hacienda warns when the alforja is short and offers to buy what is missing.
+- **Provisions:** each region lists two recommended kits (P5-02e, owner 2026-11-14). Before leaving, the hacienda shows both against the alforja and offers to buy what either lacks; it asks nothing when the full kit is already covered.
+  - **Vuelta corta** (straight to the boss, about 8 moves). Sótanos: 10 gallo pinto, 3 candelas de sebo (1,050 ₡).
+  - **Explorar todo** (every room, about 19 moves). Sótanos: 16 gallo pinto, 5 candelas de sebo (1,700 ₡).
+  - Data: region `provisions.short` and `provisions.full`; `GameState.missing_provisions(region, kit)`.
 - **Prices** (2026-11-12, DD ratio): gallo pinto 75 ₡, candela de sebo 100 ₡, fósforos 60 ₡. The full Sótanos kit costs 1,050 ₡, about 30% of what an Aprendiz run pays (≈3,500 ₡). Topping up the starter kit (4 gallo pinto, 2 candelas) costs 550 ₡.
 
 ### 4.7 Traps and curios

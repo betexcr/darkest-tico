@@ -542,7 +542,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Veterano around week 7 and Campeón around week 15 in the playtest [ ] `tests/test_progression.gd` and `tests/test_save.gd` cover the curve and the migration [ ] doc 01 §6.1 updated
 
 ### P5-02e · M · Two provision kits
-- Status: `todo` · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
+- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
 - Region `provisions` becomes `{ "short": {...}, "full": {...} }` (Sótanos: 10 and 16 gallo pinto). `GameState.missing_provisions` / `buy_missing_provisions` take the kit; the hub prompt offers "Vuelta corta" and "Explorar todo" with prices; the validator requires both; the bot buys by `--route`.
 - Done when: [ ] full-route hunger stops short of food fall from about half to under 10% [ ] `tests/test_hub.gd` covers both kits
 
