@@ -24,6 +24,10 @@ extends SceneTree
 ##   --log-long N        print the combat log of the first fight that passes N rounds
 ##   --party a,b,c,d     hero ids (data/heroes.json) in formation order, instead of the
 ##                       starting party
+##   --level N           every hero starts at resolve level N (default 0); pick a --difficulty
+##                       whose range holds it, or the heroes refuse or go under-leveled
+##   --ranks R           every skill at Casa Comunal rank R (default 1)
+##   --gear              every hero wears the dearest weapon and armor the Pulpería sells
 ##
 ## Without --chain, every fight starts from the fresh starting party (full PV, 0 stress, no
 ## items used, no camp buffs), as at the first room of a new game. Squads are drawn the way
@@ -50,7 +54,8 @@ var _template: Array = []
 var _light0: int = 0
 var _rng := RandomNumberGenerator.new()
 var _opts := {"runs": 10000, "node": "all", "policy": "smart", "seed": 1, "chain": 0,
-	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false, "log-long": 0, "party": []}
+	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false, "log-long": 0, "party": [],
+	"level": 0, "ranks": 1, "gear": false}
 var _log_on: bool = false
 ## --log-long: the current fight's log, printed once if the fight runs long.
 var _buffer: PackedStringArray = PackedStringArray()
@@ -124,6 +129,24 @@ func _run() -> void:
 			h["uid"] = _gs._take_uid()
 			_gs.roster.append(h)
 			_gs.party.append(h)
+	# A seasoned party (P5-02f): level, skill ranks and equipment as a campaign would have them.
+	var rs = load("res://scripts/domain/resolve_system.gd")
+	for h in _gs.party:
+		h["resolve_level"] = clampi(int(_opts["level"]), 0, rs.MAX_LEVEL)
+		h["resolve_xp"] = rs.xp_for_level(int(h["resolve_level"]))
+		if int(_opts["ranks"]) > 1:
+			for sid in h.get("skill_ids", []):
+				h["skill_ranks"][str(sid)] = int(_opts["ranks"])
+		if bool(_opts["gear"]):
+			for slot in ["weapon", "armor"]:
+				var best: String = ""
+				for id in _gs.all_item_ids():
+					if _gs.is_equipment(str(id)) and _gs.slots_for(str(id)).has(slot) and (best == "" or _gs.item_price(str(id)) > _gs.item_price(best)):
+						best = str(id)
+				if best != "" and _gs.add_item(best, 1) > 0:
+					_gs.equip(h, best, slot)
+		_gs.recompute_stats(h)
+		h["hp"] = int(h["hp_max"])
 	_gs.selected_difficulty_id = str(_opts["difficulty"])
 	if not _gs.start_mission(str(_opts["region"])):
 		push_error("sim_combat: could not start a mission in %s" % _opts["region"])
@@ -153,8 +176,9 @@ func _run() -> void:
 		("chains of %d fights + elite + boss" % chain) if chain > 0 else "fights per room kind",
 		_opts["policy"], int(_opts["seed"]),
 		(", overrides " + ", ".join(PackedStringArray(_opts["set"]))) if not _opts["set"].is_empty() else ""])
-	print("Party (formation order): %s. Difficulty: %s. Luz %d (%s).\n" % [
-		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))), _gs.selected_difficulty_id,
+	print("Party (formation order): %s. Level %d, skill rank %d%s. Difficulty: %s. Luz %d (%s).\n" % [
+		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))),
+		int(_opts["level"]), int(_opts["ranks"]), ", best weapon and armor" if bool(_opts["gear"]) else "", _gs.selected_difficulty_id,
 		_light0, load("res://scripts/domain/light_system.gd").tier_name(_light0)])
 	var t0: int = Time.get_ticks_msec()
 	if chain > 0:
@@ -238,7 +262,9 @@ func _parse_args() -> void:
 			"--party":
 				_opts["party"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
 				k += 1
-			"--runs", "--seed", "--chain", "--light", "--log-long":
+			"--gear":
+				_opts["gear"] = true
+			"--runs", "--seed", "--chain", "--light", "--log-long", "--level", "--ranks":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
 			"--node", "--policy", "--region", "--difficulty":
