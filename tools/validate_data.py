@@ -630,7 +630,7 @@ BALANCE_KEYS = {
     "combat.crit_mult": "mult", "combat.prot_cap": "pct", "combat.guard_mult": "chance",
     "combat.miss_stress": "int>=0", "combat.encarrerado_turns": "int>=0", "combat.enemy_base_crit": "pct",
     "combat.drag_round": "pos", "combat.drag_round_boss": "pos", "combat.drag_stress": "int>=0",
-    "combat.drag_stress_step": "int>=0",
+    "combat.drag_stress_step": "int>=0", "combat.retreat_chance": "chance", "combat.retreat_stress": "int>=0",
     "crits.party_relief": "int>=0", "crits.enemy_crit_stress": "int>=0",
     "death.base": "pct", "death.check_penalty": "int>=0", "death.collapse_penalty": "int>=0",
     "stress.resolve_threshold": "pos", "stress.colapso": "pos", "stress.colapso_survive": "int>=0",

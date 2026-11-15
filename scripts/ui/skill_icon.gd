@@ -43,6 +43,7 @@ const GLYPHS := {
 	"_guard": "shield",
 	"_move": "move",
 	"_pass": "hourglass",
+	"_retreat": "retreat",
 	"_items": "bag",
 }
 
@@ -288,6 +289,14 @@ func _g_pill() -> void:
 	_line([0.5, 0.5], [0.7, 0.3], 0.24, Color(0.9, 0.45, 0.4))
 	_circle(0.3, 0.7, 0.12)
 	_circle(0.7, 0.3, 0.12, Color(0.9, 0.45, 0.4))
+
+
+func _g_retreat() -> void:
+	# A doorway and an arrow leaving through it, back the way the party came.
+	_rect(0.60, 0.20, 0.82, 0.80, Color(0.5, 0.36, 0.2))
+	_rect(0.64, 0.25, 0.78, 0.80, DARK)
+	_line([0.56, 0.50], [0.20, 0.50], 0.08)
+	_poly([[0.12, 0.50], [0.32, 0.34], [0.32, 0.66]])
 
 
 func _g_move() -> void:

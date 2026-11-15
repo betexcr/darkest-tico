@@ -296,6 +296,13 @@ Longer missions increase reward multipliers and roster fatigue.
   - Possible random trinket loss
   - Reputation/morale hit event next week
 
+Implemented (P5-04, owner 2026-11-15: failing should be cheaper than dying):
+
+- **Retirada (in a fight).** On a hero's turn the player may order a retreat. It works 75% of the time; a failed try spends that hero's turn. On success the fight ends, every living hero gains 10 stress, and the party is back in the room it came from. The room they left keeps its enemies at full PV, so walking in again starts the fight over. There is no retreat from a night ambush.
+- **Abandonar expedición (on the map).** The party goes home with the colones and items it has already found. It gets no objective reward and no resolve XP.
+- Neither takes loot away. The trinket loss and the next-week event above are not built.
+- Numbers: `data/balance.json` `combat.retreat_chance`, `combat.retreat_stress`. Rule: `CombatResolver.roll_retreat`, `combat_controller.gd` `retreat()` (signal `combat_fled`), `GameState.retreat_to_previous_room()`.
+
 ## 6) Reward Resolution
 
 - Reward bundle is made of:

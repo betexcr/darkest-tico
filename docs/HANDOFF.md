@@ -17,6 +17,31 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-15 (3) — P5-04 — Retreat from a fight ("Retirada")
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-04 `review`. New `todo` tasks P5-05 (a bot that retreats) and P5-06 (retune Veterano and Campeón).
+- **Owner decisions (2026-11-15), answering the last handoff:** make failing cheaper than dying, then bring the later tiers into their bands; keep the economy tight; the event veteran stays at 6,000 ₡; bosses keep dragging from round 12; top hero's stress was not asked and stays as it is.
+- **Changed:**
+  - `data/balance.json` `combat.retreat_chance` 0.75, `combat.retreat_stress` 10; `BALANCE_KEYS`.
+  - `scripts/domain/combat_resolver.gd` `roll_retreat`; `scripts/combat/combat_controller.gd` `can_retreat`, `retreat`, signal `combat_fled`, `_close_fight` (split out of `_finish`).
+  - `scripts/autoload/game_state.gd` `previous_node_id`, `retreat_to_previous_room`.
+  - `scripts/expedition/expedition_screen.gd`: "Retirada" on the action row, `_on_combat_fled`, honest text for "Abandonar expedición", smaller icons when the row holds nine.
+  - `scripts/ui/skill_icon.gd`: a retreat glyph.
+  - `tests/test_retreat.gd` (new, 13 checks); `tools/screens/battle_screenshot.gd` also saves `battle_actions.png`.
+  - Docs: 01 §5.3, 13, AGENTS.md §3 and §4.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 13 test scripts pass, no `SCRIPT ERROR`.
+  - Screenshot under xvfb: the row of nine icons fits and the retreat icon draws. The first try overflowed the bottom panel; that is why the icons shrink.
+- **Not verified / risks:**
+  - The bots don't retreat yet, so no playtest numbers changed. That is P5-05.
+  - What I found before building this: retreating on the map already kept all colones and items; the old text ("con las manos vacías") was wrong. So "retreat keeps loot" needed no rule change, only a way out of a fight.
+  - A retreat costs no Luz and no hunger move. A player could walk in, look at the squad and retreat for 10 stress each; say if that should cost more.
+- **Decisions needed:** none.
+- **Next step:** P5-05: in `tools/sim_policy.gd` `act()`, call `cc.retreat()` when `cc.can_retreat()` and a hero died in this fight, or two are Al Borde, or the fight drags with someone at 150+ stress; in `tools/playtest_campaign.gd` listen to `screen._combat.combat_fled` and then press "Abandonar expedición" (`screen._on_flee_pressed()`), and abandon on the map after one death. Then rerun 3 × 24 weeks on both routes and compare with `docs/playtests/2026-11-15-final-*.md`.
+
+---
+
 ## 2026-11-15 (2) — P5-02c, P5-02f — Stress and difficulty numbers; recruits are free
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
 - **Status after session:** P5-02c `review`, P5-02f `review`. All of P5-02a–f is now in `review`; nothing is `in-progress` from this branch.

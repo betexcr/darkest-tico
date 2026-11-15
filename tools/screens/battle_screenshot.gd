@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Renders the battle stage with status effects and the info panel open, for review.
 ##   xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/battle_screenshot.gd -- <out_dir>
-## Saves <out_dir>/battle_hero.png (hero panel) and battle_enemy.png (enemy panel).
+## Saves <out_dir>/battle_hero.png (hero panel), battle_enemy.png (enemy panel),
+## battle_actions.png (the hero's action bar) and battle_items.png (the Alforja row).
 
 func _initialize() -> void:
 	_run.call_deferred()
@@ -60,6 +61,9 @@ func _run() -> void:
 		await process_frame
 		if not screen._combat.active_hero().is_empty():
 			break
+	# The hero's action bar: skills, Alforja, Moverse, Guardia, Retirada, Pasar.
+	await RenderingServer.frame_post_draw
+	root.get_viewport().get_texture().get_image().save_png(out_dir.path_join("battle_actions.png"))
 	screen._show_combat_items(screen._combat.active_hero())
 	for i in 10:
 		await process_frame

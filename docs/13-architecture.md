@@ -160,7 +160,7 @@ CombatController.start(party, enemies, hero_units, enemy_units, elite, boss, amb
   3. The screen pays the reward (`combat_reward × loot_mult`, which includes the Luz tier) unless it was an ambush.
   4. A boss or objective win calls `complete_mission()` and ends the expedition with `"objective"`.
   5. A loss ends it with `"defeat"`.
-- **Signals to the screen:** `hero_turn_started`, `actor_changed`, `logged`, `enemy_changed`, `combat_over`.
+- **Signals to the screen:** `hero_turn_started`, `actor_changed`, `logged`, `enemy_changed`, `combat_over`, and `combat_fled` when the party retreats (P5-04): the screen then calls `GameState.retreat_to_previous_room()` and the room stays uncleared.
 - **Instant mode:** `instant = true` (plus stub units) makes the controller resolve without timers. `tools/sim_combat.gd` uses it to play thousands of fights headless.
 
 ### 3.6 Back to the hub

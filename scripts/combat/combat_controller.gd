@@ -25,6 +25,8 @@ signal actor_changed(text: String)
 signal logged(text: String, color: String)
 signal enemy_changed
 signal combat_over(victory: bool)
+## The party got away (retreat()): the fight is over, nobody won.
+signal combat_fled
 
 ## Heroes in formation order (index 0 = position 1), index-aligned with hero_units.
 ## Positions count only the living; the dead are moved to the back (_collapse_ranks).
@@ -234,6 +236,40 @@ func guard() -> void:
 		u.refresh()
 	_turn_index += 1
 	_process_turn()
+
+
+## Retreat (P5-04, as in Darkest Dungeon): no way out of a night ambush.
+func can_retreat() -> bool:
+	return not is_ambush and not _ended
+
+
+## The acting hero calls the retreat. A failed try spends their turn. A good one ends the
+## fight for everyone and costs each living hero combat.retreat_stress; the screen then
+## takes the party back to the room it came from.
+func retreat() -> void:
+	var hero: Dictionary = active_hero()
+	if hero.is_empty() or not can_retreat():
+		return
+	_awaiting_hero = false
+	if not CombatResolverScript.roll_retreat():
+		_log("%s busca por dónde salir, pero les cierran el paso: no hay retirada este turno." % hero.get("name", "?"), "cc7744")
+		_turn_index += 1
+		_process_turn()
+		return
+	_log("¡Retirada! La cuadrilla sale de la pelea como puede.", "ffd27a")
+	var cost: int = BalanceScript.int_of("combat.retreat_stress")
+	for h in party:
+		if h is Dictionary and not h.get("dead", false) and cost > 0:
+			var before: int = int(h.get("stress", 0))
+			_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, cost)))
+			if int(h.get("stress", 0)) > before:
+				_log("  %s: estrés +%d" % [h.get("name", "?"), int(h.get("stress", 0)) - before], "aa88cc")
+	if _living_heroes() <= 0:
+		_finish(false)
+		return
+	_close_fight()
+	actor_changed.emit("Retirada")
+	combat_fled.emit()
 
 
 func pass_turn() -> void:
@@ -450,6 +486,18 @@ func _check_end() -> bool:
 
 
 func _finish(victory: bool) -> void:
+	_close_fight()
+	actor_changed.emit("Victoria" if victory else "Derrota")
+	if victory:
+		_log("Victoria. Cae el último enemigo.", "66aa66")
+	else:
+		_log("Derrota. La hacienda guarda silencio.", "aa4444")
+	await _pause(1.0)
+	combat_over.emit(victory)
+
+
+## The fight is over (won, lost or left): per-fight state goes away.
+func _close_fight() -> void:
 	_ended = true
 	_awaiting_hero = false
 	for h in party:
@@ -464,13 +512,6 @@ func _finish(victory: bool) -> void:
 	for u in hero_units:
 		u.set_active(false)
 		u.refresh()
-	actor_changed.emit("Victoria" if victory else "Derrota")
-	if victory:
-		_log("Victoria. Cae el último enemigo.", "66aa66")
-	else:
-		_log("Derrota. La hacienda guarda silencio.", "aa4444")
-	await _pause(1.0)
-	combat_over.emit(victory)
 
 
 # --- Rules (unchanged from the slice) ---------------------------------------------

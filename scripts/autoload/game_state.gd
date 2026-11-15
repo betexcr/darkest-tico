@@ -119,6 +119,9 @@ var moves_since_meal: int = 0
 var current_node_id: String = ""
 
 var visited_node_ids: Array = []
+## The room the party was in before the current one ("" at the start): where a retreat
+## from a fight takes them back to (P5-04).
+var previous_node_id: String = ""
 
 var cleared_node_ids: Array = []
 
@@ -1023,6 +1026,7 @@ func start_mission(region_path: String = "") -> bool:
 	current_node_id = str(r.get("start_node", "n0"))
 	objective_node_id = str(r.get("objective_node", ""))
 	visited_node_ids = [current_node_id]
+	previous_node_id = ""
 	cleared_node_ids = []
 	mission_active = true
 	mission_difficulty = ResolveSystemScript.expedition(selected_difficulty_id, int(r.get("region_level", 0)))
@@ -1176,6 +1180,7 @@ func move_to_node(target_id: String) -> bool:
 		return false
 	var decay: int = int(mission_params.get("light_decay", 5))
 	mission_light = maxi(mission_light - decay, 0)
+	previous_node_id = current_node_id
 	current_node_id = target_id
 	node_item_uses.clear()
 	moves_since_meal += 1
@@ -1289,6 +1294,18 @@ func is_room_revealed(node_id: String) -> bool:
 
 func current_node() -> Dictionary:
 	return mission_nodes_index.get(current_node_id, {})
+
+
+## After a retreat from a fight: the party is back in the room it came from. No Luz or
+## hunger cost; the room they left keeps its enemies. False if there is no room to go back to.
+func retreat_to_previous_room() -> bool:
+	if previous_node_id == "" or not mission_nodes_index.has(previous_node_id):
+		return false
+	var left: String = current_node_id
+	current_node_id = previous_node_id
+	previous_node_id = left
+	node_item_uses.clear()
+	return true
 
 
 func is_node_cleared(node_id: String) -> bool:

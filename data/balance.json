@@ -1,7 +1,7 @@
 {
   "_doc": "Balance numbers (P1-06, doc 04). Read through scripts/domain/balance.gd (Balance.num('section.key')); tools/validate_data.py checks every key, type and range. Chances are 0-1; percent points are 0-100. Other tuning lives next to its system: statuses.json (status durations, caps), progression.json (XP, difficulty, skill ranks), camp_skills.json, town_events.json, items.json (prices), region JSONs (map generator, light).",
   "combat": {
-    "_doc": "Hit = hit_base + (accuracy + skill accuracy - dodge) * hit_per_point, clamped hit_min..hit_max. Crit chance capped at crit_cap; crits deal x crit_mult. Protection is capped at prot_cap %. Guard: physical damage x guard_mult. A hero who misses gains miss_stress; a crit leaves them Encarrerado for encarrerado_turns. Enemies without 'crit' in enemies.json use enemy_base_crit. Dragging fights (P5-02b, DD stall penalty): at the start of every round from drag_round on (drag_round_boss against a boss), each living hero gains drag_stress, plus drag_stress_step for every round after that one.",
+    "_doc": "Hit = hit_base + (accuracy + skill accuracy - dodge) * hit_per_point, clamped hit_min..hit_max. Crit chance capped at crit_cap; crits deal x crit_mult. Protection is capped at prot_cap %. Guard: physical damage x guard_mult. A hero who misses gains miss_stress; a crit leaves them Encarrerado for encarrerado_turns. Enemies without 'crit' in enemies.json use enemy_base_crit. Dragging fights (P5-02b, DD stall penalty): at the start of every round from drag_round on (drag_round_boss against a boss), each living hero gains drag_stress, plus drag_stress_step for every round after that one. Retreat (P5-04, as in Darkest Dungeon): on a hero's turn the party may try to leave the fight; it works with retreat_chance (a failed try spends the turn) and costs every living hero retreat_stress.",
     "hit_base": 0.7,
     "hit_per_point": 0.02,
     "hit_min": 0.05,
@@ -17,7 +17,9 @@
     "drag_round": 8,
     "drag_round_boss": 12,
     "drag_stress": 4,
-    "drag_stress_step": 2
+    "drag_stress_step": 2,
+    "retreat_chance": 0.75,
+    "retreat_stress": 10
   },
   "crits": {
     "_doc": "Doc 01 §2.3 stress shock (owner 2026-11-11, Darkest Dungeon style): a hero's crit relieves party_relief stress for every living hero; an enemy crit adds enemy_crit_stress to the hero hit.",

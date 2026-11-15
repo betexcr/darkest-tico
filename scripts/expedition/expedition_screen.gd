@@ -7,6 +7,9 @@ extends Control
 
 signal expedition_finished(reason: String)
 
+## The action row holds this many full-size icons; with more they shrink to ACTION_ICON_SMALL.
+const ACTION_ROW_FULL := 8
+const ACTION_ICON_SMALL := Vector2(40, 40)
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
@@ -97,6 +100,7 @@ func _ready() -> void:
 	_combat.logged.connect(_log_line)
 	_combat.enemy_changed.connect(_refresh_all)
 	_combat.combat_over.connect(_on_combat_over)
+	_combat.combat_fled.connect(_on_combat_fled)
 	_build_equip_row()
 	_build_formation_row()
 	$Stage/EnemyInfo/VBox/Head/Close.pressed.connect(_hide_enemy_info)
@@ -723,7 +727,7 @@ func _show_explore_actions() -> void:
 	_turn_label.text = "Explorando: flechas o clic en una sala vecina. Clic en un héroe para verlo."
 	var flee := Button.new()
 	flee.text = "Abandonar expedición"
-	flee.tooltip_text = "Volver a la hacienda sin completar el objetivo."
+	flee.tooltip_text = "Volver a la hacienda sin completar el objetivo. La cuadrilla se lleva los colones y artículos que ya encontró; no hay paga del objetivo ni experiencia de resolución."
 	flee.pressed.connect(_on_flee_pressed)
 	_skills.add_child(flee)
 	var snuff := Button.new()
@@ -747,7 +751,7 @@ func _on_snuff_pressed() -> void:
 func _on_flee_pressed() -> void:
 	if _mode != Mode.EXPLORE:
 		return
-	_end_expedition("flee", "La cuadrilla vuelve a la hacienda con las manos vacías.")
+	_end_expedition("flee", "La cuadrilla vuelve a la hacienda sin terminar el trabajo. Se llevan lo que ya habían encontrado; la paga del objetivo y la experiencia se quedan en el sótano.")
 
 
 # --- Travel hunger (P1-18) -------------------------------------------------------------
@@ -1211,6 +1215,19 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		_combat.guard()
 	)
 	_skills.add_child(guard_btn)
+	var flee_btn = SkillButtonScript.new()
+	flee_btn.setup("_retreat", "pass", "Retirada", "Sacar a la cuadrilla de la pelea: %d%% de salir (si falla, se pierde el turno). Todos ganan %d de estrés y vuelven a la sala anterior; los enemigos se quedan esperando.%s" % [
+		int(round(BalanceScript.num("combat.retreat_chance") * 100.0)), BalanceScript.int_of("combat.retreat_stress"),
+		"" if _combat.can_retreat() else " De una emboscada no hay retirada."])
+	flee_btn.pressed.connect(func():
+		GameState.equip_turn_hero = {}
+		_clear_skills()
+		_combat.retreat()
+	)
+	if not _combat.can_retreat():
+		flee_btn.disabled = true
+		flee_btn.modulate = Color(1, 1, 1, 0.35)
+	_skills.add_child(flee_btn)
 	var pass_btn = SkillButtonScript.new()
 	pass_btn.setup("_pass", "pass", "Pasar", "No hace nada este turno.")
 	pass_btn.pressed.connect(func():
@@ -1219,6 +1236,11 @@ func _on_hero_turn(hero: Dictionary) -> void:
 		_combat.pass_turn()
 	)
 	_skills.add_child(pass_btn)
+	# Nine icons don't fit the row at full size (P5-04 added Retirada): make them a bit smaller.
+	if _skills.get_child_count() > ACTION_ROW_FULL:
+		for c in _skills.get_children():
+			if c is Control:
+				c.custom_minimum_size = ACTION_ICON_SMALL
 	if blocked > 0:
 		_turn_label.text += " Desde la posición %d, %s." % [_combat.position_of(hero),
 			"una habilidad no alcanza" if blocked == 1 else "%d habilidades no alcanzan" % blocked]
@@ -1260,6 +1282,30 @@ func _skill_tooltip(sk: Dictionary) -> String:
 func _clear_skills() -> void:
 	for c in _skills.get_children():
 		c.queue_free()
+
+
+## The party left the fight (P5-04): back to the room they came from. The room they fled
+## stays as it was, so walking in again starts the fight over.
+func _on_combat_fled() -> void:
+	GameState.equip_locked = false
+	GameState.equip_turn_hero = {}
+	_selected_enemy = {}
+	_hide_enemy_info()
+	_pending = {}
+	_clear_selectable()
+	GameState.retreat_to_previous_room()
+	_clear_enemies()
+	for u in _hero_units:
+		u.set_active(false)
+	_set_background(BG_EXPLORE)
+	_mode = Mode.EXPLORE
+	_actor_label.text = ""
+	var nd: Dictionary = GameState.current_node()
+	_room_label.text = "%s — %s" % [GameState.mission_region_data.get("name", ""), nd.get("label", GameState.current_node_id)]
+	_show_explore_actions()
+	_narrate("La cuadrilla retrocede a %s. Lo que dejaron atrás sigue ahí." % nd.get("label", "la sala anterior"))
+	_view_hero(_viewed_hero if not _viewed_hero.get("dead", false) else _first_living_hero())
+	_refresh_all()
 
 
 func _on_combat_over(victory: bool) -> void:

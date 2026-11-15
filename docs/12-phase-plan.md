@@ -580,6 +580,27 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: all P2–P5
 - Done when: [ ] Roadmap Phase 2 exit criteria checked by owner → Current phase = Alpha (break down roadmap Phase 3 into P6+ tasks then)
 
+### P5-04 · M · Retreat from a fight ("Retirada")
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to try a retreat in a fight that is going badly) · Depends: P5-02f · Spec: `01` §5.3
+- Why (owner 2026-11-15): failing should be cheaper than dying. Retreating on the map already kept every colón and item found, but there was no way out of a fight, where nearly all deaths happen.
+- Rule: on a hero's turn, "Retirada" works with `combat.retreat_chance` (0.75; a failed try spends the turn), costs every living hero `combat.retreat_stress` (10) and takes the party back to the room it came from; the room keeps its enemies. Not from a night ambush. `CombatResolver.roll_retreat`, `combat_controller.gd` `retreat()` / `combat_fled`, `GameState.previous_node_id` / `retreat_to_previous_room()`, `expedition_screen.gd` `_on_combat_fled`.
+- Also: the "Abandonar expedición" tooltip and ending line now say what the party keeps; the action row shrinks its icons when it holds nine; a retreat icon; `tools/screens/battle_screenshot.gd` saves `battle_actions.png`.
+- Done when:
+  - [x] `tests/test_retreat.gd` (13 checks: failed try, good retreat, room not cleared, enemies back at full PV, no retreat from an ambush)
+  - [x] The button and the action row checked in a screenshot
+  - [x] Doc 01 §5.3, doc 13, AGENTS.md §3 and §4
+
+### P5-05 · S · A bot that retreats (tools only)
+- Status: `todo` · Depends: P5-04
+- `tools/sim_policy.gd`: order a retreat when a hero has died in this fight, or two heroes are Al Borde, or the fight is dragging and someone is at 150+ stress. `tools/playtest_campaign.gd`: abandon the expedition after a retreat, and on the map after one death (was two); report retreats apart from defeats, with the loot kept. `tools/sim_combat.gd`: retreats as a third outcome.
+- Done when: [ ] 3 × 24 weeks on both routes with no data change saved in `docs/playtests/` as the new reference
+
+### P5-06 · M · Retune Veterano and Campeón
+- Status: `todo` · Depends: P5-05
+- Lever: `enemy_hp` / `enemy_dmg` / `enemy_stress` for Veterano and Campeón in `data/progression.json`; Aprendiz only if the P5-05 reference moves it out of 85–90%. Tier-start runs first (`--start-level 3 --start-ranks 3 --start-gear 2 --start-colones 6000` and `--start-level 5 --start-ranks 4 --start-gear 4 --start-colones 9000`, 4 × 8 weeks per route), then one 3 × 24-week pair.
+- Owner 2026-11-15: keep the economy tight (no reward changes), the event veteran stays at 6,000 ₡, bosses keep dragging from round 12.
+- Done when: [ ] Veterano 70–80% and Campeón 55–70% cleared, both routes together [ ] heroes lost per expedition at or under about 0.3 [ ] all campaigns solvent in week 24, bank 4–8k [ ] doc 01 §6.1, doc 09 §6, doc 10 updated
+
 ---
 
 ## Later (not broken down yet)
