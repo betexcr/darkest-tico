@@ -591,12 +591,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Doc 01 §5.3, doc 13, AGENTS.md §3 and §4
 
 ### P5-05 · S · A bot that retreats (tools only)
-- Status: `todo` · Depends: P5-04
-- `tools/sim_policy.gd`: order a retreat when a hero has died in this fight, or two heroes are Al Borde, or the fight is dragging and someone is at 150+ stress. `tools/playtest_campaign.gd`: abandon the expedition after a retreat, and on the map after one death (was two); report retreats apart from defeats, with the loot kept. `tools/sim_combat.gd`: retreats as a third outcome.
-- Done when: [ ] 3 × 24 weeks on both routes with no data change saved in `docs/playtests/` as the new reference
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to say whether these are the moments a player would retreat) · Depends: P5-04
+- `tools/sim_policy.gd`: the smart bot calls a retreat when a hero has died in this fight, two heroes are Al Borde, or the fight drags with someone at 150+ stress (`--no-retreat` in `tools/sim_combat.gd` turns it off; the sim counts retreats). `tools/playtest_campaign.gd`: the bot goes home after a Retirada and after one death on the map (was two), pays for up to three misas a week, and reports abandoned expeditions with the loot kept.
+- Done when: [x] 3 × 24 weeks on both routes with no data change saved as `docs/playtests/2026-11-15-retreat-{full,direct}.md`
+- Result (doc 09 §6): heroes lost per expedition fell from 0.76 to 0.18 (full) and 0.25 to 0.06 (direct). The direct route is near the bands (94% / 96% / 55%). The full route is a stress spiral: 28 of 72 cleared, parties leaving the hub at 84 stress.
 
 ### P5-06 · M · Retune Veterano and Campeón
-- Status: `todo` · Depends: P5-05
+- Status: `blocked — needs P3-03 (stress relief at the hacienda) and bigger playtest samples` · Depends: P5-05, P3-03
+- Why blocked (2026-11-15): with retreating bots the full route is a stress spiral (the Iglesia removes 10 per misa), so harder enemies would only deepen it. And three campaigns per route swing by 15–30 points between identical or near-identical settings (doc 09 §6), which is more than the change this task is after. Run about ten campaigns per setting (`--campaigns 10`, about 1.5 hours per pair of routes) once P3-03 is in. A try at `hub.iglesia_relief` 20 and 30 was inconclusive and was not kept.
 - Lever: `enemy_hp` / `enemy_dmg` / `enemy_stress` for Veterano and Campeón in `data/progression.json`; Aprendiz only if the P5-05 reference moves it out of 85–90%. Tier-start runs first (`--start-level 3 --start-ranks 3 --start-gear 2 --start-colones 6000` and `--start-level 5 --start-ranks 4 --start-gear 4 --start-colones 9000`, 4 × 8 weeks per route), then one 3 × 24-week pair.
 - Owner 2026-11-15: keep the economy tight (no reward changes), the event veteran stays at 6,000 ₡, bosses keep dragging from round 12.
 - Done when: [ ] Veterano 70–80% and Campeón 55–70% cleared, both routes together [ ] heroes lost per expedition at or under about 0.3 [ ] all campaigns solvent in week 24, bank 4–8k [ ] doc 01 §6.1, doc 09 §6, doc 10 updated

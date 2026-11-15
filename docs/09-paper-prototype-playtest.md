@@ -248,3 +248,24 @@ Against the owner's targets:
 - The economy is now tight (the bank sits at 4–8k) where I had planned for 8–15k after week 8. Loot per week fell from 5,200–6,600 ₡ to about 3,900 ₡, because most weeks are now played on Aprendiz pay. Skill ranks take 22–44% of spending, down from about 60%.
 - The bot, the sim and these targets all measure a careful player. How it feels needs the owner.
 
+### With retreat from a fight (P5-04, P5-05)
+
+Owner 2026-11-15: failing should be cheaper than dying. The game now has "Retirada" in a fight (doc 01 §5.3), and the bot uses it: it leaves a fight when a hero has died in it, when two heroes are Al Borde, or when the fight drags with someone at 150+ stress; then it goes home. On the map it goes home after one death. No game numbers changed. Raw output: [playtests/2026-11-15-retreat-full.md](playtests/2026-11-15-retreat-full.md) and [playtests/2026-11-15-retreat-direct.md](playtests/2026-11-15-retreat-direct.md).
+
+| | Full: final | Full: with retreat | Direct: final | Direct: with retreat |
+|---|---:|---:|---:|---:|
+| Expeditions cleared | 60 / 72 | 28 / 72 | 68 / 72 | 64 / 72 |
+| Cleared on Aprendiz | 88% | 39% (21 of 54) | 95% | 94% (33 of 35) |
+| Cleared on Veterano | 64% | 39% (7 of 18) | 96% | 96% (25 of 26) |
+| Cleared on Campeón | not reached | not reached | 80% (4 of 5) | 55% (6 of 11) |
+| Heroes lost per expedition | 0.76 | 0.18 | 0.25 | 0.06 |
+| Expeditions abandoned | 1 | 44 | 0 | 8 |
+| Stress leaving the hub / coming back | 29 / 38 | 84 / 98 | 25 / 28 | 33 / 38 |
+| Loot kept on an abandoned expedition | — | 1,010 ₡ | — | 1,955 ₡ |
+
+- **Deaths fall to about a quarter on both routes.** That was the point.
+- **The direct route is close to the owner's bands**: Aprendiz 94%, Veterano 96%, Campeón 55%, with a hero lost every 17 expeditions.
+- **The full route turns into a stress spiral.** A retreat costs stress and brings no relief, and the Iglesia takes off 10 per misa. Parties leave the hub at 84 stress, reach 150 in the next long fight and retreat again. Nobody dies; nothing gets done either.
+- **A stronger Iglesia did not settle it.** I tried 20 and 30 stress per misa (same 800 ₡, the bot paying for up to three). Full-route Aprendiz went from 39% to 29% and 60%; on the direct route, where the change should only help, Veterano went from 96% to 76% and 68%. Those swings are larger than the effect I was looking for, so I left the Iglesia at 10.
+- **What that says about the method.** Three campaigns per route can't measure a change of 10–15 points: one bad week sets off a run of failures in that campaign. Tuning Veterano and Campeón further (P5-06) needs about ten campaigns per setting, and the full route needs real stress relief at the hacienda first (P3-03, Iglesia and Cantina).
+

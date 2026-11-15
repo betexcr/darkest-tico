@@ -17,6 +17,29 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-15 (4) — P5-05 — Bots that retreat; P5-06 blocked
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-05 `review`. P5-06 `blocked` (needs P3-03 and bigger samples). Nothing `in-progress` from this branch.
+- **Changed (tools and docs only; no game data):**
+  - `tools/sim_policy.gd`: `_should_retreat` (a death in this fight, two heroes Al Borde, or a dragging fight with someone at 150+ stress), `retreats` switch.
+  - `tools/sim_combat.gd`: `--no-retreat`; retreats counted.
+  - `tools/playtest_campaign.gd`: goes home after a Retirada or one death; up to three misas a week (`MISAS_MAX`); "Retreats" line and ↩ marks in the report.
+  - Doc 09 §6 (table and findings), `docs/playtests/2026-11-15-retreat-{full,direct}.md`, phase plan.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 13 test scripts pass, no `SCRIPT ERROR` (run after the last tool change).
+  - Playtest 3 × 24 weeks per route, data unchanged: heroes lost per expedition 0.18 full / 0.06 direct (were 0.76 / 0.25); direct route 94% / 96% / 55% cleared by tier; full route 28 of 72 cleared.
+- **Not verified / risks:**
+  - The saved reference was run before the bot paid for more than one misa a week; with three misas the totals differ (see doc 09 §6).
+  - Run-to-run noise is large. On the direct route Veterano was 96%, 76% and 68% in three runs that differed only in the Iglesia's relief (10, 20, 30), where more relief should not hurt.
+  - The combat sim's headline number changed meaning: the starting party now clears about 84% of Aprendiz chains and retreats from 16% (it was 96% fighting to the end). Use `--no-retreat` to compare with older tables in doc 10.
+- **Decisions needed:**
+  1. The full route can't be balanced until the hacienda can take off real stress. P3-03 (Iglesia Vieja + Cantina) is the task for that; should it come next, ahead of the P2 content tasks?
+  2. A retreat costs 10 stress and nothing else (no Luz, no hunger move). Enough?
+- **Next step:** P3-03 if the owner agrees (spec: doc 02 and doc 04 §3.2; first file `scripts/autoload/game_state.gd` `iglesia_misa_rapida`, which is still a stub). Then P5-06 with `tools/playtest_campaign.gd -- --campaigns 10 --weeks 24` per route and setting. Without a decision: P1-20 (smoke frame-cap flake) or P2-02.
+
+---
+
 ## 2026-11-15 (3) — P5-04 — Retreat from a fight ("Retirada")
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
 - **Status after session:** P5-04 `review`. New `todo` tasks P5-05 (a bot that retreats) and P5-06 (retune Veterano and Campeón).
