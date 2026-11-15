@@ -38,6 +38,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
 
 ## 4. Content rules (owner decisions — `tools/validate_data.py` enforces them)
 
+- **Recruits** (owner 2026-11-15, as in Darkest Dungeon): hiring at the Terminal de Buses is free; only the beds (`limits.roster_cap`) limit it. The one priced hero is the veteran a town event offers (`hire_veteran`).
 - **Heroes:** every class has at least one skill that helps **one ally or the whole party** (`target: ally | party`). Every class has **its own basic attack** as its first skill (kind `attack`, fitting the weapon its sprite holds), and no skill is shared by two classes (owner 2026-11-11). Skills use doc 03 names.
 - **Enemies:** exactly **one basic attack** (`basic: true`) plus **1–3 special abilities**. At least one special is **magical** (`type: magical`, goes through Guard) or **inflicts a negative status** (`applies`, any negative id in `data/statuses.json`).
 - **Names:** every ability has a **Costa Rican (Tico) name that fits that specific monster or class**, written in Spanish, within the tone rules of doc 08 (e.g. Mandador en pena → *Latigazo*, *Libreta de deudas*; Cadejo → *Aullido de medianoche*).

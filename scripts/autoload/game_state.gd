@@ -802,10 +802,10 @@ func party_can_scout() -> bool:
 
 # --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------
 
+## Recruits are free, as in Darkest Dungeon (owner 2026-11-15): only the beds limit hiring.
+## The one exception is a hero a town event offers at a price (hire_veteran sets hire_price).
 func hire_cost(hero: Dictionary) -> int:
-	if hero.has("hire_price"):
-		return int(hero["hire_price"])
-	return int(get_hero_template(str(hero.get("hero_id", ""))).get("hire_cost", 800))
+	return int(hero.get("hire_price", 0))
 
 
 func refresh_recruits() -> void:
@@ -836,7 +836,7 @@ func hire_recruit(index: int) -> String:
 	recruit_pool.remove_at(index)
 	if party.size() < PARTY_SIZE:
 		party.append(h)
-	return "%s (%s) se baja del bus y se une a la hacienda (-%d ₡)." % [h.get("name", "?"), h.get("class_name", ""), cost]
+	return "%s (%s) se baja del bus y se une a la hacienda%s." % [h.get("name", "?"), h.get("class_name", ""), (" (-%d ₡)" % cost) if cost > 0 else ""]
 
 
 ## Dismiss a hero for good: equipment goes back to the inventory first (refused if it

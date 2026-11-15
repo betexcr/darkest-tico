@@ -25,7 +25,7 @@ extends SceneTree
 ##                     dies is replaced by one of the same class for its hire cost
 ##
 ## The player bot (P5-02a: it spends like a player):
-##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), preferring
+##   Hub: hires up to SPARE_ROSTER living heroes (recruits are free), preferring
 ##        a recruit who isn't a second healer; picks the difficulty for which it can send the
 ##        fullest party with the fewest under-leveled heroes (_plan_party): heroes of that
 ##        range, least stressed first, at most one dedicated healer (a class with a heal skill
@@ -51,7 +51,8 @@ const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 
 const MAX_STEPS := 60000
 const RESERVE := 1000
-const HIRE_SPARE_AT := 4000
+## Recruits are free (owner 2026-11-15): the bot keeps this many living heroes, two of them spares.
+const SPARE_ROSTER := 6
 const IGLESIA_AT := 30
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
 const STRESS_ITEM := "cafe_chorreado"
@@ -224,7 +225,7 @@ func _hub(row: Dictionary) -> void:
 				_add_forced_hero(str(id))
 				hired += 1
 	else:
-		while _living_roster().size() < 4 or (_living_roster().size() < 6 and _gs.colones >= HIRE_SPARE_AT):
+		while _living_roster().size() < SPARE_ROSTER:
 			var idx: int = _pick_recruit()
 			if idx < 0:
 				break

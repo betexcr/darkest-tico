@@ -364,8 +364,10 @@ func _refresh_recruits() -> void:
 	for i in GameState.recruit_pool.size():
 		var h: Dictionary = GameState.recruit_pool[i]
 		var b := Button.new()
-		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %d ₡" % [
-			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)), GameState.hire_cost(h)]
+		var price: int = GameState.hire_cost(h)
+		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %s" % [
+			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)),
+			("%d ₡" % price) if price > 0 else "gratis"]
 		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
 			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
 		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.roster_cap() \

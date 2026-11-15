@@ -1,5 +1,5 @@
 {
-  "_doc": "Hero classes. names: Tico names given to recruits of this class. hire_cost: colones at the Terminal de Buses. Every class needs an ally or party skill (AGENTS.md §4). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
+  "_doc": "Hero classes. names: Tico names given to recruits of this class. Recruits at the Terminal de Buses are free (owner 2026-11-15, as in Darkest Dungeon). Every class needs an ally or party skill (AGENTS.md §4). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
   "heroes": [
     {
       "id": "campesino",
@@ -28,7 +28,6 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
-      "hire_cost": 700,
       "names": [
         "Chepe",
         "Toño",
@@ -76,7 +75,6 @@
         "palabras_de_animo",
         "charla_de_fogon"
       ],
-      "hire_cost": 800,
       "names": [
         "Doña Chela",
         "Doña Lela",
@@ -123,7 +121,6 @@
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
-      "hire_cost": 800,
       "names": [
         "Maikol",
         "Kevin",
@@ -169,7 +166,6 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
-      "hire_cost": 750,
       "names": [
         "Chalo",
         "Cuco",
@@ -216,7 +212,6 @@
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
-      "hire_cost": 750,
       "names": [
         "Don Rigo",
         "Don Lalo",
@@ -261,7 +256,6 @@
         "palabras_de_animo",
         "charla_de_fogon"
       ],
-      "hire_cost": 900,
       "names": [
         "Dra. Josefina",
         "Dra. Marta",
@@ -307,7 +301,6 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
-      "hire_cost": 850,
       "names": [
         "Don Nacho",
         "Don Chico",
@@ -353,7 +346,6 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
-      "hire_cost": 850,
       "names": [
         "Padre Mauro",
         "Hermano Wilberth",

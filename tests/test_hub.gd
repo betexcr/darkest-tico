@@ -27,7 +27,7 @@ func _run() -> void:
 	_check(uids.size() == 4 and not uids.has(0), "every hero has a unique uid")
 	var cost: int = gs.hire_cost(gs.recruit_pool[0])
 	gs.hire_recruit(0)
-	_check(gs.roster.size() == 5 and gs.colones == 5000 - cost, "hiring adds to the roster and costs %d" % cost)
+	_check(cost == 0 and gs.roster.size() == 5 and gs.colones == 5000, "hiring adds to the roster and is free (owner 2026-11-15, as in Darkest Dungeon)")
 	_check(gs.party.size() == 4, "a full party is not changed by hiring")
 	var hired: Dictionary = gs.roster[4]
 	_check(gs.set_in_party(hired, true) != "", "5th party member is refused")

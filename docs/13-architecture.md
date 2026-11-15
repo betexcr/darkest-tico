@@ -206,7 +206,7 @@ Every file has a `_doc` string that explains its fields; the validator is the st
 | File | What | Loaded by |
 |---|---|---|
 | `balance.json` | Hit band, crits, death roll, stress, afflictions, enemy squad scaling, hub prices, limits, hunger, Luz tiers | `Balance` (`num`, `int_of`, `arr`, `req`) |
-| `heroes.json` | 8 classes: stats, preferred `ranks`, `skill_ids` (first = the class's basic attack), `camp_skill_ids`, `status_resist`, `names`, `hire_cost` | `GameState` |
+| `heroes.json` | 8 classes: stats, preferred `ranks`, `skill_ids` (first = the class's basic attack), `camp_skill_ids`, `status_resist`, `names` (recruits are free) | `GameState` |
 | `skills.json` | Hero skills: `kind`, `target`, `use_ranks`/`target_ranks`, damage/heal ranges, `applies`, `cure`, movement, stress, `rank_bonus` | `GameState` |
 | `enemies.json` | Enemies by id: stats, `ranks`, `elements` (affinities), `status_resist`, `crit`, `skills` (one `basic`, 1–3 specials with `type`, `element`, `applies`, `target_ranks`, `weight`, `light`, `steal_colones`) | `GameState` |
 | `statuses.json` | Status definitions and stat tables (§4) | `StatusEffects` |
