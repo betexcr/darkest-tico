@@ -569,17 +569,28 @@ def main() -> int:
                 errors.append(f"regions/{rp.name}: trap node '{n.get('id')}' needs a known trap_id")
     if "gallo_pinto" not in items:
         errors.append("items.json: 'gallo_pinto' is the food item (camp meal, travel hunger) and must exist")
-    # P1-18: recommended provisions per region (the hub offers to buy what is missing).
+    # P1-18, P5-02e: two recommended provision kits per region (the hub offers to buy what
+    # either lacks): "short" for a run straight to the boss, "full" for exploring every room.
     for rp in sorted((DATA / "regions").glob("*.json")):
-        prov = (load(rp) or {}).get("provisions", {})
-        if not isinstance(prov, dict):
-            errors.append(f"regions/{rp.name}: provisions must be {{item_id: qty}}")
+        kits = (load(rp) or {}).get("provisions", {})
+        if not isinstance(kits, dict) or set(kits) != {"short", "full"}:
+            errors.append(f"regions/{rp.name}: provisions must be {{\"short\": {{item_id: qty}}, \"full\": {{item_id: qty}}}}")
             continue
-        for iid, qty in prov.items():
-            if iid not in items:
-                errors.append(f"regions/{rp.name}: provisions references unknown item '{iid}'")
-            if not isinstance(qty, int) or qty < 1:
-                errors.append(f"regions/{rp.name}: provisions '{iid}' needs a whole number >= 1")
+        for kit, prov in kits.items():
+            if not isinstance(prov, dict) or not prov:
+                errors.append(f"regions/{rp.name}: provisions.{kit} must be {{item_id: qty}}")
+                continue
+            for iid, qty in prov.items():
+                if iid not in items:
+                    errors.append(f"regions/{rp.name}: provisions.{kit} references unknown item '{iid}'")
+                if not isinstance(qty, int) or qty < 1:
+                    errors.append(f"regions/{rp.name}: provisions.{kit} '{iid}' needs a whole number >= 1")
+        if isinstance(kits["short"], dict) and isinstance(kits["full"], dict):
+            for iid, qty in kits["short"].items():
+                if isinstance(qty, int) and isinstance(kits["full"].get(iid), int) and kits["full"][iid] < qty:
+                    errors.append(f"regions/{rp.name}: provisions.full '{iid}' can't be less than provisions.short")
+                if iid not in kits["full"]:
+                    errors.append(f"regions/{rp.name}: provisions.full is missing '{iid}' from provisions.short")
 
     manifest_path = ROOT / "tools" / "art_manifest.json"
     manifest = load(manifest_path)

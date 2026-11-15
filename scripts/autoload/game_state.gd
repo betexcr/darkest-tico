@@ -1222,12 +1222,14 @@ func travel_meal(fed: int) -> PackedStringArray:
 	return logs
 
 
-## Recommended provisions (region "provisions") the inventory is short of:
-## [{id, name, missing, price}] (price = this week's Pulpería price for all of them).
-func missing_provisions(region_path: String = "") -> Array:
+## Recommended provisions the inventory is short of: [{id, name, missing, price}] (price =
+## this week's Pulpería price for all of them). Each region has two kits (P5-02e):
+## "short" for a run straight to the boss, "full" for exploring every room.
+func missing_provisions(region_path: String = "", kit: String = "short") -> Array:
 	var r: Dictionary = ExpeditionLoaderScript.load_region(region_path if region_path != "" else selected_mission_region_path)
 	var out: Array = []
-	var prov = r.get("provisions", {})
+	var kits = r.get("provisions", {})
+	var prov = kits.get(kit, {}) if kits is Dictionary else {}
 	if not prov is Dictionary:
 		return out
 	for iid in prov:
@@ -1237,11 +1239,11 @@ func missing_provisions(region_path: String = "") -> Array:
 	return out
 
 
-## Buys every missing recommended provision it can. Returns a message for the hub.
-func buy_missing_provisions(region_path: String = "") -> String:
+## Buys every missing provision of that kit it can. Returns a message for the hub.
+func buy_missing_provisions(region_path: String = "", kit: String = "short") -> String:
 	var bought: int = 0
 	var last: String = ""
-	for m in missing_provisions(region_path):
+	for m in missing_provisions(region_path, kit):
 		for _k in int(m["missing"]):
 			var before: int = item_count(str(m["id"]))
 			last = buy_item(str(m["id"]))

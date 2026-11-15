@@ -80,6 +80,6 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame
-	hub._confirm_provisions(gs.missing_provisions())
+	hub._confirm_provisions()
 	await _shot("provisions")
 	quit(0)

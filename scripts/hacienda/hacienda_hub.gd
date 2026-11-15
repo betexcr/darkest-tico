@@ -517,32 +517,41 @@ func _on_start_pressed() -> void:
 	if not GameState.party_refusals().is_empty():
 		_hub_status.text = "Héroes de mucha resolución no salen a expediciones fáciles: sube la dificultad o cambia la cuadrilla."
 		return
-	var missing: Array = GameState.missing_provisions()
-	if missing.is_empty():
+	# Covered for exploring every room: nothing to ask.
+	if GameState.missing_provisions("", "full").is_empty():
 		start_mission_requested.emit()
 		return
-	_confirm_provisions(missing)
+	_confirm_provisions()
 
 
-## DD-style provisioning (P1-18): warn when the alforja lacks the region's recommended
-## food and candles, and offer to buy what is missing at the Pulpería.
-func _confirm_provisions(missing: Array) -> void:
-	var lines: PackedStringArray = PackedStringArray()
-	var total: int = 0
-	for m in missing:
-		lines.append("· %d × %s (%d ₡)" % [int(m["missing"]), m["name"], int(m["price"])])
-		total += int(m["price"])
+## DD-style provisioning (P1-18, P5-02e): before leaving, show the region's two recommended
+## kits (a run straight to the boss, or exploring every room) against the alforja, and offer
+## to buy what either one lacks at the Pulpería.
+func _confirm_provisions() -> void:
+	var text: PackedStringArray = PackedStringArray(["Provisiones recomendadas para esta expedición:"])
+	var totals: Dictionary = {}
+	for kit in ["short", "full"]:
+		var missing: Array = GameState.missing_provisions("", kit)
+		var parts: PackedStringArray = PackedStringArray()
+		var total: int = 0
+		for m in missing:
+			parts.append("%d × %s" % [int(m["missing"]), m["name"]])
+			total += int(m["price"])
+		totals[kit] = total
+		var label: String = "Vuelta corta (directo al jefe)" if kit == "short" else "Explorar todo"
+		text.append("· %s: %s" % [label, ("faltan %s (%d ₡)" % [", ".join(parts), total]) if not missing.is_empty() else "ya está completa"])
 	var dlg := ConfirmationDialog.new()
 	dlg.title = "Provisiones"
-	dlg.dialog_text = "Para esta expedición se recomienda llevar más:\n%s\n\nSin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras." % "\n".join(lines)
+	dlg.dialog_text = "%s\n\nSin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras." % "\n".join(text)
 	dlg.ok_button_text = "Salir así"
 	dlg.cancel_button_text = "Volver"
-	dlg.add_button("Comprar lo que falta (%d ₡)" % total, true, "buy")
+	if int(totals["short"]) > 0:
+		dlg.add_button("Vuelta corta (%d ₡)" % int(totals["short"]), true, "short")
+	dlg.add_button("Explorar todo (%d ₡)" % int(totals["full"]), true, "full")
 	dlg.confirmed.connect(func(): start_mission_requested.emit())
 	dlg.custom_action.connect(func(action: StringName):
-		if action == &"buy":
-			dlg.hide()
-			_say(GameState.buy_missing_provisions())
+		dlg.hide()
+		_say(GameState.buy_missing_provisions("", str(action)))
 	)
 	dlg.visibility_changed.connect(func():
 		if not dlg.visible:

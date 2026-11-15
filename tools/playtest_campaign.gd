@@ -24,7 +24,8 @@ extends SceneTree
 ##        a recruit who isn't a second healer; takes the 4 least stressed with at most one
 ##        dedicated healer (a class with a heal skill that never stands in position 1), orders
 ##        them by their class's preferred position, heals them at the EBAIS, pays the Iglesia
-##        when the party's average stress ≥ IGLESIA_AT, buys the region's missing provisions,
+##        when the party's average stress ≥ IGLESIA_AT, buys what the region's provision kit
+##        lacks (the full-exploration kit on --route full, the short one on direct),
 ##        tops up agua de pipa and vendas, carries one café chorreado per hero at ≥ STRESS_ITEM_AT
 ##        stress, then buys upgrades cheapest first until the colones run out: Casa Comunal
 ##        ranks, and one piece of equipment per hero a week for an empty slot (the dearest it
@@ -248,8 +249,10 @@ func _hub(row: Dictionary) -> void:
 		_gs.iglesia_misa_rapida()
 	row["iglesia"] = mark - _gs.colones
 	mark = _gs.colones
-	if not _gs.missing_provisions().is_empty():
-		_gs.buy_missing_provisions()
+	# The kit that fits the plan (P5-02e): every room, or straight to the boss.
+	var kit: String = "full" if str(_opts["route"]) == "full" else "short"
+	if not _gs.missing_provisions("", kit).is_empty():
+		_gs.buy_missing_provisions("", kit)
 	row["provisions"] = mark - _gs.colones
 	mark = _gs.colones
 	for id in HEAL_ITEMS:

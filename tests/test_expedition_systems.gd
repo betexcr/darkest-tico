@@ -212,7 +212,13 @@ func _test_hunger(gs) -> void:
 	_check(not gp.is_empty() and int(gp[0]["missing"]) == 7 and int(gp[0]["price"]) == 7 * gs.item_price("gallo_pinto"), "provisions: 7 gallo pinto missing of 10 (%d ₡)" % (int(gp[0]["price"]) if not gp.is_empty() else -1))
 	gs.colones = 100000
 	gs.buy_missing_provisions()
-	_check(gs.missing_provisions().is_empty() and gs.item_count("gallo_pinto") == 10, "buying what is missing fills the recommended list")
+	_check(gs.missing_provisions().is_empty() and gs.item_count("gallo_pinto") == 10, "buying what is missing fills the short kit")
+	# P5-02e: the full-exploration kit asks for more.
+	var miss_full: Array = gs.missing_provisions("", "full").filter(func(m): return m["id"] == "gallo_pinto")
+	_check(not miss_full.is_empty() and int(miss_full[0]["missing"]) == 6, "full kit: 6 more gallo pinto on top of the short kit's 10")
+	gs.buy_missing_provisions("", "full")
+	_check(gs.missing_provisions("", "full").is_empty() and gs.missing_provisions("", "short").is_empty() and gs.item_count("gallo_pinto") == 16, "buying the full kit covers both (16 gallo pinto)")
+	_check(gs.missing_provisions("", "nope").is_empty(), "an unknown kit asks for nothing")
 	for p in gs.party:
 		p["hp"] = p["hp_max"]
 		p["stress"] = 0

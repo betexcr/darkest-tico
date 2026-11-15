@@ -2,7 +2,10 @@
   "region_id": "sotanos",
   "name": "Sótanos de la Hacienda",
   "initial_light": 100,
-  "provisions": { "gallo_pinto": 10, "candela_sebo": 3 },
+  "provisions": {
+    "short": { "gallo_pinto": 10, "candela_sebo": 3 },
+    "full": { "gallo_pinto": 16, "candela_sebo": 5 }
+  },
   "light_decay_per_move": 8,
   "objective_reward_colones": 800,
   "region_level": 0,
