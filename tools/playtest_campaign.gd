@@ -28,7 +28,8 @@ extends SceneTree
 ##   Hub: hires up to SPARE_ROSTER living heroes (recruits are free), preferring
 ##        a recruit who isn't a second healer; picks the difficulty for which it can send the
 ##        fullest party with the fewest under-leveled heroes (_plan_party): heroes of that
-##        range, least stressed first, at most one dedicated healer (a class with a heal skill
+##        range, the most seasoned first (those at REST_AT stress or more go last), at most
+##        one dedicated healer (a class with a heal skill
 ##        that never stands in position 1), a hire to fill a place on the easiest difficulty,
 ##        under-leveled heroes last; orders them by preferred position, heals them at the EBAIS, pays the Iglesia
 ##        when the party's average stress ≥ IGLESIA_AT, buys what the region's provision kit
@@ -53,6 +54,8 @@ const MAX_STEPS := 60000
 const RESERVE := 1000
 ## Recruits are free (owner 2026-11-15): the bot keeps this many living heroes, two of them spares.
 const SPARE_ROSTER := 6
+## A hero at or above this stress stays home when a calmer one can go.
+const REST_AT := 60
 const IGLESIA_AT := 30
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
 const STRESS_ITEM := "cafe_chorreado"
@@ -236,7 +239,7 @@ func _hub(row: Dictionary) -> void:
 	row["hired"] = hired
 	row["hires"] = c0 - _gs.colones
 	# Difficulty and party together: for each difficulty, the best party of 4 the roster can
-	# send (heroes of that range first, least stressed, at most one dedicated healer; then
+	# send (heroes of that range first, the most seasoned, at most one dedicated healer; then
 	# under-leveled ones, the highest level first; heroes above the range refuse). On the
 	# easiest difficulty a missing place can be filled by hiring. The bot takes the fullest
 	# party, then the one with the fewest missing levels (a hire counts as 2), then the easier
@@ -244,7 +247,16 @@ func _hub(row: Dictionary) -> void:
 	# and the bot never leaves with three heroes when it can send four.
 	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
 	var pool: Array = _living_roster()
-	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
+	# A core team: the most seasoned heroes go, unless they are badly stressed (REST_AT); then
+	# the calmer ones first. Spares are free, but ranks bought for six heroes are thinner.
+	pool.sort_custom(func(a, b):
+		var ra: bool = int(a.get("stress", 0)) >= REST_AT
+		var rb: bool = int(b.get("stress", 0)) >= REST_AT
+		if ra != rb:
+			return rb
+		if int(a.get("resolve_level", 0)) != int(b.get("resolve_level", 0)):
+			return int(a.get("resolve_level", 0)) > int(b.get("resolve_level", 0))
+		return int(a.get("stress", 0)) < int(b.get("stress", 0)))
 	var chosen: Array = []
 	if _opts["party"].is_empty():
 		var best: Dictionary = {}
@@ -383,7 +395,7 @@ func _gear_for(h: Dictionary) -> Array:
 	return []
 
 
-## The best party of up to 4 for this expedition from `pool` (sorted, least stressed first):
+## The best party of up to 4 for this expedition from `pool` (sorted, best pick first):
 ## {expedition, party, size, hires, cost}. `hires` = recruits to take on to reach 4 (only on
 ## an expedition that accepts level 0, and only as many as the colones and the beds allow);
 ## `size` counts them. `cost` = levels the under-leveled heroes are short, plus 2 per hire.
