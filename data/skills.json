@@ -123,8 +123,8 @@
       "id": "sopa_milagrosa",
       "name": "Sopa Milagrosa",
       "kind": "heal",
-      "heal_min": 2,
-      "heal_max": 4,
+      "heal_min": 1,
+      "heal_max": 3,
       "target": "party",
       "use_ranks": [
         2,
@@ -233,7 +233,7 @@
         3,
         4
       ],
-      "stress_relief": 12,
+      "stress_relief": 8,
       "description": "Un regaño de abuela que endereza a cualquiera: alivia mucho estrés al aliado elegido. Le quita el susto.",
       "cure": [
         "susto"
@@ -341,7 +341,7 @@
         3,
         4
       ],
-      "stress_relief": 5,
+      "stress_relief": 2,
       "description": "Grito de toro que levanta a todos: alivia estrés a toda la cuadrilla. El montador queda respondón por 3 turnos.",
       "self_applies": {
         "status": "respondon",
@@ -562,7 +562,7 @@
       ],
       "heal_min": 1,
       "heal_max": 5,
-      "stress_relief": 3,
+      "stress_relief": 2,
       "description": "Un rezo largo: cura un poco a toda la cuadrilla y calma."
     },
     {
@@ -575,7 +575,7 @@
         3,
         4
       ],
-      "stress_relief": 6,
+      "stress_relief": 3,
       "description": "Humo de copal y hierbas: alivia el estrés de todos. Todos quedan chivas: +8 esquiva por 2 turnos.",
       "applies": {
         "status": "chiva",
@@ -678,7 +678,7 @@
         3,
         4
       ],
-      "stress_relief": 6,
+      "stress_relief": 3,
       "description": "Tiza bendita en el piso: alivia el estrés de toda la cuadrilla. Quita el susto a todos.",
       "cure": [
         "susto"

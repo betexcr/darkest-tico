@@ -188,7 +188,7 @@ func _run() -> void:
 	var pr: Dictionary = rs.progress(hero)
 	_check(int(pr["current"]) == 0 and int(pr["needed"]) == 14, "progress 0/14 toward level 3")
 	var base_v: Dictionary = rs.expedition("veterano", 0)
-	_check(int(base_v["level"]) == 3 and is_equal_approx(float(base_v["enemy_hp"]), 1.22) and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, x1.22 PV, +10 resist (doc 05)")
+	_check(int(base_v["level"]) == 3 and is_equal_approx(float(base_v["enemy_hp"]), 1.75) and is_equal_approx(float(base_v["enemy_stress"]), 2.0) and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, x1.75 PV, x2 stress, +10 resist (P5-02f)")
 	var bosque: Dictionary = rs.expedition("aprendiz", 1)
 	_check(int(bosque["level"]) == 2 and int(bosque["min_level"]) == 1 and int(bosque["max_level"]) == 3, "Aprendiz in a level-1 region: level 2, heroes 1-3")
 	_check(float(bosque["enemy_hp"]) > 1.0 and int(bosque["xp"]) == 5, "level-1 region: tougher enemies, +1 XP")
