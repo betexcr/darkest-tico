@@ -12,12 +12,15 @@ extends RefCounted
 ##          PV is healed, and everyone else attacks. Calming costs more turns than the
 ##          dragging stress gives back.
 ##   basic: the first usable attack on the current target.
-## Nothing to hit: smart uses any support skill that helps, then Moverse, then Guardia.
+## Nothing to hit: smart first steps back into a position where one of its attacks works
+## (after a push or a shuffle), else uses any support skill that helps, then Moverse, then
+## Guardia.
 
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 ## Smart policy: heal an ally below this share of PV (or Al Borde)…
 const HEAL_BELOW := 0.4
@@ -75,6 +78,12 @@ func act(hero: Dictionary) -> void:
 		cc.use_skill(best)
 		return
 	if mode == "smart":
+		# Out of position (pushed or shuffled): step back to where an attack works.
+		var step: Dictionary = _step_to_attack(hero)
+		if not step.is_empty():
+			_count(hero, "Moverse")
+			cc.move_hero(step)
+			return
 		# Nothing to hit: any support skill that does something beats standing still.
 		for sk in usable:
 			var who: Dictionary = _support_target(hero, sk)
@@ -130,6 +139,32 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 					_count(hero, str(sk.get("name", "?")))
 					cc.use_skill(sk, hero)
 					return true
+	return false
+
+
+## A neighbour to swap with so that this hero can attack from the new position ({} if none).
+## A swap that leaves the neighbour able to attack too is preferred.
+func _step_to_attack(hero: Dictionary) -> Dictionary:
+	var here: int = FormationScript.position_of(hero, cc.party)
+	var best: Dictionary = {}
+	var best_both: bool = false
+	for other in cc.move_options(hero):
+		var there: int = FormationScript.position_of(other, cc.party)
+		if not _attacks_from(hero, there):
+			continue
+		var both: bool = _attacks_from(other, here)
+		if best.is_empty() or (both and not best_both):
+			best = other
+			best_both = both
+	return best
+
+
+## True if the hero has an attack that works from `pos` and has something to hit.
+func _attacks_from(hero: Dictionary, pos: int) -> bool:
+	for sid in hero.get("skill_ids", []):
+		var sk: Dictionary = gs.hero_skill(hero, str(sid))
+		if str(sk.get("kind", "")) == "attack" and FormationScript.use_ranks(sk).has(pos) and not cc.targets_for(sk).is_empty():
+			return true
 	return false
 
 

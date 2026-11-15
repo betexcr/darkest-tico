@@ -21,9 +21,10 @@ extends SceneTree
 ##
 ## The player bot (P5-02a: it spends like a player):
 ##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), preferring
-##        a recruit who isn't a second healer; takes the 4 least stressed with at most one
-##        dedicated healer (a class with a heal skill that never stands in position 1), orders
-##        them by their class's preferred position, heals them at the EBAIS, pays the Iglesia
+##        a recruit who isn't a second healer; picks the difficulty most of the roster is the
+##        right level for, and for it the 4 least stressed heroes of that range with at most
+##        one dedicated healer (a class with a heal skill that never stands in position 1),
+##        under-leveled heroes only to fill the party; orders them by preferred position, heals them at the EBAIS, pays the Iglesia
 ##        when the party's average stress ≥ IGLESIA_AT, buys what the region's provision kit
 ##        lacks (the full-exploration kit on --route full, the short one on direct),
 ##        tops up agua de pipa and vendas, carries one café chorreado per hero at ≥ STRESS_ITEM_AT
@@ -204,35 +205,52 @@ func _hub(row: Dictionary) -> void:
 			hired += 1
 	row["hired"] = hired
 	row["hires"] = c0 - _gs.colones
-	# Party: the 4 least stressed, at most one dedicated healer, in their classes' preferred order.
+	# Difficulty first: the one most of the living heroes are the right level for (the easier
+	# on a tie), so a veteran or two don't drag fresh recruits into an expedition above them.
+	# Then the party: heroes of that range, least stressed first, at most one dedicated healer;
+	# under-leveled ones only to fill it. Heroes above the range refuse and stay home.
+	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
 	var pool: Array = _living_roster()
 	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
 	var chosen: Array = []
 	if _opts["party"].is_empty():
+		var pick: Dictionary = {}
+		var pick_n: int = -1
+		for d in diffs:
+			var e: Dictionary = _gs.selected_expedition(str(d["id"]))
+			var n: int = pool.filter(func(h): return _in_range(h, e)).size()
+			if n > pick_n:
+				pick = e
+				pick_n = n
+		_gs.selected_difficulty_id = str(pick.get("id", _opts["difficulty"]))
 		var has_healer: bool = false
 		for h in pool:
 			if chosen.size() >= 4:
 				break
+			if not _in_range(h, pick):
+				continue
 			if _is_healer(h):
 				if has_healer:
 					continue
 				has_healer = true
 			chosen.append(h)
-		for h in pool:
+		var rest: Array = pool.filter(func(h): return not chosen.has(h) and int(h.get("resolve_level", 0)) <= int(pick.get("max_level", 6)))
+		rest.sort_custom(func(a, b): return int(a.get("resolve_level", 0)) > int(b.get("resolve_level", 0)))
+		for h in rest:
 			if chosen.size() >= 4:
 				break
-			if not chosen.has(h):
-				chosen.append(h)
+			chosen.append(h)
+		chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
+		_gs.party = chosen
 	else:
 		chosen = pool.slice(0, 4)
-	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
-	_gs.party = chosen
-	# Seasoned heroes refuse easy expeditions (doc 01 §6): take the easiest one nobody refuses.
-	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
-	for d in diffs:
-		if _gs.party_refusals(str(d["id"])).is_empty():
-			_gs.selected_difficulty_id = str(d["id"])
-			break
+		chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
+		_gs.party = chosen
+		# Forced class mix: the easiest expedition nobody refuses (doc 01 §6).
+		for d in diffs:
+			if _gs.party_refusals(str(d["id"])).is_empty():
+				_gs.selected_difficulty_id = str(d["id"])
+				break
 	var mark: int = _gs.colones
 	for h in chosen:
 		var cost: int = _gs.heal_cost(h)
@@ -341,6 +359,12 @@ func _gear_for(h: Dictionary) -> Array:
 				best = sid
 		return [best, slot] if best != "" else []
 	return []
+
+
+## The hero's level is inside the expedition's range (neither refuses nor is under-leveled).
+func _in_range(h: Dictionary, expedition: Dictionary) -> bool:
+	var lvl: int = int(h.get("resolve_level", 0))
+	return lvl >= int(expedition.get("min_level", 0)) and lvl <= int(expedition.get("max_level", 6))
 
 
 ## A dedicated healer: the class has a heal skill and never stands in position 1.
