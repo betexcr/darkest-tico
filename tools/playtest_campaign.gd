@@ -15,6 +15,11 @@ extends SceneTree
 ##                     the bot moves up when a hero refuses (too seasoned)
 ##   --set path=value  override a data/balance.json number for this run (repeatable), as in
 ##                     tools/sim_combat.gd
+##   --start-level N   start each campaign at a later point (P5-02f, to measure one difficulty
+##   --start-ranks R   on its own): the starting heroes are resolve level N with every skill at
+##   --start-gear K    Casa Comunal rank R and K pieces of equipment each (0-4: weapon, armor,
+##   --start-colones C then accessories; the dearest the Pulpería sells), and the hacienda has
+##                     C colones. Defaults: 0, 1, 0 and hub.start_colones.
 ##   --party a,b,c,d   force the class mix (hero ids from data/heroes.json): every campaign
 ##                     starts with exactly these four, nobody else is hired, and a hero who
 ##                     dies is replaced by one of the same class for its hire cost
@@ -60,7 +65,8 @@ const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", 
 var _gs
 var _loader
 var _scene: PackedScene
-var _opts := {"campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": []}
+var _opts := {"campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": [],
+	"start-level": 0, "start-ranks": 1, "start-gear": 0, "start-colones": -1}
 var _finished: String = ""
 var _uses: Dictionary = {}
 var _all_rows: Array = []
@@ -90,7 +96,8 @@ func _run() -> void:
 	_scene = load("res://scenes/expedition/expedition_screen.tscn")
 	print("## Campaign playtest — %d campaign(s) × %d weeks, route %s, %s, seed %d%s%s\n" % [
 		int(_opts["campaigns"]), int(_opts["weeks"]), _opts["route"], _opts["difficulty"], int(_opts["seed"]),
-		(", party " + "/".join(PackedStringArray(_opts["party"]))) if not _opts["party"].is_empty() else "",
+		((", party " + "/".join(PackedStringArray(_opts["party"]))) if not _opts["party"].is_empty() else "")
+		+ ((", start at level %d, rank %d, %d gear" % [int(_opts["start-level"]), int(_opts["start-ranks"]), int(_opts["start-gear"])]) if int(_opts["start-level"]) > 0 or int(_opts["start-ranks"]) > 1 or int(_opts["start-gear"]) > 0 else ""),
 		(", overrides " + ", ".join(PackedStringArray(_opts["set"]))) if not _opts["set"].is_empty() else ""])
 	var t0: int = Time.get_ticks_msec()
 	for c in int(_opts["campaigns"]):
@@ -117,7 +124,7 @@ func _parse_args() -> void:
 		var flag: String = a[k]
 		var val: String = a[k + 1] if k + 1 < a.size() else ""
 		match flag:
-			"--campaigns", "--weeks", "--seed":
+			"--campaigns", "--weeks", "--seed", "--start-level", "--start-ranks", "--start-gear", "--start-colones":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
 			"--route", "--difficulty":
@@ -148,6 +155,27 @@ func _new_campaign() -> void:
 		_gs.party.clear()
 		for id in _opts["party"]:
 			_add_forced_hero(str(id))
+	# --start-level and friends: a party as it would be on reaching that difficulty.
+	if int(_opts["start-colones"]) >= 0:
+		_gs.colones = int(_opts["start-colones"])
+	var rs = load("res://scripts/domain/resolve_system.gd")
+	for h in _gs.roster:
+		h["resolve_level"] = clampi(int(_opts["start-level"]), 0, rs.MAX_LEVEL)
+		h["resolve_xp"] = rs.xp_for_level(int(h["resolve_level"]))
+		if int(_opts["start-ranks"]) > 1:
+			for sid in h.get("skill_ids", []):
+				h["skill_ranks"][str(sid)] = int(_opts["start-ranks"])
+		for slot in EQUIP_SLOTS.slice(0, clampi(int(_opts["start-gear"]), 0, EQUIP_SLOTS.size())):
+			var worn: Array = h.get("equipment", {}).values() if h.get("equipment") is Dictionary else []
+			var best: String = ""
+			for id in _gs.all_item_ids():
+				var sid: String = str(id)
+				if _gs.is_equipment(sid) and _gs.slots_for(sid).has(slot) and not worn.has(sid) and (best == "" or _gs.item_price(sid) > _gs.item_price(best)):
+					best = sid
+			if best != "" and _gs.add_item(best, 1) > 0:
+				_gs.equip(h, best, slot)
+		_gs.recompute_stats(h)
+		h["hp"] = int(h["hp_max"])
 
 
 ## --party: a fresh hero of that class joins the roster (no recruit pool involved).
