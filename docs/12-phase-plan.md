@@ -498,12 +498,13 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
 ### P5-02 · L→ split · Balance pass on the P1-09 playtest findings
-- Status: split into P5-02a–f (owner 2026-11-14: pulled ahead of P2 and P5-01 to fix the six findings in doc 09 §5). Do them in order; each one ends in `review` for an owner playtest.
+- Status: split into P5-02a–f (owner 2026-11-14: pulled ahead of P2 and P5-01 to fix the six findings in doc 09 §5). All six are in `review` (2026-11-15). They were done in the order a, b, d, e, c, f: stress and difficulty could only be tuned once food and levelling were right.
 - Owner decisions (2026-11-14):
   - Clear rate for the careful bot: about 85–90% on Aprendiz, 70–80% on Veterano, 55–70% on Campeón. The doc 06 target of 55–70% applies to the hardest tier, since the bot plays near-perfectly.
   - Healer stall: dragging-fight stress (Darkest Dungeon's stall penalty).
   - Progression: Darkest Dungeon curve (XP thresholds become per-level costs).
   - Provisions: two recommended kits, short run and full exploration.
+  - Recruits are free, as in Darkest Dungeon (2026-11-15).
 - Every task reruns `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compares with the P5-02a baseline in `docs/playtests/`.
 
 ### P5-02a · M · Measurement first: a playtest bot that spends like a player
@@ -531,10 +532,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6, doc 10): longest fight 58 → 23 rounds in the standard playtest; all 96 expeditions cleared, so the game is easier for the bot than before. One boss fight still reached 23 rounds.
 
 ### P5-02c · M · Stress pass
-- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02b · Spec: `01` §3, `04` §4
-- Levers, one at a time: (1) lower the free in-combat `stress_relief` in `data/skills.json` (*No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas*, *Regaño Santo*); (2) an `enemy_stress` multiplier per difficulty in `data/progression.json`; (3) enemy basic-attack `stress` in `data/enemies.json`.
-- Done when (full route): [ ] top stress at the end 60–80 [ ] a resolve check in about 1 of 3 expeditions [ ] party average back at the hub 30–50
-- Note (2026-11-14): on hold until P5-02d and P5-02e are in. The first try (relief on the four skills cut to 2 / 3 / 3 / 8) changed nothing on the direct route (stress back at the hub 18) and far too much on the full route (44, with 30 of 42 expeditions cleared). Half of the full route's hunger stops are short of food, and each one costs every unfed hero 10 stress and 10% PV, so the food kits have to be right before the stress numbers can be set. The `enemy_stress` multiplier per difficulty is in (`progression.json`, all 1.0 for now).
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to play a full-route expedition and judge whether stress now matters without being unfair) · Depends: P5-02b, P5-02e · Spec: `01` §3, `04` §4
+- Done after P5-02d and P5-02e, not before: while half the full route's hunger stops were short of food, stress could not be tuned (the first try did nothing on the direct route and wrecked the full one).
+- What changed:
+  - `data/skills.json` `stress_relief`: *No Me Tumban* 5 → 2, *Círculo de Tiza* and *Humo de Hierbas* 6 → 3, *Regaño Santo* 12 → 8, *Rezo de Nicoya* 3 → 2.
+  - `enemy_stress` per difficulty in `data/progression.json`: 1.5 / 2.0 / 2.25. It scales the stress of enemy skills (`stress_mult` on the enemy; `combat_controller.gd`), not the extra stress of an enemy crit. Shown in the hub's difficulty tooltip; checked by the validator.
+  - Enemy basic-attack stress in `data/enemies.json` was not needed.
+- Done when (full route):
+  - [ ] Top hero's stress at the end 60–80 (measured 83; 55 on the direct route)
+  - [x] A resolve check in about 1 of 3 expeditions (26 of 72; 9 of 72 on the direct route)
+  - [x] Party average back at the hub 30–50 (38; 28 on the direct route)
 
 ### P5-02d · S · Darkest Dungeon XP curve
 - Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to judge whether Campeón in week 15–17 is the pace wanted) · Depends: P5-02a · Spec: `01` §6.1
@@ -554,10 +561,20 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6): with food sorted and the bot fixes, 144 of 144 expeditions are cleared and stress comes back at 12–16.
 
 ### P5-02f · M · Economy and clear-rate tuning
-- Status: `todo` · Depends: P5-02c, P5-02d, P5-02e
-- Economy levers: room, elite, boss and objective rewards in `data/regions/sotanos.json`; difficulty `reward` in `progression.json`; `hub.iglesia_cost`, `hub.heal_cost_per_hp`. Clear-rate levers: per-difficulty `enemy_hp` / `enemy_dmg`, `enemies.boss_hp_mult`, heal amounts on *Sopa Milagrosa* and *Cataplasma Casero*.
-- Baseline (doc 09 §6): colones after week 8 are already 7–11k and spending is 96% of loot, nearly all of it skill ranks. So the economy work here is to check the bank again after P5-02c–e, and to make stress relief (Iglesia, stress items) a real cost; loot only needs cutting if the bank leaves the band.
-- Done when: [ ] colones after week 8 between 8k and 15k with the spending bot [ ] the Iglesia and stress items take at least 10% of weekly spending [ ] clear rates in the owner's bands [ ] before/after tables in doc 09 and doc 10
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner decisions listed in the handoff of that date) · Depends: P5-02c, P5-02d, P5-02e
+- What changed:
+  - **Recruits are free** (owner 2026-11-15, as in Darkest Dungeon): `hire_cost` removed from `data/heroes.json`; `GameState.hire_cost` is 0 except for a hero a town event prices (`hire_veteran`). With paid recruits every full-route campaign went bankrupt after its first wipes.
+  - Enemies per difficulty in `data/progression.json`, PV / damage: Aprendiz ×1.1 / ×1.2, Veterano ×1.75 / ×1.6, Campeón ×2.4 / ×2 (were ×1 / ×1, ×1.22 / ×1.12, ×1.46 / ×1.24).
+  - *Sopa Milagrosa* heals 1–3 (was 2–4).
+  - Rewards, the Iglesia and the EBAIS were not changed: the bank no longer piles up.
+  - Tools: `tools/sim_combat.gd --level N --ranks R --gear` and `tools/playtest_campaign.gd --start-level N --start-ranks R --start-gear K --start-colones C` measure one difficulty on its own; the bot keeps a core team and two free spares.
+- Done when:
+  - [ ] Clear rates in the owner's bands: Aprendiz 91% (band 85–90), Veterano 86% (band 70–80; 64% full route, 96% direct), Campeón 4 of 5 (band 55–70; too few). See the note below.
+  - [x] The Iglesia and stress items take at least 10% of weekly spending on the full route (12%; 7% on the direct route)
+  - [ ] Colones after week 8 between 8k and 15k (measured 4.2–8.0k: the economy is now tight, and all 12 campaigns are solvent in week 24; loot was not raised)
+  - [x] Before/after tables in doc 09 §6 and doc 10
+- Why the later tiers are not pushed to the bottom of their bands: the bot retreats only after two heroes are down, so its failures are wipes. Veterano on the full route already loses 1.5 heroes per expedition at a 64% clear rate, against doc 04 §4's one death every 5–8 missions. Lowering the clear rate further this way would cost several heroes per expedition. Reaching the bands needs a decision first (see the handoff): a bot and a player who retreat earlier, or a retreat that keeps part of the loot.
+- Known limits: Campeón has almost no data (no full-route campaign reached it in 24 weeks); the first six weeks of a campaign are still never lost (36 of 36).
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

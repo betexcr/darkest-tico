@@ -132,3 +132,19 @@ With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Ne
 - **Why fights stalled.** The log of a 41-round boss fight showed the same loop every round: a hero collapses at 200 stress and drops to Al Borde, a companion heals them back up, and the next stress collapses them again. Nobody died and nobody attacked. A second Colapso in the same fight is now a death roll (doc 01 §3.4).
 - **The smart policy changed too.** Once a fight is about to drag it stops calming, heals only a hero Al Borde or under 25% PV, and attacks. Before that it spent every turn healing and calming while one self-healing enemy was left, which is what a player would not do. With the rule off the policy plays as before.
 
+### Rerun on the P5-02c/f numbers (2026-11-15)
+
+`--level N --ranks R --gear` plays a seasoned party: every hero at that resolve level, every skill at that rank, the dearest weapon and armor. Chains of 3 fights + elite + boss, 10,000 per row, smart policy:
+
+| Party | Difficulty | Boss cleared | Rounds in the boss fight | Top stress after the boss | Boss fights with a death | Chains past 40 rounds |
+|---|---|---:|---:|---:|---:|---:|
+| Starting party, level 0, rank 1 | Aprendiz | 95.9% | 9.7 | 57.8 | 8.3% | 0 |
+| Starting party, level 3, rank 3, weapon and armor | Veterano | 98.7% | 7.7 | 46.8 | 9.8% | 0 |
+| Starting party, level 5, rank 4, weapon and armor | Campeón | 92.3% | 10.5 | 65.1 | 22.8% | 0 |
+| 3 Abuelas + Curandero, level 0, rank 1 | Aprendiz | 48.2% | 17.4 | 163.1 | 49.1% | 0 |
+
+- **Aprendiz is no longer free.** The starting party cleared 99.2% of chains before; now 95.9%, with the top hero at 58 stress, up from 31.
+- **The tiers are in order for a seasoned party**, but the sim's seasoned party is better prepared than most parties that reach a tier in a campaign. In the campaign playtest Veterano on the full route was cleared 64% of the time (doc 09 §6). Use the sim to compare settings, not to predict the clear rate.
+- **Damage alone does little.** Raising enemy damage from ×1.25 to ×1.35 on Aprendiz moved the chain clear rate by under a point, because healing absorbs it. Enemy PV (longer fights, so more stress and more dragging) and smaller heals move it more.
+- **A healer-only party now loses most chains.** It can't kill fast enough, so the dragging stress gets it. That is the stall penalty doing its job.
+

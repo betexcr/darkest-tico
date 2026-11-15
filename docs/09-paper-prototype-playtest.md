@@ -193,3 +193,58 @@ Same runs with the rule on (doc 01 §3.1) and a bot that plays to finish once a 
   - It never leaves with three heroes when it can send four.
 - So with careful play the game currently has no losing condition in practice. The stress pass (P5-02c) and the clear-rate tuning (P5-02f) start from here.
 
+### Final numbers: stress, difficulty and free recruits (P5-02c, P5-02f)
+
+**What changed in the game**
+
+- Free stress relief is smaller: *No Me Tumban* 5 → 2, *Círculo de Tiza* and *Humo de Hierbas* 6 → 3, *Regaño Santo* 12 → 8, *Rezo de Nicoya* 3 → 2.
+- *Sopa Milagrosa* heals 1–3 (was 2–4).
+- Enemies per difficulty, PV / damage / stress: Aprendiz ×1.1 / ×1.2 / ×1.5, Veterano ×1.75 / ×1.6 / ×2, Campeón ×2.4 / ×2 / ×2.25 (doc 01 §6.1).
+- **Recruits are free** (owner 2026-11-15, as in Darkest Dungeon).
+
+**Result.** 3 campaigns × 24 weeks per route, the same as the reference above. Raw output: [playtests/2026-11-15-final-full.md](playtests/2026-11-15-final-full.md) and [playtests/2026-11-15-final-direct.md](playtests/2026-11-15-final-direct.md).
+
+| | Full: reference | Full: final | Direct: reference | Direct: final |
+|---|---:|---:|---:|---:|
+| Expeditions cleared | 72 / 72 | 60 / 72 | 72 / 72 | 68 / 72 |
+| Cleared on Aprendiz | 100% | 88% (51 of 58) | 100% | 95% (37 of 39) |
+| Cleared on Veterano | 100% | 64% (9 of 14) | 100% | 96% (27 of 28) |
+| Cleared on Campeón | 100% | not reached | 100% | 80% (4 of 5) |
+| Heroes lost per expedition | 0.03 | 0.76 | 0.00 | 0.25 |
+| Stress coming back (party average) | 12 | 38 | 16 | 28 |
+| Top hero's stress at the end | 22 | 83 | 28 | 55 |
+| Expeditions where someone reached 100 stress | 0 | 26 | 1 | 9 |
+| Avg rounds against the boss (longest fight) | 6.3 (12) | 11.2 (25) | 5.7 (20) | 8.3 (24) |
+| Loot per week | 6,587 ₡ | 3,900 ₡ | 5,217 ₡ | 3,885 ₡ |
+| Hub spending, share of loot | 95% | 100% | 97% | 101% |
+| Iglesia and stress items, share of spending | 0% | 12% | 1% | 7% |
+| Colones after week 8 | 4.1–7.1k | 4.2–8.0k | 4.6–6.0k | 4.6–7.6k |
+| Colones after week 24 | 10.9–15.8k | 4.2–4.5k | 8.4–10.1k | 4.0–5.2k |
+| Campaigns still solvent in week 24 | 3 of 3 | 3 of 3 | 3 of 3 | 3 of 3 |
+
+Against the owner's targets:
+
+| Target | Measured (both routes together) |
+|---|---|
+| Aprendiz cleared 85–90% | 91% (88 of 97) |
+| Veterano cleared 70–80% | 86% (36 of 42); 64% on the full route, 96% on the direct one |
+| Campeón cleared 55–70% | 4 of 5: too few to say |
+| Stress back at the hub 30–50 | 38 full, 28 direct |
+| A resolve check in about 1 of 3 expeditions | 26 of 72 full, 9 of 72 direct |
+| Top hero's stress at the end 60–80 | 83 full, 55 direct |
+
+**What the tuning showed** (about 60 campaign runs on copies of the project; only the final pair is saved in `docs/playtests/`)
+
+- **The first six weeks are still never lost.** A fresh campaign cleared 36 of 36 Aprendiz expeditions in weeks 1–6 with no deaths. The Aprendiz losses come later, from parties rebuilt out of whoever was at the terminal after a wipe on Veterano. A rebuilt party has no ranks, little equipment and often a poor class mix.
+- **The full route is much more sensitive than the direct one.** The same numbers give Veterano 64% on the full route and 96% on the direct one. More fights and more moves mean more stress, and stress is what kills.
+- **Clear rate and hero deaths pull against each other.** The bot retreats only after two heroes are down, so nearly all its failures are wipes. On Veterano's full route a 64% clear rate already costs 1.5 heroes per expedition; doc 04 §4 asks for one death every 5–8 missions. Pushing Veterano and Campeón down to the bottom of their bands this way would cost several heroes per expedition.
+- **Paid recruits made a wipe unrecoverable.** With recruits at 700–900 ₡, a wiped party cost about 3,000 ₡ on top of its ranks and equipment. At these same Aprendiz numbers every full-route campaign (9 of 9) went bankrupt between weeks 5 and 21. With free recruits all 12 campaigns are solvent in week 24.
+- **Tiers have to grow with the party.** A prepared party (started at the tier with `--start-level`) cleared Veterano 54 of 54 at ×1.75 PV / ×1.6 damage and Campeón 58 of 58 at ×2.2 / ×1.9. Skill ranks roughly double a party's healing and damage. Parties that reach a tier in a real campaign are poorer than that, which is why the same Veterano numbers give 64% on the full route.
+- **Results are noisy.** One early wipe changes a whole campaign, so failures cluster. Three campaigns per route separate "fine" from "broken", not 85% from 90%.
+
+**Still open**
+
+- Campeón has almost no data: on the full route no campaign got there in 24 weeks, because Veterano wipes send the roster back to Aprendiz.
+- The economy is now tight (the bank sits at 4–8k) where I had planned for 8–15k after week 8. Loot per week fell from 5,200–6,600 ₡ to about 3,900 ₡, because most weeks are now played on Aprendiz pay. Skill ranks take 22–44% of spending, down from about 60%.
+- The bot, the sim and these targets all measure a careful player. How it feels needs the owner.
+

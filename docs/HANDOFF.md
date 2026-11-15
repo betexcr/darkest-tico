@@ -17,6 +17,36 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-15 (2) — P5-02c, P5-02f — Stress and difficulty numbers; recruits are free
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02c `review`, P5-02f `review`. All of P5-02a–f is now in `review`; nothing is `in-progress` from this branch.
+- **Changed:**
+  - `data/skills.json`: `stress_relief` on *No Me Tumban* 2, *Círculo de Tiza* 3, *Humo de Hierbas* 3, *Regaño Santo* 8, *Rezo de Nicoya* 2; *Sopa Milagrosa* heals 1–3.
+  - `data/progression.json` difficulties, PV / damage / stress: Aprendiz 1.1 / 1.2 / 1.5, Veterano 1.75 / 1.6 / 2.0, Campeón 2.4 / 2.0 / 2.25.
+  - Recruits are free (owner 2026-11-15): `hire_cost` removed from `data/heroes.json`; `GameState.hire_cost`; the hub button says "gratis"; `tests/test_hub.gd`; AGENTS.md §4, doc 02 §3, doc 13.
+  - `tests/test_progression.gd`: the Veterano check follows the new multipliers.
+  - Tools: `tools/sim_combat.gd --level --ranks --gear`; `tools/playtest_campaign.gd --start-level --start-ranks --start-gear --start-colones`, a core-team party pick (`REST_AT` 60) and two free spares (`SPARE_ROSTER` 6).
+  - Docs: 01 §6.1 (difficulty table), 09 §6 (final table, targets, what the tuning showed), 10 (sim rerun); `docs/playtests/2026-11-15-final-{full,direct}.md`.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR`, on the final data.
+  - Sim, 10,000 chains each: Aprendiz 95.9% (fresh party), Veterano 98.7% and Campeón 92.3% (seasoned parties), 0 chains past 40 rounds.
+  - Playtest 3 × 24 weeks per route: 128 of 144 cleared; Aprendiz 91%, Veterano 86%, Campeón 4 of 5; all 12 campaigns solvent in week 24. It ran on a copy of the project with the same data values (checked key by key) and the bot as committed.
+- **Not verified / risks:**
+  - The final numbers rest on one pair of runs; an earlier pair with the same Aprendiz numbers but paid recruits gave very different totals. Three campaigns per route can tell "fine" from "broken", not 85% from 90%.
+  - Campeón: 5 expeditions in the final runs. Its multipliers come from tier-start runs with a prepared party (58 of 58 cleared at ×2.2 / ×1.9; 33 of 36 at ×2.6 / ×2.1).
+  - The first six weeks of a campaign are never lost (36 of 36); the Aprendiz losses come from parties rebuilt after a wipe.
+  - Nothing here was played by a person. The hub's "gratis" recruit buttons were checked in a screenshot (`tools/screens/expedition_events_screenshot.gd` under xvfb); the new difficulty tooltip (with "x… estrés") was not.
+- **Decisions needed:**
+  1. **Clear rate or hero deaths?** The bands (85–90 / 70–80 / 55–70) and doc 04 §4 (a death every 5–8 missions) can't both hold while a failed expedition is a wipe. Veterano on the full route is at 64% cleared and 1.5 heroes lost per expedition. Options: a retreat that keeps part of the loot, so failing is cheaper than dying; or accept higher clear rates on the later tiers. I stopped at the softer side.
+  2. **The economy is tight now** (bank 4–8k, was planned at 8–15k after week 8). Raise rewards, or keep it tight?
+  3. The level-6 veteran from a town event still costs 6,000 ₡. Free too?
+  4. Top hero's stress on the full route is 83 (target 60–80). Leave it, or give back a little relief (for example *Regaño Santo* 10)?
+  5. Still open from P5-02b: should bosses start dragging at round 8 instead of 12?
+- **Next step:** owner playtest of P5-02a–f (a direct run and a full run on Aprendiz, then one on Veterano), then the decisions above. For an agent with no decision yet: P1-20 (smoke frame-cap flake, `tests/smoke_expedition.gd`) or the first `todo` in P2 (P2-02, 30–40 Sótanos event variants). If decision 1 goes to "retreat keeps loot", add it as a new task in P5 and rerun `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24` on both routes against `docs/playtests/2026-11-15-final-*.md`.
+
+---
+
 ## 2026-11-15 — P5-02d, P5-02e — Darkest Dungeon XP curve; two provision kits; reference run for the tuning
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
 - **Status after session:** P5-02d `review`, P5-02e `review`. P5-02c (stress) is `in-progress`: the lever is in, the numbers are not set. P5-02f `todo`.
