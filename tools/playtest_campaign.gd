@@ -21,10 +21,11 @@ extends SceneTree
 ##
 ## The player bot (P5-02a: it spends like a player):
 ##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), preferring
-##        a recruit who isn't a second healer; picks the difficulty most of the roster is the
-##        right level for, and for it the 4 least stressed heroes of that range with at most
-##        one dedicated healer (a class with a heal skill that never stands in position 1),
-##        under-leveled heroes only to fill the party; orders them by preferred position, heals them at the EBAIS, pays the Iglesia
+##        a recruit who isn't a second healer; picks the difficulty for which it can send the
+##        fullest party with the fewest under-leveled heroes (_plan_party): heroes of that
+##        range, least stressed first, at most one dedicated healer (a class with a heal skill
+##        that never stands in position 1), a hire to fill a place on the easiest difficulty,
+##        under-leveled heroes last; orders them by preferred position, heals them at the EBAIS, pays the Iglesia
 ##        when the party's average stress ≥ IGLESIA_AT, buys what the region's provision kit
 ##        lacks (the full-exploration kit on --route full, the short one on direct),
 ##        tops up agua de pipa and vendas, carries one café chorreado per hero at ≥ STRESS_ITEM_AT
@@ -205,41 +206,33 @@ func _hub(row: Dictionary) -> void:
 			hired += 1
 	row["hired"] = hired
 	row["hires"] = c0 - _gs.colones
-	# Difficulty first: the one most of the living heroes are the right level for (the easier
-	# on a tie), so a veteran or two don't drag fresh recruits into an expedition above them.
-	# Then the party: heroes of that range, least stressed first, at most one dedicated healer;
-	# under-leveled ones only to fill it. Heroes above the range refuse and stay home.
+	# Difficulty and party together: for each difficulty, the best party of 4 the roster can
+	# send (heroes of that range first, least stressed, at most one dedicated healer; then
+	# under-leveled ones, the highest level first; heroes above the range refuse). On the
+	# easiest difficulty a missing place can be filled by hiring. The bot takes the fullest
+	# party, then the one with the fewest missing levels (a hire counts as 2), then the easier
+	# expedition. So a lone veteran doesn't drag fresh recruits into an expedition above them,
+	# and the bot never leaves with three heroes when it can send four.
 	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
 	var pool: Array = _living_roster()
 	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
 	var chosen: Array = []
 	if _opts["party"].is_empty():
-		var pick: Dictionary = {}
-		var pick_n: int = -1
+		var best: Dictionary = {}
 		for d in diffs:
-			var e: Dictionary = _gs.selected_expedition(str(d["id"]))
-			var n: int = pool.filter(func(h): return _in_range(h, e)).size()
-			if n > pick_n:
-				pick = e
-				pick_n = n
-		_gs.selected_difficulty_id = str(pick.get("id", _opts["difficulty"]))
-		var has_healer: bool = false
-		for h in pool:
-			if chosen.size() >= 4:
+			var plan: Dictionary = _plan_party(pool, _gs.selected_expedition(str(d["id"])))
+			if best.is_empty() or int(plan["size"]) > int(best["size"]) or (int(plan["size"]) == int(best["size"]) and int(plan["cost"]) < int(best["cost"])):
+				best = plan
+		_gs.selected_difficulty_id = str(best["expedition"].get("id", _opts["difficulty"]))
+		chosen = best["party"]
+		for _k in int(best["hires"]):
+			var idx: int = _pick_recruit()
+			if idx < 0 or not _gs.hire_recruit(idx).contains("se une"):
 				break
-			if not _in_range(h, pick):
-				continue
-			if _is_healer(h):
-				if has_healer:
-					continue
-				has_healer = true
-			chosen.append(h)
-		var rest: Array = pool.filter(func(h): return not chosen.has(h) and int(h.get("resolve_level", 0)) <= int(pick.get("max_level", 6)))
-		rest.sort_custom(func(a, b): return int(a.get("resolve_level", 0)) > int(b.get("resolve_level", 0)))
-		for h in rest:
-			if chosen.size() >= 4:
-				break
-			chosen.append(h)
+			hired += 1
+			chosen.append(_gs.roster[-1])
+		row["hired"] = hired
+		row["hires"] = c0 - _gs.colones
 		chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
 		_gs.party = chosen
 	else:
@@ -359,6 +352,47 @@ func _gear_for(h: Dictionary) -> Array:
 				best = sid
 		return [best, slot] if best != "" else []
 	return []
+
+
+## The best party of up to 4 for this expedition from `pool` (sorted, least stressed first):
+## {expedition, party, size, hires, cost}. `hires` = recruits to take on to reach 4 (only on
+## an expedition that accepts level 0, and only as many as the colones and the beds allow);
+## `size` counts them. `cost` = levels the under-leveled heroes are short, plus 2 per hire.
+func _plan_party(pool: Array, expedition: Dictionary) -> Dictionary:
+	var party: Array = []
+	var has_healer: bool = false
+	for h in pool:
+		if party.size() >= 4:
+			break
+		if not _in_range(h, expedition):
+			continue
+		if _is_healer(h):
+			if has_healer:
+				continue
+			has_healer = true
+		party.append(h)
+	var hires: int = 0
+	if party.size() < 4 and int(expedition.get("min_level", 0)) <= 0:
+		var prices: Array = _gs.recruit_pool.map(func(r): return _gs.hire_cost(r))
+		prices.sort()
+		var left: int = _gs.colones
+		var beds: int = _gs.roster_cap() - _gs.roster.size()
+		for c in prices:
+			if party.size() + hires >= 4 or hires >= beds or int(c) > left:
+				break
+			left -= int(c)
+			hires += 1
+	var short: int = 0
+	if party.size() + hires < 4:
+		# A second healer or an under-leveled hero is better than an empty place.
+		var rest: Array = pool.filter(func(h): return not party.has(h) and int(h.get("resolve_level", 0)) <= int(expedition.get("max_level", 6)))
+		rest.sort_custom(func(a, b): return int(a.get("resolve_level", 0)) > int(b.get("resolve_level", 0)))
+		for h in rest:
+			if party.size() + hires >= 4:
+				break
+			party.append(h)
+			short += maxi(int(expedition.get("min_level", 0)) - int(h.get("resolve_level", 0)), 0)
+	return {"expedition": expedition, "party": party, "size": party.size() + hires, "hires": hires, "cost": short + 2 * hires}
 
 
 ## The hero's level is inside the expedition's range (neither refuses nor is under-leveled).
