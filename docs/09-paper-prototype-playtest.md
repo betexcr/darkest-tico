@@ -166,3 +166,30 @@ Same runs with the rule on (doc 01 §3.1) and a bot that plays to finish once a 
 - **The game got easier for the bot, not harder.** Both losses in the baseline were stalled boss fights. Finishing a fight is simply better play than healing through it, so the clear rate is now 96 of 96. Difficulty is the job of P5-02c and P5-02f.
 - **The first try failed, and why.** With the rule on and the old bot, a level-1 party was wiped in a 22-round normal fight: the bot kept healing and calming while the dragging stress piled up. A player who doesn't attack in a dragging fight will lose it. That is the rule working, and the log warns one round ahead.
 
+### After the XP curve and the provision kits (P5-02d, P5-02e)
+
+3 campaigns × 24 weeks per route (144 expeditions), so that Campeón is reached on the longer curve. Raw output: [playtests/2026-11-15-xp-kits-full.md](playtests/2026-11-15-xp-kits-full.md) and [playtests/2026-11-15-xp-kits-direct.md](playtests/2026-11-15-xp-kits-direct.md). The bot buys the full-exploration kit on the full route and the short kit on the direct one. "Before" is the P5-02b run above.
+
+| | Full: before | Full: after | Direct: before | Direct: after |
+|---|---:|---:|---:|---:|
+| First week on Veterano | 5–6 | 7–9 | 5 | 8 |
+| First week on Campeón | 8–11 | 15–17 | 8 | 16 |
+| Hunger stops short of food | 50 of 103 (49%) | 3 of 152 (2%) | 0 of 10 | 0 of 13 |
+| Expeditions cleared | 48 / 48 | 72 / 72 | 48 / 48 | 72 / 72 |
+| Heroes lost per expedition | 0.06 | 0.03 | 0.00 | 0.00 |
+| Stress coming back (party average) | 20 | 12 | 18 | 16 |
+| Top hero's stress at the end | 31 | 22 | 33 | 28 |
+| Provisions per week | about 930 ₡ | 1,190 ₡ | about 390 ₡ | 365 ₡ |
+| Colones after week 8 | 7.3–10.3k | 4.1–7.1k | 7.8–10.0k | 4.6–6.0k |
+| Colones after week 24 | — | 10.9–15.8k | — | 8.4–10.1k |
+
+- **Levelling takes about twice as long.** Veterano comes in week 7–9 and Campeón in week 15–17. The spread is the bot resting a hero some weeks; a party that never changes reaches them in weeks 7 and 15.
+- **Full exploration is fed.** With 16 gallo pinto the party runs short in 3 expeditions of 72. The kit costs about 260 ₡ a week more than the bot used to spend.
+- **Without hunger the full route is calm too.** Stress back at the hub fell from 20 to 12. Most of the full route's stress in the baseline was hunger, not fights.
+- **The bank is lower early.** Heroes spend more weeks on Aprendiz pay, so week 8 ends at 4–7k, down from 7–10k. Skill ranks still take about 60% of the spending.
+- **Nothing is lost any more: 144 of 144.** Three bot fixes made in these two tasks account for that, and none of them changes the game:
+  - A hero pushed out of position steps back to where an attack works. Before, the bot used support skills from the wrong place for the rest of the fight.
+  - The bot picks the difficulty for which it can send the fullest party of the right level.
+  - It never leaves with three heroes when it can send four.
+- So with careful play the game currently has no losing condition in practice. The stress pass (P5-02c) and the clear-rate tuning (P5-02f) start from here.
+

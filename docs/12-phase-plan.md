@@ -537,14 +537,21 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Note (2026-11-14): on hold until P5-02d and P5-02e are in. The first try (relief on the four skills cut to 2 / 3 / 3 / 8) changed nothing on the direct route (stress back at the hub 18) and far too much on the full route (44, with 30 of 42 expeditions cleared). Half of the full route's hunger stops are short of food, and each one costs every unfed hero 10 stress and 10% PV, so the food kits have to be right before the stress numbers can be set. The `enemy_stress` multiplier per difficulty is in (`progression.json`, all 1.0 for now).
 
 ### P5-02d · S · Darkest Dungeon XP curve
-- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §6.1
-- `xp_thresholds` `[0, 2, 10, 24, 48, 84, 132]`, Pura Vida about 20% lower; XP per expedition stays 4 / 8 / 16. Bump `SAVE_VERSION` and raise each saved hero's XP to the new threshold of their level, so nobody loses a level.
-- Done when: [ ] Veterano around week 7 and Campeón around week 15 in the playtest [ ] `tests/test_progression.gd` and `tests/test_save.gd` cover the curve and the migration [ ] doc 01 §6.1 updated
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to judge whether Campeón in week 15–17 is the pace wanted) · Depends: P5-02a · Spec: `01` §6.1
+- `xp_thresholds` `[0, 2, 10, 24, 48, 84, 132]`, Pura Vida about 20% lower (`[0, 2, 8, 19, 38, 67, 106]`); XP per expedition stays 4 / 8 / 16. `SAVE_VERSION` 10: on load a hero's XP is raised to the threshold of their level, so nobody loses a level.
+- Done when:
+  - [x] Veterano around week 7 and Campeón around week 15 in the playtest (weeks 7–9 and 15–17; the spread is the bot resting heroes)
+  - [x] `tests/test_progression.gd` covers the curve and the migration (`tests/test_town_events.gd` the Pura Vida curve)
+  - [x] Doc 01 §6.1 and doc 13 updated
 
 ### P5-02e · M · Two provision kits
-- Status: `in-progress (Claude Code, betomm/happy-faraday-5yrmcr, 2026-11-14)` · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
-- Region `provisions` becomes `{ "short": {...}, "full": {...} }` (Sótanos: 10 and 16 gallo pinto). `GameState.missing_provisions` / `buy_missing_provisions` take the kit; the hub prompt offers "Vuelta corta" and "Explorar todo" with prices; the validator requires both; the bot buys by `--route`.
-- Done when: [ ] full-route hunger stops short of food fall from about half to under 10% [ ] `tests/test_hub.gd` covers both kits
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to try the prompt before leaving the hub) · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
+- Region `provisions` is `{ "short": {...}, "full": {...} }`. Sótanos: 10 gallo pinto + 3 candelas (1,050 ₡) and 16 + 5 (1,700 ₡); Bosque 9 + 3 and 14 + 4 (an estimate; Bosque is not in the slice). `GameState.missing_provisions(region, kit)` / `buy_missing_provisions(region, kit)`; the hub prompt lists both kits with a button for each and asks nothing when the full kit is covered; the validator requires both; the bot buys by `--route`.
+- Also in this task (tools only): the bot steps back into position when it can't attack, and plans its party per difficulty (`_plan_party` in `tools/playtest_campaign.gd`).
+- Done when:
+  - [x] Full-route hunger stops short of food fall from about half to under 10% (2%: 3 of 152)
+  - [x] Both kits covered by a test (`tests/test_expedition_systems.gd`, where the provision checks already were)
+- Result (doc 09 §6): with food sorted and the bot fixes, 144 of 144 expeditions are cleared and stress comes back at 12–16.
 
 ### P5-02f · M · Economy and clear-rate tuning
 - Status: `todo` · Depends: P5-02c, P5-02d, P5-02e

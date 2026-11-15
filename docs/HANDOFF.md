@@ -17,6 +17,30 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-15 — P5-02d, P5-02e — Darkest Dungeon XP curve; two provision kits; reference run for the tuning
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02d `review`, P5-02e `review`. P5-02c (stress) is `in-progress`: the lever is in, the numbers are not set. P5-02f `todo`.
+- **Changed:**
+  - P5-02d: `data/progression.json` thresholds `[0, 2, 10, 24, 48, 84, 132]` (Pura Vida `[0, 2, 8, 19, 38, 67, 106]`); `SAVE_VERSION` 10 and the XP floor on load in `game_state.gd`; validator check for the Pura Vida curve; tests; doc 01 §6.1, doc 13.
+  - P5-02e: both region JSONs; `missing_provisions` / `buy_missing_provisions` take a kit; the hub prompt (`hacienda_hub.gd` `_confirm_provisions`); validator; `tests/test_expedition_systems.gd`; doc 01 §4.6, doc 04 §3.1, AGENTS.md §4; `tools/screens/expedition_events_screenshot.gd` call updated.
+  - P5-02c so far: `enemy_stress` per difficulty in `progression.json` (all 1.0), read in `game_state.gd` (`stress_mult`) and `combat_controller.gd`; shown in the hub's difficulty tooltip; validator.
+  - Tools: the bot steps back into position (`tools/sim_policy.gd` `_step_to_attack`) and plans its party per difficulty (`tools/playtest_campaign.gd` `_plan_party`).
+  - Doc 09 §6: table for these two tasks. `docs/playtests/2026-11-15-xp-kits-{full,direct}.md`.
+- **Why the order changed:** the first stress try (relief on four skills cut) did nothing on the direct route and far too much on the full one, because half the full route's hunger stops were short of food. So the kits and the curve went in before the stress numbers.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR` (run on commit `3495406` plus the bot change; no game code changed after).
+  - The provisions prompt rendered under xvfb (`tools/screens/expedition_events_screenshot.gd`): both kits and both buttons show.
+  - Playtest 3 × 24 weeks per route: Veterano in week 7–9, Campeón in week 15–17; 3 of 152 full-route hunger stops short of food; 144 of 144 cleared.
+- **Not verified / risks:**
+  - The game is now far too easy for the bot (no expedition lost, stress back at 12–16). That is the starting point for P5-02c and P5-02f, not a regression.
+  - Bosque's kits are a guess; the region is not playable in the slice.
+  - A v9 save was only tested through `apply_save_data` in the test, not by loading a real save file from the owner's machine.
+- **Decisions needed:** none new. (Still open from P5-02b: should bosses start dragging at round 8 instead of 12?)
+- **Next step:** P5-02c and P5-02f together. Copies of the project with data edits live in the scratchpad (`tools/variant.py`; recreate it if the container is new: it copies the repo and edits `data/skills.json` / `data/progression.json`). Compare 3 × 24-week runs on both routes with `docs/playtests/2026-11-15-xp-kits-*.md`. Levers tried so far in the sim: enemy damage alone barely moves the clear rate, because in-combat healing absorbs it; enemy PV and smaller heals move it more. Targets: stress back at the hub 30–50 with a resolve check in about 1 of 3 expeditions; clear rate 85–90% Aprendiz, 70–80% Veterano, 55–70% Campeón.
+
+---
+
 ## 2026-11-14 (2) — P5-02b — Dragging-fight stress; a second Colapso in a fight is a death roll
 - **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
 - **Status after session:** P5-02b `review`. P5-02c (stress pass) is next.
