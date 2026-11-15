@@ -39,7 +39,7 @@ extends SceneTree
 ##        ranks, and one piece of equipment per hero a week for an empty slot (the dearest it
 ##        can afford). It always keeps RESERVE colones.
 ##   Expedition: between rooms uses healing items under half PV, stress items at ≥ 50 stress
-##        and a candle below Tenue; flees when 2 heroes are down; eats when hungry; disarms
+##        and a candle below Tenue; goes home once a hero is dead or after a Retirada; eats when hungry; disarms
 ##        traps at ≥ 50% (else passes with care); uses a curio's key item, else examines it;
 ##        camps at the fogata (best meal that leaves a travel meal, a watch first, then the
 ##        most stressed or hurt ally); fights with tools/sim_policy.gd "smart" + healing items.
@@ -517,6 +517,12 @@ func _expedition(row: Dictionary) -> void:
 		var kind: String = "ambush" if bool(ctx.get("is_ambush", false)) else ("boss" if bool(ctx.get("is_boss", false)) else ("elite" if bool(ctx.get("is_elite", false)) else "combat"))
 		fights.append({"kind": kind, "rounds": int(screen._combat._round), "won": v, "surprise": str(ctx.get("surprise", ""))})
 	screen._combat.combat_over.connect(on_over)
+	var left_fight: Array = [false]
+	screen._combat.combat_fled.connect(func():
+		left_fight[0] = true
+		var ctx: Dictionary = _gs.combat_context
+		fights.append({"kind": "boss" if bool(ctx.get("is_boss", false)) else ("elite" if bool(ctx.get("is_elite", false)) else "combat"),
+			"rounds": int(screen._combat._round), "won": false, "fled": true, "surprise": str(ctx.get("surprise", ""))}))
 	var moves: int = 0
 	var steps: int = 0
 	var started_with: int = _gs.living_party_count()
@@ -529,8 +535,11 @@ func _expedition(row: Dictionary) -> void:
 				if room_done != _gs.current_node_id:
 					room_done = _gs.current_node_id
 					row["items_used"] += _use_items_between_rooms()
-				if _gs.living_party_count() <= started_with - 2 and _gs.current_node_id != _gs.objective_node_id:
+				# Go home after leaving a fight, or once a hero is dead (P5-05): the loot found so
+				# far is kept, and a hero is worth more than the rest of the expedition.
+				if left_fight[0] or (_gs.living_party_count() <= started_with - 1 and _gs.current_node_id != _gs.objective_node_id):
 					row["fled"] = true
+					row["fled_fight"] = left_fight[0]
 					screen._on_flee_pressed()
 					continue
 				var path: Array = _next_path()
@@ -790,7 +799,7 @@ func _print_campaign(c: int, rows: Array) -> void:
 	print("|---:|---|---|---|---|---:|---:|---|---:|---:|---|---|---|---:|---:|")
 	for r in rows:
 		var f: Array = r.get("fights", [])
-		var fr: PackedStringArray = PackedStringArray(f.map(func(x): return "%s%d%s" % [str(x["kind"])[0].to_upper() if x["kind"] != "combat" else "", int(x["rounds"]), "" if x["won"] else "✗"]))
+		var fr: PackedStringArray = PackedStringArray(f.map(func(x): return "%s%d%s" % [str(x["kind"])[0].to_upper() if x["kind"] != "combat" else "", int(x["rounds"]), "" if x["won"] else ("↩" if x.get("fled", false) else "✗")]))
 		var bought: PackedStringArray = PackedStringArray()
 		if int(r.get("hired", 0)) > 0:
 			bought.append("hired %d" % int(r["hired"]))
@@ -828,6 +837,13 @@ func _print_summary() -> void:
 	print("- Results: %s" % ", ".join(PackedStringArray(res.keys().map(func(k): return "%s %d" % [k, res[k]]))))
 	print("- Deaths per expedition: %.2f. Quebrantos/Virtudes per expedition: %.2f. Moves per expedition: %.1f. Camped in %d." % [
 		float(deaths) / n, float(breaks) / n, float(moves) / n, camped])
+	# Retreats (P5-04): an expedition abandoned, on the map or after leaving a fight (↩ in the rows).
+	var went_home: Array = _all_rows.filter(func(r): return str(r.get("result", "")) == "flee")
+	var kept: int = 0
+	for r in went_home:
+		kept += int(r.get("loot", 0))
+	print("- Retreats: %d expedition(s) abandoned, %d of them after a Retirada from a fight; they kept %.0f ₡ of loot on average." % [
+		went_home.size(), went_home.filter(func(r): return bool(r.get("fled_fight", false))).size(), float(kept) / maxf(went_home.size(), 1.0)])
 	_print_difficulty_table()
 	_print_stress_and_food()
 	_print_economy()

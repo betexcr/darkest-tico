@@ -11,6 +11,9 @@ extends RefCounted
 ##          plays to finish: nobody calms, only a hero Al Borde or under FINISH_HEAL_BELOW of
 ##          PV is healed, and everyone else attacks. Calming costs more turns than the
 ##          dragging stress gives back.
+##          It calls a retreat (P5-04) when the fight has gone wrong: a hero died in it,
+##          two heroes are Al Borde, or it is dragging with someone at RETREAT_STRESS or more.
+##          Set `retreats` to false to make it fight to the end.
 ##   basic: the first usable attack on the current target.
 ## Nothing to hit: smart first steps back into a position where one of its attacks works
 ## (after a push or a shuffle), else uses any support skill that helps, then Moverse, then
@@ -26,6 +29,8 @@ const FormationScript := preload("res://scripts/domain/formation.gd")
 const HEAL_BELOW := 0.4
 ## …and calm one at or above this stress.
 const CALM_AT := 50
+## In a dragging fight, a hero at this stress or more is reason to leave.
+const RETREAT_STRESS := 150
 ## Once the fight drags: heal only below this share of PV (or Al Borde).
 const FINISH_HEAL_BELOW := 0.25
 
@@ -33,6 +38,11 @@ var cc  ## CombatController
 var gs  ## GameState
 var mode: String = "smart"
 var use_items: bool = false
+## Smart policy: leave a fight that has gone wrong (see _should_retreat).
+var retreats: bool = true
+## The fight the policy is in (its enemies array) and how many heroes were dead when it began.
+var _fight: Array = []
+var _dead_at_start: int = 0
 ## "<class> · <skill or action>" -> times used (for reports).
 var uses: Dictionary = {}
 
@@ -49,6 +59,13 @@ func _count(hero: Dictionary, what: String) -> void:
 
 
 func act(hero: Dictionary) -> void:
+	if not is_same(_fight, cc.enemies):
+		_fight = cc.enemies
+		_dead_at_start = cc.party.filter(func(h): return h.get("dead", false)).size()
+	if mode == "smart" and retreats and cc.can_retreat() and _should_retreat():
+		_count(hero, "Retirada")
+		cc.retreat()
+		return
 	var usable: Array = []
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = gs.hero_skill(hero, str(sid))
@@ -140,6 +157,23 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 					cc.use_skill(sk, hero)
 					return true
 	return false
+
+
+## The fight has gone wrong: someone died in it, two heroes are Al Borde, or it drags and a
+## hero is close to a Colapso.
+func _should_retreat() -> bool:
+	var dead: int = 0
+	var borde: int = 0
+	var top: int = 0
+	for h in cc.party:
+		if h.get("dead", false):
+			dead += 1
+			continue
+		borde += 1 if bool(h.get("al_borde", false)) else 0
+		top = maxi(top, int(h.get("stress", 0)))
+	if dead > _dead_at_start or borde >= 2:
+		return true
+	return StressSystemScript.drag_stress(int(cc._round), bool(cc.is_boss)) > 0 and top >= RETREAT_STRESS
 
 
 ## A neighbour to swap with so that this hero can attack from the new position ({} if none).
