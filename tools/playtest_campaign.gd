@@ -57,6 +57,7 @@ const SPARE_ROSTER := 6
 ## A hero at or above this stress stays home when a calmer one can go.
 const REST_AT := 60
 const IGLESIA_AT := 30
+const MISAS_MAX := 3
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
 const STRESS_ITEM := "cafe_chorreado"
 const STRESS_ITEM_AT := 50
@@ -297,8 +298,17 @@ func _hub(row: Dictionary) -> void:
 	avg_stress /= maxf(chosen.size(), 1.0)
 	row["stress_start"] = avg_stress
 	mark = _gs.colones
-	if avg_stress >= IGLESIA_AT and _gs.colones - _gs.iglesia_cost() >= RESERVE:
+	# Misas until the party is calm again (at most MISAS_MAX a week, keeping RESERVE).
+	for _k in MISAS_MAX:
+		var now: float = 0.0
+		for h in chosen:
+			now += int(h.get("stress", 0))
+		if now / maxf(chosen.size(), 1.0) < IGLESIA_AT or _gs.colones - _gs.iglesia_cost() < RESERVE:
+			break
+		var had: int = _gs.colones
 		_gs.iglesia_misa_rapida()
+		if _gs.colones == had:
+			break
 	row["iglesia"] = mark - _gs.colones
 	mark = _gs.colones
 	# The kit that fits the plan (P5-02e): every room, or straight to the boss.
