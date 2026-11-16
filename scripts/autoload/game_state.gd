@@ -970,7 +970,7 @@ func activity_cost(building_id: String, activity_id: String) -> int:
 		TownEventsScript.service_mult(active_event(), building_id))
 
 
-## Town events' relief_pct only touches the Iglesia (it reads "la misa alivia ...").
+## Town events' relief_pct only touches the Iglesia Vieja.
 func activity_relief_mult(building_id: String) -> float:
 	return TownEventsScript.relief_mult(active_event()) if building_id == "iglesia" else 1.0
 
@@ -1111,44 +1111,6 @@ func _apply_activity_side_effect(h: Dictionary, building_id: String, side: Dicti
 			for l in StressSystemScript.add_stress(h, n):
 				out.append("  " + l)
 	return out
-
-
-## Iglesia Vieja "misa rápida": group prayer for everyone, small risk of bad mood.
-
-
-func iglesia_cost() -> int:
-	return int(round(BalanceScript.int_of("hub.iglesia_cost") * TownEventsScript.service_mult(active_event(), "iglesia")))
-
-
-## Stress the misa removes this week (town events can raise or lower it).
-func iglesia_relief() -> int:
-	return int(floor(BalanceScript.int_of("hub.iglesia_relief") * TownEventsScript.relief_mult(active_event())))
-
-
-func iglesia_misa_rapida() -> String:
-	if TownEventsScript.is_closed(active_event(), "iglesia"):
-		return "La Iglesia Vieja está cerrada esta semana (%s)." % active_event().get("name", "")
-	var cost: int = iglesia_cost()
-	if colones < cost:
-		return "No alcanza para la colecta (%d colones)." % cost
-	colones -= cost
-	var relief: int = iglesia_relief()
-	for h in roster:
-		if h is Dictionary and not h.get("dead", false):
-			for _x in StressSystemScript.add_stress(h, -relief):
-				pass
-	if randf() < BalanceScript.num("hub.iglesia_backfire_chance"):
-		var living: Array = []
-		for h in roster:
-			if h is Dictionary and not h.get("dead", false):
-				living.append(h)
-		if not living.is_empty():
-			var v: Dictionary = living[randi() % living.size()]
-			var bf: int = BalanceScript.int_of("hub.iglesia_backfire_stress")
-			for _x in StressSystemScript.add_stress(v, bf):
-				pass
-			return "La misa ayuda, pero %s sigue inquieto (+%d estrés)." % [v.get("name", "?"), bf]
-	return "La Iglesia Vieja devuelve un poco de calma (-%d estrés a todos los héroes)." % relief
 
 
 func start_mission(region_path: String = "") -> bool:

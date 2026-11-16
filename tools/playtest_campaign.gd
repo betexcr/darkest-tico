@@ -17,7 +17,7 @@ extends SceneTree
 ## The player bot:
 ##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), takes the 4
 ##        least stressed, orders them by their class's preferred position, heals them at the
-##        EBAIS, pays the Iglesia when the party's average stress ≥ IGLESIA_AT, buys the region's
+##        EBAIS, books stressed heroes left at home into the Iglesia/Cantina (≥ IGLESIA_AT), buys the region's
 ##        missing provisions, tops up agua de pipa and vendas, and after a won expedition buys
 ##        one Casa Comunal rank. It always keeps RESERVE colones.
 ##   Expedition: between rooms uses healing items under half PV, stress items at ≥ 50 stress
@@ -143,7 +143,8 @@ func _hub(row: Dictionary) -> void:
 		log.append(msg)
 	row["hired"] = log.size()
 	# Party: the 4 least stressed, in their classes' preferred order.
-	var pool: Array = _living_roster()
+	# Heroes still away at the Iglesia/Cantina (an extra week) can't go out.
+	var pool: Array = _living_roster().filter(func(h): return not h.has("busy"))
 	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
 	var chosen: Array = pool.slice(0, 4)
 	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
@@ -161,14 +162,20 @@ func _hub(row: Dictionary) -> void:
 			_gs.heal_hero(h)
 			spent_heal += cost
 	row["ebais"] = spent_heal
-	var avg_stress: float = 0.0
-	for h in chosen:
-		avg_stress += int(h.get("stress", 0))
-	avg_stress /= maxf(chosen.size(), 1.0)
+	# Iglesia Vieja / Cantina (P3-03): heroes left at home with stress ≥ IGLESIA_AT or a Quebranto
+	# take the cheapest activity with a free slot (they skip this expedition anyway).
 	row["iglesia"] = 0
-	if avg_stress >= IGLESIA_AT and _gs.colones - _gs.iglesia_cost() >= RESERVE:
-		row["iglesia"] = _gs.iglesia_cost()
-		_gs.iglesia_misa_rapida()
+	for h in _living_roster():
+		if chosen.has(h) or (int(h.get("stress", 0)) < IGLESIA_AT and str(h.get("affliction_id", "")) == ""):
+			continue
+		var best: Array = []
+		for b in ["iglesia", "cantina"]:
+			for a in ["meditacion", "rezo", "penitencia", "guaro_conversa", "juegos_de_azar", "noche_de_fiesta"]:
+				if _gs.activity_block_reason(h, b, a) == "" and (best.is_empty() or _gs.activity_cost(b, a) < int(best[2])):
+					best = [b, a, _gs.activity_cost(b, a)]
+		if not best.is_empty() and _gs.colones - int(best[2]) >= RESERVE:
+			row["iglesia"] = int(row["iglesia"]) + int(best[2])
+			_gs.send_to_activity(h, str(best[0]), str(best[1]))
 	var before_prov: int = _gs.colones
 	if not _gs.missing_provisions().is_empty():
 		_gs.buy_missing_provisions()
@@ -515,7 +522,7 @@ func _camp_skill(screen) -> bool:
 
 func _print_campaign(c: int, rows: Array) -> void:
 	print("### Campaign %d\n" % c)
-	print("| Wk | Party (levels, difficulty) | Town event | Hub ₡ (prov / EBAIS / Iglesia) | Result | Rooms | Moves | Fights (rounds) | Deaths | Top stress | Breaks | Hunger (short) | Traps D/C | Loot ₡ | ₡ after |")
+	print("| Wk | Party (levels, difficulty) | Town event | Hub ₡ (prov / EBAIS / Iglesia+Cantina) | Result | Rooms | Moves | Fights (rounds) | Deaths | Top stress | Breaks | Hunger (short) | Traps D/C | Loot ₡ | ₡ after |")
 	print("|---:|---|---|---|---|---:|---:|---|---:|---:|---|---|---|---:|---:|")
 	for r in rows:
 		var f: Array = r.get("fights", [])

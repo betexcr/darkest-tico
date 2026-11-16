@@ -275,6 +275,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: P3-01
 - Spec: `02` §6, `01` §3
 - Done when: [ ] Positive/negative quirks gained on missions; treatment in Clínica
+- Note (owner 2026-11-16): quirks may lock a hero out of an Iglesia/Cantina activity or tie them to one (DD "won't go to the church" / "only drinks"). Quebrantos never block activities: activities are how a Quebranto is cured.
 
 ### P3-07 · S · Guardabosques (camp skills)
 - Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08; owner asked for it ahead of P2-01) · Depends: P2-01

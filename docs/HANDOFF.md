@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-16 (2) — P3-03 — Owner decisions: misa rápida removed, Quebranto cure kept
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P3-03 `review` (unchanged; the owner answered the 3 questions from the entry below).
+- **Changed:**
+  - The group "misa rápida" is gone:
+    - `GameState.iglesia_cost/iglesia_relief/iglesia_misa_rapida` removed;
+    - the hub's `BtnIglesia` became the `ReliefTitle` label;
+    - `hub.iglesia_*` removed from `balance.json` and `BALANCE_KEYS`.
+  - `data/town_events.json`: the event texts that said "la misa" now talk about the Iglesia Vieja. The effects are unchanged; `service_pct.iglesia` and `relief_pct` already apply to the activities. `town_events.gd` effect line reads "La Iglesia Vieja alivia …".
+  - `tests/test_town_events.gd`: the misa checks now test activity cost and relief and the closed Iglesia.
+  - `tools/playtest_campaign.gd`: heroes left at home with stress ≥ 30 or a Quebranto book the cheapest free activity; busy heroes are not picked for the party.
+  - Docs: doc 02 §7 records the decisions (activities cure the Quebranto; no refusals by Quebranto; refusals come with quirks). P3-06 has the quirk note. Doc 04 points to `hub_activities.json`.
+- **Verified:** see the commit; `validate_data.py` 0 errors; full test list + smoke 0 failures; a 1-campaign × 8-week bot run finished without `SCRIPT ERROR`.
+- **Not verified / risks:** no human play-test. Older doc 09 §5 playtest notes still mention the misa (historic record, left as is).
+- **Decisions needed:** none new.
+- **Next step:** owner play-tests P3-03 in the hub. Otherwise the next `todo` in the current phase (P1-20 smoke frame-cap flake).
+
+---
+
 ## 2026-11-16 — P3-03 — Iglesia Vieja + Cantina del Centro (stress activities)
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-03 `review`. New `todo` P3-18 (Iglesia/Cantina upgrade tracks).

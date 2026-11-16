@@ -1,6 +1,6 @@
 extends Control
 
-## Hacienda hub: Pulpería (items), Iglesia (stress), Terminal de Buses (recruiting),
+## Hacienda hub: Pulpería (items), Iglesia Vieja + Cantina (stress activities), Terminal de Buses (recruiting),
 ## roster with party selection/order and EBAIS healing, Casa Comunal (skill ranks of the
 ## selected hero), and expedition start.
 
@@ -48,7 +48,7 @@ var _difficulty_option: OptionButton
 var _pura_vida: CheckBox
 ## "Evento de la semana" button in the info row; opens the event card.
 var _event_btn: Button
-## Iglesia Vieja + Cantina activities for the selected hero (P3-03), under the misa button.
+## Iglesia Vieja + Cantina activities for the selected hero (P3-03), under ReliefTitle.
 var _relief_box: VBoxContainer
 
 
@@ -62,11 +62,10 @@ func _ready() -> void:
 	_build_difficulty_picker()
 	_btn_start.pressed.connect(_on_start_pressed)
 	$Columns/Right/VBox/BtnQuit.pressed.connect(_on_quit_pressed)
-	$Columns/Left/VBox/BtnIglesia.pressed.connect(_on_iglesia_pressed)
 	_relief_box = VBoxContainer.new()
 	_relief_box.add_theme_constant_override("separation", 4)
 	$Columns/Left/VBox.add_child(_relief_box)
-	$Columns/Left/VBox.move_child(_relief_box, $Columns/Left/VBox/BtnIglesia.get_index() + 1)
+	$Columns/Left/VBox.move_child(_relief_box, $Columns/Left/VBox/ReliefTitle.get_index() + 1)
 	_sync_region_option_from_state()
 	_try_load_hub_background()
 	_build_shop_filters()
@@ -195,11 +194,6 @@ func _refresh() -> void:
 	for b in _shop_grid.get_children():
 		if not b.is_queued_for_deletion():
 			b.refresh()
-	var igl: Button = $Columns/Left/VBox/BtnIglesia
-	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "iglesia")
-	igl.text = "Iglesia Vieja: cerrada esta semana" if closed else "Iglesia Vieja: misa rápida (%s, -%d estrés a todos)" % [
-		"gratis" if GameState.iglesia_cost() == 0 else "%d ₡" % GameState.iglesia_cost(), GameState.iglesia_relief()]
-	igl.disabled = closed or GameState.colones < GameState.iglesia_cost()
 	_refresh_relief()
 	_refresh_event_button()
 	_refresh_recruits()
@@ -251,10 +245,6 @@ func _build_shop() -> void:
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		_shop_grid.add_child(b)
-
-
-func _on_iglesia_pressed() -> void:
-	_say(GameState.iglesia_misa_rapida())
 
 
 # --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------

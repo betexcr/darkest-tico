@@ -11,7 +11,7 @@ This spec defines currency loops, costs, reward scaling, and long-term pacing ta
   - `stress`: thresholds and caps
   - `afflictions`: Quebranto and Virtud chances and amounts
   - `enemies`: boss and elite HP, squad HP scale
-  - `hub`: starting colones, sell rate, EBAIS, Iglesia
+  - `hub`: starting colones, sell rate, EBAIS (Iglesia Vieja / Cantina activity prices are in `data/hub_activities.json`)
   - `limits`: roster, inventory, recruits, graveyard
   - `light`
 - Next to their system:

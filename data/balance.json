@@ -80,15 +80,11 @@
     ]
   },
   "hub": {
-    "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia misa: iglesia_cost, relieves iglesia_relief stress; with iglesia_backfire_chance a hero gets iglesia_backfire_stress instead.",
+    "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia Vieja / Cantina activity prices are in hub_activities.json.",
     "start_colones": 5000,
     "sell_rate": 0.5,
     "heal_cost_per_hp": 15,
-    "heal_min_cost": 100,
-    "iglesia_cost": 800,
-    "iglesia_relief": 10,
-    "iglesia_backfire_chance": 0.12,
-    "iglesia_backfire_stress": 8
+    "heal_min_cost": 100
   },
   "limits": {
     "_doc": "Owner 2026-11-12: tunable limits. The party size (4) stays in code: the stage, positions 1-4 and the hub are built around it.",

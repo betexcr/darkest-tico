@@ -89,7 +89,7 @@ func _run() -> void:
 	gs.draw_town_event("corte_de_luz")
 	_check(gs.sell_item("gallo_pinto").begins_with("La pulpería no compra"), "Corte de luz: can't sell")
 	gs.draw_town_event("el_padre_de_gira")
-	_check(gs.iglesia_misa_rapida().begins_with("La Iglesia Vieja está cerrada"), "El padre anda de gira: Iglesia closed")
+	_check(gs.activity_block_reason(gs.roster[0], "iglesia", "rezo").contains("cerrada"), "El padre anda de gira: Iglesia closed")
 	gs.party[0]["hp"] = 10
 	var ebais_full: int = maxi((int(gs.party[0]["hp_max"]) - 10) * gs.BalanceScript.int_of("hub.heal_cost_per_hp"), gs.BalanceScript.int_of("hub.heal_min_cost"))
 	_check(gs.heal_cost(gs.party[0]) == ebais_full / 2, "…EBAIS at half price")
@@ -98,9 +98,10 @@ func _run() -> void:
 	gs.heal_hero(gs.party[0])
 	_check(gs.colones == before_c and int(gs.party[0]["hp"]) == int(gs.party[0]["hp_max"]), "Feria de la salud: EBAIS free")
 	gs.draw_town_event("romeria")
-	_check(gs.iglesia_cost() == 0, "Romería: misa free")
+	_check(gs.activity_cost("iglesia", "rezo") == 0 and gs.activity_cost("cantina", "guaro_conversa") > 0, "Romería: Iglesia free, Cantina not")
 	gs.draw_town_event("mananita_de_sol")
-	_check(gs.iglesia_relief() == 13, "Mañanitas de sol: misa relieves 13 instead of 10")
+	var rel: Array = gs.activity_relief_range("iglesia", "rezo")
+	_check(rel == [39, 66] and gs.activity_relief_range("cantina", "noche_de_fiesta") == [40, 65], "Mañanitas de sol: Rezo relieves 39–66 instead of 30–50 (%s); Cantina unchanged" % str(rel))
 	gs.draw_town_event("arreglan_la_terminal")
 	_check(gs.hire_recruit(0).begins_with("La terminal está cerrada"), "Arreglan la terminal: no hiring")
 

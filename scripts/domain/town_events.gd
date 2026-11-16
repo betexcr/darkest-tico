@@ -201,7 +201,7 @@ static func effect_lines(ev: Dictionary, immediate: bool = true) -> PackedString
 	if fx.has("blocked_items"):
 		out.append("Artículos que no se venden: %d" % fx["blocked_items"].size())
 	if fx.has("relief_pct"):
-		out.append("La misa alivia %+d%% de estrés" % int(fx["relief_pct"]))
+		out.append("La Iglesia Vieja alivia %+d%% de estrés" % int(fx["relief_pct"]))
 	var m: Dictionary = fx.get("mission", {})
 	var where: String = " (solo %s)" % m["region"] if m.has("region") else ""
 	if m.has("xp_pct"):

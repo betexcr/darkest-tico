@@ -125,9 +125,10 @@ size_flags_horizontal = 3
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 
-[node name="BtnIglesia" type="Button" parent="Columns/Left/VBox"]
+[node name="ReliefTitle" type="Label" parent="Columns/Left/VBox"]
 layout_mode = 2
-text = "Iglesia Vieja: misa rápida (800 ₡, -10 estrés a todos)"
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+text = "Iglesia Vieja y Cantina del Centro — una semana de descanso"
 
 [node name="TerminalTitle" type="Label" parent="Columns/Left/VBox"]
 layout_mode = 2
