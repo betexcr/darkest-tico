@@ -20,6 +20,7 @@ const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
+const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -44,7 +45,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 9
+const SAVE_VERSION := 10
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -876,6 +877,8 @@ func set_in_party(hero: Dictionary, on: bool) -> String:
 			return "La cuadrilla ya tiene %d héroes." % PARTY_SIZE
 		if bool(hero.get("dead", false)):
 			return "%s ya no puede salir." % hero.get("name", "?")
+		if HubActivitiesScript.is_busy(hero):
+			return "%s está ocupado en %s esta semana." % [hero.get("name", "?"), HubActivitiesScript.building_name(str(hero["busy"].get("building", "")))]
 		party.append(hero)
 		return ""
 	for k in party.size():
@@ -950,14 +953,167 @@ func end_of_expedition_week() -> void:
 	for k in range(party.size() - 1, -1, -1):
 		if bool(party[k].get("dead", false)):
 			party.remove_at(k)
+	var activity_lines: PackedStringArray = _resolve_hub_activities()
 	refresh_recruits()
 	last_week_report = "Semana %d." % week
 	if not fallen.is_empty():
 		last_week_report += " Descansen en paz: %s." % ", ".join(fallen)
 	last_week_report += " Llegaron candidatos nuevos a la terminal."
+	if not activity_lines.is_empty():
+		last_week_report += "\n" + "\n".join(activity_lines)
 
 
-## Iglesia Vieja stub: group prayer, small risk of bad mood.
+# --- Iglesia Vieja + Cantina del Centro: stress activities (doc 02 §7, P3-03) ---------
+
+func activity_cost(building_id: String, activity_id: String) -> int:
+	return HubActivitiesScript.cost(HubActivitiesScript.activity(building_id, activity_id),
+		TownEventsScript.service_mult(active_event(), building_id))
+
+
+## Town events' relief_pct only touches the Iglesia (it reads "la misa alivia ...").
+func activity_relief_mult(building_id: String) -> float:
+	return TownEventsScript.relief_mult(active_event()) if building_id == "iglesia" else 1.0
+
+
+func activity_relief_range(building_id: String, activity_id: String) -> Array:
+	return HubActivitiesScript.relief_range(HubActivitiesScript.activity(building_id, activity_id), activity_relief_mult(building_id))
+
+
+func activity_slots_used(building_id: String, activity_id: String) -> int:
+	return HubActivitiesScript.slots_used(roster, building_id, activity_id)
+
+
+func _free_heroes() -> Array:
+	return roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and not HubActivitiesScript.is_busy(h))
+
+
+## "" when `hero` can be sent to the activity now, else why not (Spanish, for the hub).
+func activity_block_reason(hero: Dictionary, building_id: String, activity_id: String) -> String:
+	var act: Dictionary = HubActivitiesScript.activity(building_id, activity_id)
+	if act.is_empty() or hero.is_empty():
+		return "Esa actividad no existe."
+	var bname: String = HubActivitiesScript.building_name(building_id)
+	if TownEventsScript.is_closed(active_event(), building_id):
+		return "%s está cerrada esta semana (%s)." % [bname, active_event().get("name", "")]
+	if bool(hero.get("dead", false)):
+		return "%s ya no está con nosotros." % hero.get("name", "?")
+	if HubActivitiesScript.is_busy(hero):
+		return "%s ya está ocupado esta semana." % hero.get("name", "?")
+	if int(hero.get("stress", 0)) <= 0:
+		return "%s no tiene estrés que quitarse." % hero.get("name", "?")
+	if activity_slots_used(building_id, activity_id) >= HubActivitiesScript.slots(act):
+		return "%s: no quedan cupos esta semana." % act.get("name", "?")
+	# Someone has to go on the expedition, or the week never ends.
+	if _free_heroes().size() <= 1:
+		return "Alguien tiene que salir de expedición: %s es el único libre." % hero.get("name", "?")
+	var price: int = activity_cost(building_id, activity_id)
+	if colones < price:
+		return "No alcanza: %s cuesta %d ₡." % [act.get("name", "?"), price]
+	return ""
+
+
+## Books the hero for the week: pays, takes a slot, leaves the cuadrilla.
+func send_to_activity(hero: Dictionary, building_id: String, activity_id: String) -> String:
+	var why: String = activity_block_reason(hero, building_id, activity_id)
+	if why != "":
+		return why
+	var act: Dictionary = HubActivitiesScript.activity(building_id, activity_id)
+	var price: int = activity_cost(building_id, activity_id)
+	colones -= price
+	set_in_party(hero, false)
+	hero["busy"] = {"building": building_id, "activity": activity_id, "cost": price, "weeks_left": 1, "resolved": false}
+	return "%s se va a %s (%s) esta semana (-%d ₡). No sale de expedición." % [
+		hero.get("name", "?"), act.get("name", "?"), HubActivitiesScript.building_name(building_id), price]
+
+
+## Cancels a booking that hasn't happened yet and refunds what was paid.
+func cancel_activity(hero: Dictionary) -> String:
+	if not HubActivitiesScript.is_pending(hero):
+		return "%s no tiene nada que cancelar." % hero.get("name", "?")
+	var refund: int = int(hero["busy"].get("cost", 0))
+	var act: Dictionary = HubActivitiesScript.booked(hero)
+	colones += refund
+	hero.erase("busy")
+	return "%s ya no va a %s (+%d ₡ de vuelta)." % [hero.get("name", "?"), act.get("name", "?"), refund]
+
+
+## Week end: booked heroes lose stress (and their Quebranto) and may get a side effect;
+## heroes kept an extra week count it down. Returns report lines.
+func _resolve_hub_activities() -> PackedStringArray:
+	var out: PackedStringArray = PackedStringArray()
+	for h in roster:
+		if not h is Dictionary or not HubActivitiesScript.is_busy(h):
+			continue
+		var b: Dictionary = h["busy"]
+		var bid: String = str(b.get("building", ""))
+		var act: Dictionary = HubActivitiesScript.booked(h)
+		if bool(h.get("dead", false)) or act.is_empty():
+			h.erase("busy")
+			continue
+		var who: String = str(h.get("name", "?"))
+		if not bool(b.get("resolved", false)):
+			b["resolved"] = true
+			var relief: int = HubActivitiesScript.roll_relief(act, activity_relief_mult(bid))
+			StressSystemScript.add_stress(h, -relief)
+			var line: String = "%s: %s (-%d estrés)." % [who, act.get("name", "?"), relief]
+			if str(h.get("affliction_id", "")) != "":
+				line += " Se le quitó el %s." % StressSystemScript.affliction_name(str(h["affliction_id"]))
+				h["affliction_id"] = ""
+			out.append(line)
+			var side: Dictionary = HubActivitiesScript.roll_side_effect(act)
+			if not side.is_empty():
+				out.append_array(_apply_activity_side_effect(h, bid, side))
+		b["weeks_left"] = int(b.get("weeks_left", 1)) - 1
+		if int(b["weeks_left"]) <= 0:
+			h.erase("busy")
+	# Never leave the hacienda with nobody to send out (a lone free hero may have died).
+	if _free_heroes().is_empty():
+		for h in roster:
+			if h is Dictionary and HubActivitiesScript.is_busy(h):
+				h.erase("busy")
+				out.append("%s vuelve antes de tiempo: la hacienda lo necesita." % h.get("name", "?"))
+	return out
+
+
+func _apply_activity_side_effect(h: Dictionary, building_id: String, side: Dictionary) -> PackedStringArray:
+	var who: String = str(h.get("name", "?"))
+	var text: String = str(side.get("text", "%s"))
+	var out: PackedStringArray = PackedStringArray()
+	match str(side.get("kind", "")):
+		"buff", "debuff":
+			if not h.get("town_buffs", null) is Array:
+				h["town_buffs"] = []
+			h["town_buffs"].append({"source": building_id, "from": HubActivitiesScript.building_name(building_id),
+				"name": str(side.get("name", "")), "mods": (side.get("mods", {}) as Dictionary).duplicate(),
+				"fights": int(BalanceScript.req(side, "fights", "hub_activities.json side effect"))})
+			out.append("  " + text % who + " %s: %s por %d peleas." % [side.get("name", ""),
+				CampingSystemScript.mods_text(side.get("mods", {})), int(side.get("fights", 0))])
+		"lose_colones":
+			var n: int = mini(HubActivitiesScript.roll_amount(side), colones)
+			colones -= n
+			out.append("  " + text % [who, n])
+		"gain_colones":
+			var n: int = HubActivitiesScript.roll_amount(side)
+			colones += n
+			out.append("  " + text % [who, n])
+		"lose_item":
+			var pool: Array = inventory.filter(func(e): return not is_equipment(str(e.get("id", ""))))
+			if not pool.is_empty():
+				var id: String = str(pool[randi() % pool.size()].get("id", ""))
+				remove_item(id, 1)
+				out.append("  " + text % [who, str(get_item(id).get("name", id))])
+		"extra_week":
+			h["busy"]["weeks_left"] = int(h["busy"].get("weeks_left", 1)) + 1
+			out.append("  " + text % who)
+		"stress":
+			var n: int = HubActivitiesScript.roll_amount(side)
+			out.append("  " + text % [who, n])
+			for l in StressSystemScript.add_stress(h, n):
+				out.append("  " + l)
+	return out
+
+
+## Iglesia Vieja "misa rápida": group prayer for everyone, small risk of bad mood.
 
 
 func iglesia_cost() -> int:
@@ -1051,6 +1207,12 @@ func _prepare_party_for_mission() -> void:
 		if not h is Dictionary:
 			continue
 		h["camp_buffs"] = []
+		# Iglesia / Cantina side effects (P3-03) last into this expedition like camp buffs.
+		if h.get("town_buffs", null) is Array:
+			for tb in h["town_buffs"]:
+				if tb is Dictionary:
+					h["camp_buffs"].append(tb.duplicate(true))
+		h.erase("town_buffs")
 		h["underlevel_stress_pct"] = 0
 		mission_start_snapshot[int(h.get("uid", 0))] = {
 			"affliction_id": str(h.get("affliction_id", "")),
@@ -1535,11 +1697,11 @@ func apply_save_data(data: Dictionary) -> void:
 			uids.append(int(u))
 	for uid in uids:
 		for h in roster:
-			if int(h["uid"]) == uid and party.size() < PARTY_SIZE:
+			if int(h["uid"]) == uid and party.size() < PARTY_SIZE and not HubActivitiesScript.is_busy(h):
 				party.append(h)
 	if not raw_uids is Array:
 		for h in roster:
-			if party.size() < PARTY_SIZE:
+			if party.size() < PARTY_SIZE and not HubActivitiesScript.is_busy(h):
 				party.append(h)
 	graveyard.clear()
 	var raw_grave = data.get("graveyard", null)
@@ -1612,6 +1774,15 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["skill_ranks"] = ranks
 	out["camp_buffs"] = []
 	out["underlevel_stress_pct"] = 0
+	# v10: Iglesia / Cantina booking and the side-effect buffs waiting for the next expedition.
+	var busy = out.get("busy", null)
+	if busy is Dictionary and not HubActivitiesScript.activity(str(busy.get("building", "")), str(busy.get("activity", ""))).is_empty():
+		out["busy"] = {"building": str(busy["building"]), "activity": str(busy["activity"]), "cost": int(busy.get("cost", 0)),
+			"weeks_left": maxi(int(busy.get("weeks_left", 1)), 1), "resolved": bool(busy.get("resolved", false))}
+	else:
+		out.erase("busy")
+	if not out.get("town_buffs", null) is Array:
+		out.erase("town_buffs")
 	recompute_stats(out)
 	var smax: int = maxi(int(out.get("stress_max", 0)), BalanceScript.int_of("stress.colapso"))
 	out["stress_max"] = smax

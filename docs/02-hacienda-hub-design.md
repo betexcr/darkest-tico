@@ -128,6 +128,20 @@ Each branch has 3 activities with independent slots and upgrade levels.
   - Lost gold item
   - Hero unavailable for one extra week
 
+### Built (P3-03, 2026-11-16)
+
+- Data: `data/hub_activities.json` (costs, `relief` [min, max], `slots`, `side_chance`, weighted side effects). Rules: `scripts/domain/hub_activities.gd`; state in `GameState` (`send_to_activity`, `cancel_activity`, `_resolve_hub_activities`).
+- In the hub, the selected hero can be sent to one activity (panel under the misa button). The hero pays now, takes a slot, leaves the cuadrilla and can't rejoin it. A booking can be cancelled for a full refund until the week ends.
+- When the week ends (after the next expedition), the hero loses the rolled stress **and their Quebranto** (Darkest Dungeon rule), then may get one side effect:
+  - `buff` / `debuff`: a camp-buff-style modifier for N fights of the hero's next expedition (*En paz*, *Fe renovada*, *Alma limpia*, *Desahogado*, *Fiestero*; *Goma*, *Rodillas peladas*).
+  - `lose_colones` / `gain_colones`: the collection plate, paying the round, the chance.
+  - `lose_item`: a consumable pawned at dominoes.
+  - `extra_week`: busy one more week (no slot held).
+  - `stress`: a bad night.
+- Guards: a hero with 0 stress is refused; the last free hero can't be booked; if nobody is left free at week end (the lone free hero died), busy heroes come back early.
+- Town events: `closed` / `service_pct` accept `cantina` as well as `iglesia`; `relief_pct` scales Iglesia activities only. The old group "misa rápida" (−10 to everyone, no busy week) is kept.
+- Not yet: upgrade tracks (more relief, cheaper, more slots) are P3-16; mood traits as lasting quirks wait for P3-06.
+
 ## 8) Feria Nocturna (Trinkets)
 
 ### Upgrade Tracks

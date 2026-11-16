@@ -15,6 +15,7 @@ const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
+const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -47,6 +48,8 @@ var _difficulty_option: OptionButton
 var _pura_vida: CheckBox
 ## "Evento de la semana" button in the info row; opens the event card.
 var _event_btn: Button
+## Iglesia Vieja + Cantina activities for the selected hero (P3-03), under the misa button.
+var _relief_box: VBoxContainer
 
 
 func _ready() -> void:
@@ -60,6 +63,10 @@ func _ready() -> void:
 	_btn_start.pressed.connect(_on_start_pressed)
 	$Columns/Right/VBox/BtnQuit.pressed.connect(_on_quit_pressed)
 	$Columns/Left/VBox/BtnIglesia.pressed.connect(_on_iglesia_pressed)
+	_relief_box = VBoxContainer.new()
+	_relief_box.add_theme_constant_override("separation", 4)
+	$Columns/Left/VBox.add_child(_relief_box)
+	$Columns/Left/VBox.move_child(_relief_box, $Columns/Left/VBox/BtnIglesia.get_index() + 1)
 	_sync_region_option_from_state()
 	_try_load_hub_background()
 	_build_shop_filters()
@@ -193,6 +200,7 @@ func _refresh() -> void:
 	igl.text = "Iglesia Vieja: cerrada esta semana" if closed else "Iglesia Vieja: misa rápida (%s, -%d estrés a todos)" % [
 		"gratis" if GameState.iglesia_cost() == 0 else "%d ₡" % GameState.iglesia_cost(), GameState.iglesia_relief()]
 	igl.disabled = closed or GameState.colones < GameState.iglesia_cost()
+	_refresh_relief()
 	_refresh_event_button()
 	_refresh_recruits()
 	_refresh_roster()
@@ -247,6 +255,74 @@ func _build_shop() -> void:
 
 func _on_iglesia_pressed() -> void:
 	_say(GameState.iglesia_misa_rapida())
+
+
+# --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------
+
+## One row per building: the selected hero can be sent to one activity for the week
+## (pays now, skips the next expedition, stress comes off when the week ends).
+func _refresh_relief() -> void:
+	if _relief_box == null:
+		return
+	for c in _relief_box.get_children():
+		c.queue_free()
+	var h: Dictionary = _selected
+	var head := Label.new()
+	head.add_theme_font_size_override("font_size", 13)
+	head.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_relief_box.add_child(head)
+	if h.is_empty():
+		head.text = "Iglesia Vieja y Cantina del Centro: elige un héroe."
+		return
+	if HubActivitiesScript.is_busy(h):
+		var act: Dictionary = HubActivitiesScript.booked(h)
+		var bname: String = HubActivitiesScript.building_name(str(h["busy"].get("building", "")))
+		if HubActivitiesScript.is_pending(h):
+			head.text = "%s pasa la semana en %s: %s. No sale de expedición." % [h.get("name", "?"), bname, act.get("name", "?")]
+			var cancel := Button.new()
+			cancel.text = "Cancelar %s (+%d ₡ de vuelta)" % [act.get("name", "?"), int(h["busy"].get("cost", 0))]
+			cancel.add_theme_font_size_override("font_size", 13)
+			cancel.pressed.connect(func(): _say(GameState.cancel_activity(h)))
+			_relief_box.add_child(cancel)
+		else:
+			head.text = "%s sigue en %s una semana más (%s)." % [h.get("name", "?"), bname, act.get("name", "?")]
+		return
+	head.text = "Mandar a %s (estrés %d) una semana a descansar — no sale de expedición:" % [h.get("name", "?"), int(h.get("stress", 0))]
+	for b in HubActivitiesScript.buildings():
+		var bid: String = str(b.get("id", ""))
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 4)
+		var lbl := Label.new()
+		# Short name ("Iglesia", "Cantina") so the three buttons fit; the full name is in the tooltip.
+		lbl.text = str(b.get("name", bid)).get_slice(" ", 0)
+		lbl.custom_minimum_size = Vector2(60, 0)
+		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.tooltip_text = "%s\n%s" % [b.get("name", bid), b.get("text", "")]
+		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+		row.add_child(lbl)
+		var closed: bool = TownEventsScript.is_closed(GameState.active_event(), bid)
+		for a in b.get("activities", []):
+			var aid: String = str(a.get("id", ""))
+			var btn := Button.new()
+			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			btn.clip_text = true
+			btn.add_theme_font_size_override("font_size", 12)
+			var price: int = GameState.activity_cost(bid, aid)
+			var rel: Array = GameState.activity_relief_range(bid, aid)
+			var used: int = GameState.activity_slots_used(bid, aid)
+			var cap: int = HubActivitiesScript.slots(a)
+			btn.text = "Cerrada" if closed else "%s %s · %d/%d" % [a.get("name", aid), "gratis" if price == 0 else "%d ₡" % price, used, cap]
+			var why: String = GameState.activity_block_reason(h, bid, aid)
+			var lines: PackedStringArray = PackedStringArray([str(a.get("name", aid)), str(a.get("text", "")),
+				"Quita %d–%d de estrés y el Quebranto al terminar la semana." % [int(rel[0]), int(rel[1])],
+				"Cupos ocupados: %d de %d. Puede tener efectos secundarios." % [used, cap]])
+			if why != "":
+				lines.append(why)
+			btn.tooltip_text = "\n".join(lines)
+			btn.disabled = why != ""
+			btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
+			row.add_child(btn)
+		_relief_box.add_child(row)
 
 
 # --- Equipment (drag from the alforja onto a slot; click a slot to unequip) ---------
@@ -419,6 +495,9 @@ func _roster_row(h: Dictionary) -> Control:
 		extra = " · Quebranto: %s" % StressSystemScript.affliction_name(aff)
 	elif str(h.get("virtud_id", "")) != "":
 		extra = " · Virtud: %s" % StressSystemScript.virtud_name(str(h["virtud_id"]))
+	if HubActivitiesScript.is_busy(h):
+		extra += " · En %s (%s)" % [HubActivitiesScript.building_name(str(h["busy"].get("building", ""))),
+			HubActivitiesScript.booked(h).get("name", "?")]
 	var in_party: bool = GameState.is_in_party(h)
 	var rank: String = ""
 	if in_party:
@@ -485,6 +564,7 @@ func _roster_row(h: Dictionary) -> Control:
 	var cb := CheckBox.new()
 	cb.text = "Cuadrilla"
 	cb.button_pressed = in_party
+	cb.disabled = HubActivitiesScript.is_busy(h) and not in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))
 	row.add_child(cb)
 	return row

@@ -253,9 +253,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Weekly recruit pool, hire cost, roster cap
 
 ### P3-03 · M · Iglesia Vieja + Cantina (stress duality)
-- Status: `todo` · Depends: P3-01
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-16): built and tested headless; owner to play-test prices, relief and side-effect odds · Depends: P3-01
 - Spec: `02` §7
-- Done when: [ ] Both buildings with activities, slots, and side effects; heroes are busy for the week
+- Files: `data/hub_activities.json`, `scripts/domain/hub_activities.gd`, `scripts/autoload/game_state.gd` (`send_to_activity`, `cancel_activity`, `_resolve_hub_activities`, party lock, save v10), `scripts/hacienda/hacienda_hub.gd` (panel under the misa button, busy tag on the roster), `scripts/domain/town_events.gd` (`cantina` service), `tools/validate_data.py`, `tests/test_hub_activities.gd`, `tools/screens/relief_screenshot.gd`
+- Done when: [x] Both buildings with activities, slots, and side effects; [x] heroes are busy for the week
+- Follow-ups: P3-18 (Iglesia/Cantina upgrade tracks).
 
 ### P3-04 · M · Casa Comunal (skills) + hero XP/resolve level
 - Status: `review` (Claude Code, `main`, 2026-11-11): everything built and tested headless; owner to play-test ranks and balance · Depends: P3-01
@@ -296,6 +298,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `todo` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §4 (upgrade tracks), `04` §3.3 (discount up to 50% at cap)
 - Done when: [ ] Maestría de Oficio raises the max skill rank (start lower than 5); [ ] Plan de Formación lowers rank prices up to 50%
+
+### P3-18 · S · Iglesia Vieja + Cantina upgrade tracks
+- Status: `todo` · Depends: P3-03, a building-upgrade system (materials, doc 02 §11)
+- Spec: `02` §7 (upgrade pattern)
+- Done when: [ ] Per-activity upgrades: more relief, lower cost, more slots, repeated for higher tiers (data in `data/hub_activities.json`)
 
 ### P3-17 · S · Unlockable skills
 - Status: `todo` · Depends: classes having more than 4 skills (doc 03)

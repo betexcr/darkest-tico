@@ -37,9 +37,9 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 
 | Key | Contents |
 |---|---|
-| `version` | `GameState.SAVE_VERSION` (9) |
+| `version` | `GameState.SAVE_VERSION` (10) |
 | `colones`, `week` | Campaign money and week |
-| `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`) |
+| `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`; `busy` = Iglesia/Cantina booking, `town_buffs` = side-effect buffs waiting for the next expedition) |
 | `party_uids` | The expedition party in formation order (position 1 first) |
 | `recruit_pool`, `next_uid` | Candidates at the terminal; next hero uid |
 | `selected_mission_region_path`, `selected_difficulty_id` | The last expedition choice in the hub |
@@ -61,6 +61,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | v7 | Modo Pura Vida and town events |
 | v8 | Casa Comunal skill ranks; older saves start every skill at rank 1 |
 | v9 | A hero's `skill_ids` always follow the class; a rank in a replaced skill moves to the new skill in the same slot |
+| v10 | Iglesia Vieja / Cantina (P3-03): hero `busy` {building, activity, cost, weeks_left, resolved} and `town_buffs`; a busy hero is never loaded into the party |
 
 `_sanitize_runtime_hero()` fills hero fields added after a save was written, so new hero keys don't need a version bump on their own. Change the version when a key is renamed or its meaning changes:
 1. Bump `SAVE_VERSION`.
@@ -88,7 +89,7 @@ HaciendaHub ──start_mission_requested──▶ main.gd ──GameState.start
 4. Sets up the mission state:
    - Luz = `initial_light`, capped by `light_max()`; hunger count 0.
    - Difficulty (`ResolveSystem.expedition`), with the town event's mission mods applied.
-   - Firewood, the ledger and the party prep (`_prepare_party_for_mission`: clears camp buffs, snapshots each hero's mental state, applies the under-level penalty).
+   - Firewood, the ledger and the party prep (`_prepare_party_for_mission`: clears camp buffs, adds the hero's Iglesia/Cantina `town_buffs`, snapshots each hero's mental state, applies the under-level penalty).
 
 ### 3.2 Map generator (`scripts/domain/map_generator.gd`)
 - **Layout:**

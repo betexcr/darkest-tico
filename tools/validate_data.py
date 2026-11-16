@@ -7,6 +7,7 @@ Checks that JSON parses and that cross-references resolve:
   - data/camp_skills.json (targets, effects, mods, cures, class lists) and data/progression.json
   - data/statuses.json mental_mods -> Quebranto/Virtud ids in scripts/domain/stress_system.gd
   - data/town_events.json: effect keys, categories, services, item/class/region references
+  - data/hub_activities.json: Iglesia/Cantina activities (costs, slots, relief, side effects)
   - region start/objective nodes, edges, enemy_id -> nodes / data/enemies.json
     (regions with a "generator" block: enemy pools and boss -> data/enemies.json)
   - every non-start region node is reachable from start_node
@@ -190,7 +191,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal"}
+    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal"}
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"
@@ -233,6 +234,64 @@ def main() -> int:
             errors.append(f"{where} unknown region '{m['region']}'")
     if not 0 <= int(te_raw.get("chance_pct", -1)) <= 100:
         errors.append("town_events.json: chance_pct must be 0-100")
+
+    # Iglesia Vieja + Cantina activities (doc 02 §7, P3-03).
+    ha_raw = load(DATA / "hub_activities.json") or {}
+    side_kinds = {"buff", "debuff", "lose_colones", "gain_colones", "lose_item", "extra_week", "stress"}
+
+    def is_range(v):
+        return isinstance(v, list) and len(v) == 2 and all(isinstance(x, int) and x >= 0 for x in v) and v[0] <= v[1]
+
+    bids = [b.get("id") for b in ha_raw.get("buildings", [])]
+    if sorted(bids) != ["cantina", "iglesia"]:
+        errors.append("hub_activities.json: needs exactly the buildings 'iglesia' and 'cantina'")
+    for bld in ha_raw.get("buildings", []):
+        bw = f"hub_activities.json: '{bld.get('id')}'"
+        if not bld.get("name"):
+            errors.append(f"{bw} needs a name")
+        acts = bld.get("activities", [])
+        if len(acts) != 3:
+            errors.append(f"{bw} needs 3 activities (doc 02 §7)")
+        if len({a.get("id") for a in acts}) != len(acts):
+            errors.append(f"{bw} duplicate activity ids")
+        for act in acts:
+            aw = f"{bw}.{act.get('id')}"
+            if not act.get("name") or not act.get("text"):
+                errors.append(f"{aw} needs name and text")
+            if not isinstance(act.get("cost"), int) or act["cost"] < 0:
+                errors.append(f"{aw} cost must be a whole number >= 0")
+            if not isinstance(act.get("slots"), int) or act["slots"] < 1:
+                errors.append(f"{aw} slots must be a whole number >= 1")
+            if not is_range(act.get("relief")) or act["relief"][1] <= 0:
+                errors.append(f"{aw} relief must be [min, max] with max > 0")
+            sc = act.get("side_chance")
+            if not isinstance(sc, (int, float)) or not 0 <= sc <= 1:
+                errors.append(f"{aw} side_chance must be 0-1")
+            if not act.get("side_effects"):
+                errors.append(f"{aw} needs side_effects (doc 02 §7)")
+            for se in act.get("side_effects", []):
+                k = se.get("kind")
+                sw = f"{aw} side effect '{k}'"
+                if k not in side_kinds:
+                    errors.append(f"{sw}: unknown kind")
+                if not isinstance(se.get("weight"), int) or se["weight"] < 1:
+                    errors.append(f"{sw}: weight must be a whole number >= 1")
+                txt = se.get("text", "")
+                need = 2 if k in ("lose_colones", "gain_colones", "lose_item", "stress") else 1
+                if txt.count("%") != need:
+                    errors.append(f"{sw}: text needs {need} placeholder(s) (hero name first)")
+                if k in ("buff", "debuff"):
+                    mods = se.get("mods") or {}
+                    if not se.get("name") or not mods or not isinstance(se.get("fights"), int) or se["fights"] < 1:
+                        errors.append(f"{sw}: needs name, mods and fights >= 1")
+                    for mk in mods:
+                        if mk not in stat_keys:
+                            errors.append(f"{sw}: unknown stat '{mk}'")
+                    score = sum(-v if mk == "stress_pct" else v for mk, v in mods.items())
+                    if (score < 0) != (k == "debuff"):
+                        errors.append(f"{sw}: mods don't match the kind (buff helps, debuff hurts)")
+                if k in ("lose_colones", "gain_colones", "stress") and not is_range(se.get("amount")):
+                    errors.append(f"{sw}: amount must be [min, max]")
 
     stress_src = (ROOT / "scripts/domain/stress_system.gd").read_text(encoding="utf-8")
     mental_ids = set()

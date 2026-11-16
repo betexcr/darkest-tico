@@ -17,6 +17,41 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-16 — P3-03 — Iglesia Vieja + Cantina del Centro (stress activities)
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P3-03 `review`. New `todo` P3-18 (Iglesia/Cantina upgrade tracks).
+- **Changed:**
+  - `data/hub_activities.json` (new): 2 buildings × 3 activities (Meditación, Rezo, Penitencia; Guaro y Conversa, Juegos de Azar, Noche de Fiesta). Each has a cost, a relief range, slots, a side-effect chance and weighted side effects.
+  - `scripts/domain/hub_activities.gd` (new): pure rules (catalog, slots, cost, relief and side-effect rolls).
+  - `scripts/autoload/game_state.gd`:
+    - `send_to_activity` / `cancel_activity` (full refund) / `activity_block_reason`;
+    - `_resolve_hub_activities` runs inside `end_of_expedition_week`: relief, Quebranto cured, one side effect;
+    - side-effect kinds: buff/debuff, lose/gain colones, lose a consumable, extra week, stress;
+    - a busy hero can't join the party;
+    - `town_buffs` become camp buffs at mission start;
+    - save v10 (`busy`, `town_buffs` sanitized; busy heroes never loaded into the party).
+  - `scripts/hacienda/hacienda_hub.gd`: a panel under the misa button for the selected hero (3 buttons per building with price and slots, or Cancel). The roster row shows "En Cantina del Centro (…)" and the Cuadrilla box is locked.
+  - `scripts/domain/town_events.gd` + validator: `cantina` is a service (`closed`, `service_pct`). `relief_pct` scales Iglesia activities only.
+  - `tools/validate_data.py` checks `hub_activities.json`: shape, ranges, kinds, placeholders, and that buff mods help and debuff mods hurt.
+  - New: `tests/test_hub_activities.gd` (29 checks) and `tools/screens/relief_screenshot.gd`.
+  - Docs: doc 02 §7 "Built", doc 13 (save v10), the plan, and the AGENTS.md test list.
+- **Verified:**
+  - Godot 4.7.2 Linux was downloaded into the scratchpad. `--import` ran clean.
+  - `validate_data.py`: 0 errors, 1 known warning (Amarrado icon).
+  - Smoke test and every test in the AGENTS list, plus the new test: 0 failures, no `SCRIPT ERROR`.
+  - Screenshot at 1280×720: the panel fits under the misa button in both states (free, booked).
+- **Not verified / risks:**
+  - No human play-test.
+  - Prices (900–1500 ₡) and relief (25–65) are first guesses. Doc 09 §5 says the economy isn't tight and stress rarely reaches 100, so these may matter little until P5-02 balance.
+  - `tools/playtest_campaign.gd` still uses only the misa rápida, not the new activities.
+- **Decisions needed:**
+  - Keep the old group "misa rápida" (−10 to everyone, no busy week) now that real activities exist? It undercuts the duality. Kept for now, because town events mention "la misa".
+  - Should activities cure the Quebranto (DD rule; implemented) or only lower stress?
+  - DD-style activity restrictions by Quebranto (e.g. a hero who refuses the church) are not implemented. Do we want them?
+- **Next step:** owner play-tests P3-03 in the hub (select a stressed hero → panel under "Iglesia Vieja: misa rápida"). Otherwise take the next `todo` in the current phase (P1: P1-20 smoke frame-cap flake), or teach `tools/playtest_campaign.gd` to book stressed idle heroes into `GameState.send_to_activity`.
+
+---
+
 ## 2026-11-12 (night, 6) — P1-09 — Headless campaign playtest
 - **Agent / branch:** Claude Code (Opus 5.5, owner's Windows machine) / `main`
 - **Status after session:** P1-09 `review`. The owner reads doc 09 §5 and decides whether Phase 1's exit criteria are met.

@@ -1,0 +1,70 @@
+{
+  "_doc": "Stress relief duality (doc 02 §7, P3-03; Darkest Dungeon Abbey + Tavern). Rules: scripts/domain/hub_activities.gd. A hero sent to an activity pays `cost` colones, takes one of its `slots` and skips the next expedition (busy for the week). When the week ends (back from the expedition) the hero loses a random stress amount in `relief` [min, max] and, with `side_chance` (0-1), gets one side effect drawn by `weight`. Side effect kinds: buff / debuff {name, mods, fights} (a camp-buff-style modifier for the hero's next expedition; mods use the camp stat keys), lose_colones [min, max] (taken from the hacienda, never below 0), gain_colones [min, max], lose_item (one random consumable from the alforja), extra_week (busy one more week), stress [min, max] (added after the relief, e.g. a bad night). Any activity also clears the hero's Quebranto (DD rule: town stress relief cures afflictions). Town events: 'closed' / 'service_pct' take the building id (iglesia | cantina); 'relief_pct' scales Iglesia relief only. Upgrade tracks (more relief, cheaper, more slots) are P3-16.",
+  "buildings": [
+    {
+      "id": "iglesia",
+      "name": "Iglesia Vieja",
+      "text": "Bancas de cedro, olor a candela y un padre que no hace preguntas.",
+      "activities": [
+        { "id": "meditacion", "name": "Meditación", "cost": 1000, "relief": [25, 40], "slots": 1, "side_chance": 0.10,
+          "text": "Una semana de silencio en el campanario, viendo pasar las nubes sobre el cafetal.",
+          "side_effects": [
+            { "kind": "buff", "weight": 3, "name": "En paz", "text": "%s vuelve en paz consigo mismo.",
+              "mods": { "stress_pct": -10 }, "fights": 4 },
+            { "kind": "extra_week", "weight": 1, "text": "%s se quedó una semana más en el campanario. Dice que todavía no termina de pensar." }
+          ] },
+        { "id": "rezo", "name": "Rezo", "cost": 1200, "relief": [30, 50], "slots": 2, "side_chance": 0.12,
+          "text": "Rosario de la mañana, rosario de la tarde y novena por si acaso.",
+          "side_effects": [
+            { "kind": "buff", "weight": 3, "name": "Fe renovada", "text": "%s sale con una fe que da miedo.",
+              "mods": { "accuracy": 3, "stress_pct": -5 }, "fights": 4 },
+            { "kind": "lose_colones", "weight": 2, "amount": [200, 500], "text": "%s se puso generoso en la colecta: -%d ₡." },
+            { "kind": "extra_week", "weight": 1, "text": "%s se apuntó a la procesión de la otra semana." }
+          ] },
+        { "id": "penitencia", "name": "Penitencia", "cost": 1500, "relief": [40, 60], "slots": 1, "side_chance": 0.18,
+          "text": "De rodillas en el piso de la nave, con los ojos de los santos encima.",
+          "side_effects": [
+            { "kind": "debuff", "weight": 3, "name": "Rodillas peladas", "text": "%s vuelve con las rodillas peladas.",
+              "mods": { "speed": -2, "dodge": -5 }, "fights": 3 },
+            { "kind": "buff", "weight": 2, "name": "Alma limpia", "text": "%s siente que le quitaron un saco de encima.",
+              "mods": { "stress_pct": -15 }, "fights": 4 },
+            { "kind": "extra_week", "weight": 1, "text": "Al padre le pareció poca la penitencia de %s: una semana más." }
+          ] }
+      ]
+    },
+    {
+      "id": "cantina",
+      "name": "Cantina del Centro",
+      "text": "Rocola con boleros, bocas de chicharrón y una mesa de dominó que nunca se levanta.",
+      "activities": [
+        { "id": "guaro_conversa", "name": "Guaro y Conversa", "cost": 900, "relief": [25, 45], "slots": 2, "side_chance": 0.15,
+          "text": "Unos tragos, unas bocas y alguien que escuche las penas sin juzgar.",
+          "side_effects": [
+            { "kind": "debuff", "weight": 3, "name": "Goma", "text": "%s amanece con una goma de las buenas.",
+              "mods": { "accuracy": -5, "speed": -1 }, "fights": 2 },
+            { "kind": "lose_colones", "weight": 2, "amount": [150, 400], "text": "%s pagó la ronda de toda la cantina: -%d ₡." },
+            { "kind": "buff", "weight": 1, "name": "Desahogado", "text": "%s se desahogó y anda liviano.",
+              "mods": { "stress_pct": -10 }, "fights": 3 }
+          ] },
+        { "id": "juegos_de_azar", "name": "Juegos de Azar", "cost": 1000, "relief": [30, 50], "slots": 1, "side_chance": 0.25,
+          "text": "Dominó, chances y una tómbola que nadie sabe quién organiza.",
+          "side_effects": [
+            { "kind": "lose_colones", "weight": 3, "amount": [300, 900], "text": "%s apostó lo que no tenía: -%d ₡." },
+            { "kind": "gain_colones", "weight": 2, "amount": [200, 700], "text": "¡%s pegó el chance! +%d ₡ para la hacienda." },
+            { "kind": "lose_item", "weight": 2, "text": "%s empeñó %s en el dominó." },
+            { "kind": "stress", "weight": 1, "amount": [5, 15], "text": "%s perdió hasta la paciencia: +%d estrés." }
+          ] },
+        { "id": "noche_de_fiesta", "name": "Noche de Fiesta", "cost": 1400, "relief": [40, 65], "slots": 2, "side_chance": 0.25,
+          "text": "Cimarrona, baile hasta que cierran y un taxi pirata de vuelta.",
+          "side_effects": [
+            { "kind": "extra_week", "weight": 3, "text": "%s se fue de parranda a Puntarenas y no ha vuelto." },
+            { "kind": "debuff", "weight": 2, "name": "Goma", "text": "%s amanece con una goma de las buenas.",
+              "mods": { "accuracy": -5, "speed": -1 }, "fights": 2 },
+            { "kind": "buff", "weight": 2, "name": "Fiestero", "text": "%s vuelve contento y con ganas de bailar.",
+              "mods": { "speed": 2, "dodge": 3 }, "fights": 3 },
+            { "kind": "lose_colones", "weight": 1, "amount": [200, 600], "text": "A %s le cobraron la cuenta de la cimarrona: -%d ₡." }
+          ] }
+      ]
+    }
+  ]
+}
