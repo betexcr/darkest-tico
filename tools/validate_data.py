@@ -552,7 +552,7 @@ def main() -> int:
     # (GameState.apply_event_outcome); every key, status, stat and item must exist.
     outcome_keys = {"heal_party", "stress_party", "colones", "damage_random", "damage_party", "add_item",
                     "reveal_neighbors", "reveal_map", "random_equipment", "applies", "buff", "debuff",
-                    "ambush", "weight", "text"}
+                    "ambush", "weight", "text", "light", "stress_random"}
 
     def check_outcome(where: str, o) -> None:
         if not isinstance(o, dict):
@@ -561,6 +561,9 @@ def main() -> int:
         for k in o:
             if k not in outcome_keys:
                 errors.append(f"{where}: unknown outcome key '{k}'")
+        for k in ("light", "stress_random", "stress_party", "heal_party", "damage_random", "damage_party"):
+            if k in o and not isinstance(o[k], int):
+                errors.append(f"{where}: '{k}' must be a whole number")
         check_applies(where, o.get("applies"))
         for bk in ("buff", "debuff"):
             b = o.get(bk)
@@ -582,15 +585,43 @@ def main() -> int:
     curio_ids = set()
     for c in curios_raw.get("curios", []):
         where = f"curios.json: '{c.get('id')}'"
+        if c.get("id") in curio_ids:
+            errors.append(f"{where}: duplicate id")
         curio_ids.add(c.get("id"))
+        for f in ("name", "text"):
+            if not c.get(f):
+                errors.append(f"{where}: needs '{f}'")
         if c.get("key_item") and c["key_item"] not in items:
             errors.append(f"{where}: key_item '{c['key_item']}' is not an item")
         if c.get("key_item"):
             check_outcome(where + " key_outcome", c.get("key_outcome", {}))
-        if not c.get("blind"):
-            errors.append(f"{where}: needs a blind outcome table")
+            if not c.get("key_text"):
+                errors.append(f"{where}: key_item needs key_text")
+        # P2-02: a curio is either examined blind or a choice event (doc 07 §5), not both.
+        choices = c.get("choices")
+        if bool(choices) == bool(c.get("blind")):
+            errors.append(f"{where}: needs either a blind outcome table or choices (not both)")
         for k, o in enumerate(c.get("blind", [])):
             check_outcome(f"{where} blind[{k}]", o)
+            if not o.get("text"):
+                errors.append(f"{where} blind[{k}]: needs text")
+        if choices:
+            if len(choices) < 2:
+                errors.append(f"{where}: a choice event needs at least 2 choices")
+            if all(ch.get("item") or ch.get("cost") for ch in choices):
+                errors.append(f"{where}: at least one choice must be free (it is the way out)")
+        for k, ch in enumerate(choices or []):
+            cw = f"{where} choices[{k}]"
+            if not ch.get("label") or not ch.get("outcomes"):
+                errors.append(f"{cw}: needs label and outcomes")
+            if ch.get("item") and ch["item"] not in items:
+                errors.append(f"{cw}: item '{ch['item']}' is not an item")
+            if "cost" in ch and (not isinstance(ch["cost"], int) or ch["cost"] < 1):
+                errors.append(f"{cw}: cost must be a whole number >= 1")
+            for j, o in enumerate(ch.get("outcomes", [])):
+                check_outcome(f"{cw} outcomes[{j}]", o)
+                if not o.get("text"):
+                    errors.append(f"{cw} outcomes[{j}]: needs text")
     traps_raw = load(DATA / "traps.json") or {}
     trap_ids = set()
     for k in ("disarm_min", "disarm_max", "disarm_relief", "careful_light", "careful_trigger_pct"):
@@ -616,6 +647,8 @@ def main() -> int:
         for tid in gen.get("traps", []):
             if tid not in trap_ids:
                 errors.append(f"regions/{rp.name}: generator.traps references unknown trap '{tid}'")
+        if rp.stem == "sotanos" and len(set(gen.get("curios", [])) | set(gen.get("traps", []))) < 30:
+            errors.append(f"regions/{rp.name}: P2-02 wants at least 30 room events (curios + traps) in the pools")
         for n in reg.get("nodes", []):
             if n.get("type") == "trap" and n.get("trap_id") not in trap_ids:
                 errors.append(f"regions/{rp.name}: trap node '{n.get('id')}' needs a known trap_id")

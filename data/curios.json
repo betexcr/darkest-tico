@@ -1,5 +1,5 @@
 {
-  "_doc": "Curio rooms (doc 07 §3). Each has a blind 'examine' outcome table (weighted) and an optional key item with a better outcome. Outcome effects: heal_party, stress_party, colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
+  "_doc": "Curio rooms (doc 07 §3) and choice events (doc 07 §5, P2-02). A curio has either a blind 'Examinar' outcome table (weighted) or `choices` [{label, item? (spent), cost? (colones), outcomes [weighted]}] (a choice event: no 'Dejarlo', so one choice must be free), plus an optional key item with a better outcome (offered only when carried). Which region uses which curio: the region generator's `curios` pool. Outcome effects: heal_party, stress_party, stress_random (one hero), light (Luz delta), colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
   "curios": [
     {
       "id": "altar_roto",
@@ -122,6 +122,209 @@
           "ambush": [1, 2]
         }
       ]
-    }
+    },
+    { "id": "sacos_de_cafe", "name": "Sacos de café viejo",
+      "text": "Una estiba de sacos de yute con el sello de la hacienda. Algunos se mueven solos.",
+      "blind": [
+        { "weight": 45, "text": "Entre los granos hay un puño de monedas.", "colones": [80, 180] },
+        { "weight": 30, "text": "Gorgojos del tamaño de un dedo. Alguien sale mordido.", "damage_random": 3, "stress_party": 3 },
+        { "weight": 25, "text": "Un saco todavía huele a café bueno. Lo chorrean ahí mismo.", "stress_party": -6 }
+      ] },
+    { "id": "trapiche_viejo", "name": "Trapiche abandonado",
+      "text": "Un trapiche de madera con la rueda trabada. Todavía huele a caña.",
+      "key_item": "mecate",
+      "key_text": "Amarran la rueda con el mecate y la hacen girar. Sale guarapo, todavía dulce.",
+      "key_outcome": { "heal_party": 4, "stress_party": -6 },
+      "blind": [
+        { "weight": 50, "text": "La rueda cruje y suelta una tapa de dulce olvidada.", "add_item": { "id": "tapa_de_dulce", "qty": 1 } },
+        { "weight": 50, "text": "La rueda se suelta de golpe y le machuca la mano a alguien.", "damage_random": 5, "stress_party": 3 }
+      ] },
+    { "id": "tinajas_de_guaro", "name": "Tinajas de guaro",
+      "text": "Tinajas de barro tapadas con tusa. Alguien sacaba guaro de contrabando aquí abajo.",
+      "blind": [
+        { "weight": 40, "text": "Una tinaja está llena y bien tapada. Eso se lleva.", "add_item": { "id": "guaro_contrabando", "qty": 1 } },
+        { "weight": 35, "text": "Alguien prueba un trago. El guaro estaba pasado y se le va la vista.", "stress_random": -8,
+          "debuff": { "name": "Guaro de alambique", "mods": { "accuracy": -10 }, "fights": 2 } },
+        { "weight": 25, "text": "Las tinajas están llenas de algo que no es guaro. Y los está mirando.", "stress_party": 8 }
+      ] },
+    { "id": "nicho_de_santos", "name": "Nicho de santos",
+      "text": "Un nicho en la pared con santos de madera despintados y un mantel tieso de cera.",
+      "key_item": "candela_sebo",
+      "key_text": "Prenden una candela a los santos. Parece que lo agradecen.",
+      "key_outcome": { "stress_party": -12, "buff": { "name": "Bendición del nicho", "mods": { "stress_pct": -10 }, "fights": 3, "party": true } },
+      "blind": [
+        { "weight": 50, "text": "Uno de los santos tiene la cara volteada hacia la pared. Nadie lo dejó así.", "stress_party": 6 },
+        { "weight": 50, "text": "Debajo del mantel hay una limosna olvidada.", "colones": [60, 150] }
+      ] },
+    { "id": "ropero_de_la_abuela", "name": "Ropero de la abuela",
+      "text": "Un ropero de cedro con espejo, cerrado con llave. Huele a naftalina y a domingo.",
+      "key_item": "llave_abuelo",
+      "key_text": "La llave del abuelo abre el ropero. Adentro, lo que la abuela guardaba para una emergencia.",
+      "key_outcome": { "colones": [150, 350], "random_equipment": true },
+      "blind": [
+        { "weight": 40, "text": "En la gaveta de abajo hay un frasco de ungüento.", "add_item": { "id": "unguento_de_la_abuela", "qty": 1 } },
+        { "weight": 35, "text": "Un vestido de novia cuelga solo. Y se mueve.", "stress_party": 5, "applies": { "status": "susto", "turns": 3, "value": 4 } },
+        { "weight": 25, "text": "Ropa vieja y recuerdos. Alguien se acuerda de su casa.", "stress_random": -6 }
+      ] },
+    { "id": "libreta_de_deudas", "name": "Libreta de deudas",
+      "text": "El libro de cuentas del mandador. Cada página es una deuda, y algunas están firmadas con sangre.",
+      "key_item": "agua_bendita",
+      "key_text": "El agua bendita borra las firmas. Las deudas ya no pesan.",
+      "key_outcome": { "stress_party": -10, "buff": { "name": "Deudas saldadas", "mods": { "stress_pct": -10 }, "fights": 3, "party": true } },
+      "blind": [
+        { "weight": 50, "text": "Leen los nombres. Uno es de un pariente.", "stress_party": 8 },
+        { "weight": 50, "text": "Entre las páginas hay billetes viejos que nadie cobró.", "colones": [100, 250] }
+      ] },
+    { "id": "carreta_pintada", "name": "Carreta pintada",
+      "text": "Una carreta de Sarchí pintada a mano, sin bueyes. Las ruedas todavía están tibias.",
+      "blind": [
+        { "weight": 45, "text": "En el cajón de la carreta hay provisiones envueltas en hoja.", "add_item": { "id": "gallo_pinto", "qty": 2 } },
+        { "weight": 30, "text": "La carreta arranca sola por el pasillo. Alguien no se quita a tiempo.", "damage_random": 6, "stress_party": 4 },
+        { "weight": 25, "text": "El rechinar de la rueda despierta a alguien más.", "ambush": [1, 2] }
+      ] },
+    { "id": "pila_de_lavar", "name": "Pila de lavar",
+      "text": "Una pila de cemento todavía con agua. En el fondo se ve un reflejo que no es de nadie.",
+      "key_item": "ramo_ruda",
+      "key_text": "Hacen una limpia con ruda en el agua de la pila. El reflejo se va.",
+      "key_outcome": { "heal_party": 5, "stress_party": -8 },
+      "blind": [
+        { "weight": 50, "text": "El agua está fresca. Se lavan la cara y respiran.", "heal_party": 3 },
+        { "weight": 50, "text": "El reflejo saca la mano y jala a alguien de la camisa.", "damage_random": 4, "applies": { "status": "susto", "turns": 3, "value": 4 } }
+      ] },
+    { "id": "horno_de_lena", "name": "Horno de leña",
+      "text": "Un horno de barro con las brasas vivas. Nadie lo ha prendido en cincuenta años.",
+      "blind": [
+        { "weight": 45, "text": "Adentro hay un tamal todavía caliente. Nadie pregunta de quién es.", "add_item": { "id": "tamal_de_cerdo", "qty": 1 } },
+        { "weight": 30, "text": "Prenden las candelas con las brasas y se calientan las manos.", "light": 15, "stress_party": -4 },
+        { "weight": 25, "text": "Una llamarada sale de la boca del horno.", "damage_random": 5, "stress_party": 2 }
+      ] },
+    { "id": "retrato_del_abuelo", "name": "Retrato del abuelo",
+      "text": "Un retrato al óleo del abuelo, con sombrero y bigote. Los ojos siguen a la cuadrilla.",
+      "blind": [
+        { "weight": 50, "text": "El abuelo parece asentir. Algo de calma.", "stress_party": -8 },
+        { "weight": 30, "text": "El retrato llora lágrimas de cera y las candelas bajan.", "stress_party": 6, "light": -10 },
+        { "weight": 20, "text": "Detrás del cuadro hay una caja fuerte, abierta.", "colones": [150, 300] }
+      ] },
+    { "id": "campana_de_capilla", "name": "Campana de capilla",
+      "text": "Una campana de bronce colgada de una viga. Si suena, todo el sótano se entera.",
+      "key_item": "mecate",
+      "key_text": "Amarran el badajo y la descuelgan sin un ruido. Adentro había una ofrenda.",
+      "key_outcome": { "colones": [200, 400] },
+      "blind": [
+        { "weight": 40, "text": "La campana suena sola. Muy lejos, algo contesta y viene.", "stress_party": 4, "ambush": [1, 2] },
+        { "weight": 60, "text": "Una campanada limpia. La cuadrilla se siente acompañada.", "stress_party": -6,
+          "buff": { "name": "Campanada", "mods": { "accuracy": 3 }, "fights": 2, "party": true } }
+      ] },
+    { "id": "hongos_de_luz", "name": "Hongos de luz",
+      "text": "Hongos pálidos crecen en las vigas podridas y dan una luz verde, como de luciérnaga.",
+      "blind": [
+        { "weight": 50, "text": "Raspan los hongos y los meten en un frasco. Alumbran bastante.", "light": 15 },
+        { "weight": 30, "text": "Las esporas dan tos y mareo a todos.", "debuff": { "name": "Esporas", "mods": { "accuracy": -5 }, "fights": 2, "party": true } },
+        { "weight": 20, "text": "Se apagan al tocarlos, y con ellos un poco de la luz de las candelas.", "light": -5 }
+      ] },
+    { "id": "grieta_que_susurra", "name": "Grieta que susurra",
+      "text": "Una grieta en la pared de piedra. Por ahí sale una voz que sabe sus nombres.",
+      "key_item": "rosario_de_semillas",
+      "key_text": "Rezan el rosario frente a la grieta hasta que la voz se calla.",
+      "key_outcome": { "stress_party": -15, "buff": { "name": "Oídos sordos", "mods": { "stress_pct": -15 }, "fights": 3, "party": true } },
+      "blind": [
+        { "weight": 50, "text": "La voz cuenta un secreto de cada uno. Todos son verdad.", "stress_party": 10 },
+        { "weight": 30, "text": "La voz les dice por dónde seguir. Por esta vez, no miente.", "reveal_neighbors": true },
+        { "weight": 20, "text": "La voz se ríe y sopla las candelas.", "light": -20, "stress_party": 4 }
+      ] },
+    { "id": "tumba_del_perro", "name": "Tumba del perro",
+      "text": "Una cruz chiquita con un collar colgado: «Capitán, buen perro».",
+      "blind": [
+        { "weight": 60, "text": "Le dejan una oración. Desde lejos se oye un ladrido amigo.", "stress_party": -4,
+          "buff": { "name": "Capitán cuida", "mods": { "dodge": 4 }, "fights": 3, "party": true } },
+        { "weight": 40, "text": "La tierra está removida. Lo que salió de ahí no era el perro.", "stress_party": 4, "ambush": [1, 1] }
+      ] },
+    { "id": "estante_de_botica", "name": "Estante de botica",
+      "text": "Un estante con frascos de la botica del pueblo, con las etiquetas escritas a mano.",
+      "blind": [
+        { "weight": 40, "text": "Hay vendas limpias, todavía en su papel.", "add_item": { "id": "venda_manta", "qty": 1 } },
+        { "weight": 30, "text": "Un frasco de té de tilo, bien tapado.", "add_item": { "id": "te_de_tilo", "qty": 1 } },
+        { "weight": 30, "text": "Un frasco sin etiqueta. Alguien lo prueba, por si acaso. Mala idea.", "damage_random": 2,
+          "applies": { "status": "veneno", "turns": 3, "value": 2 } }
+      ] },
+
+    { "id": "caminante_perdido", "name": "Caminante perdido",
+      "text": "Un peón de la hacienda, flaco y con el sombrero roto. Dice que lleva días buscando la salida.",
+      "choices": [
+        { "label": "Darle de comer", "item": "gallo_pinto", "outcomes": [
+          { "weight": 70, "text": "El peón come y les cuenta por dónde no hay que ir.", "stress_party": -6, "reveal_neighbors": true },
+          { "weight": 30, "text": "Come, da las gracias y se va. Les queda el gusto de haber ayudado.", "stress_party": -10 } ] },
+        { "label": "Quitarle lo que tenga", "outcomes": [
+          { "weight": 50, "text": "Llevaba unos colones en el sombrero. Nadie se siente bien con eso.", "colones": [80, 160], "stress_party": 6 },
+          { "weight": 50, "text": "El peón se estira y deja de ser peón. Era una trampa.", "ambush": [1, 2] } ] },
+        { "label": "Seguir de largo", "outcomes": [
+          { "weight": 100, "text": "Siguen. El peón se queda llamándolos un buen rato.", "stress_party": 4 } ] }
+      ] },
+    { "id": "mercado_clandestino", "name": "Mercado clandestino",
+      "text": "Tres bultos y una candela en medio. Un vendedor sin cara ofrece mercadería «sin factura».",
+      "choices": [
+        { "label": "Comprarle", "cost": 300, "outcomes": [
+          { "weight": 60, "text": "Le venden algo bueno, de verdad.", "random_equipment": true },
+          { "weight": 40, "text": "Era chatarra envuelta en papel periódico.", "stress_party": 4 } ] },
+        { "label": "Robarle un bulto", "outcomes": [
+          { "weight": 40, "text": "Se llevan un bulto antes de que se dé cuenta.", "random_equipment": true, "stress_party": 4 },
+          { "weight": 60, "text": "El vendedor silba. Sus socios no son personas.", "ambush": [2, 3] } ] },
+        { "label": "No comprar nada", "outcomes": [
+          { "weight": 100, "text": "Sin factura no se compra nada. El vendedor se encoge de hombros." } ] }
+      ] },
+    { "id": "vision_del_abuelo", "name": "Visión del abuelo",
+      "text": "En lo oscuro aparece el abuelo, de sombrero y con el mandador en la mano. No está muerto, dice: solo está esperando.",
+      "choices": [
+        { "label": "Sostenerle la mirada", "outcomes": [
+          { "weight": 60, "text": "Le sostienen la mirada hasta que se desvanece.", "stress_party": -5,
+            "buff": { "name": "Firmes", "mods": { "stress_pct": -10 }, "fights": 3, "party": true } },
+          { "weight": 40, "text": "No pueden. El abuelo se ríe y se va riendo.", "stress_party": 10 } ] },
+        { "label": "Abrazarlo", "outcomes": [
+          { "weight": 40, "text": "El abrazo es frío pero sincero. Les dice dónde guardaba la plata.", "colones": [200, 400], "stress_party": -8 },
+          { "weight": 60, "text": "El abrazo no los suelta.", "damage_party": 2, "stress_party": 8,
+            "debuff": { "name": "Frío del abuelo", "mods": { "speed": -1, "dodge": -5 }, "fights": 3, "party": true } } ] }
+      ] },
+    { "id": "mesa_de_domino", "name": "Mesa de dominó",
+      "text": "Cuatro sillas, tres jugadores que no se ven y una ficha esperando. Falta uno para la partida.",
+      "choices": [
+        { "label": "Sentarse a jugar", "outcomes": [
+          { "weight": 45, "text": "¡Capote! Los muertos pagan lo que deben.", "colones": [150, 350], "stress_party": -5 },
+          { "weight": 35, "text": "Pierden. Los muertos cobran en sustos.", "stress_party": 10 },
+          { "weight": 20, "text": "Alguien hace trampa y los muertos se levantan de la mesa.", "ambush": [1, 2] } ] },
+        { "label": "Dejar la partida", "outcomes": [
+          { "weight": 100, "text": "Se levantan despacio. Las fichas siguen sonando a sus espaldas.", "stress_party": 3 } ] }
+      ] },
+    { "id": "llanto_en_el_pasillo", "name": "Llanto en el pasillo",
+      "text": "Del fondo del pasillo viene un llanto de mujer: «¡Ay, mis hijos!». La Llorona anda buscando.",
+      "choices": [
+        { "label": "Rezar por ella", "item": "rosario_de_semillas", "outcomes": [
+          { "weight": 100, "text": "Rezan por la Llorona. Por esta noche, descansa, y el pasillo queda en paz.", "stress_party": -12, "reveal_neighbors": true } ] },
+        { "label": "Seguir el llanto", "outcomes": [
+          { "weight": 50, "text": "Encuentran un rebozo con algo envuelto adentro.", "random_equipment": true, "stress_party": 6 },
+          { "weight": 50, "text": "El llanto se vuelve grito, y el grito tiene manos.", "damage_random": 5, "stress_party": 8,
+            "applies": { "status": "susto", "turns": 3, "value": 4 } } ] },
+        { "label": "Taparse los oídos y seguir", "outcomes": [
+          { "weight": 100, "text": "Caminan rápido, sin voltear. El llanto los sigue un rato.", "stress_party": 5, "light": -5 } ] }
+      ] },
+    { "id": "duendes_juguetones", "name": "Duendes juguetones",
+      "text": "Caen piedritas del techo. Alguien se ríe bajito: son duendes, y quieren jugar.",
+      "choices": [
+        { "label": "Dejarles comida", "item": "gallo_pinto", "outcomes": [
+          { "weight": 100, "text": "Los duendes aceptan el gallo pinto y devuelven el favor con candelas.", "add_item": { "id": "candela_sebo", "qty": 2 } } ] },
+        { "label": "Espantarlos", "outcomes": [
+          { "weight": 50, "text": "Se van entre risitas.", "stress_party": -3 },
+          { "weight": 50, "text": "Se ofenden y les soplan las candelas.", "stress_party": 6, "light": -10 } ] },
+        { "label": "Ignorarlos", "outcomes": [
+          { "weight": 100, "text": "Siguen. Las piedritas también.", "stress_party": 4 } ] }
+      ] },
+    { "id": "procesion_de_animas", "name": "Procesión de ánimas",
+      "text": "Una fila de candelas pasa por el pasillo, cargadas por nadie. Es una procesión de ánimas.",
+      "choices": [
+        { "label": "Unirse a la procesión", "outcomes": [
+          { "weight": 50, "text": "Caminan con las ánimas, que les regalan una candela y les muestran el camino.", "light": 20, "reveal_neighbors": true },
+          { "weight": 50, "text": "Las ánimas no los dejan irse tan fácil.", "stress_party": 10, "light": -10 } ] },
+        { "label": "Esconderse hasta que pase", "outcomes": [
+          { "weight": 100, "text": "Esperan en lo oscuro, sin respirar, hasta que se apaga la última candela.", "stress_party": 5 } ] }
+      ] }
   ]
 }

@@ -221,6 +221,66 @@ func get_curio(curio_id: String) -> Dictionary:
 	return _curios_by_id.get(curio_id, {})
 
 
+## What a curio room offers besides leaving (P2-02): the key item (only when carried), then
+## either its `choices` (choice events, doc 07 §5) or "Examinar" (the blind table).
+## Each option: {label, enabled, reason, item, cost, outcomes, text}.
+func curio_options(curio: Dictionary) -> Array:
+	var out: Array = []
+	var key: String = str(curio.get("key_item", ""))
+	if key != "" and item_count(key) > 0:
+		var ko: Dictionary = (curio.get("key_outcome", {}) as Dictionary).duplicate(true)
+		ko["text"] = str(curio.get("key_text", ""))
+		out.append({"label": "Usar %s" % get_item(key).get("name", key), "enabled": true, "reason": "",
+			"item": key, "cost": 0, "outcomes": [ko]})
+	var choices = curio.get("choices", null)
+	if choices is Array and not (choices as Array).is_empty():
+		for c in choices:
+			var item: String = str(c.get("item", ""))
+			var cost: int = int(c.get("cost", 0))
+			var label: String = str(c.get("label", "?"))
+			var reason: String = ""
+			if item != "":
+				label += " (gasta %s)" % get_item(item).get("name", item)
+				if item_count(item) <= 0:
+					reason = "No llevan %s." % get_item(item).get("name", item)
+			if cost > 0:
+				label += " (%d ₡)" % cost
+				if colones < cost:
+					reason = "No alcanza la plata (%d ₡)." % cost
+			out.append({"label": label, "enabled": reason == "", "reason": reason, "item": item, "cost": cost,
+				"outcomes": c.get("outcomes", [])})
+	else:
+		out.append({"label": "Examinar", "enabled": true, "reason": "", "item": "", "cost": 0, "outcomes": curio.get("blind", [])})
+	return out
+
+
+## Choice events offer their own way out; plain curios get "Dejarlo".
+func curio_can_leave(curio: Dictionary) -> bool:
+	return not (curio.get("choices", null) is Array and not (curio["choices"] as Array).is_empty())
+
+
+## Pays for the option (item, colones) and rolls its outcome table. Returns the outcome
+## (with its "text") for the expedition screen to apply; {} if the option can't be taken.
+func pick_curio_option(option: Dictionary) -> Dictionary:
+	if not bool(option.get("enabled", false)):
+		return {}
+	ledger_add("curios")
+	var item: String = str(option.get("item", ""))
+	if item != "":
+		remove_item(item, 1)
+	colones -= int(option.get("cost", 0))
+	var table: Array = option.get("outcomes", [])
+	var total: float = 0.0
+	for o in table:
+		total += float(o.get("weight", 1))
+	var roll: float = randf() * total
+	for o in table:
+		roll -= float(o.get("weight", 1))
+		if roll <= 0.0:
+			return o
+	return table.back() if not table.is_empty() else {"text": "No pasa nada."}
+
+
 ## Applies an event outcome (curios.json, traps.json) to the party/mission. Returns log
 ## lines. Damage follows the combat rule (HeroDamage). An "ambush" key is left to the
 ## expedition screen, which starts the fight after this.
@@ -243,6 +303,13 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 		for h in living:
 			logs.append_array(StressSystemScript.add_stress(h, int(outcome["stress_party"])))
 		logs.append("Estrés %+d a la cuadrilla." % int(outcome["stress_party"]))
+	if outcome.has("stress_random") and not victim.is_empty():
+		logs.append("%s: estrés %+d." % [victim.get("name", "?"), int(outcome["stress_random"])])
+		logs.append_array(StressSystemScript.add_stress(victim, int(outcome["stress_random"])))
+	if outcome.has("light"):
+		var before: int = mission_light
+		mission_light = clampi(mission_light + int(outcome["light"]), 0, light_max())
+		logs.append("Luz %+d." % (mission_light - before))
 	if outcome.has("damage_random") and not victim.is_empty():
 		var amt: int = int(outcome["damage_random"])
 		logs.append("%s pierde %d PV." % [victim.get("name", "?"), amt])

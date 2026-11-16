@@ -57,6 +57,17 @@ Data: `data/traps.json` (P2-01). Every trap triggers when the party enters its r
 | `mercado_clandestino` | After combat | Buy / Steal / Leave | Gold, trinket, fight |
 | `vision_abuelo` | Low light | Resist / Embrace | Virtud chance / stress |
 
+Built (P2-02, 2026-11-16) as **choice events**: curio rooms with `choices` in `data/curios.json` instead of a blind table. A choice may spend an item (`item`) or colones (`cost`); a choice event has no "Dejarlo", so one choice is always free. Built: `caminante_perdido`, `mercado_clandestino`, `vision_del_abuelo`, `mesa_de_domino`, `llanto_en_el_pasillo`, `duendes_juguetones`, `procesion_de_animas`. The conditions above (after combat, low light) are not implemented: choice events are placed like any curio.
+
+## 5.1) Sótanos room event pool (P2-02)
+
+36 events in `data/regions/sotanos.json` (`generator.curios` + `generator.traps`). The validator requires at least 30.
+
+- **Curios, examined blind (20):** the 5 above plus `sacos_de_cafe`, `trapiche_viejo` (mecate), `tinajas_de_guaro`, `nicho_de_santos` (candela), `ropero_de_la_abuela` (llave), `libreta_de_deudas` (agua bendita), `carreta_pintada`, `pila_de_lavar` (ruda), `horno_de_lena`, `retrato_del_abuelo`, `campana_de_capilla` (mecate), `hongos_de_luz`, `grieta_que_susurra` (rosario), `tumba_del_perro`, `estante_de_botica`.
+- **Choice events (7):** see §5.
+- **Traps (9):** the 4 Sótanos traps in §4 plus `pared_de_bahareque` (10, party damage), `corriente_negra` (10, −20 Luz + stress; doc 05's "darkness bursts"), `cepo_oxidado` (10, Amarrado), `barriles_sueltos` (5), `vapor_de_cava` (15, party damage + *Mareo de cava*).
+- New outcome keys: `light` (Luz ±, clamped) and `stress_random` (one hero).
+
 ## 6) Ambush rules
 
 - Base ambush chance at camp: 12% (`data/camp_skills.json` `ambush`).

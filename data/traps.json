@@ -1,5 +1,5 @@
 {
-  "_doc": "Trap rooms (doc 07 §4, P2-01). Rules: scripts/domain/trap_rules.gd. Choices: Desarmar (DD trap disarm: chance = the party's best 'trampa' value (the class's trap skill) + the Luz tier's trap_pct − the trap's difficulty, clamped disarm_min..disarm_max; success clears the room and relieves disarm_relief stress for whoever spotted it, failure springs the trap) or Pasar con cuidado (costs careful_light Luz, then springs the trap with careful_trigger_pct). effects use the event outcome keys (GameState.apply_event_outcome): damage_random, damage_party, stress_party, applies {status, turns, value, mods, party}, debuff/buff {name, mods, fights, party}, ambush. Damage follows the combat rule (Al Borde, then Golpe de gracia).",
+  "_doc": "Trap rooms (doc 07 §4, P2-01). Rules: scripts/domain/trap_rules.gd. Choices: Desarmar (DD trap disarm: chance = the party's best 'trampa' value (the class's trap skill) + the Luz tier's trap_pct − the trap's difficulty, clamped disarm_min..disarm_max; success clears the room and relieves disarm_relief stress for whoever spotted it, failure springs the trap) or Pasar con cuidado (costs careful_light Luz, then springs the trap with careful_trigger_pct). effects use the event outcome keys (GameState.apply_event_outcome): damage_random, damage_party, stress_party, stress_random, light, applies {status, turns, value, mods, party}, debuff/buff {name, mods, fights, party}, ambush. Damage follows the combat rule (Al Borde, then Golpe de gracia).",
   "disarm_min": 5,
   "disarm_max": 95,
   "disarm_relief": 5,
@@ -45,6 +45,31 @@
       "difficulty": 10,
       "fail_text": "Alguien se hunde hasta la rodilla y queda atascado entre las tablas.",
       "effects": { "damage_random": 5, "applies": { "status": "amarrado", "turns": 2 } }
-    }
+    },
+    { "id": "pared_de_bahareque", "name": "Pared de bahareque",
+      "text": "Una pared de barro y caña, hinchada de humedad. Parece que respira.",
+      "difficulty": 10,
+      "fail_text": "La pared revienta y les cae encima a todos.",
+      "effects": { "damage_party": 2, "stress_party": 3 } },
+    { "id": "corriente_negra", "name": "Corriente negra",
+      "text": "Una corriente fría baja por la escalera. Las candelas tiemblan.",
+      "difficulty": 10,
+      "fail_text": "El aire negro apaga las candelas y se mete por la boca.",
+      "effects": { "light": -20, "stress_party": 6 } },
+    { "id": "cepo_oxidado", "name": "Cepo oxidado",
+      "text": "Un cepo para zorros, oxidado y escondido entre la paja del piso.",
+      "difficulty": 10,
+      "fail_text": "¡Clac! El cepo agarra un tobillo y no lo suelta.",
+      "effects": { "damage_random": 4, "applies": { "status": "amarrado", "turns": 2 } } },
+    { "id": "barriles_sueltos", "name": "Barriles sueltos",
+      "text": "Barriles de guaro apilados en la rampa, sin cuña.",
+      "difficulty": 5,
+      "fail_text": "Los barriles ruedan cuesta abajo y arrastran a alguien.",
+      "effects": { "damage_random": 5, "stress_party": 2 } },
+    { "id": "vapor_de_cava", "name": "Vapor de cava",
+      "text": "La cava huele a guaro podrido. Mucho rato aquí, y la cabeza da vueltas.",
+      "difficulty": 15,
+      "fail_text": "Se marean con el vapor de la cava.",
+      "effects": { "damage_party": 1, "debuff": { "name": "Mareo de cava", "mods": { "accuracy": -5 }, "fights": 2, "party": true } } }
   ]
 }

@@ -1,7 +1,7 @@
 extends SceneTree
 
 ## Expedition systems outside combat: shared hero damage (P1-16), Luz tiers (P1-17), travel
-## hunger (P1-18), traps (P2-01), curio outcomes and camp fixes (P2-09).
+## hunger (P1-18), traps (P2-01), curio outcomes and camp fixes (P2-09), Sótanos room events (P2-02).
 ##   godot --headless --path . -s tests/test_expedition_systems.gd
 
 var _fail: int = 0
@@ -27,6 +27,7 @@ func _run() -> void:
 	_test_hunger(gs)
 	await _test_traps(gs)
 	await _test_curios(gs)
+	await _test_room_events(gs)
 	_test_items(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
@@ -335,6 +336,88 @@ func _test_curios(gs) -> void:
 	for i in 5:
 		await process_frame
 	gs.mission_nodes_index.erase("sim_curio")
+
+
+func _test_room_events(gs) -> void:
+	print("Sótanos room events (P2-02)")
+	gs.reset_party_from_catalog()
+	gs.start_mission()
+	var gen: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/regions/sotanos.json"))["generator"]
+	var trap_rules = load("res://scripts/domain/trap_rules.gd")
+	_check(gen["curios"].size() + gen["traps"].size() >= 30, "Sótanos has %d room events (≥ 30)" % (gen["curios"].size() + gen["traps"].size()))
+	# Every outcome of every Sótanos event applies cleanly (ambushes are started by the screen).
+	var outcomes: Array = []
+	for cid in gen["curios"]:
+		var c: Dictionary = gs.get_curio(str(cid))
+		if c.has("key_outcome"):
+			outcomes.append(c["key_outcome"])
+		outcomes.append_array(c.get("blind", []))
+		for ch in c.get("choices", []):
+			outcomes.append_array(ch["outcomes"])
+	for tid in gen["traps"]:
+		outcomes.append(trap_rules.get_trap(str(tid))["effects"])
+	var ok: bool = true
+	for o in outcomes:
+		for p in gs.party:
+			p["hp"] = p["hp_max"]
+			p["dead"] = false
+			p["al_borde"] = false
+			p["stress"] = 0
+		gs.inventory.clear()
+		gs.apply_event_outcome(o)
+		ok = ok and gs.living_party_count() == gs.party.size()
+	_check(ok and outcomes.size() > 60, "all %d Sótanos event outcomes apply without killing a fresh party" % outcomes.size())
+
+	# New outcome keys.
+	gs.mission_light = 50
+	gs.apply_event_outcome({"light": -70})
+	_check(gs.mission_light == 0, "light: Luz never drops below 0")
+	gs.apply_event_outcome({"light": 500})
+	_check(gs.mission_light == gs.light_max(), "light: Luz never goes over the maximum")
+	for p in gs.party:
+		p["stress"] = 0
+	gs.apply_event_outcome({"stress_random": 9})
+	_check(gs.party.filter(func(p): return int(p["stress"]) == 9).size() == 1, "stress_random hits one hero")
+
+	# Choice events: item and colones costs, no "Dejarlo".
+	var caminante: Dictionary = gs.get_curio("caminante_perdido")
+	gs.inventory.clear()
+	var opts: Array = gs.curio_options(caminante)
+	_check(opts.size() == 3 and not opts[0]["enabled"] and opts[1]["enabled"], "Caminante perdido: feeding him needs gallo pinto")
+	_check(not gs.curio_can_leave(caminante) and gs.curio_can_leave(gs.get_curio("altar_roto")), "choice events offer their own way out (no Dejarlo)")
+	gs.add_item("gallo_pinto", 2)
+	opts = gs.curio_options(caminante)
+	var got: Dictionary = gs.pick_curio_option(opts[0])
+	_check(opts[0]["enabled"] and gs.item_count("gallo_pinto") == 1 and str(got.get("text", "")) != "", "feeding him spends one gallo pinto")
+	var mercado: Dictionary = gs.get_curio("mercado_clandestino")
+	gs.colones = 100
+	_check(not gs.curio_options(mercado)[0]["enabled"], "Mercado clandestino: buying needs 300 ₡")
+	gs.colones = 1000
+	gs.pick_curio_option(gs.curio_options(mercado)[0])
+	_check(gs.colones == 700, "buying costs 300 ₡")
+	# Key item option only when carried; plain curios are examined.
+	gs.inventory.clear()
+	var nicho: Dictionary = gs.get_curio("nicho_de_santos")
+	_check(gs.curio_options(nicho).map(func(o): return o["label"]) == ["Examinar"], "no candle: only Examinar")
+	gs.add_item("candela_sebo", 1)
+	opts = gs.curio_options(nicho)
+	_check(opts.size() == 2 and str(opts[0]["label"]).begins_with("Usar"), "with a candle: Usar first")
+	got = gs.pick_curio_option(opts[0])
+	_check(gs.item_count("candela_sebo") == 0 and int(got.get("stress_party", 0)) == -12, "the key item is spent for its outcome")
+
+	# The screen shows the choices and no Dejarlo.
+	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	gs.mission_nodes_index["sim_choice"] = {"id": "sim_choice", "type": "curio", "curio_id": "mesa_de_domino", "label": "Mesa de dominó"}
+	gs.current_node_id = "sim_choice"
+	screen._open_curio()
+	var labels: Array = screen._event_actions.get_children().filter(func(b): return not b.is_queued_for_deletion()).map(func(b): return str(b.text))
+	_check(labels == ["Sentarse a jugar", "Dejar la partida"], "the screen lists the choices (%s)" % str(labels))
+	screen.queue_free()
+	for i in 5:
+		await process_frame
+	gs.mission_nodes_index.erase("sim_choice")
 
 
 func _test_items(gs) -> void:

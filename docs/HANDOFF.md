@@ -17,6 +17,35 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-16 (3) — P2-02 — 36 Sótanos room events
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P2-02 `review` (the owner asked for it; the plan's current phase is still P1). New `todo` P2-10 (conditions for choice events).
+- **Changed:**
+  - `data/curios.json`: 15 new curios (blind table, 8 with a key item) and 7 choice events. Choice events: Caminante perdido, Mercado clandestino, Visión del abuelo, Mesa de dominó, Llanto en el pasillo (La Llorona), Duendes juguetones, Procesión de ánimas.
+  - `data/traps.json`: 5 new Sótanos traps (bahareque, corriente negra, cepo, barriles, vapor de cava).
+  - `data/regions/sotanos.json`: pools now hold 27 curios + 9 traps = 36. The region pool is the "tag"; there is no `data/events.json` (the plan's Files line predated P2-01).
+  - `GameState`:
+    - `curio_options` / `pick_curio_option` / `curio_can_leave` (the logic moved out of the screen, so it can be tested);
+    - new outcome keys `light` (Luz ±, clamped) and `stress_random` (one hero).
+  - `expedition_screen.gd` `_open_curio`: shows the options. Disabled choices carry a tooltip reason. Choice events have no "Dejarlo".
+  - `tools/validate_data.py`:
+    - choice schema: each curio has a blind table or choices, ≥2 choices, one of them free;
+    - every outcome has text;
+    - curio ids unique;
+    - new keys allowed;
+    - Sótanos pools must hold ≥30 events.
+  - `tests/test_expedition_systems.gd` `_test_room_events`: all 99 Sótanos outcomes apply; light clamps; stress_random; item and colones costs; key item only when carried; the screen lists the choices without Dejarlo.
+  - Docs: doc 07 §5 and §5.1 (the pool), doc 13 (curio flow).
+- **Verified:** see the commit message; `validate_data.py` 0 errors.
+- **Not verified / risks:**
+  - No owner read of the Spanish text. I checked it against doc 08: folklore figures (Llorona, duendes, ánimas) are treated as characters with rules, and the jokes are about situations. Robbing the peón costs stress.
+  - Balance is a first guess. Blind outcomes are roughly 50/50 good and bad, as before.
+  - The bot presses the first choice of a choice event.
+- **Decisions needed:** Should doc 07 §5's conditions (mercado after a fight, visión in low light) be enforced (P2-10), or are the events fine anywhere?
+- **Next step:** the owner reads the new rooms in `data/curios.json` / `data/traps.json` (or plays a Sótanos expedition) and marks P2-02 done. Otherwise sign off Phase 1 (P1-09) and take P2-04 (Sótanos enemies to ~12).
+
+---
+
 ## 2026-11-16 (2) — P3-03 — Owner decisions: misa rápida removed, Quebranto cure kept
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-03 `review` (unchanged; the owner answered the 3 questions from the entry below).

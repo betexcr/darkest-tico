@@ -172,11 +172,17 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] `humo_infernal` (doc 07's mid-combat smoke) — needs combat environment hooks; later
 
 ### P2-02 · M · 30–40 Sótanos event variants
-- Status: `todo` · Depends: P2-01
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-16): 36 events built and tested headless; owner to read the Spanish text and play a few rooms · Depends: P2-01
 - Spec: `07`, `05` §1.1, `08` (tone)
-- Files: `data/events.json`
+- Files: `data/curios.json` (15 curios + 7 choice events), `data/traps.json` (5 traps), `data/regions/sotanos.json` (pools; the region pool is the tag, there is no separate `events.json`), `scripts/autoload/game_state.gd` (`curio_options`, `pick_curio_option`, `curio_can_leave`; outcome keys `light`, `stress_random`), `scripts/expedition/expedition_screen.gd` (`_open_curio`), `tools/validate_data.py`, `tests/test_expedition_systems.gd`
 - Done when:
-  - [ ] ≥30 events tagged for `sotanos`, Spanish text, tone-reviewed against `08`
+  - [x] ≥30 events tagged for `sotanos` (36), Spanish text, tone-reviewed against `08` by the agent (owner read pending)
+- Follow-up: P2-10 (event conditions: after combat, low light).
+
+### P2-10 · S · Conditions for choice events
+- Status: `todo` · Depends: P2-02
+- Spec: `07` §5 (Condition column)
+- Done when: [ ] Choice events can require a situation when the room is entered (e.g. `mercado_clandestino` after a fight, `vision_del_abuelo` in low Luz); otherwise a fallback curio is used
 
 ### P2-03 · M · Classes 5–8
 - Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints added in P1-03a) · Depends: P1-03, P1-04

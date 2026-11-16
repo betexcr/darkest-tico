@@ -862,28 +862,20 @@ func _open_curio() -> void:
 		_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
 		return
 	_open_event(str(curio.get("name", "Lugar extraño")), str(curio.get("text", "")))
-	var key: String = str(curio.get("key_item", ""))
-	if key != "" and GameState.item_count(key) > 0:
-		_event_button("Usar %s" % GameState.get_item(key).get("name", key), func():
-			GameState.ledger_add("curios")
-			GameState.remove_item(key, 1)
-			_curio_result(str(curio.get("key_text", "")), curio.get("key_outcome", {}))
-		)
-	_event_button("Examinar", func():
-		GameState.ledger_add("curios")
-		var table: Array = curio.get("blind", [])
-		var total: float = 0.0
-		for o in table:
-			total += float(o.get("weight", 1))
-		var roll: float = randf() * total
-		for o in table:
-			roll -= float(o.get("weight", 1))
-			if roll <= 0.0:
+	for opt in GameState.curio_options(curio):
+		_event_button(str(opt["label"]), func():
+			var o: Dictionary = GameState.pick_curio_option(opt)
+			if o.is_empty():
+				_resolve_event("No pasa nada.")
+			else:
 				_curio_result(str(o.get("text", "")), o)
-				return
-		_resolve_event("No pasa nada.")
-	)
-	_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
+		)
+		if not bool(opt["enabled"]):
+			var b: Button = _event_actions.get_child(_event_actions.get_child_count() - 1)
+			b.disabled = true
+			b.tooltip_text = str(opt["reason"])
+	if GameState.curio_can_leave(curio):
+		_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
 
 
 func _curio_result(text: String, outcome: Dictionary) -> void:
