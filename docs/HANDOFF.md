@@ -36,7 +36,12 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
     - Sótanos pools must hold ≥30 events.
   - `tests/test_expedition_systems.gd` `_test_room_events`: all 99 Sótanos outcomes apply; light clamps; stress_random; item and colones costs; key item only when carried; the screen lists the choices without Dejarlo.
   - Docs: doc 07 §5 and §5.1 (the pool), doc 13 (curio flow).
-- **Verified:** see the commit message; `validate_data.py` 0 errors.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and the whole AGENTS test list: 0 failures, no `SCRIPT ERROR`. The new `_test_room_events` has 13 checks.
+  - Bot run, 2 campaigns × 6 weeks: no `SCRIPT ERROR` and no stuck room.
+    - 11 of 12 expeditions won.
+    - The one loss was a 74-round fight at Veterano with a healer-heavy party (2 Abuelas), the stall already noted in doc 09 §5, not a room event.
 - **Not verified / risks:**
   - No owner read of the Spanish text. I checked it against doc 08: folklore figures (Llorona, duendes, ánimas) are treated as characters with rules, and the jokes are about situations. Robbing the peón costs stress.
   - Balance is a first guess. Blind outcomes are roughly 50/50 good and bad, as before.
