@@ -113,6 +113,9 @@ func _run() -> void:
 		h["stress"] = 0
 	_start(gs, cc, fight_room, false)
 	hero = await _wait_hero(cc)
+	# Enemies may act before the first hero (and their hits cause stress): measure from here.
+	for h in gs.party:
+		h["stress"] = 0
 	cc.retreat()
 	_check(fled[0] == 1 and over[0] == 0 and not cc.is_running(), "chance 1: combat_fled once, no victory or defeat")
 	_check(gs.party.all(func(h): return int(h.get("stress", 0)) == 10 and not h.get("dead", false)), "every hero gains combat.retreat_stress (10) and lives")
