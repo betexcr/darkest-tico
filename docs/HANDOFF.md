@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (14) — P4-17 fix — town art loads before Godot has imported it
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
+- **Status after session:** P4-17 `review`.
+- **Changed:** `hacienda_hub.gd` `_load_texture`. The owner opened `main` and saw no buildings: `*.import` is in `.gitignore`, so new PNGs are invisible to `ResourceLoader` until the editor imports them. The hub now falls back to `Image.load_from_file` (and warns if a file is missing).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - `test_ui`, `test_hub`, `test_quirks`, `test_hub_activities`, `test_town_events`: 0 failures.
+  - Town screenshot with every `.import` removed: all buildings and the backdrop show.
+- **Not verified / risks:** an exported build needs the PNGs imported (the editor does this on export).
+- **Decisions needed:** see entry 13.
+- **Next step:** owner review of P4-17. Otherwise P5-07.
+
+---
+
 ## 2026-11-17 (13) — P4-17 — Town view: clickable buildings, Darkest Dungeon style
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-17 `review` (owner to look at the screenshots / play the hub).

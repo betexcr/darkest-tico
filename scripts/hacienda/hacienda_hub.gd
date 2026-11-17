@@ -194,11 +194,10 @@ func _try_optional_hub_ambient() -> void:
 func _try_load_hub_background() -> void:
 	_town_data = _load_town()
 	var p: String = str(_town_data.get("background", "res://assets/ui_bg/hub_bg.png"))
-	if ResourceLoader.exists(p):
-		var tex := load(p) as Texture2D
-		if tex != null:
-			_bg.texture = tex
-			return
+	var tex: Texture2D = _load_texture(p)
+	if tex != null:
+		_bg.texture = tex
+		return
 	var img2 := Image.create(512, 512, false, Image.FORMAT_RGB8)
 	img2.fill(Color(0.11, 0.07, 0.15))
 	_bg.texture = ImageTexture.create_from_image(img2)
@@ -906,6 +905,21 @@ func _on_quit_pressed() -> void:
 
 # --- Town view (P4-17) ------------------------------------------------------------------
 
+## Loads a picture. *.import files are not in git, so right after a pull the editor may not
+## have imported new art yet: then the PNG is read straight from disk.
+static func _load_texture(path: String) -> Texture2D:
+	if ResourceLoader.exists(path):
+		var tex := load(path) as Texture2D
+		if tex != null:
+			return tex
+	if FileAccess.file_exists(path):
+		var img := Image.load_from_file(path)
+		if img != null and not img.is_empty():
+			return ImageTexture.create_from_image(img)
+	push_warning("Town art missing: %s" % path)
+	return null
+
+
 static func _load_town() -> Dictionary:
 	var f := FileAccess.open(TOWN_PATH, FileAccess.READ)
 	if f == null:
@@ -936,7 +950,7 @@ func _build_town() -> void:
 	rows.sort_custom(func(a, b): return float(a.get("bottom", 0)) < float(b.get("bottom", 0)))
 	for row in rows:
 		var art: String = str(row.get("art", ""))
-		var tex: Texture2D = load(art) as Texture2D if ResourceLoader.exists(art) else null
+		var tex: Texture2D = _load_texture(art)
 		if tex == null:
 			continue
 		var b = TownBuildingScript.new()
