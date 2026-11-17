@@ -21,6 +21,7 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
+const QuirksScript := preload("res://scripts/domain/quirks.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -45,7 +46,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 11
+const SAVE_VERSION := 12
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -974,7 +975,9 @@ func refresh_recruits() -> void:
 	for _k in recruit_pool_size():
 		if ids.is_empty():
 			break
-		recruit_pool.append(_instantiate_hero(_heroes_by_id[ids[randi() % ids.size()]]))
+		var r: Dictionary = _instantiate_hero(_heroes_by_id[ids[randi() % ids.size()]])
+		QuirksScript.roll_recruit(r)
+		recruit_pool.append(r)
 
 
 ## Terminal de Buses de Sarchí. Returns a message for the hub.
@@ -1112,6 +1115,7 @@ func end_of_expedition_week() -> void:
 	for k in range(party.size() - 1, -1, -1):
 		if bool(party[k].get("dead", false)):
 			party.remove_at(k)
+	var quirk_lines: PackedStringArray = _roll_expedition_quirks()
 	var activity_lines: PackedStringArray = _resolve_hub_activities()
 	_log_week(fallen.size(), roster.filter(func(h): return HubActivitiesScript.is_busy(h)).size())
 	refresh_recruits()
@@ -1119,8 +1123,79 @@ func end_of_expedition_week() -> void:
 	if not fallen.is_empty():
 		last_week_report += " Descansen en paz: %s." % ", ".join(fallen)
 	last_week_report += " Llegaron candidatos nuevos a la terminal."
+	if not quirk_lines.is_empty():
+		last_week_report += "\n" + "\n".join(quirk_lines)
 	if not activity_lines.is_empty():
 		last_week_report += "\n" + "\n".join(activity_lines)
+
+
+# --- Quirks and the Clínica de Espantos (P3-06, doc 02 §6; data/quirks.json) ------------
+
+## Week end: everyone who went on the expedition (and lived) may pick up quirks. Report lines.
+func _roll_expedition_quirks() -> PackedStringArray:
+	var out: PackedStringArray = PackedStringArray()
+	for h in party:
+		if not h is Dictionary or bool(h.get("dead", false)):
+			continue
+		for id in QuirksScript.roll_after_expedition(h):
+			var q: Dictionary = QuirksScript.get_quirk(str(id))
+			var what: String = {"positive": "ganó", "negative": "se le pegó", "disease": "se enfermó de"}.get(str(q.get("kind", "")), "ganó")
+			out.append("%s %s %s (%s)." % [h.get("name", "?"), what, q.get("name", id), QuirksScript.mods_text(str(id))])
+	return out
+
+
+## What the Clínica can do for `hero`: one entry per quirk {id, name, kind, desc, effects,
+## locked, actions: [{action, label, cost, enabled, reason}]}. action: remove | lock.
+func clinic_options(hero: Dictionary) -> Array:
+	var out: Array = []
+	var closed: bool = TownEventsScript.is_closed(active_event(), "clinica")
+	for e in QuirksScript.of(hero):
+		var id: String = str(e["id"])
+		var q: Dictionary = QuirksScript.get_quirk(id)
+		var op: String = QuirksScript.op_for(id)
+		var price: int = int(round(QuirksScript.cost(op, hero) * TownEventsScript.service_mult(active_event(), "clinica")))
+		var acts: Array = []
+		var wanted: Array = [["remove", "Quitar" if op != "disease" else "Curar"]]
+		if op == "positive" and not bool(e.get("locked", false)):
+			wanted.push_front(["lock", "Fijar"])
+		for w in wanted:
+			var why: String = ""
+			if closed:
+				why = "La Clínica está cerrada esta semana."
+			elif bool(e.get("locked", false)) and w[0] == "remove":
+				why = "Está fijado: ya no se quita."
+			elif QuirksScript.used_this_week(hero, op, week):
+				why = "%s ya tuvo su tratamiento %s esta semana." % [hero.get("name", "?"), "de rasgos buenos" if op == "positive" else "de rasgos malos"]
+			elif colones < price:
+				why = "No alcanza: cuesta %d ₡." % price
+			acts.append({"action": w[0], "label": "%s — %d ₡" % [w[1], price], "cost": price, "enabled": why == "", "reason": why})
+		out.append({"id": id, "name": str(q.get("name", id)), "kind": str(q.get("kind", "")), "desc": str(q.get("desc", "")),
+			"effects": QuirksScript.mods_text(id), "locked": bool(e.get("locked", false)), "actions": acts})
+	return out
+
+
+## Pays and treats: removes a quirk / cures a disease, or locks a positive quirk (a full
+## roster of positives then keeps it). Returns a message for the hub.
+func clinic_treat(hero: Dictionary, quirk_id: String, action: String) -> String:
+	for opt in clinic_options(hero):
+		if str(opt["id"]) != quirk_id:
+			continue
+		for a in opt["actions"]:
+			if str(a["action"]) != action:
+				continue
+			if not bool(a["enabled"]):
+				return str(a["reason"])
+			colones -= int(a["cost"])
+			var op: String = QuirksScript.op_for(quirk_id)
+			QuirksScript.mark_used(hero, op, week)
+			if action == "lock":
+				QuirksScript.set_locked(hero, quirk_id, true)
+				return "En la Clínica le fijan a %s lo de %s: ya no se le quita (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+			QuirksScript.remove(hero, quirk_id)
+			if op == "disease":
+				return "En la Clínica curan a %s del %s (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+			return "En la Clínica le quitan a %s lo de %s (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+	return "Eso no se trata aquí."
 
 
 # --- Iglesia Vieja + Cantina del Centro: stress activities (doc 02 §7, P3-03) ---------
@@ -1161,6 +1236,10 @@ func activity_block_reason(hero: Dictionary, building_id: String, activity_id: S
 		return "%s ya está ocupado esta semana." % hero.get("name", "?")
 	if int(hero.get("stress", 0)) <= 0:
 		return "%s no tiene estrés que quitarse." % hero.get("name", "?")
+	# Quirks (P3-06): some heroes won't set foot in one of the two.
+	var refusal: Dictionary = QuirksScript.refusal(hero, building_id)
+	if not refusal.is_empty():
+		return "%s (%s) no pone un pie en %s." % [hero.get("name", "?"), refusal.get("name", ""), bname]
 	if activity_slots_used(building_id, activity_id) >= HubActivitiesScript.slots(act):
 		return "%s: no quedan cupos esta semana." % act.get("name", "?")
 	# Someone has to go on the expedition, or the week never ends.
@@ -2028,6 +2107,15 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 		out.erase("busy")
 	if not out.get("town_buffs", null) is Array:
 		out.erase("town_buffs")
+	# v12: quirks [{id, locked}] (unknown ids dropped) and this week's Clínica use.
+	var qs: Array = []
+	if out.get("quirks", null) is Array:
+		for qe in out["quirks"]:
+			if qe is Dictionary and not QuirksScript.get_quirk(str(qe.get("id", ""))).is_empty():
+				qs.append({"id": str(qe["id"]), "locked": bool(qe.get("locked", false))})
+	out["quirks"] = qs
+	if not out.get("clinic", null) is Dictionary:
+		out.erase("clinic")
 	recompute_stats(out)
 	var smax: int = maxi(int(out.get("stress_max", 0)), BalanceScript.int_of("stress.colapso"))
 	out["stress_max"] = smax

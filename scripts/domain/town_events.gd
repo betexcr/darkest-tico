@@ -155,7 +155,7 @@ static func kind_label(ev: Dictionary) -> String:
 
 const CATEGORY_NAMES := {"consumable": "consumibles", "healing": "remedios y vendas", "weapon": "armas", "armor": "armaduras", "accessory": "accesorios"}
 const SERVICE_NAMES := {"iglesia": "Iglesia Vieja", "cantina": "Cantina del Centro", "ebais": "EBAIS", "terminal": "Terminal de Buses",
-	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "casa_comunal": "Casa Comunal"}
+	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "casa_comunal": "Casa Comunal", "clinica": "Clínica de Espantos"}
 
 
 static func _pct_text(pct: int) -> String:

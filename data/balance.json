@@ -86,6 +86,20 @@
     "heal_cost_per_hp": 15,
     "heal_min_cost": 100
   },
+  "quirks": {
+    "_doc": "Quirks (P3-06, data/quirks.json). After each expedition every hero who went may gain a positive (positive_chance), a negative (negative_chance) and a disease (disease_chance); at max_positive / max_negative a new one replaces a random unlocked one (none if all are locked). Recruits arrive with one of each with recruit_positive_chance / recruit_negative_chance. Clínica prices (doc 04 §3.5) by resolve tier: levels below tier_levels[0], below tier_levels[1], the rest. Each hero: one negative removal and one positive lock/removal per week; diseases any time.",
+    "positive_chance": 0.25,
+    "negative_chance": 0.25,
+    "disease_chance": 0.08,
+    "max_positive": 5,
+    "max_negative": 5,
+    "recruit_positive_chance": 0.5,
+    "recruit_negative_chance": 0.5,
+    "tier_levels": [3, 5],
+    "remove_negative_cost": [1500, 2100, 2700],
+    "positive_cost": [7500, 10500, 13500],
+    "disease_cost": [750, 1050, 1350]
+  },
   "limits": {
     "_doc": "Owner 2026-11-12: tunable limits. The party size (4) stays in code: the stage, positions 1-4 and the hub are built around it.",
     "roster_cap": 8,

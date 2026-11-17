@@ -23,6 +23,7 @@ extends RefCounted
 
 const DATA_PATH := "res://data/statuses.json"
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const QuirksScript := preload("res://scripts/domain/quirks.gd")
 
 static var _data: Dictionary = {}
 
@@ -238,7 +239,8 @@ static func remove(unit: Dictionary, status: String) -> bool:
 
 
 ## Sum of one stat's changes from salado/chiva/encarrerado stacks, the Al Borde / Convaleciente
-## states, the hero's Quebranto/Virtud ("mental_mods") and camp buffs (hero["camp_buffs"]).
+## states, the hero's Quebranto/Virtud ("mental_mods"), quirks (hero["quirks"], P3-06) and
+## camp buffs (hero["camp_buffs"]).
 ## Stats: accuracy, dodge, speed, crit, prot, dmg_pct, stress_pct.
 static func stat(unit: Dictionary, key: String) -> int:
 	var n: int = 0
@@ -255,6 +257,8 @@ static func stat(unit: Dictionary, key: String) -> int:
 	elif bool(unit.get("convaleciente", false)):
 		n += int(sm.get("convaleciente", {}).get(key, 0))
 	n += mental_mod(unit, key)
+	# Quirks and diseases (P3-06): always on.
+	n += QuirksScript.mod(unit, key)
 	for b in unit.get("camp_buffs", []):
 		if b is Dictionary and b.get("mods", null) is Dictionary:
 			n += int(b["mods"].get(key, 0))

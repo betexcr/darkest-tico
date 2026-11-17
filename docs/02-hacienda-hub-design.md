@@ -97,6 +97,29 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
   - Lock or remove one positive trait per week.
 - Disease/curse treatment uses separate slot pipeline.
 
+### Built (P3-06, 2026-11-17)
+
+- **Data:**
+  - `data/quirks.json`: 8 positive, 8 negative, 3 diseases (Tico names). Each changes combat stats (`mods`, read by `StatusEffects.stat`) and may `refuse` a building.
+    - *Descreído* won't go to the Iglesia.
+    - *No le entra el guaro* won't go to the Cantina.
+    - This is the owner's 2026-11-16 decision: refusals come with quirks.
+  - Numbers in `data/balance.json` `quirks`; rules in `scripts/domain/quirks.gd`.
+- **Gaining:**
+  - After each expedition, every hero who went and lived rolls a positive (25%), a negative (25%) and a disease (8%).
+  - Caps: 5 positive and 5 negative. At the cap, a new one replaces a random unlocked one.
+  - Recruits arrive with a positive and a negative at 50% each.
+  - The week report says who got what.
+- **The Clínica,** for the selected hero (the button under the Iglesia/Cantina panel opens the card):
+  - remove a negative quirk (1,500 / 2,100 / 2,700);
+  - lock or remove a positive one (7,500 / 10,500 / 13,500);
+  - cure a disease (750 / 1,050 / 1,350).
+  - Prices are tiered by resolve: levels 0–2, 3–4, 5–6 (doc 04 §3.5).
+  - Each hero gets one negative treatment and one positive treatment per week; diseases any time. Treatment is immediate: no busy week.
+- **Town events:** `closed` / `service_pct` accept `clinica`.
+- **Save:** v12 (`quirks`, `clinic`).
+- **Not yet:** the upgrade tracks above (with the building-upgrade system), treatment slots, "locked negative" quirks, and curio/enemy sources of diseases.
+
 ## 7) Iglesia Vieja + Cantina del Centro (Stress Relief Duality)
 
 Each branch has 3 activities with independent slots and upgrade levels.

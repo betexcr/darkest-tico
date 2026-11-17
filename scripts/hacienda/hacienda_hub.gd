@@ -16,6 +16,7 @@ const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
+const QuirksScript := preload("res://scripts/domain/quirks.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -276,6 +277,7 @@ func _refresh_relief() -> void:
 			_relief_box.add_child(cancel)
 		else:
 			head.text = "%s sigue en %s una semana más (%s)." % [h.get("name", "?"), bname, act.get("name", "?")]
+		_add_clinic_button(h)
 		return
 	head.text = "Mandar a %s (estrés %d) una semana a descansar — no sale de expedición:" % [h.get("name", "?"), int(h.get("stress", 0))]
 	for b in HubActivitiesScript.buildings():
@@ -313,6 +315,70 @@ func _refresh_relief() -> void:
 			btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
 			row.add_child(btn)
 		_relief_box.add_child(row)
+	_add_clinic_button(h)
+
+
+# --- Clínica de Espantos (P3-06) -----------------------------------------------------
+
+## "Clínica de Espantos" for the selected hero: opens the card with their quirks.
+func _add_clinic_button(h: Dictionary) -> void:
+	var b := Button.new()
+	var n: int = QuirksScript.of(h).size()
+	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "clinica")
+	b.text = "Clínica de Espantos: cerrada esta semana" if closed else "Clínica de Espantos — rasgos de %s (%d)" % [h.get("name", "?"), n]
+	b.add_theme_font_size_override("font_size", 13)
+	b.tooltip_text = "Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades.\nCada héroe: un tratamiento de rasgos malos y uno de buenos por semana; las enfermedades, cuando sea."
+	b.disabled = n == 0
+	b.pressed.connect(_show_clinic.bind(h))
+	_relief_box.add_child(b)
+
+
+func _show_clinic(h: Dictionary) -> void:
+	var dlg := AcceptDialog.new()
+	dlg.title = "Clínica de Espantos — %s (Resolución %d)" % [h.get("name", "?"), int(h.get("resolve_level", 0))]
+	dlg.ok_button_text = "Cerrar"
+	var box := VBoxContainer.new()
+	box.custom_minimum_size = Vector2(560, 0)
+	box.add_theme_constant_override("separation", 6)
+	var opts: Array = GameState.clinic_options(h)
+	if opts.is_empty():
+		var none := Label.new()
+		none.text = "%s no tiene rasgos ni enfermedades." % h.get("name", "?")
+		box.add_child(none)
+	var tags: Dictionary = {"positive": "Bueno", "negative": "Malo", "disease": "Enfermedad"}
+	var colors: Dictionary = {"positive": Color(0.6, 0.85, 0.55), "negative": Color(0.95, 0.55, 0.5), "disease": Color(0.85, 0.75, 0.45)}
+	for o in opts:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		var lbl := Label.new()
+		lbl.text = "%s%s — %s: %s" % [o["name"], " (fijado)" if o["locked"] else "", tags.get(o["kind"], ""), o["effects"]]
+		lbl.tooltip_text = "%s\n%s\n%s" % [o["name"], o["desc"], o["effects"]]
+		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+		lbl.add_theme_color_override("font_color", colors.get(o["kind"], Color.WHITE))
+		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		lbl.custom_minimum_size = Vector2(300, 0)
+		row.add_child(lbl)
+		for a in o["actions"]:
+			var b := Button.new()
+			b.text = str(a["label"])
+			b.disabled = not bool(a["enabled"])
+			b.tooltip_text = str(a["reason"]) if not bool(a["enabled"]) else str(a["label"])
+			var qid: String = str(o["id"])
+			var act: String = str(a["action"])
+			b.pressed.connect(func():
+				dlg.hide()
+				_say(GameState.clinic_treat(h, qid, act))
+			)
+			row.add_child(b)
+		box.add_child(row)
+	dlg.add_child(box)
+	dlg.visibility_changed.connect(func():
+		if not dlg.visible:
+			dlg.queue_free()
+	)
+	add_child(dlg)
+	dlg.popup_centered(Vector2i(620, 0))
 
 
 # --- Equipment (drag from the alforja onto a slot; click a slot to unequip) ---------
@@ -517,6 +583,9 @@ func _roster_row(h: Dictionary) -> Control:
 		ranks.append("%s %d" % [GameState.get_skill(str(sid)).get("name", sid), SkillRanksScript.rank(h, str(sid))])
 	info.tooltip_text = "%s\nResolución %d: %s (%s)\nPosiciones ideales en combate: %s (el orden de la cuadrilla es la posición: 1 = adelante)\nHabilidades (rango): %s\nClic para ver su equipo y sus habilidades." % [
 		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ideal_txt, ", ".join(ranks)]
+	var quirk_names: Array = QuirksScript.of(h).map(func(e): return "%s%s" % [QuirksScript.get_quirk(str(e["id"])).get("name", ""), " (fijado)" if e.get("locked", false) else ""])
+	if not quirk_names.is_empty():
+		info.tooltip_text += "\nRasgos: " + ", ".join(quirk_names)
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):

@@ -38,9 +38,9 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 
 | Key | Contents |
 |---|---|
-| `version` | `GameState.SAVE_VERSION` (11) |
+| `version` | `GameState.SAVE_VERSION` (12) |
 | `colones`, `week` | Campaign money and week |
-| `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`; `busy` = Iglesia/Cantina booking, `town_buffs` = side-effect buffs waiting for the next expedition) |
+| `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`; `busy` = Iglesia/Cantina booking, `town_buffs` = side-effect buffs waiting for the next expedition, `quirks` = quirks and diseases) |
 | `party_uids` | The expedition party in formation order (position 1 first) |
 | `recruit_pool`, `next_uid` | Candidates at the terminal; next hero uid |
 | `selected_mission_region_path`, `selected_difficulty_id` | The last expedition choice in the hub |
@@ -65,6 +65,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | v9 | A hero's `skill_ids` always follow the class; a rank in a replaced skill moves to the new skill in the same slot |
 | v10 | Iglesia Vieja / Cantina (P3-03): hero `busy` {building, activity, cost, weeks_left, resolved} and `town_buffs`; a busy hero is never loaded into the party |
 | v11 | `week_colones` {in, out}: the week's money so far, for telemetry (P5-01) |
+| v12 | Hero `quirks` [{id, locked}] (unknown ids dropped) and `clinic` {week, remove_negative, positive} (P3-06) |
 
 `_sanitize_runtime_hero()` fills hero fields added after a save was written, so new hero keys don't need a version bump on their own. Change the version when a key is renamed or its meaning changes:
 1. Bump `SAVE_VERSION`.

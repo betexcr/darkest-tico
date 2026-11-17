@@ -27,6 +27,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from collections import Counter
 from collections import deque
 from pathlib import Path
 
@@ -191,7 +192,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal"}
+    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal", "clinica"}
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"
@@ -234,6 +235,38 @@ def main() -> int:
             errors.append(f"{where} unknown region '{m['region']}'")
     if not 0 <= int(te_raw.get("chance_pct", -1)) <= 100:
         errors.append("town_events.json: chance_pct must be 0-100")
+
+    # Quirks and diseases (P3-06, doc 02 §6).
+    qraw = load(DATA / "quirks.json") or {}
+    qids = set()
+    kinds_count = Counter()
+    for q in qraw.get("quirks", []):
+        qw = f"quirks.json: '{q.get('id')}'"
+        if q.get("id") in qids:
+            errors.append(f"{qw} duplicate id")
+        qids.add(q.get("id"))
+        if q.get("kind") not in ("positive", "negative", "disease"):
+            errors.append(f"{qw} kind must be positive | negative | disease")
+        kinds_count[q.get("kind")] += 1
+        if not q.get("name") or not q.get("desc"):
+            errors.append(f"{qw} needs name and desc")
+        mods = q.get("mods") or {}
+        for mk, mv in mods.items():
+            if mk not in stat_keys or not isinstance(mv, int):
+                errors.append(f"{qw} unknown stat or non-integer '{mk}'")
+        for b in q.get("refuses", []):
+            if b not in ("iglesia", "cantina"):
+                errors.append(f"{qw} refuses unknown building '{b}'")
+        if not mods and not q.get("refuses"):
+            errors.append(f"{qw} does nothing (needs mods or refuses)")
+        score = sum(-v if mk == "stress_pct" else v for mk, v in mods.items())
+        if q.get("kind") == "positive" and (score <= 0 or q.get("refuses")):
+            errors.append(f"{qw} is positive but its mods don't help")
+        if q.get("kind") in ("negative", "disease") and score > 0:
+            errors.append(f"{qw} is {q.get('kind')} but its mods help")
+    for k in ("positive", "negative", "disease"):
+        if kinds_count[k] < 1:
+            errors.append(f"quirks.json: needs at least one {k} quirk")
 
     # Iglesia Vieja + Cantina activities (doc 02 §7, P3-03).
     ha_raw = load(DATA / "hub_activities.json") or {}
@@ -805,6 +838,9 @@ BALANCE_KEYS = {
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
     "limits.graveyard_cap": "pos", "light.max": "pos", "light.snuff": "int>=0",
     "hunger.every_moves": "pos", "hunger.hp_pct": "pct", "hunger.stress": "int>=0",
+    "quirks.positive_chance": "chance", "quirks.negative_chance": "chance", "quirks.disease_chance": "chance",
+    "quirks.max_positive": "pos", "quirks.max_negative": "pos",
+    "quirks.recruit_positive_chance": "chance", "quirks.recruit_negative_chance": "chance",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).
@@ -853,6 +889,14 @@ def check_balance(errors: list) -> None:
     sc = get("enemies.squad_hp_scale")
     if not isinstance(sc, list) or len(sc) != 5 or any(not isinstance(x, (int, float)) or x <= 0 for x in sc):
         errors.append("balance.json: enemies.squad_hp_scale needs 5 positive numbers (squad size 0-4)")
+    # P3-06 Clínica prices (doc 04 §3.5): 3 resolve tiers; tier_levels: 2 rising resolve levels.
+    tl = get("quirks.tier_levels")
+    if not isinstance(tl, list) or len(tl) != 2 or tl != sorted(tl) or any(not isinstance(x, int) or not 1 <= x <= 6 for x in tl):
+        errors.append("balance.json: quirks.tier_levels must be 2 rising resolve levels (1-6)")
+    for k in ("remove_negative_cost", "positive_cost", "disease_cost"):
+        v = get(f"quirks.{k}")
+        if not isinstance(v, list) or len(v) != 3 or any(not isinstance(x, int) or x < 0 for x in v):
+            errors.append(f"balance.json: quirks.{k} must be 3 whole prices (one per resolve tier)")
     dmg = get("afflictions.ira_ciega_damage")
     if not isinstance(dmg, list) or len(dmg) != 2 or dmg[0] > dmg[1] or dmg[0] < 0:
         errors.append("balance.json: afflictions.ira_ciega_damage must be [min, max]")
@@ -873,7 +917,8 @@ def check_balance(errors: list) -> None:
     used = set()
     for gd in (ROOT / "scripts").rglob("*.gd"):
         used |= set(re.findall(r'BalanceScript\.(?:num|int_of|arr|value)\("([a-z_.]+)"\)', gd.read_text(encoding="utf-8")))
-    arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage", "light.tiers"}
+    arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage", "light.tiers",
+              "quirks.tier_levels"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
 
