@@ -4,7 +4,7 @@
   "initial_light": 100,
   "provisions": { "gallo_pinto": 10, "candela_sebo": 3 },
   "light_decay_per_move": 8,
-  "objective_reward_colones": 640,
+  "objective_reward_colones": 720,
   "region_level": 0,
   "generator": {
     "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching. squads + squad_template_pct (P2-04): authored mixed squads used for that share of regular fights (doc 05 §2.6); Ratas de troje add their pack. roaming (P2-05, doc 05 §3.2): a mini-boss placed in a combat, empty, curio or trap room (a curio/trap room keeps its event after the fight) with chance_pct by difficulty; it moves to a neighbouring room every move_every party moves (never into the party); killing it pays bounty_colones (+ one equipment); it flees after its flee_after rounds.",
@@ -42,14 +42,14 @@
     ],
     "boss_enemy_id": "mayordomo_hundido",
     "reward_colones": [
-      240,
-      360
+      270,
+      405
     ],
     "elite_reward_colones": [
-      400,
-      520
+      450,
+      585
     ],
-    "boss_reward_colones": 720,
+    "boss_reward_colones": 810,
     "labels": {
       "safe": [
         "Boca del sótano"

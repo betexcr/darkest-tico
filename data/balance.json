@@ -14,9 +14,9 @@
     "miss_stress": 3,
     "encarrerado_turns": 2,
     "enemy_base_crit": 5,
-    "enemy_stress_pct": 150,
+    "enemy_stress_pct": 60,
     "long_fight_from": 12,
-    "long_fight_stress": 4
+    "long_fight_stress": 3
   },
   "crits": {
     "_doc": "Doc 01 §2.3 stress shock (owner 2026-11-11, Darkest Dungeon style): a hero's crit relieves party_relief stress for every living hero; an enemy crit adds enemy_crit_stress to the hero hit.",
