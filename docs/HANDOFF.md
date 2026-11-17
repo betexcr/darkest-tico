@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (12) — P4-16 — Skill tooltips stay up during a fight
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-16 done. P4-17 (town view) claimed, `in-progress`.
+- **Changed:**
+  - `expedition_screen.gd`: the combat action bar is no longer freed and rebuilt each turn. `_bar_button` refills the same SkillButtons in place, and `_lock_skills` disables them after a hero acts instead of clearing them. A hovered button stays alive, so its tooltip doesn't close when another unit acts.
+  - `skill_button.gd`: `setup` can be called again (it replaces the icon and pips); `action` is the click callable and is ignored while the button is disabled.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+  - `test_ui` has a new "Combat bar" section (same nodes after acting, locked, reused next turn); it passed 15 runs in a row.
+- **Not verified / risks:** not hovered by hand in a windowed game. A tooltip that is open when the next hero's turn starts shows the old skill until the mouse moves.
+- **Decisions needed:** none.
+- **Next step:** P4-17 (town view), see the plan.
+
+---
+
 ## 2026-11-17 (11) — Merge measured; main updated
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (= `main`)
 - **Status after session:**

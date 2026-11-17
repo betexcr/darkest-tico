@@ -543,7 +543,7 @@ func _on_equipment_changed(message: String) -> void:
 	if _mode == Mode.COMBAT and not hero.is_empty() and _equipment_of(hero) != _turn_equipment:
 		# The swap already happened; it costs the hero's turn.
 		GameState.equip_turn_hero = {}
-		_clear_skills()
+		_lock_skills()
 		_refresh_all()
 		_combat.spend_turn_on_equipment()
 		return
@@ -1170,7 +1170,7 @@ func _execute_pending(target: Dictionary, action: Dictionary = {}) -> void:
 		action = _pending
 	_pending = {}
 	_clear_selectable()
-	_clear_skills()
+	_lock_skills()
 	var side: String = str(action.get("side", ""))
 	if side == "enemy" and not target.is_empty():
 		_selected_enemy = target
@@ -1188,77 +1188,102 @@ func _on_hero_turn(hero: Dictionary) -> void:
 	_view_hero(hero)
 	_pending = {}
 	_clear_selectable()
-	_clear_skills()
+	_bar_begin()
 	_update_turn_label()
 	GameState.equip_turn_hero = hero
 	_turn_equipment = _equipment_of(hero)
-	# One row of icons: the hero's skills, then Alforja, Moverse, Guardia and Pasar.
+	# One row of icons: the hero's skills, then Alforja, Moverse, Guardia, Retirada and Pasar.
 	# Hover = name + description. Skills out of reach from this position are greyed out.
+	# The buttons are reused from turn to turn (P4-16): an open tooltip stays up while the
+	# other units act.
 	var blocked: int = 0
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = GameState.hero_skill(hero, str(sid))
 		if sk.is_empty():
 			continue
-		var b = SkillButtonScript.new()
 		var rank: int = int(sk.get("rank", 1))
-		b.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank], _skill_tooltip(sk),
-			rank, SkillRanksScript.max_rank())
 		var side: String = {"enemy": "enemy", "ally": "ally"}.get(str(sk.get("target", "enemy" if str(sk.get("kind", "")) == "attack" else "self")), "")
-		b.pressed.connect(func(): _begin_pending({"side": side, "skill": sk}))
-		if not _combat.skill_usable(hero, sk):
-			b.disabled = true
-			b.modulate = Color(1, 1, 1, 0.35)
+		var usable: bool = _combat.skill_usable(hero, sk)
+		_bar_button(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank], _skill_tooltip(sk),
+			func(): _begin_pending({"side": side, "skill": sk}), usable, rank, SkillRanksScript.max_rank())
+		if not usable:
 			blocked += 1
-		_skills.add_child(b)
-	var bag_btn = SkillButtonScript.new()
-	bag_btn.setup("_items", "item", "Alforja", "Usar un artículo (agua de pipa, venda, café...). Usarlo gasta el turno.")
-	bag_btn.pressed.connect(_show_combat_items.bind(hero))
-	_skills.add_child(bag_btn)
-	var move_btn = SkillButtonScript.new()
-	move_btn.setup("_move", "guard", "Moverse", "Cambia de lugar con el héroe de al lado (adelante o atrás). Gasta el turno.")
-	move_btn.pressed.connect(func(): _begin_pending({"side": "ally", "move": true}))
-	if _combat.move_options(hero).is_empty():
-		move_btn.disabled = true
-		move_btn.modulate = Color(1, 1, 1, 0.35)
-	_skills.add_child(move_btn)
-	var guard_btn = SkillButtonScript.new()
-	guard_btn.setup("_guard", "guard", "Guardia", "Se cubre: recibe la mitad del daño físico hasta su próximo turno.")
-	guard_btn.pressed.connect(func():
-		GameState.equip_turn_hero = {}
-		_clear_skills()
-		_combat.guard()
-	)
-	_skills.add_child(guard_btn)
-	var flee_btn = SkillButtonScript.new()
-	flee_btn.setup("_retreat", "pass", "Retirada", "Sacar a la cuadrilla de la pelea: %d%% de salir (si falla, se pierde el turno). Todos ganan %d de estrés y vuelven a la sala anterior; los enemigos se quedan esperando.%s" % [
+	_bar_button("_items", "item", "Alforja", "Usar un artículo (agua de pipa, venda, café...). Usarlo gasta el turno.",
+		_show_combat_items.bind(hero))
+	_bar_button("_move", "guard", "Moverse", "Cambia de lugar con el héroe de al lado (adelante o atrás). Gasta el turno.",
+		func(): _begin_pending({"side": "ally", "move": true}), not _combat.move_options(hero).is_empty())
+	var act := func(what: Callable) -> Callable:
+		return func():
+			GameState.equip_turn_hero = {}
+			_lock_skills()
+			what.call()
+	_bar_button("_guard", "guard", "Guardia", "Se cubre: recibe la mitad del daño físico hasta su próximo turno.",
+		act.call(_combat.guard))
+	_bar_button("_retreat", "pass", "Retirada", "Sacar a la cuadrilla de la pelea: %d%% de salir (si falla, se pierde el turno). Todos ganan %d de estrés y vuelven a la sala anterior; los enemigos se quedan esperando.%s" % [
 		int(round(BalanceScript.num("combat.retreat_chance") * 100.0)), BalanceScript.int_of("combat.retreat_stress"),
-		"" if _combat.can_retreat() else " De una emboscada no hay retirada."])
-	flee_btn.pressed.connect(func():
-		GameState.equip_turn_hero = {}
-		_clear_skills()
-		_combat.retreat()
-	)
-	if not _combat.can_retreat():
-		flee_btn.disabled = true
-		flee_btn.modulate = Color(1, 1, 1, 0.35)
-	_skills.add_child(flee_btn)
-	var pass_btn = SkillButtonScript.new()
-	pass_btn.setup("_pass", "pass", "Pasar", "No hace nada este turno.")
-	pass_btn.pressed.connect(func():
-		GameState.equip_turn_hero = {}
-		_clear_skills()
-		_combat.pass_turn()
-	)
-	_skills.add_child(pass_btn)
-	# Nine icons don't fit the row at full size (P5-04 added Retirada): make them a bit smaller.
-	if _skills.get_child_count() > ACTION_ROW_FULL:
-		for c in _skills.get_children():
-			if c is Control:
-				c.custom_minimum_size = ACTION_ICON_SMALL
+		"" if _combat.can_retreat() else " De una emboscada no hay retirada."],
+		act.call(_combat.retreat), _combat.can_retreat())
+	_bar_button("_pass", "pass", "Pasar", "No hace nada este turno.", act.call(_combat.pass_turn))
+	_bar_end()
 	if blocked > 0:
 		_turn_label.text += " Desde la posición %d, %s." % [_combat.position_of(hero),
 			"una habilidad no alcanza" if blocked == 1 else "%d habilidades no alcanzan" % blocked]
 	_refresh_all()
+
+
+## The combat action bar (P4-16) keeps its SkillButtons between turns so that the tooltip
+## under the mouse is never freed: `_bar_begin` starts a fill, `_bar_button` reconfigures
+## the next button in place (or adds one), `_bar_end` drops the extras. Anything else in
+## the row (Cancelar, the alforja's items, exploring buttons) makes it start from scratch.
+var _bar_slot: int = 0
+
+
+func _bar_kids() -> Array:
+	return _skills.get_children().filter(func(c): return not c.is_queued_for_deletion())
+
+
+func _bar_begin() -> void:
+	_bar_slot = 0
+	if _bar_kids().any(func(c): return not (c is SkillButtonScript)):
+		_clear_skills()
+
+
+func _bar_button(icon_id: String, kind: String, title: String, body: String, action: Callable,
+		enabled: bool = true, rank: int = 0, max_rank: int = 5) -> void:
+	var kids: Array = _bar_kids()
+	var b
+	if _bar_slot < kids.size():
+		b = kids[_bar_slot]
+	else:
+		b = SkillButtonScript.new()
+		_skills.add_child(b)
+	_bar_slot += 1
+	b.setup(icon_id, kind, title, body, rank, max_rank)
+	b.action = action
+	b.disabled = not enabled
+	b.modulate = Color.WHITE if enabled else Color(1, 1, 1, 0.35)
+
+
+func _bar_end() -> void:
+	var kids: Array = _bar_kids()
+	for i in range(_bar_slot, kids.size()):
+		kids[i].queue_free()
+	# Nine icons don't fit the row at full size (P5-04 added Retirada): make them a bit smaller.
+	if _bar_slot > ACTION_ROW_FULL:
+		for i in _bar_slot:
+			kids[i].custom_minimum_size = ACTION_ICON_SMALL
+
+
+## A hero has acted: the bar stays (so its tooltips do) but nothing can be pressed until the
+## next hero's turn. A bar that isn't the skill row (Cancelar, the alforja) is cleared.
+func _lock_skills() -> void:
+	if _bar_kids().any(func(c): return not (c is SkillButtonScript)):
+		_clear_skills()
+		return
+	for c in _bar_kids():
+		c.disabled = true
+		if c.modulate.a > 0.6:
+			c.modulate = Color(1, 1, 1, 0.6)
 
 
 ## Action bar → Alforja: the consumables usable in combat, as icons with counts.

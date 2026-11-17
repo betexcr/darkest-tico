@@ -14,6 +14,18 @@ const EFFECT_PREFIXES := ["Ataque:", "Cura ", "Alivia ", "Objetivo:", "Desde pos
 
 var title: String = ""
 var body: String = ""
+## What a click does (the combat bar reuses its buttons from turn to turn, so it sets this
+## instead of connecting `pressed` each time). Empty = only `pressed` listeners.
+var action: Callable = Callable()
+var _icon: Control = null
+var _pips: Control = null
+
+
+func _init() -> void:
+	pressed.connect(func():
+		if action.is_valid() and not disabled:
+			action.call()
+	)
 
 
 const PIP_ON := Color(0.95, 0.78, 0.35)
@@ -23,6 +35,8 @@ const PIP_EDGE := Color(0, 0, 0, 0.85)
 
 ## `icon_id` is the skill id (or "_guard"/"_pass"); `kind` picks the background colour.
 ## `rank` > 0 draws Casa Comunal rank pips (filled up to `rank`, out of `max_rank`) along the bottom.
+## Calling it again on the same button replaces the icon, pips and texts (P4-16: the combat bar
+## keeps its buttons so that an open tooltip survives the other units' turns).
 func setup(icon_id: String, kind: String, p_title: String, p_body: String, rank: int = 0, max_rank: int = 5) -> void:
 	title = p_title
 	body = p_body
@@ -30,7 +44,13 @@ func setup(icon_id: String, kind: String, p_title: String, p_body: String, rank:
 	focus_mode = Control.FOCUS_NONE
 	# Godot only shows a tooltip when tooltip_text is set; the custom one replaces it.
 	tooltip_text = "%s\n%s" % [p_title, p_body]
+	for old in [_icon, _pips]:
+		if old != null and is_instance_valid(old):
+			remove_child(old)
+			old.queue_free()
+	_pips = null
 	var ic = SkillIconScript.new()
+	_icon = ic
 	ic.setup(icon_id, kind, p_title)
 	ic.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	ic.offset_left = 3
@@ -50,6 +70,7 @@ func _add_pips(rank: int, max_rank: int) -> void:
 	pips.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	pips.offset_top = -9
 	pips.offset_bottom = -2
+	_pips = pips
 	pips.draw.connect(func():
 		var r: float = 2.6
 		var gap: float = 7.0

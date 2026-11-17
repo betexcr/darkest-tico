@@ -89,7 +89,8 @@ func _run() -> void:
 					var hero: Dictionary = screen._combat.active_hero()
 					if not hero.is_empty():
 						var buttons = screen._skills.get_children()
-						if not buttons.is_empty():
+						# After a hero acts the bar stays up, locked (P4-16): wait for an unlocked one.
+						if buttons.any(func(b): return not b.is_queued_for_deletion() and not b.disabled):
 							hero_turns += 1
 							if hero_turns == 2 and not screen._enemy_units.is_empty():
 								screen._on_unit_clicked(screen._enemy_units[0])
