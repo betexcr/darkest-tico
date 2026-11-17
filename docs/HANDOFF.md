@@ -17,6 +17,41 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 — P2-04 — Sótanos enemy gimmicks and authored squads
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P2-04 `review` (the owner asked for it; the plan's current phase is still P1).
+- **Changed:** every doc 05 §2.6 gimmick that was missing. The table is in doc 05 §2.6 "Built".
+  - **Sombra:** strikes back while marked.
+  - **Peón:** grudge against healers, +15% per heal (max 3), and it goes for the healer.
+  - **Mandador:** new *Embargo*, which applies the new status *Embargado* (no healing).
+  - **Ratas:** come in pairs.
+  - **Murciélago:** −3 Luz per hit.
+  - **Monaguillo:** new *Bendición torcida* (Chiva on the two in front, `target: allies`).
+  - **Vigía:** *Pedrada* marks; alive at round 3, it calls one reinforcement.
+  - **Duende:** stolen colones come back when it dies.
+  - **Squads:** 4 authored squads in the Sótanos generator, used for 50% of regular fights.
+  - **Code:**
+    - `GameState.make_enemy` / `expand_packs` (the squad builder now uses them);
+    - `CombatController.spawn_enemy` + `enemy_spawner` (screen: `_spawn_enemy_unit`; sim: `SimUnit`), ready for the Mayordomo's summons in P2-05.
+  - **Validator:** checks the new enemy fields, `allies` skills and `squads`.
+  - **Tests:** `tests/test_enemies.gd` (31 checks, including a reinforcement on the real stage row). `tests/test_formation.gd` now expects the rat pair.
+  - **Docs:** doc 05 §2.6, doc 13, AGENTS test list.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 15 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+  - `sim_combat --runs 300 --chain 3`: boss cleared 99.7%, 0.07 heroes lost per clear (before: 100%, 0.03).
+  - Bot run, 2 campaigns × 6 weeks: 12 of 12 expeditions won, no `SCRIPT ERROR`.
+- **Not verified / risks:**
+  - No human play-test, and the reinforcement unit was not checked visually (only its place in the row).
+  - Fights got longer in the bot run:
+    - regular fights average 6.0 rounds (was 4.9);
+    - boss fights average 13.2 rounds (was 8.6), the longest 34. This is the Mayordomo without his P2-05 mechanics, plus the Embargo and grudge slowing healer-heavy parties.
+  - Watch this in P5-02.
+- **Decisions needed:** none new. The Phase 1 sign-off and the doc 09 §5 balance questions are still open.
+- **Next step:** P2-05 (the Mayordomo's 3 mechanics + the Cadejo as a roaming mini-boss). Open `scripts/combat/combat_controller.gd` and summon `sirviente_ahogado` with `spawn_enemy()`.
+
+---
+
 ## 2026-11-16 (3) — P2-02 — 36 Sótanos room events
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P2-02 `review` (the owner asked for it; the plan's current phase is still P1). New `todo` P2-10 (conditions for choice events).

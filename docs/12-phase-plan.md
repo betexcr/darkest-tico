@@ -194,12 +194,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Portraits generated with SD metadata (`assets/portraits/{guachiman,medica_josefina,curandero,exorcista}.png`; hero ids should match these names)
 
 ### P2-04 · M · Sótanos enemy roster to ~12 units
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P1-03, P1-04
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): every doc 05 §2.6 gimmick built and tested headless; owner to play a few fights · Depends: P1-03, P1-04
 - Spec: `05` §1.1, §2
-- Files: `data/enemies.json`, `data/regions/sotanos.json`, `assets/enemies/`
+- Files: `data/enemies.json` (gimmick fields, Embargo, Bendición torcida, Vigía mark + reinforce), `data/statuses.json` (Embargado), `data/regions/sotanos.json` (`squads`, `squad_template_pct`), `scripts/combat/combat_controller.gd` (gimmicks, `spawn_enemy`, `enemy_spawner`), `scripts/autoload/game_state.gd` (`make_enemy`, `expand_packs`), `scripts/domain/map_generator.gd` (`_template_squad`), `scripts/domain/item_effects.gd` (Embargado), `scripts/expedition/expedition_screen.gd` (`_spawn_enemy_unit`), `tools/sim_combat.gd`, `tools/validate_data.py`, `tests/test_enemies.gd`, `tests/test_formation.gd`
 - Done when:
   - [x] Roster spec approved by owner 2026-11-06: `05` §2.6 (11 regulars incl. summon, Cadejo mini-boss, Mayordomo boss). Art for all of them already exists in `assets/enemies/`
-  - [ ] ≥12 Sótanos enemies with skills, ranks, statuses; 3+ mixed squads used in the map
+  - [x] ≥12 Sótanos enemies with skills, ranks, statuses (13, each with its doc 05 gimmick); 3+ mixed squads used in the map (4 authored squads, 50% of regular fights)
 
 ### P2-05 · M · Bosses: Mayordomo Hundido (apex) + 1 mini-boss
 - Status: `todo` · Depends: P2-04
