@@ -279,9 +279,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Weapon/armor tiers; trinket slots with market rotation
 
 ### P3-06 · M · Clínica de Espantos + quirks
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P3-01
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): built and tested headless; owner to read the quirk names and try the Clínica · Depends: P3-01
 - Spec: `02` §6, `01` §3
-- Done when: [ ] Positive/negative quirks gained on missions; treatment in Clínica
+- Files: `data/quirks.json` (new), `data/balance.json` (`quirks`), `scripts/domain/quirks.gd` (new), `scripts/domain/status_effects.gd` (`stat`), `scripts/autoload/game_state.gd` (`_roll_expedition_quirks`, `clinic_options`, `clinic_treat`, recruits, refusals, save v12), `scripts/hacienda/hacienda_hub.gd` (Clínica button + card, roster tooltip), `scripts/domain/town_events.gd` (`clinica` service), `tools/validate_data.py`, `tests/test_quirks.gd` (new), `tests/test_hub_activities.gd`, `tools/screens/clinic_screenshot.gd` (new)
+- Done when: [x] Positive/negative quirks gained on missions (plus diseases); [x] treatment in Clínica (remove negatives, lock/remove positives, cure diseases; doc 04 §3.5 prices; one of each per week)
 - Note (owner 2026-11-16): quirks may lock a hero out of an Iglesia/Cantina activity or tie them to one (DD "won't go to the church" / "only drinks"). Quebrantos never block activities: activities are how a Quebranto is cured.
 
 ### P3-07 · S · Guardabosques (camp skills)

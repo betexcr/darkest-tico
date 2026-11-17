@@ -17,6 +17,39 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (7) — P3-06 — Quirks, diseases and the Clínica de Espantos
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P3-06 `review`.
+- **Changed:** details in doc 02 §6 "Built".
+  - **`data/quirks.json`** (new): 8 positive, 8 negative, 3 diseases. Each changes combat stats.
+    - *Descreído* refuses the Iglesia; *No le entra el guaro* refuses the Cantina (owner 2026-11-16).
+  - **`data/balance.json` `quirks`:** gain chances 25/25/8%, caps 5/5, recruit chances 50/50%, Clínica prices by resolve tier (doc 04 §3.5).
+  - **`scripts/domain/quirks.gd`** (new): catalog, `mod`, `refusal`, `gain` (replaces an unlocked one at the cap), `roll_after_expedition`, `roll_recruit`, prices and weekly limits.
+  - **`StatusEffects.stat`** adds quirk mods.
+  - **`GameState`:** quirks rolled at week end for everyone who went (week report lines); recruits roll quirks; refusals in `activity_block_reason`; `clinic_options` / `clinic_treat`; save v12.
+  - **Hub:** a "Clínica de Espantos — rasgos de X (n)" button under the Iglesia/Cantina panel opens a card listing each quirk with Quitar / Fijar / Curar and its price. Disabled buttons give the reason in their tooltip. The roster tooltip lists quirks.
+  - **Town events:** `clinica` is a service (`closed`, `service_pct`).
+  - **Validator:** checks quirks (kinds, stats, refuses; a positive must help and a negative must hurt), the balance keys and the price tables.
+  - **Tests:** `tests/test_quirks.gd` (23 checks). `tests/test_hub_activities.gd` now expects the Clínica button in the panel.
+  - **Screenshot tool:** `tools/screens/clinic_screenshot.gd`.
+  - **Docs:** doc 02 §6, doc 13 (save v12), AGENTS test list.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 17 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+  - Screenshot at 1280×720: the card is readable (colors by kind; a locked quirk's Quitar is disabled).
+  - Bot run, 2 × 8 weeks with telemetry: 15 of 16 expeditions won; fights won: regular 100%, elite 100%, boss 94%; no `SCRIPT ERROR`.
+- **Not verified / risks:**
+  - No human play-test.
+  - The bot never uses the Clínica.
+  - Quirk names and descriptions were checked against doc 08 by the agent only. *Delicadito* and *Desjaretado* are teasing but about behaviour.
+  - Treatment is immediate (DD makes the hero busy for the week) and has no slots yet.
+- **Decisions needed:**
+  - Should Clínica treatments take the hero out for the week, like the Iglesia/Cantina (DD style)?
+  - Are the gain chances (25% / 25% / 8% per expedition) right?
+- **Next step:** owner play-test of the hub (Clínica, Iglesia/Cantina) and a Veterano run. Then P5-02 (balance to 55–70% success): run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 8 --telemetry <path>` and `tools/telemetry_report.py <path>` for the baseline.
+
+---
+
 ## 2026-11-17 (6) — P5-01 — Local telemetry log
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-01 `done`.
