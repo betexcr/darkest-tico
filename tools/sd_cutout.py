@@ -30,6 +30,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "tools" / "art_manifest.json"
 MODEL = "openmmlab/upernet-convnext-small"
 MARGIN = 6
+## Pixels shaved off and grown back on the mask: removes thin strays (wires, stray lines).
+OPEN = 5
 ## ADE20K labels that are background in a town picture.
 DROP = {
     "sky", "floor", "road", "grass", "earth", "ground", "mountain", "field", "sand", "sidewalk",
@@ -60,13 +62,13 @@ def cut(im, proc, model):
     labels = model.config.id2label
     drop_ids = [i for i, name in labels.items() if any(d == part.strip() for part in name.split(",") for d in DROP)]
     keep = ~np.isin(seg, drop_ids)
+    keep = ndimage.binary_opening(keep, iterations=OPEN)
     # The biggest piece only (stray bits of other houses go), with its holes filled.
     lab, n = ndimage.label(keep)
     if n > 0:
         sizes = ndimage.sum(keep, lab, range(1, n + 1))
         keep = lab == (int(np.argmax(sizes)) + 1)
     keep = ndimage.binary_fill_holes(keep)
-    keep = ndimage.binary_opening(keep, iterations=2)
     mask = Image.fromarray((keep * 255).astype("uint8")).filter(ImageFilter.GaussianBlur(1.2))
     rgba = im.convert("RGBA")
     rgba.putalpha(mask)

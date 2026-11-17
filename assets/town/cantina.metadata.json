@@ -1,0 +1,25 @@
+{
+  "id": "town_cantina",
+  "prompt": "dark fantasy painting, exterior facade of a small wooden roadside cantina at night, red tin roof, swinging saloon doors, warm orange light inside, beer crates outside, string of bulbs, isolated on black background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 5207,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-17T06:58:59+00:00",
+  "cutout": {
+    "model": "openmmlab/upernet-convnext-small",
+    "tool": "tools/sd_cutout.py",
+    "crop": [
+      0,
+      130,
+      512,
+      279
+    ]
+  }
+}

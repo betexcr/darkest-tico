@@ -475,10 +475,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] the combat bar keeps its buttons from turn to turn (refilled in place), so the hovered button is never freed and its tooltip stays; [x] after a hero acts the bar stays up, locked, until the next hero's turn; [x] test
 
 ### P4-17 · L · Town view: clickable buildings, Darkest Dungeon style (owner 2026-11-17)
-- Status: `in-progress` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17) · Depends: P4-15
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): owner to look at the screenshots / play the hub · Depends: P4-15
 - Spec: owner request with a screenshot of the Darkest Dungeon hamlet: "change the main town view to look like this; each building clickable and highlighted on hover; a click opens that building's menu; keep the Tico style and be true to the design of each place". Buildings: doc 02 §2.
-- Files: `data/town.json` (new), `scripts/hacienda/town_building.gd` (new), `scripts/hacienda/hacienda_hub.gd`, `scenes/hacienda/hacienda_hub.tscn`, `assets/town/` (new art), `tools/art_manifest.json`, `tools/sd_cutout.py` (new), `tests/test_ui.gd`
-- Done when: [ ] the hub is a painted town with one picture per building (Terminal, Casa Comunal, Taller, Clínica, Iglesia, Cantina, Pulpería), the roster on the right and a bottom bar (colones, week, region, difficulty, start); [ ] hovering a building highlights it and names it; [ ] clicking opens that building's menu; [ ] buildings closed by a town event look closed; [ ] screenshot for review
+- Files: `data/town.json` (new), `scripts/hacienda/town_building.gd` (new), `scripts/hacienda/hacienda_hub.gd`, `scenes/hacienda/hacienda_hub.tscn`, `assets/town/` (new art), `tools/art_manifest.json`, `tools/sd_cutout.py` (new), `tests/test_ui.gd`, `tests/test_hub_activities.gd`, `tests/test_quirks.gd`, `tools/screens/town_screenshot.gd` (new), `tools/screens/clinic_screenshot.gd`, `docs/02` (town view)
+- Done when: [x] the hub is a painted town with one picture per building (Terminal, Casa Comunal, Taller, Clínica, Iglesia, Cantina, Pulpería), the roster on the right and a bottom bar (colones, week, region, difficulty, start); [x] hovering a building highlights it and names it; [x] clicking opens that building's menu; [x] buildings closed by a town event look closed; [x] screenshot for review
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01

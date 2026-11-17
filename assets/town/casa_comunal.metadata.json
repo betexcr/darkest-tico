@@ -1,0 +1,25 @@
+{
+  "id": "town_casa_comunal",
+  "prompt": "dark fantasy painting, exterior of a long single-storey wooden community hall at night, pale green planks, clay tile roof, front porch with posts, bronze bell, notice board, lit windows, isolated on black background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 5203,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-17T06:47:15+00:00",
+  "cutout": {
+    "model": "openmmlab/upernet-convnext-small",
+    "tool": "tools/sd_cutout.py",
+    "crop": [
+      0,
+      127,
+      512,
+      366
+    ]
+  }
+}

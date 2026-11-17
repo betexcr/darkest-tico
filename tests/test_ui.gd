@@ -192,6 +192,7 @@ func _combat_bar(gs) -> void:
 ## opens its window with its page, Esc or "Volver al pueblo" closes it.
 func _town(gs) -> void:
 	print("Town view")
+	root.size = Vector2i(1280, 720)  # headless windows start at 64x64
 	gs.reset_party_from_catalog()
 	gs.active_event_id = ""
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
@@ -205,7 +206,7 @@ func _town(gs) -> void:
 	for bid in hub._buildings:
 		var b = hub._buildings[bid]
 		ok = ok and b.size.x > 40.0 and b.size.y > 40.0 and Rect2(Vector2.ZERO, hub.size).encloses(Rect2(b.position, b.size).grow(-4.0))
-	_check(ok, "every building is on screen")
+	_check(ok, "every building is on screen (screen %s)" % hub.size)
 	var ig = hub._buildings.get("iglesia")
 	if ig != null:
 		_check(not ig._has_point(Vector2(1, 1)), "a transparent corner of the picture is not the building")

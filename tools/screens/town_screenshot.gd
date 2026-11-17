@@ -35,13 +35,15 @@ func _run() -> void:
 	load("res://scripts/domain/quirks.gd").add(gs.roster[0], "dengue")
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
-	_move(Vector2(1000, 700))
+	hub._selected = gs.party[2]
+	hub._refresh()
+	_move(Vector2(300, 690))
 	await _snap(out_dir, "town.png")
 	var ig: Control = hub._buildings["iglesia"]
 	_move(ig.get_global_rect().get_center())
 	await create_timer(0.3).timeout
 	await _snap(out_dir, "town_hover.png")
-	_move(Vector2(1000, 700))
+	_move(Vector2(300, 690))
 	for bid in hub._buildings:
 		hub.open_building(bid)
 		await _snap(out_dir, "town_%s.png" % bid)

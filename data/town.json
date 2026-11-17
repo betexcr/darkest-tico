@@ -1,29 +1,87 @@
 {
-  "_doc": "Town view of the Hacienda (P4-17): one painted building per hub service. Positions are in a 1280x720 design space (the right 380 px hold the roster): x = centre, bottom = where it stands, height = drawn height (width follows the picture). Buildings are drawn back to front by `bottom`. `closed_by` lists the town-event closures (data/town_events.json `closed`) that grey the building out; `note_by` adds a line to its name plate.",
+  "_doc": "Town view of the Hacienda (P4-17): one painted building per hub service. Positions are in a 1280x720 design space (the right 380 px hold the roster): x = centre, bottom = where it stands, height = drawn height (width follows the picture). Buildings are drawn back to front by `bottom`. `ground_top` is where the dirt of the plaza starts fading in over the backdrop. `closed_by` lists the town-event closures (data/town_events.json `closed`) that grey the building out; `note_by` adds a line to its name plate.",
   "background": "res://assets/town/town_bg.png",
-  "design_size": [1280, 720],
+  "design_size": [
+    1280,
+    720
+  ],
   "buildings": [
-    { "id": "iglesia", "name": "Iglesia Vieja", "art": "res://assets/town/iglesia.png",
+    {
+      "id": "iglesia",
+      "name": "Iglesia Vieja",
+      "art": "res://assets/town/iglesia.png",
       "text": "Rezar, meditar o pagar penitencia: una semana para quitarse el estrés por el lado del alma.",
-      "x": 470, "bottom": 440, "height": 330, "closed_by": ["iglesia"] },
-    { "id": "casa_comunal", "name": "Casa Comunal de Oficios", "art": "res://assets/town/casa_comunal.png",
+      "x": 455,
+      "bottom": 418,
+      "height": 320,
+      "closed_by": [
+        "iglesia"
+      ]
+    },
+    {
+      "id": "casa_comunal",
+      "name": "Casa Comunal de Oficios",
+      "art": "res://assets/town/casa_comunal.png",
       "text": "Aquí se entrenan las habilidades: cada rango cuesta plata y pide resolución.",
-      "x": 245, "bottom": 448, "height": 200 },
-    { "id": "clinica", "name": "Clínica de Espantos", "art": "res://assets/town/clinica.png",
+      "x": 215,
+      "bottom": 405,
+      "height": 175
+    },
+    {
+      "id": "clinica",
+      "name": "Clínica de Espantos",
+      "art": "res://assets/town/clinica.png",
       "text": "Quitar rasgos malos, fijar los buenos y curar enfermedades. El paciente se queda la semana.",
-      "x": 705, "bottom": 448, "height": 190 },
-    { "id": "terminal", "name": "Terminal de Buses de Sarchí", "art": "res://assets/town/terminal.png",
+      "x": 695,
+      "bottom": 410,
+      "height": 170
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal de Buses de Sarchí",
+      "art": "res://assets/town/terminal.png",
       "text": "Cada semana llega gente buscando brete. Contratar es gratis; lo que falta son camas.",
-      "x": 125, "bottom": 650, "height": 215, "closed_by": ["terminal"] },
-    { "id": "taller", "name": "Taller de Herrería y Carretas", "art": "res://assets/town/taller.png",
+      "x": 140,
+      "bottom": 655,
+      "height": 165,
+      "closed_by": [
+        "terminal"
+      ]
+    },
+    {
+      "id": "taller",
+      "name": "Taller de Herrería y Carretas",
+      "art": "res://assets/town/taller.png",
       "text": "Ponerle y quitarle el equipo a cada héroe: arma, armadura y dos accesorios.",
-      "x": 335, "bottom": 640, "height": 200 },
-    { "id": "pulperia", "name": "Pulpería La Hacienda", "art": "res://assets/town/pulperia.png",
+      "x": 575,
+      "bottom": 525,
+      "height": 165
+    },
+    {
+      "id": "pulperia",
+      "name": "Pulpería La Hacienda",
+      "art": "res://assets/town/pulperia.png",
       "text": "Comida, candelas, vendas y equipo. Compra lo que le vendan a la mitad del precio.",
-      "x": 565, "bottom": 645, "height": 205,
-      "note_by": { "pulperia_compra": "No vende esta semana", "pulperia_venta": "No compra esta semana" } },
-    { "id": "cantina", "name": "Cantina del Centro", "art": "res://assets/town/cantina.png",
+      "x": 400,
+      "bottom": 652,
+      "height": 200,
+      "note_by": {
+        "pulperia_compra": "No vende esta semana",
+        "pulperia_venta": "No compra esta semana"
+      }
+    },
+    {
+      "id": "cantina",
+      "name": "Cantina del Centro",
+      "art": "res://assets/town/cantina.png",
       "text": "Guaro, cartas y conversa: el otro camino para bajar el estrés, con sus riesgos.",
-      "x": 790, "bottom": 655, "height": 220, "closed_by": ["cantina"] }
-  ]
+      "x": 762,
+      "bottom": 660,
+      "height": 155,
+      "closed_by": [
+        "cantina"
+      ]
+    }
+  ],
+  "ground_top": 330
 }

@@ -140,7 +140,7 @@ func _build_difficulty_picker() -> void:
 	lbl.text = "Dificultad:"
 	row.add_child(lbl)
 	_difficulty_option = OptionButton.new()
-	_difficulty_option.custom_minimum_size = Vector2(170, 0)
+	_difficulty_option.custom_minimum_size = Vector2(160, 0)
 	var diffs: Array = ResolveSystemScript.difficulties()
 	for i in diffs.size():
 		_difficulty_option.add_item(str(diffs[i].get("name", "?")))
@@ -228,9 +228,11 @@ func _refresh() -> void:
 	_refresh_roster()
 	var refusing: Array = GameState.party_refusals()
 	_btn_start.disabled = GameState.living_party_count() <= 0 or not refusing.is_empty()
-	_btn_start.text = "Salir de expedición (%d en la cuadrilla)" % GameState.living_party_count()
+	_btn_start.text = "Salir de expedición"
+	_btn_start.tooltip_text = "Salir con la cuadrilla (%d héroes)." % GameState.living_party_count()
 	if not refusing.is_empty():
-		_btn_start.text = "%s no quiere ir a una expedición tan fácil" % ", ".join(refusing.map(func(h): return str(h.get("name", "?"))))
+		_btn_start.text = "No quieren ir"
+		_btn_start.tooltip_text = "%s no quiere ir a una expedición tan fácil: suba la dificultad o cambie la cuadrilla." % ", ".join(refusing.map(func(h): return str(h.get("name", "?"))))
 
 
 # --- Pulpería ----------------------------------------------------------------------
@@ -914,6 +916,22 @@ static func _load_town() -> Dictionary:
 
 ## One TownBuilding per data/town.json row, drawn back to front (by where it stands).
 func _build_town() -> void:
+	# The plaza: dirt fading in under the buildings, so they stand on something.
+	var grad := Gradient.new()
+	grad.set_color(0, Color(0.09, 0.06, 0.05, 0.0))
+	grad.set_color(1, Color(0.075, 0.05, 0.04, 0.97))
+	grad.add_point(0.35, Color(0.1, 0.07, 0.055, 0.75))
+	var gt := GradientTexture2D.new()
+	gt.gradient = grad
+	gt.fill_from = Vector2(0, 0)
+	gt.fill_to = Vector2(0, 1)
+	var ground := TextureRect.new()
+	ground.name = "Ground"
+	ground.texture = gt
+	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ground.stretch_mode = TextureRect.STRETCH_SCALE
+	_town.add_child(ground)
 	var rows: Array = _town_data.get("buildings", []).duplicate()
 	rows.sort_custom(func(a, b): return float(a.get("bottom", 0)) < float(b.get("bottom", 0)))
 	for row in rows:
@@ -937,6 +955,11 @@ func _layout_town() -> void:
 	var k: float = minf(_town.size.x / float(design[0]), _town.size.y / float(design[1]))
 	if k <= 0.0:
 		k = 1.0
+	var ground: Control = _town.get_node_or_null("Ground")
+	if ground != null:
+		var top: float = float(_town_data.get("ground_top", 360)) * k
+		ground.position = Vector2(0, top)
+		ground.size = Vector2(_town.size.x, _town.size.y - top)
 	for bid in _buildings:
 		var b = _buildings[bid]
 		var row: Dictionary = b.get_meta("row")

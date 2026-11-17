@@ -166,7 +166,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="GoldLabel" type="Label" parent="BottomBar/Row"]
-custom_minimum_size = Vector2(130, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.98, 0.84, 0.4, 1)
@@ -179,7 +179,7 @@ size_flags_vertical = 4
 text = "Región:"
 
 [node name="RegionOption" type="OptionButton" parent="BottomBar/Row"]
-custom_minimum_size = Vector2(170, 0)
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 4
 
@@ -188,7 +188,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="BtnStart" type="Button" parent="BottomBar/Row"]
-custom_minimum_size = Vector2(260, 42)
+custom_minimum_size = Vector2(200, 42)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(1, 0.86, 0.6, 1)
@@ -198,7 +198,8 @@ text = "Salir de expedición"
 [node name="BtnQuit" type="Button" parent="BottomBar/Row"]
 layout_mode = 2
 size_flags_vertical = 4
-text = "Salir del juego"
+tooltip_text = "Salir del juego"
+text = "Salir"
 
 [node name="Building" type="PanelContainer" parent="."]
 visible = false

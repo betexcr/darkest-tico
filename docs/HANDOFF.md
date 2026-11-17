@@ -17,6 +17,37 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (13) — P4-17 — Town view: clickable buildings, Darkest Dungeon style
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-17 `review` (owner to look at the screenshots / play the hub).
+- **Changed:**
+  - `hacienda_hub.tscn`: rebuilt. Painted town (`Town`), top-left banner (week, town event), roster and alforja on the right, bottom bar (colones, region, difficulty, Pura Vida, start, quit), and a building window (`Building`) with one page per building.
+  - `hacienda_hub.gd`: new node paths; `_build_town` / `_layout_town` / `_refresh_town`, `open_building` / `close_building` (Esc closes), `_refresh_who` (hero strip on the per-hero pages).
+    - Iglesia and Cantina are separate pages (`_relief_boxes`).
+    - The Clínica page lists every hero (`_refresh_clinic_page`).
+    - Roster rows are two lines.
+  - `town_building.gd` (new): picture with alpha hit-test, hover outline shader, name plate, grey when closed.
+  - `data/town.json` (new): positions, texts, `closed_by` / `note_by`; checked by `validate_data.py`.
+  - Art: `assets/town/` (7 buildings + `town_bg`), new manifest entries.
+  - `tools/sd_cutout.py` (new): UperNet scene parsing, built into transformers. BiRefNet was dropped because it needs `trust_remote_code`.
+  - Tests updated (`test_ui` "Town view", `test_hub_activities`, `test_quirks`); `tools/screens/town_screenshot.gd` (new); `clinic_screenshot.gd` adapted.
+  - `docs/02` §1 town view; `AGENTS.md` UI note.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures (`test_ui` 3 runs in a row).
+  - Screenshots: town, hover, and the 7 windows.
+- **Not verified / risks:**
+  - Not played by hand in a window.
+  - The art is SD output: the terminal bus lost its lamppost in the cutout, and the Taller keeps a dark edge on its right.
+  - Feria Nocturna, Guardabosques and Mejoras have no building (not built yet).
+  - Other `tools/screens/*` hub tools (relief, skills, tooltip) still run but were made for the old two-column layout.
+- **Decisions needed:**
+  - The EBAIS stays a button on each roster row rather than a building. OK?
+  - The Taller is where heroes are equipped (no upgrades exist yet). OK?
+- **Next step:** owner review of P4-17. Otherwise P5-07 (see entry 11).
+
+---
+
 ## 2026-11-17 (12) — P4-16 — Skill tooltips stay up during a fight
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-16 done. P4-17 (town view) claimed, `in-progress`.
