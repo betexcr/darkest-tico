@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (3) — P1-21 — The last one standing ignores use_ranks
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P1-21 `done`.
+- **Changed:**
+  - `FormationScript.can_use`: when the user is the only living unit on its side, `use_ranks` is not checked. `target_ranks` still is.
+    - It covers heroes (skill bar, sim, bot) and enemies.
+    - The validator already guarantees every class has an attack that reaches enemy position 1, so a lone hero can always act.
+  - `tests/test_formation.gd`: 3 checks.
+  - Doc 01 §2.1 rule.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 15 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+  - `sim_combat --runs 300 --chain 3`, seeds 1–3: boss cleared 98.3% / 99.0% / 99.7%; stalls 1 / 0 / 0.
+  - The one stall left is not a stuck hero. A lone Abuela at Luz 0 heals herself and keeps hitting a half-dead Mayordomo, who keeps hitting back, until the sim's 40-round cutoff. That's attrition, for balance (P5-02).
+- **Not verified / risks:** no human play-test. The rule is my default (the plan suggested this or "let enemies close in").
+- **Decisions needed:** OK that a lone survivor may use any of their skills from position 1?
+- **Next step:** owner play-tests a Veterano Sótanos run (P2-02, P2-04, P2-05 in review). Otherwise sign off Phase 1 (P1-09) and start P5-02 balance; doc 09 §5 and the 2026-11-17 handoffs list the open numbers.
+
+---
+
 ## 2026-11-17 (2) — P2-05 — Mayordomo mechanics and the roaming Cadejo
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P2-05 `review`. New `todo` P1-21 (a lone hero stuck where none of their skills work).
