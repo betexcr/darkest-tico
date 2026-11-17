@@ -31,7 +31,9 @@ static func apply_to_hero(item: Dictionary, hero: Dictionary) -> PackedStringArr
 		return logs
 	var fx: Dictionary = item.get("effects", {})
 	var who: String = str(hero.get("name", "?"))
-	if fx.has("heal"):
+	if fx.has("heal") and StatusEffectsScript.has(hero, "embargado"):
+		logs.append("%s está embargado: no se cura." % who)
+	elif fx.has("heal"):
 		var before: int = int(hero.get("hp", 0))
 		hero["hp"] = mini(before + int(fx["heal"]), int(hero.get("hp_max", 1)))
 		if int(hero["hp"]) > 0 and bool(hero.get("al_borde", false)):

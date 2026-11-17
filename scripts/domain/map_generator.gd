@@ -142,8 +142,13 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 		}
 		match t:
 			"combat":
-				nd["enemy_id"] = _pick(gen.get("enemy_pool", ["espanto"]), rng)
-				nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
+				var tpl: Array = _template_squad(gen, rng)
+				if not tpl.is_empty():
+					nd["enemy_id"] = str(tpl[0])
+					nd["enemy_ids"] = tpl
+				else:
+					nd["enemy_id"] = _pick(gen.get("enemy_pool", ["espanto"]), rng)
+					nd["enemy_ids"] = _squad(nd["enemy_id"], gen, rng)
 				nd["reward_colones"] = _range(BalanceScript.req(gen, "reward_colones", "region generator"), rng)
 			"elite":
 				nd["type"] = "combat"
@@ -179,6 +184,15 @@ static func _generate_once(gen: Dictionary, seed_value: int) -> Dictionary:
 
 
 ## Leader first (front rank), then 0..n extra members from the normal pool (P1-02).
+## Authored mixed squads (P2-04, doc 05 §2.6): with squad_template_pct a fight uses one of
+## the region's "squads" instead of a random mix. [] = roll a random squad.
+static func _template_squad(gen: Dictionary, rng: RandomNumberGenerator) -> Array:
+	var squads: Array = gen.get("squads", [])
+	if squads.is_empty() or rng.randi() % 100 >= int(BalanceScript.req(gen, "squad_template_pct", "region generator")):
+		return []
+	return Array(squads[rng.randi() % squads.size()]).duplicate()
+
+
 static func _squad(leader: String, gen: Dictionary, rng: RandomNumberGenerator) -> Array:
 	var size_range: Array = BalanceScript.req(gen, "squad_size", "region generator")
 	var n: int = rng.randi_range(int(size_range[0]), int(size_range[1]))

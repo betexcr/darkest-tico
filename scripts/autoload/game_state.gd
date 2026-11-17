@@ -1508,33 +1508,15 @@ func build_combat_context_for_node(node_id: String) -> void:
 	var ids: Array = nd0.get("enemy_ids", [])
 	if ids.is_empty():
 		ids = [str(nd0.get("enemy_id", "espanto"))]
-	var scales: Array = BalanceScript.arr("enemies.squad_hp_scale")
-	var squad_scale: float = float(scales[mini(ids.size(), scales.size() - 1)])
+	ids = expand_packs(ids)
 	var squad: Array = []
 	var seen: Dictionary = {}
 	for k in ids.size():
-		var raw_en = _enemies_by_id.get(str(ids[k]), {})
-		var en: Dictionary = (raw_en as Dictionary).duplicate(true) if raw_en is Dictionary else {}
+		var mult: float = leader_hp_mult(nd0) if k == 0 else 1.0
+		# The boss keeps full HP; everyone else is scaled for the squad size.
+		var en: Dictionary = make_enemy(str(ids[k]), 0 if (k == 0 and bool(nd0.get("is_boss", false))) else ids.size(), mult)
 		if en.is_empty():
-			en = {"id": "espanto", "name": "Espanto del Sótano", "hp_max": 45, "speed": 4, "dodge": 5, "accuracy": 8}
-		var hp: float = float(en.get("hp_max", 40))
-		if k == 0 and bool(nd0.get("is_boss", false)):
-			hp *= leader_hp_mult(nd0)
-		else:
-			if k == 0:
-				hp *= leader_hp_mult(nd0)
-			hp *= squad_scale
-		hp *= float(mission_difficulty.get("enemy_hp", 1.0))
-		en["hp_max"] = maxi(int(ceil(hp)), 1)
-		en["hp"] = en["hp_max"]
-		en["dead"] = false
-		en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
-		en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
-		# Tougher tiers resist ailments more (doc 05 §4: +10% Veterano, +20% Campeón).
-		var er: int = int(mission_difficulty.get("enemy_resist", 0))
-		if er != 0 and en.get("status_resist", null) is Dictionary:
-			for rk in en["status_resist"]:
-				en["status_resist"][rk] = int(en["status_resist"][rk]) + er
+			en = make_enemy("espanto", ids.size())
 		seen[str(en["id"])] = int(seen.get(str(en["id"]), 0)) + 1
 		squad.append(en)
 	var counts: Dictionary = {}
@@ -1550,6 +1532,43 @@ func build_combat_context_for_node(node_id: String) -> void:
 	combat_context["enemy"] = leader
 	# Luz tiers (P1-17): a normal fight may open with one side surprised; never the boss.
 	combat_context["surprise"] = "" if bool(nd0.get("is_boss", false)) else LightSystemScript.roll_surprise(mission_light)
+
+
+## A fresh enemy for a fight: catalog copy, HP scaled for a squad of `squad_size` (0 = no
+## scaling, e.g. the boss) and by `hp_mult`, plus the expedition difficulty. {} if unknown.
+## Also used for enemies that join mid-fight (P2-04 reinforcements).
+func make_enemy(enemy_id: String, squad_size: int, hp_mult: float = 1.0) -> Dictionary:
+	var raw_en = _enemies_by_id.get(enemy_id, {})
+	if not raw_en is Dictionary or (raw_en as Dictionary).is_empty():
+		return {}
+	var en: Dictionary = (raw_en as Dictionary).duplicate(true)
+	var hp: float = float(en.get("hp_max", 40)) * hp_mult
+	if squad_size > 0:
+		var scales: Array = BalanceScript.arr("enemies.squad_hp_scale")
+		hp *= float(scales[mini(squad_size, scales.size() - 1)])
+	hp *= float(mission_difficulty.get("enemy_hp", 1.0))
+	en["hp_max"] = maxi(int(ceil(hp)), 1)
+	en["hp"] = en["hp_max"]
+	en["dead"] = false
+	en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
+	en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
+	# Tougher tiers resist ailments more (doc 05 §4: +10% Veterano, +20% Campeón).
+	var er: int = int(mission_difficulty.get("enemy_resist", 0))
+	if er != 0 and en.get("status_resist", null) is Dictionary:
+		for rk in en["status_resist"]:
+			en["status_resist"][rk] = int(en["status_resist"][rk]) + er
+	return en
+
+
+## Enemies with "pack" N come in groups (Ratas de troje, P2-04): each one in the squad pulls
+## in more of its kind, up to N, while the squad has room (4).
+func expand_packs(ids: Array) -> Array:
+	var out: Array = ids.duplicate()
+	for id in ids:
+		var pack: int = int((_enemies_by_id.get(str(id), {}) as Dictionary).get("pack", 0))
+		while pack > 1 and out.count(id) < pack and out.size() < 4:
+			out.append(id)
+	return out
 
 
 func _build_single_context(node_id: String) -> void:

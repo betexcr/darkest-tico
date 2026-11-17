@@ -40,6 +40,9 @@ var is_boss: bool = false
 var is_ambush: bool = false
 ## Luz tiers (P1-17): the heroes caught the enemies off guard and act first in round 1.
 var enemies_surprised: bool = false
+## Makes the stage unit for an enemy that joins mid-fight (reinforcements, summons; P2-04).
+## Set by the screen / sim: func(enemy: Dictionary) -> unit. Without it nobody can join.
+var enemy_spawner: Callable
 ## No pauses between steps (headless sim, tools/sim_combat.gd). With stub units whose
 ## play_* calls return at once, every action then resolves synchronously.
 var instant: bool = false
@@ -212,6 +215,8 @@ func use_item(item_id: String, ally: Dictionary) -> void:
 		_:
 			var target: Dictionary = ally if (not ally.is_empty() and not ally.get("dead", false)) else hero
 			_log_all(ItemEffectsScript.apply_to_hero(item, target))
+	if item.get("effects", {}).has("heal") and str(item.get("target", "ally")) != "enemy":
+		_on_hero_healed(hero)
 	var light: int = ItemEffectsScript.light_amount(item)
 	if light != 0:
 		GameState.mission_light = clampi(GameState.mission_light + light, 0, GameState.light_max())
@@ -301,6 +306,7 @@ func _start_round() -> void:
 	if _round > 1:
 		# Virtudes Esperanza (calms companions) and Vigor (regains PV) at the top of each round.
 		_log_all(StressSystemScript.round_start_effects(party))
+	_call_reinforcements()
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
@@ -474,8 +480,8 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 	for t in targets:
 		if skill.has("heal_min"):
 			var amt: int = randi_range(int(skill["heal_min"]), int(skill.get("heal_max", skill["heal_min"])))
-			_heal(t, amt)
-			_log("  %s +%d PV" % [t.get("name", "?"), amt], "88bb88")
+			if _heal(t, amt):
+				_log("  %s +%d PV" % [t.get("name", "?"), amt], "88bb88")
 		for ap in _applies_list(skill.get("applies", null)):
 			_try_apply(t, ap, false, "  ")
 		if bool(skill.get("guard_ally", false)) and not is_same(t, hero):
@@ -505,6 +511,8 @@ func _resolve_support(hero: Dictionary, skill: Dictionary, ally: Dictionary) -> 
 			_log("  %s queda en guardia" % t.get("name", "?"), "88aacc")
 	for ap in _applies_list(skill.get("self_applies", null)):
 		_try_apply(hero, ap, false, "  ")
+	if skill.has("heal_min"):
+		_on_hero_healed(hero)
 
 
 func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary) -> void:
@@ -577,9 +585,17 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 
 func _apply_damage_to_enemy(enemy: Dictionary, dmg: int) -> void:
 	enemy["hp"] = int(enemy["hp"]) - dmg
-	if int(enemy["hp"]) <= 0:
+	if int(enemy["hp"]) <= 0 and not bool(enemy.get("dead", false)):
 		enemy["hp"] = 0
 		enemy["dead"] = true
+		# A thief that dies drops what it stole (Duende del sótano, P2-04).
+		var stolen: int = int(enemy.get("stolen", 0))
+		if stolen > 0:
+			GameState.colones += stolen
+			enemy["stolen"] = 0
+			_log("%s suelta los %d colones que se había robado." % [enemy.get("name", "?"), stolen], "ddbb55")
+	elif int(enemy["hp"]) <= 0:
+		enemy["hp"] = 0
 
 
 ## Elemental multiplier from the target's "elements" (enemies) or "resist" (heroes).
@@ -604,8 +620,10 @@ func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
 	var all: Array = enemy.get("skills", [])
 	if all.is_empty():
 		all = [{"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}]
-	var list: Array = all.filter(func(s): return FormationScript.can_use(s, enemy, enemies, party,
-		str(s.get("target", "single")) != "party"))
+	var list: Array = all.filter(func(s):
+		if str(s.get("target", "")) == "allies":
+			return FormationScript.can_use(s, enemy, enemies, party, false) and not _ally_targets(enemy, s).is_empty()
+		return FormationScript.can_use(s, enemy, enemies, party, str(s.get("target", "single")) != "party"))
 	if list.is_empty():
 		return {}
 	var total: float = 0.0
@@ -658,12 +676,20 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	if skill.is_empty():
 		await _enemy_reposition(enemy)
 		return
+	if str(skill.get("target", "")) == "allies":
+		await _enemy_support(enemy, skill)
+		return
 	var magical: bool = str(skill.get("type", "physical")) == "magical"
 	var single: bool = str(skill.get("target", "single")) != "party"
 	var targets: Array = living
 	if single:
 		# Only heroes in the skill's reach (target_ranks); Fichado preferred, Agazapado avoided.
-		var pick: Dictionary = StatusEffectsScript.pick_target(FormationScript.at_positions(party, FormationScript.target_ranks(skill)))
+		var reach: Array = FormationScript.at_positions(party, FormationScript.target_ranks(skill))
+		var pick: Dictionary = StatusEffectsScript.pick_target(reach)
+		# Rencor (P2-04): goes for the healer it holds a grudge against, if in reach and not hidden.
+		var held: Array = reach.filter(func(h): return int(h.get("uid", -1)) == int(enemy.get("grudge_uid", -2)) and not StatusEffectsScript.has(h, "agazapado"))
+		if int(enemy.get("grudge_stacks", 0)) > 0 and not held.is_empty():
+			pick = held[0]
 		# Al cuido: the guardian steps in front of single-target attacks.
 		var guard: Dictionary = StatusEffectsScript.guardian_of(pick, party)
 		if not guard.is_empty():
@@ -718,6 +744,11 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		if dmg > 0:
 			_log("  %s recibe %d." % [t.get("name", "?"), dmg], "cc6655")
 			_apply_damage_to_hero(t, dmg, physical)
+		# Murciélago de bodega (P2-04): every hit drains the Luz.
+		var hit_light: int = int(enemy.get("on_hit_light", 0))
+		if hit_light != 0:
+			GameState.mission_light = clampi(GameState.mission_light + hit_light, 0, GameState.light_max())
+			_log("  Las alas apagan un poco la luz (%d)." % GameState.mission_light, "aa8866")
 		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
 		var base_stress: int = int(skill.get("stress", 0)) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
 		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
@@ -744,6 +775,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 	if steal > 0:
 		var taken: int = mini(steal, GameState.colones)
 		GameState.colones -= taken
+		enemy["stolen"] = int(enemy.get("stolen", 0)) + taken
 		_log("Se llevó %d colones." % taken, "aa8866")
 	await _animate_party_changes(party_before)
 	await _apply_queued_moves()
@@ -769,14 +801,19 @@ func _apply_damage_to_hero(hero: Dictionary, dmg: int, physical: bool = true, di
 
 
 ## Heal a hero; coming back from Al Borde leaves them Convaleciente for the expedition.
-func _heal(hero: Dictionary, amount: int) -> void:
+## False when nothing was healed (Embargado blocks every heal, P2-04).
+func _heal(hero: Dictionary, amount: int) -> bool:
 	if hero.get("dead", false) or amount <= 0:
-		return
+		return false
+	if StatusEffectsScript.has(hero, "embargado"):
+		_log("  %s está embargado: no se cura." % hero.get("name", "?"), "c0a060")
+		return false
 	hero["hp"] = mini(int(hero["hp"]) + amount, int(hero["hp_max"]))
 	if int(hero["hp"]) > 0 and bool(hero.get("al_borde", false)):
 		hero["al_borde"] = false
 		hero["convaleciente"] = true
 		_log("%s sale de Al Borde, pero queda convaleciente." % hero.get("name", "?"), "c09090")
+	return true
 
 
 ## Damage after buffs/debuffs (dmg_pct) and the mark bonus (skill "vs_marked_pct").
@@ -784,6 +821,10 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 	var pct: int = StatusEffectsScript.stat(attacker, "dmg_pct")
 	if StatusEffectsScript.has(target, "fichado"):
 		pct += int(skill.get("vs_marked_pct", 0))
+	# Rencor (P2-04): extra damage against the hero it holds a grudge against.
+	if attacker.get("grudge", null) is Dictionary and int(attacker.get("grudge_stacks", 0)) > 0 \
+			and int(target.get("uid", -1)) == int(attacker.get("grudge_uid", -2)):
+		pct += int(attacker.get("grudge_stacks", 0)) * int(attacker["grudge"].get("dmg_pct", 0))
 	return maxi(int(round(dmg * (1.0 + pct / 100.0))), 1) if dmg > 0 else dmg
 
 
@@ -825,7 +866,8 @@ func _try_apply(unit: Dictionary, ap: Dictionary, crit: bool, indent: String) ->
 
 ## Respondón (riposte) on an enemy: it hits back the hero that attacked it.
 func _enemy_riposte(enemy: Dictionary, hero: Dictionary) -> void:
-	if enemy.get("dead", false) or hero.get("dead", false) or not StatusEffectsScript.has(enemy, "respondon"):
+	var marked_riposte: bool = bool(enemy.get("riposte_when_marked", false)) and StatusEffectsScript.has(enemy, "fichado")
+	if enemy.get("dead", false) or hero.get("dead", false) or not (StatusEffectsScript.has(enemy, "respondon") or marked_riposte):
 		return
 	var basic: Dictionary = {}
 	for s in enemy.get("skills", []):
@@ -860,6 +902,86 @@ func _living_heroes() -> int:
 		if h is Dictionary and not h.get("dead", false):
 			n += 1
 	return n
+
+
+# --- Enemy gimmicks (P2-04, doc 05 §2.6) ------------------------------------------------
+
+## Living allies (not the user) in the skill's ally_ranks that don't already have its buff.
+func _ally_targets(enemy: Dictionary, skill: Dictionary) -> Array:
+	var buffs: Array = _applies_list(skill.get("applies", null)).map(func(a): return str(a.get("status", "")))
+	return FormationScript.at_positions(enemies, skill.get("ally_ranks", [1, 2, 3, 4])).filter(func(e):
+		return not is_same(e, enemy) and not buffs.any(func(b): return StatusEffectsScript.has(e, b)))
+
+
+## A buff for allies (Monaguillo's Bendición torcida): no damage, no hero targeted.
+func _enemy_support(enemy: Dictionary, skill: Dictionary) -> void:
+	var targets: Array = _ally_targets(enemy, skill)
+	var eu = _unit_for_enemy(enemy)
+	if eu != null:
+		await eu.play_action("cast")
+	_log("%s usa %s → %s." % [enemy.get("name", "?"), skill.get("name", "?"), ", ".join(targets.map(func(e): return str(e.get("name", "?"))))], "cc6655")
+	for e in targets:
+		for ap in _applies_list(skill.get("applies", null)):
+			_try_apply(e, ap, false, "  ")
+	_refresh_units()
+
+
+## Rencor (Peón penado): every heal makes it hold a grudge against the healer.
+func _on_hero_healed(healer: Dictionary) -> void:
+	for e in enemies:
+		if e.get("dead", false) or not e.get("grudge", null) is Dictionary:
+			continue
+		if int(e.get("grudge_uid", -2)) != int(healer.get("uid", -1)):
+			e["grudge_uid"] = int(healer.get("uid", -1))
+			e["grudge_stacks"] = 0
+		e["grudge_stacks"] = mini(int(e.get("grudge_stacks", 0)) + 1, int(e["grudge"].get("max", 1)))
+		_log("%s le guarda rencor a %s por curar (+%d%% de daño contra él)." % [e.get("name", "?"), healer.get("name", "?"),
+			int(e["grudge_stacks"]) * int(e["grudge"].get("dmg_pct", 0))], "cc7744")
+
+
+## Vigía del Portón: still standing when the round after `after_round` starts, it calls help
+## (once), if the enemy side has room.
+func _call_reinforcements() -> void:
+	for e in enemies.duplicate():
+		var rf = e.get("reinforce", null)
+		if e.get("dead", false) or not rf is Dictionary or bool(e.get("reinforced", false)) or _round <= int(rf.get("after_round", 0)):
+			continue
+		e["reinforced"] = true
+		var ids: Array = rf.get("ids", [])
+		var came: PackedStringArray = PackedStringArray()
+		for _k in int(rf.get("count", 1)):
+			if ids.is_empty():
+				break
+			var ne: Dictionary = spawn_enemy(str(ids[randi() % ids.size()]))
+			if not ne.is_empty():
+				came.append(str(ne.get("name", "?")))
+		if came.is_empty():
+			_log("%s pita, pero no cabe nadie más." % e.get("name", "?"), "999999")
+		else:
+			_log("¡%s pitó: llegan refuerzos! %s." % [e.get("name", "?"), ", ".join(came)], "dd8866")
+
+
+## Adds an enemy mid-fight at the back of the living ones (P2-04: reinforcements; P2-05 will
+## use it for the Mayordomo's summons). {} if the side is full or nobody can make its unit.
+func spawn_enemy(enemy_id: String) -> Dictionary:
+	if not enemy_spawner.is_valid() or FormationScript.living(enemies).size() >= 4:
+		return {}
+	var e: Dictionary = GameState.make_enemy(enemy_id, FormationScript.living(enemies).size() + 1)
+	if e.is_empty():
+		return {}
+	var same: int = enemies.filter(func(x): return str(x.get("id", "")) == enemy_id).size()
+	if same > 0:
+		e["name"] = "%s %s" % [e.get("name", "?"), "ABCDEFGH"[mini(same, 7)]]
+	var u = enemy_spawner.call(e)
+	if u == null:
+		return {}
+	enemies.append(e)
+	enemy_units.append(u)
+	_collapse_ranks()
+	_sync_rows()
+	_refresh_units()
+	enemy_changed.emit()
+	return e
 
 
 # --- Formation on the stage ---------------------------------------------------------

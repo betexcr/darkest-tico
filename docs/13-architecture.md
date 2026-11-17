@@ -113,6 +113,7 @@ HaciendaHub ──start_mission_requested──▶ main.gd ──GameState.start
 3. **Room:** `_resolve_room` reads the node `type`:
    - `combat` / `boss`: `_start_combat`.
    - `trap`: `_open_trap` (disarm or pass with care, `TrapRules`).
+   - Enemies for a fight come from `GameState.make_enemy(id, squad_size, hp_mult)` (difficulty scaling) after `expand_packs` (P2-04). Mid-fight newcomers (reinforcements, later summons) go through `CombatController.spawn_enemy()`, which asks the screen's `enemy_spawner` callable for a stage unit and keeps `enemies` / `enemy_units` aligned.
    - `curio`: `_open_curio` lists `GameState.curio_options()`: the key item (when carried), then the curio's `choices` (a choice event) or "Examinar" (its blind table). `pick_curio_option()` spends the item or colones and rolls the outcome. Choice events have no "Dejarlo" (`curio_can_leave`).
    - `camp`: `_open_camp` (meal, respite skills, watch, sleep; may end in a night ambush).
    - `safe` and the rest: narrated and cleared.

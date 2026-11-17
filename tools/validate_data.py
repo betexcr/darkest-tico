@@ -385,7 +385,7 @@ def main() -> int:
         check_moves(f"skills.json: '{sid_}'", sk_, sk_.get("target") == "enemy")
     for eid_, en_ in enemies.items():
         for x in en_.get("skills", []):
-            check_moves(f"enemies.json: '{eid_}.{x.get('id')}'", x, x.get("target", "single") != "party")
+            check_moves(f"enemies.json: '{eid_}.{x.get('id')}'", x, x.get("target", "single") not in ("party", "allies"))
 
     # Formation (P1-03a): battlefield positions 1-4 (1 = front). See scripts/domain/formation.gd.
     def positions_ok(v):
@@ -409,6 +409,27 @@ def main() -> int:
                    and 1 in skills[s].get("target_ranks", [])
                    for s in hero.get("skill_ids", []) if s in skills):
             errors.append(f"heroes.json: '{hid}' has no attack that reaches enemy position 1 from its own positions")
+    def _is_negative_status(a):
+        return status_defs.get(a.get("status"), {}).get("kind") == "negative"
+
+    # P2-04 enemy gimmicks (doc 05 §2.6); rules in scripts/combat/combat_controller.gd.
+    for eid, en in enemies.items():
+        where = f"enemies.json: '{eid}'"
+        g = en.get("grudge")
+        if g is not None and not (isinstance(g.get("dmg_pct"), int) and g["dmg_pct"] > 0 and isinstance(g.get("max"), int) and g["max"] >= 1):
+            errors.append(f"{where} grudge needs dmg_pct > 0 and max >= 1")
+        if "pack" in en and not (isinstance(en["pack"], int) and 2 <= en["pack"] <= 4):
+            errors.append(f"{where} pack must be 2-4")
+        if "on_hit_light" in en and not (isinstance(en["on_hit_light"], int) and en["on_hit_light"] < 0):
+            errors.append(f"{where} on_hit_light must be a negative whole number")
+        if "riposte_when_marked" in en and not isinstance(en["riposte_when_marked"], bool):
+            errors.append(f"{where} riposte_when_marked must be true/false")
+        rf = en.get("reinforce")
+        if rf is not None:
+            if not (isinstance(rf.get("after_round"), int) and rf["after_round"] >= 1 and isinstance(rf.get("count"), int) and 1 <= rf["count"] <= 3):
+                errors.append(f"{where} reinforce needs after_round >= 1 and count 1-3")
+            if not rf.get("ids") or any(i not in enemies for i in rf.get("ids", [])):
+                errors.append(f"{where} reinforce ids must be known enemies")
     for eid, en in enemies.items():
         if not positions_ok(en.get("ranks")):
             errors.append(f"enemies.json: '{eid}' needs ranks (preferred positions 1-4)")
@@ -419,6 +440,13 @@ def main() -> int:
                 errors.append(f"{where} use_ranks must be positions 1-4")
             if x.get("target", "single") == "party":
                 reach1 = reach1 or "use_ranks" not in x
+                continue
+            if x.get("target") == "allies":
+                # P2-04: buffs allies in ally_ranks (no damage); doesn't count as reaching the heroes.
+                if not positions_ok(x.get("ally_ranks")):
+                    errors.append(f"{where} (allies) needs ally_ranks (positions 1-4)")
+                if not x.get("applies") or any(_is_negative_status(a) for a in (x["applies"] if isinstance(x["applies"], list) else [x["applies"]])):
+                    errors.append(f"{where} (allies) needs positive applies")
                 continue
             if not positions_ok(x.get("target_ranks")):
                 errors.append(f"{where} (single target) needs target_ranks (positions 1-4)")
@@ -638,6 +666,7 @@ def main() -> int:
         if not isinstance(t.get("difficulty"), int) or not 0 <= t["difficulty"] <= 100:
             errors.append(f"{where}: difficulty must be a whole number 0-100")
         check_outcome(where + " effects", t.get("effects", {}))
+    enemy_ids_all = set(enemies)
     for rp in sorted((DATA / "regions").glob("*.json")):
         reg = load(rp) or {}
         gen = reg.get("generator") or {}
@@ -647,6 +676,13 @@ def main() -> int:
         for tid in gen.get("traps", []):
             if tid not in trap_ids:
                 errors.append(f"regions/{rp.name}: generator.traps references unknown trap '{tid}'")
+        for sq in gen.get("squads", []):
+            if not isinstance(sq, list) or not 1 <= len(sq) <= 4 or any(e not in enemy_ids_all for e in sq):
+                errors.append(f"regions/{rp.name}: generator.squads entry {sq} must list 1-4 known enemies")
+        if gen.get("squads") and not (isinstance(gen.get("squad_template_pct"), int) and 0 <= gen["squad_template_pct"] <= 100):
+            errors.append(f"regions/{rp.name}: generator.squad_template_pct must be 0-100 when squads are listed")
+        if rp.stem == "sotanos" and len(gen.get("squads", [])) < 3:
+            errors.append(f"regions/{rp.name}: P2-04 wants at least 3 mixed squads")
         if rp.stem == "sotanos" and len(set(gen.get("curios", [])) | set(gen.get("traps", []))) < 30:
             errors.append(f"regions/{rp.name}: P2-02 wants at least 30 room events (curios + traps) in the pools")
         for n in reg.get("nodes", []):

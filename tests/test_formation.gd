@@ -101,7 +101,8 @@ func _test_combat(fm) -> void:
 	await process_frame
 	screen._start_combat(node_id)
 	var cc = screen._combat
-	_check(cc.enemies.map(func(e): return str(e["id"])) == ["peon_penado", "rata_de_troje", "murcielago_bodega"], "squad sorted: Peón (1-2), Rata (1-3), Murciélago (3-4)")
+	# Ratas de troje come in pairs (P2-04 pack): the one rat brings another.
+	_check(cc.enemies.map(func(e): return str(e["id"])) == ["peon_penado", "rata_de_troje", "rata_de_troje", "murcielago_bodega"], "squad sorted: Peón (1-2), Ratas (1-3) in a pair, Murciélago (3-4)")
 	_check(_rows_match(screen, cc), "stage rows match the formation at the start")
 	var hero: Dictionary = {}
 	for i in 900:

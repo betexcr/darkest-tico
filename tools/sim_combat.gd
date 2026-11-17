@@ -267,6 +267,7 @@ func _fight(kind: String, party: Array) -> Dictionary:
 	_cc.combat_over.connect(on_over)
 	# Luz tiers (P1-17): the same surprise roll the game makes when a fight starts.
 	var surprise: String = str(_gs.combat_context.get("surprise", ""))
+	_cc.enemy_spawner = func(e: Dictionary): return SimUnit.new(e)
 	_cc.start(party, squad, party.map(func(h): return SimUnit.new(h)), squad.map(func(e): return SimUnit.new(e)),
 		bool(nd.get("is_elite", false)), bool(nd.get("is_boss", false)), surprise == "party", surprise == "enemies")
 	var went_borde: Dictionary = {}

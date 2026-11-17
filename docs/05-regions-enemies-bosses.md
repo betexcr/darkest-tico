@@ -131,6 +131,21 @@ Vertical slice roster. `id` is the key used in `data/enemies.json` and `assets/e
 
 Example squad: `peon_penado` + `sombra_cuadrilla` + `monaguillo_porton` + `vigia_porton` (tough front, buffing back line).
 
+**Built (P2-04, 2026-11-17).** Enemy fields in `data/enemies.json`, rules in `scripts/combat/combat_controller.gd`:
+
+| Enemy | Gimmick | How |
+|---|---|---|
+| `sombra_cuadrilla` | Riposte when marked | `riposte_when_marked`: strikes back like Respondón while Fichado |
+| `peon_penado` | Grudge against healers | `grudge {dmg_pct 15, max 3}`: each heal adds a stack against that healer; it goes for them when in reach |
+| `mandador_en_pena` | Anti-heal | New special *Embargo*: 80% *Embargado* for 3 turns (new status: no healing from skills, items or statuses) |
+| `rata_de_troje` | Pairs | `pack 2`: a rat in a squad brings a second one if there is room |
+| `murcielago_bodega` | Light drain | `on_hit_light −3` on every hit (plus *Aleteo apagavelas*); *Chupasangre* already reaches positions 3–4 |
+| `monaguillo_porton` | Buffs the front | New special *Bendición torcida* (`target: allies`, `ally_ranks [1, 2]`): Chiva (+15% daño, +5 precisión) on the two in front, never twice |
+| `vigia_porton` | Marks, then reinforcements | *Pedrada certera* now also marks (Fichado); `reinforce {after_round 2, count 1}`: alive at the start of round 3, it calls a Monaguillo, Peón or Rata (once, if there is room) |
+| `duende_sotano` | Steals colones | Stolen colones come back if it dies; Agazapado on stealing is its escape |
+
+Authored squads (`generator.squads`, used for 50% of regular fights): Portón (Peón, Vigía, Monaguillo), Hacienda (Peón, Mandador, Susurro; punishes healing), Bestias (2 Ratas, Murciélago), Espantos (Espanto, Duende, Susurro). Mid-fight spawning (`CombatController.spawn_enemy`, `GameState.make_enemy`) is ready for the Mayordomo's summons (P2-05).
+
 ## 2.7 Enemy Ability Rules (owner, 2026-11-07)
 
 - Every enemy: one **basic attack** + **1–3 specials**. At least one special is **magical** (ignores Guard) or **inflicts an ailment** (`sangrado` bleed, `veneno` poison, `aturdido` stun).

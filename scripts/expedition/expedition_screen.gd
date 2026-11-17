@@ -154,6 +154,16 @@ func _spawn_enemies(squad: Array) -> void:
 		_enemy_row.add_child(_enemy_units[k])
 
 
+## Combat's enemy_spawner (P2-04): the stage unit for an enemy that joins mid-fight. The
+## controller appends it to the shared unit array and lines up the row.
+func _spawn_enemy_unit(enemy: Dictionary):
+	var u = BattleUnitScript.new()
+	u.setup(enemy, false, "res://assets/enemies/%s.png" % str(enemy.get("id", "")))
+	u.clicked.connect(_on_unit_clicked)
+	_enemy_row.add_child(u)
+	return u
+
+
 func _clear_enemies() -> void:
 	for u in _enemy_units:
 		u.queue_free()
@@ -1064,6 +1074,7 @@ func _start_combat_from_context(node_id: String) -> void:
 		note = "¡Los agarraron desprevenidos en la %s!" % LightSystemScript.tier_name(GameState.mission_light).to_lower()
 	elif surprise == "enemies":
 		note = "¡La cuadrilla los agarra desprevenidos!"
+	_combat.enemy_spawner = _spawn_enemy_unit
 	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush or surprise == "party",
 		surprise == "enemies", note)

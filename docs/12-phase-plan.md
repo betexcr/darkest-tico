@@ -194,7 +194,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] Portraits generated with SD metadata (`assets/portraits/{guachiman,medica_josefina,curandero,exorcista}.png`; hero ids should match these names)
 
 ### P2-04 · M · Sótanos enemy roster to ~12 units
-- Status: `todo` · Depends: P1-03, P1-04
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P1-03, P1-04
 - Spec: `05` §1.1, §2
 - Files: `data/enemies.json`, `data/regions/sotanos.json`, `assets/enemies/`
 - Done when:

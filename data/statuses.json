@@ -133,6 +133,15 @@
       "resist": "movimiento",
       "description": "Bien amarrado: no puede moverse ni cambiar de lugar, y nadie lo puede empujar, jalar ni revolver."
     },
+    "embargado": {
+      "name": "Embargado",
+      "kind": "negative",
+      "stacks": false,
+      "irresistible": true,
+      "color": "#7a6a2f",
+      "letter": "E",
+      "description": "El mandador le embargó hasta la salud: no recibe curación de habilidades, objetos ni estados."
+    },
     "guardia": {
       "name": "En guardia",
       "kind": "positive",

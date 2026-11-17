@@ -7,7 +7,7 @@
   "objective_reward_colones": 800,
   "region_level": 0,
   "generator": {
-    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching.",
+    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching. squads + squad_template_pct (P2-04): authored mixed squads used for that share of regular fights (doc 05 §2.6); Ratas de troje add their pack.",
     "rooms": [
       10,
       13
@@ -130,6 +130,13 @@
       "cepo_oxidado",
       "barriles_sueltos",
       "vapor_de_cava"
+    ],
+    "squad_template_pct": 50,
+    "squads": [
+      ["peon_penado", "vigia_porton", "monaguillo_porton"],
+      ["peon_penado", "mandador_en_pena", "susurro_aljibe"],
+      ["rata_de_troje", "murcielago_bodega"],
+      ["espanto", "duende_sotano", "susurro_aljibe"]
     ],
     "squad_size": [
       1,

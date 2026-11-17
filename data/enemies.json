@@ -1,5 +1,5 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento.",
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento. P2-04 gimmicks: riposte_when_marked (Respondón while Fichado), grudge {dmg_pct, max} (stacks against the hero who heals; prefers that hero), pack N (comes in groups of N), on_hit_light (Luz change per hit), reinforce {after_round, ids, count} (calls help at the start of the round after `after_round` if alive and there's room; once). Skill target 'allies' + ally_ranks: applies its `applies` to living allies in those positions (no damage). Stolen colones come back if the thief dies.",
   "enemies": {
     "espanto": {
       "id": "espanto",
@@ -197,7 +197,8 @@
         "sangrado": 70,
         "salado": 30,
         "movimiento": 50
-      }
+      },
+      "riposte_when_marked": true
     },
     "mayordomo_hundido": {
       "id": "mayordomo_hundido",
@@ -660,6 +661,10 @@
         "sangrado": 30,
         "salado": 20,
         "movimiento": 40
+      },
+      "grudge": {
+        "dmg_pct": 15,
+        "max": 3
       }
     },
     "mandador_en_pena": {
@@ -741,6 +746,31 @@
             "chance": 1.0,
             "turns": 3
           }
+        },
+        {
+          "id": "embargo",
+          "name": "Embargo",
+          "type": "magical",
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "weight": 20,
+          "applies": {
+            "status": "embargado",
+            "chance": 0.8,
+            "turns": 3
+          },
+          "description": "Le embarga hasta la salud: por un rato, nadie lo puede curar."
         }
       ],
       "elements": {
@@ -823,7 +853,8 @@
         "sangrado": 10,
         "salado": 20,
         "movimiento": 10
-      }
+      },
+      "pack": 2
     },
     "murcielago_bodega": {
       "id": "murcielago_bodega",
@@ -916,7 +947,8 @@
         "sangrado": 10,
         "salado": 20,
         "movimiento": 20
-      }
+      },
+      "on_hit_light": -3
     },
     "monaguillo_porton": {
       "id": "monaguillo_porton",
@@ -995,6 +1027,27 @@
           },
           "description": "Palabras que dejan la mente en blanco.",
           "element": "oscuridad"
+        },
+        {
+          "id": "bendicion_torcida",
+          "name": "Bendición torcida",
+          "type": "magical",
+          "target": "allies",
+          "ally_ranks": [
+            1,
+            2
+          ],
+          "weight": 25,
+          "applies": {
+            "status": "chiva",
+            "chance": 1.0,
+            "turns": 3,
+            "mods": {
+              "dmg_pct": 15,
+              "accuracy": 5
+            }
+          },
+          "description": "Bendice al revés a los de adelante: pegan más fuerte."
         }
       ],
       "elements": {
@@ -1059,13 +1112,20 @@
             4
           ],
           "weight": 20,
-          "applies": {
-            "status": "aturdido",
-            "chance": 0.3,
-            "turns": 1,
-            "value": 0
-          },
-          "description": "Una piedra a la sien."
+          "applies": [
+            {
+              "status": "aturdido",
+              "chance": 0.3,
+              "turns": 1,
+              "value": 0
+            },
+            {
+              "status": "fichado",
+              "chance": 1.0,
+              "turns": 3
+            }
+          ],
+          "description": "Una piedra a la sien, y el pitazo ya sabe a quién buscar."
         },
         {
           "id": "pitazo_de_alerta",
@@ -1097,6 +1157,15 @@
         "sangrado": 20,
         "salado": 30,
         "movimiento": 30
+      },
+      "reinforce": {
+        "after_round": 2,
+        "ids": [
+          "monaguillo_porton",
+          "peon_penado",
+          "rata_de_troje"
+        ],
+        "count": 1
       }
     },
     "susurro_aljibe": {
