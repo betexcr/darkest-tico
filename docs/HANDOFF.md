@@ -31,8 +31,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Smoke test and all 15 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
   - `sim_combat --runs 300 --chain 3`, seeds 1–3: boss cleared 98.3% / 99.0% / 99.7%; stalls 1 / 0 / 0.
   - The one stall left is not a stuck hero. A lone Abuela at Luz 0 heals herself and keeps hitting a half-dead Mayordomo, who keeps hitting back, until the sim's 40-round cutoff. That's attrition, for balance (P5-02).
-- **Not verified / risks:** no human play-test. The rule is my default (the plan suggested this or "let enemies close in").
-- **Decisions needed:** OK that a lone survivor may use any of their skills from position 1?
+- **Not verified / risks:** no human play-test.
+- **Decisions needed:** none. The owner confirmed (2026-11-17) that a lone survivor may use any of their skills; recorded in AGENTS.md §4 (Formation) and doc 01 §2.1.
 - **Next step:** owner play-tests a Veterano Sótanos run (P2-02, P2-04, P2-05 in review). Otherwise sign off Phase 1 (P1-09) and start P5-02 balance; doc 09 §5 and the 2026-11-17 handoffs list the open numbers.
 
 ---
