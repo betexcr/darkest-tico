@@ -14,8 +14,8 @@
     "miss_stress": 3,
     "encarrerado_turns": 2,
     "enemy_base_crit": 5,
-    "enemy_stress_pct": 60,
-    "long_fight_from": 12,
+    "enemy_stress_pct": 35,
+    "long_fight_from": 14,
     "long_fight_stress": 3
   },
   "crits": {

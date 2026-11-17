@@ -159,6 +159,11 @@ func _hub(row: Dictionary) -> void:
 	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h))
 	# P5-02: a careful player leaves the frayed at home (a Quebranto or 100+ stress sorts last).
 	pool.sort_custom(func(a, b): return _frayed_key(a) < _frayed_key(b))
+	# A hero at RETREAT_STRESS would turn the party back at the first room: with 3 others to
+	# go, they stay home and rest instead.
+	var fit: Array = pool.filter(func(h): return int(h.get("stress", 0)) < RETREAT_STRESS)
+	if fit.size() >= 3:
+		pool = fit
 	var chosen: Array = pool.slice(0, 4)
 	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
 	_gs.party = chosen
