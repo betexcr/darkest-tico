@@ -202,12 +202,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] ≥12 Sótanos enemies with skills, ranks, statuses (13, each with its doc 05 gimmick); 3+ mixed squads used in the map (4 authored squads, 50% of regular fights)
 
 ### P2-05 · M · Bosses: Mayordomo Hundido (apex) + 1 mini-boss
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P2-04
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): built and tested headless; owner to play the Mayordomo and meet the Cadejo in a Veterano run · Depends: P2-04
 - Spec: `05` §3.1–3.2 (Mayordomo: summon servants, darkness pulses, anti-guard)
-- Files: `data/enemies.json`, `scripts/domain/boss_scripts.gd` (new) or data-driven phases, `data/regions/sotanos.json`
+- Files: `data/enemies.json` (`summon`, `cycle`, `vs_guard_pct`, `flee_after`), `data/regions/sotanos.json` (`generator.roaming`; Cadejo out of the elite pool), `scripts/combat/combat_controller.gd` (`_boss_round_start`, cycle, anti-guard), `scripts/autoload/game_state.gd` (roaming: `_place_roaming`, `roaming_tick`, `build_roaming_context`, `finish_roaming`), `scripts/expedition/expedition_screen.gd` (roaming encounter + bounty), `scripts/expedition/map_view.gd` (red mark + tooltip), `tools/sim_policy.gd` (steps back into position), `tools/validate_data.py`, `tests/test_enemies.gd`
 - Done when:
-  - [ ] **Owner confirmed 2026-11-06:** Mayordomo is the Sótanos final boss. He becomes the objective fight at `n9` (he's currently a plain combat node at `n7`; give `n7` a regular squad) with his 3 mechanics
-  - [ ] One roaming mini-boss with a spawn rule (suggested: Cadejo Negro, listed in `05` §3.2; today it is a plain elite in Bosque `b4`)
+  - [x] **Owner confirmed 2026-11-06:** Mayordomo is the Sótanos final boss: the boss room of every generated map (the old static `n7`/`n9` layout is replaced by the P2-06 generator), with his 3 mechanics (servants every 3 rounds, max 2 per fight; Pulso de oscuridad every 4th round; Golpe al escudo +50% on guarding heroes)
+  - [x] One roaming mini-boss with a spawn rule: Cadejo Negro, 50% Veterano / 75% Campeón, moves every 3 party moves, flees after 4 rounds, bounty when killed
 
 ### P2-06 · M · Random grid dungeon generator (owner spec 2026-11-07)
 - Status: `review` (owner: play a few runs) · Depends: —

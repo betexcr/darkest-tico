@@ -17,6 +17,51 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (2) — P2-05 — Mayordomo mechanics and the roaming Cadejo
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P2-05 `review`. New `todo` P1-21 (a lone hero stuck where none of their skills work).
+- **Changed:**
+  - **Mayordomo** (`data/enemies.json`):
+    - `summon`: rings for a Sirviente ahogado on rounds 4 and 7, while fewer than 2 stand, at most 2 per fight;
+    - `cycle`: *Pulso de oscuridad* every 4th round;
+    - *Golpe al escudo* `vs_guard_pct 50`: targets and punishes a guarding hero.
+  - **Cadejo Negro:**
+    - `flee_after 4`;
+    - `generator.roaming` in `sotanos.json`: 0/50/75% by difficulty, starts in a fight, empty, curio or trap room, moves every 3 party moves (never onto the party), bounty 600–900 ₡ × difficulty reward + one equipment;
+    - out of the elite pool (Mandador en pena took its place).
+  - **Code:**
+    - `CombatController._boss_round_start` (summons and fleeing), the cycle in `_pick_enemy_skill`, anti-guard targeting and damage;
+    - `GameState` roaming (`_place_roaming`, `roaming_tick` in `move_to_node`, `build_roaming_context`, `finish_roaming`, `roaming_clears_room`);
+    - expedition screen: the encounter, the bounty, and a curio or trap room keeps its event after the fight;
+    - `map_view.gd`: a red dot and a tooltip on the Cadejo's room.
+  - **Validator:** `summon` (now needs `max_total`), `cycle`, `flee_after`, `vs_guard_pct`, `generator.roaming`.
+  - **Tests:** `tests/test_enemies.gd`, +19 checks: summon timing and cap, beat, anti-guard, spawn chance, movement, fight, fleeing, bounty, and the real screen.
+  - **`tools/sim_policy.gd`:** a shoved hero with nothing to hit now steps back toward its class's positions. Before, it buffed forever and the fight stalled.
+  - **Docs:** doc 05 §3.1 and §3.2 "Built", doc 13.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 15 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+  - `sim_combat --runs 300 --chain 3`, seeds 1 and 2:
+    - boss cleared 97.3–98.0%, 0–1 stalls, boss fights about 10 rounds;
+    - first version, with uncapped summons and a pulse every 3 rounds: 77% and 48 stalls.
+  - Bot run, 2 campaigns × 8 weeks: no `SCRIPT ERROR`.
+    - 13 of 16 expeditions won.
+    - Fights won: regular 98%, elite 94%, boss 85%.
+    - Average rounds: regular 8.2, boss 18.2.
+- **Not verified / risks:**
+  - No human play-test. The map's red dot was not checked visually.
+  - Campaign 1 lost weeks 6–8 in a row:
+    - After a wipe, the bot kept going to Veterano with fresh level-0 recruits, because a surviving level-3 hero refuses easier runs.
+    - The week-8 loss was a 48-round stall with a healer-heavy party (the doc 09 issue).
+  - The game is clearly harder now, which is closer to P5-02's 55–70% target, but nobody has tuned it.
+  - Infernal shards (doc 05 §3.2 drops) wait for materials (doc 02 §11).
+- **Decisions needed:**
+  - Is the Cadejo's 50% / 75% chance and its 4-round flee right?
+  - The bot campaign's death spiral after a wipe: should a hero's refusal to take easy runs be softer (P5-02)?
+- **Next step:** owner play-tests P2-02, P2-04 and P2-05 in a Veterano Sótanos run. Otherwise P1-21 (lone hero stuck; start in `scripts/combat/combat_controller.gd` `skill_usable`), or sign off Phase 1 (P1-09) and start P5-02 balance.
+
+---
+
 ## 2026-11-17 — P2-04 — Sótanos enemy gimmicks and authored squads
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P2-04 `review` (the owner asked for it; the plan's current phase is still P1).
