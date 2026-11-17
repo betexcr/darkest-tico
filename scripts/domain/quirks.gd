@@ -187,7 +187,7 @@ static func mark_used(hero: Dictionary, op: String, week: int) -> void:
 	if not c is Dictionary or int(c.get("week", -1)) != week:
 		c = {"week": week}
 	c[op] = true
-	hero["clinic"] = c
+	hero["clinic"] = c  # GameState adds "stay" (P3-19: the hero spends the week there)
 
 
 ## "+2 velocidad, -10% daño" for tooltips.

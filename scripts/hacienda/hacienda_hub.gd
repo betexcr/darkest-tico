@@ -265,6 +265,10 @@ func _refresh_relief() -> void:
 	if h.is_empty():
 		head.text = "Iglesia Vieja y Cantina del Centro: elige un héroe."
 		return
+	if GameState.in_clinic(h):
+		head.text = "%s pasa la semana en la Clínica de Espantos. No sale de expedición." % h.get("name", "?")
+		_add_clinic_button(h)
+		return
 	if HubActivitiesScript.is_busy(h):
 		var act: Dictionary = HubActivitiesScript.booked(h)
 		var bname: String = HubActivitiesScript.building_name(str(h["busy"].get("building", "")))
@@ -551,7 +555,9 @@ func _roster_row(h: Dictionary) -> Control:
 		extra = " · Quebranto: %s" % StressSystemScript.affliction_name(aff)
 	elif str(h.get("virtud_id", "")) != "":
 		extra = " · Virtud: %s" % StressSystemScript.virtud_name(str(h["virtud_id"]))
-	if HubActivitiesScript.is_busy(h):
+	if GameState.in_clinic(h):
+		extra += " · En la Clínica esta semana"
+	elif HubActivitiesScript.is_busy(h):
 		extra += " · En %s (%s)" % [HubActivitiesScript.building_name(str(h["busy"].get("building", ""))),
 			HubActivitiesScript.booked(h).get("name", "?")]
 	var in_party: bool = GameState.is_in_party(h)
@@ -623,7 +629,7 @@ func _roster_row(h: Dictionary) -> Control:
 	var cb := CheckBox.new()
 	cb.text = "Cuadrilla"
 	cb.button_pressed = in_party
-	cb.disabled = HubActivitiesScript.is_busy(h) and not in_party
+	cb.disabled = GameState.hero_busy(h) and not in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))
 	row.add_child(cb)
 	return row

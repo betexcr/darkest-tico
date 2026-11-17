@@ -285,6 +285,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] Positive/negative quirks gained on missions (plus diseases); [x] treatment in Clínica (remove negatives, lock/remove positives, cure diseases; doc 04 §3.5 prices; one of each per week)
 - Note (owner 2026-11-16): quirks may lock a hero out of an Iglesia/Cantina activity or tie them to one (DD "won't go to the church" / "only drinks"). Quebrantos never block activities: activities are how a Quebranto is cured.
 
+### P3-19 · S · Clínica treatments keep the hero home for the week (owner 2026-11-17)
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17) · Depends: P3-06
+- Files: `scripts/autoload/game_state.gd` (`in_clinic`, `hero_busy`, `busy_place`, `clinic_options`, `clinic_treat`), `scripts/hacienda/hacienda_hub.gd`, `tools/playtest_campaign.gd`, `tests/test_quirks.gd`
+- Spec: `02` §6; owner answer to the P3-06 question ("like the Iglesia and Cantina, the Darkest Dungeon way")
+- Done when: [x] a treated hero leaves the cuadrilla and can't rejoin or book the Iglesia/Cantina until the week ends; a hero already booked elsewhere can't be treated; the last free hero can't be treated; test
+
 ### P3-07 · S · Guardabosques (camp skills)
 - Status: `review` (Claude Code, `betomm/amazing-clarke-lv3whd`, 2026-11-08; owner asked for it ahead of P2-01) · Depends: P2-01
 - Spec: `02` §9, `01` §4.4
@@ -449,6 +455,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner request: style all tooltips with a better design. Content of skill/status/stress tooltips is still P4-02.
 - Files: `scripts/ui/tooltip_card.gd` (new, shared look), `scripts/autoload/tooltip_styler.gd` (new autoload `TooltipStyler`), `project.godot`, `scripts/ui/item_tooltip.gd`, `scripts/ui/skill_button.gd`, `scripts/ui/equip_slot.gd`, `tools/screens/tooltip_screenshot.gd`
 - Done when: [x] every plain `tooltip_text` tooltip (hub, expedition, status icons, map, option lists) shows as the opaque card, with "Title\nbody" or "Title — body" split into a gold title and wrapped body; [x] skill and item tooltips use the same card; [ ] owner looks at it in-game
+
+### P4-15 · M · Menus in the item-card style (owner 2026-11-17)
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: —
+- Spec: owner request "make all menus better in the UX, including Clínica de Espantos, similar to the style of the item tooltips"; style source `scripts/ui/tooltip_card.gd`, `scripts/ui/item_tooltip.gd`
+- Done when: [ ] one UI theme in the card palette for buttons, dialogs, option buttons and check boxes; [ ] the Clínica, the town-event card and the hub confirmations are built from card parts (header, chips, rules, bullets); [ ] hub menus that list things (Iglesia/Cantina activities, recruits, roster) show item-style cards on hover; [ ] screenshots for review
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01

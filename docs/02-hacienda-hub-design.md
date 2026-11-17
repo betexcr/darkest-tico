@@ -115,7 +115,8 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
   - lock or remove a positive one (7,500 / 10,500 / 13,500);
   - cure a disease (750 / 1,050 / 1,350).
   - Prices are tiered by resolve: levels 0–2, 3–4, 5–6 (doc 04 §3.5).
-  - Each hero gets one negative treatment and one positive treatment per week; diseases any time. Treatment is immediate: no busy week.
+  - Each hero gets one negative treatment and one positive treatment per week; diseases any time.
+  - **The hero stays at the Clínica for the rest of the week** (P3-19, owner 2026-11-17): they leave the cuadrilla, can't rejoin and can't book the Iglesia/Cantina. A hero booked at the Iglesia/Cantina can't be treated, and neither can the last free hero.
 - **Town events:** `closed` / `service_pct` accept `clinica`.
 - **Save:** v12 (`quirks`, `clinic`).
 - **Not yet:** the upgrade tracks above (with the building-upgrade system), treatment slots, "locked negative" quirks, and curio/enemy sources of diseases.

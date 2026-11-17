@@ -1039,8 +1039,8 @@ func set_in_party(hero: Dictionary, on: bool) -> String:
 			return "La cuadrilla ya tiene %d héroes." % PARTY_SIZE
 		if bool(hero.get("dead", false)):
 			return "%s ya no puede salir." % hero.get("name", "?")
-		if HubActivitiesScript.is_busy(hero):
-			return "%s está ocupado en %s esta semana." % [hero.get("name", "?"), HubActivitiesScript.building_name(str(hero["busy"].get("building", "")))]
+		if hero_busy(hero):
+			return "%s está ocupado en %s esta semana." % [hero.get("name", "?"), busy_place(hero)]
 		party.append(hero)
 		return ""
 	for k in party.size():
@@ -1117,7 +1117,7 @@ func end_of_expedition_week() -> void:
 			party.remove_at(k)
 	var quirk_lines: PackedStringArray = _roll_expedition_quirks()
 	var activity_lines: PackedStringArray = _resolve_hub_activities()
-	_log_week(fallen.size(), roster.filter(func(h): return HubActivitiesScript.is_busy(h)).size())
+	_log_week(fallen.size(), roster.filter(func(h): return hero_busy(h)).size())
 	refresh_recruits()
 	last_week_report = "Semana %d." % week
 	if not fallen.is_empty():
@@ -1144,6 +1144,27 @@ func _roll_expedition_quirks() -> PackedStringArray:
 	return out
 
 
+## P3-19 (owner 2026-11-17): a Clínica treatment keeps the hero home for the rest of the
+## week, like the Iglesia and the Cantina. hero["clinic"] = {week, stay, remove_negative, positive}.
+func in_clinic(hero: Dictionary) -> bool:
+	var c = hero.get("clinic", null)
+	return c is Dictionary and bool(c.get("stay", false)) and int(c.get("week", -1)) == week
+
+
+## Out of the cuadrilla this week: booked at the Iglesia/Cantina, or staying at the Clínica.
+func hero_busy(hero: Dictionary) -> bool:
+	return HubActivitiesScript.is_busy(hero) or in_clinic(hero)
+
+
+## Where a busy hero is ("la Clínica de Espantos", "Cantina del Centro"…), "" if free.
+func busy_place(hero: Dictionary) -> String:
+	if in_clinic(hero):
+		return "la Clínica de Espantos"
+	if HubActivitiesScript.is_busy(hero):
+		return HubActivitiesScript.building_name(str(hero["busy"].get("building", "")))
+	return ""
+
+
 ## What the Clínica can do for `hero`: one entry per quirk {id, name, kind, desc, effects,
 ## locked, actions: [{action, label, cost, enabled, reason}]}. action: remove | lock.
 func clinic_options(hero: Dictionary) -> Array:
@@ -1162,6 +1183,10 @@ func clinic_options(hero: Dictionary) -> Array:
 			var why: String = ""
 			if closed:
 				why = "La Clínica está cerrada esta semana."
+			elif HubActivitiesScript.is_busy(hero):
+				why = "%s pasa la semana en %s." % [hero.get("name", "?"), busy_place(hero)]
+			elif not in_clinic(hero) and _free_heroes().size() <= 1:
+				why = "Alguien tiene que salir de expedición: %s es el único libre." % hero.get("name", "?")
 			elif bool(e.get("locked", false)) and w[0] == "remove":
 				why = "Está fijado: ya no se quita."
 			elif QuirksScript.used_this_week(hero, op, week):
@@ -1188,13 +1213,16 @@ func clinic_treat(hero: Dictionary, quirk_id: String, action: String) -> String:
 			colones -= int(a["cost"])
 			var op: String = QuirksScript.op_for(quirk_id)
 			QuirksScript.mark_used(hero, op, week)
+			# P3-19: the treatment keeps them home this week.
+			hero["clinic"]["stay"] = true
+			set_in_party(hero, false)
 			if action == "lock":
 				QuirksScript.set_locked(hero, quirk_id, true)
-				return "En la Clínica le fijan a %s lo de %s: ya no se le quita (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+				return "En la Clínica le fijan a %s lo de %s: ya no se le quita (-%d ₡). Se queda la semana en la Clínica." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
 			QuirksScript.remove(hero, quirk_id)
 			if op == "disease":
-				return "En la Clínica curan a %s del %s (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
-			return "En la Clínica le quitan a %s lo de %s (-%d ₡)." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+				return "En la Clínica curan a %s del %s (-%d ₡). Se queda la semana en la Clínica." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
+			return "En la Clínica le quitan a %s lo de %s (-%d ₡). Se queda la semana en la Clínica." % [hero.get("name", "?"), opt["name"], int(a["cost"])]
 	return "Eso no se trata aquí."
 
 
@@ -1219,7 +1247,7 @@ func activity_slots_used(building_id: String, activity_id: String) -> int:
 
 
 func _free_heroes() -> Array:
-	return roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and not HubActivitiesScript.is_busy(h))
+	return roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and not hero_busy(h))
 
 
 ## "" when `hero` can be sent to the activity now, else why not (Spanish, for the hub).
@@ -1232,8 +1260,8 @@ func activity_block_reason(hero: Dictionary, building_id: String, activity_id: S
 		return "%s está cerrada esta semana (%s)." % [bname, active_event().get("name", "")]
 	if bool(hero.get("dead", false)):
 		return "%s ya no está con nosotros." % hero.get("name", "?")
-	if HubActivitiesScript.is_busy(hero):
-		return "%s ya está ocupado esta semana." % hero.get("name", "?")
+	if hero_busy(hero):
+		return "%s ya está ocupado esta semana (%s)." % [hero.get("name", "?"), busy_place(hero)]
 	if int(hero.get("stress", 0)) <= 0:
 		return "%s no tiene estrés que quitarse." % hero.get("name", "?")
 	# Quirks (P3-06): some heroes won't set foot in one of the two.
@@ -2017,11 +2045,11 @@ func apply_save_data(data: Dictionary) -> void:
 			uids.append(int(u))
 	for uid in uids:
 		for h in roster:
-			if int(h["uid"]) == uid and party.size() < PARTY_SIZE and not HubActivitiesScript.is_busy(h):
+			if int(h["uid"]) == uid and party.size() < PARTY_SIZE and not hero_busy(h):
 				party.append(h)
 	if not raw_uids is Array:
 		for h in roster:
-			if party.size() < PARTY_SIZE and not HubActivitiesScript.is_busy(h):
+			if party.size() < PARTY_SIZE and not hero_busy(h):
 				party.append(h)
 	graveyard.clear()
 	var raw_grave = data.get("graveyard", null)

@@ -153,7 +153,7 @@ func _hub(row: Dictionary) -> void:
 	row["hired"] = log.size()
 	# Party: the 4 least stressed, in their classes' preferred order.
 	# Heroes still away at the Iglesia/Cantina (an extra week) can't go out.
-	var pool: Array = _living_roster().filter(func(h): return not h.has("busy"))
+	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h))
 	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
 	var chosen: Array = pool.slice(0, 4)
 	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))

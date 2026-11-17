@@ -83,11 +83,21 @@ func _run() -> void:
 	QuirksScript.add(h, "pachorra")
 	QuirksScript.add(h, "pura_vida")
 	QuirksScript.add(h, "tos_de_perro")
+	gs.set_in_party(h, true)
 	var c0: int = gs.colones
 	var msg: String = gs.clinic_treat(h, "mano_de_piedra", "remove")
 	var neg_cost: int = int(bal.arr("quirks.remove_negative_cost")[0])
 	_check(not QuirksScript.has(h, "mano_de_piedra") and gs.colones == c0 - neg_cost, "removing a bad quirk costs %d ₡ at resolve 0 (%s)" % [neg_cost, msg])
 	_check(gs.clinic_treat(h, "pachorra", "remove").contains("esta semana") and QuirksScript.has(h, "pachorra"), "one bad-quirk treatment per week")
+	# P3-19 (owner 2026-11-17): the treatment keeps them home for the week.
+	_check(gs.in_clinic(h) and not gs.is_in_party(h) and gs.set_in_party(h, true) != "", "treated: out of the cuadrilla and can't rejoin this week")
+	_check(gs.activity_block_reason(h, "cantina", "guaro_conversa").contains("Clínica"), "…nor book the Iglesia/Cantina")
+	var other: Dictionary = gs.party[0]
+	other["stress"] = 50
+	gs.send_to_activity(other, "cantina", "guaro_conversa")
+	QuirksScript.add(other, "pachorra")
+	_check(gs.clinic_options(other)[0]["actions"].all(func(a): return not a["enabled"] and str(a["reason"]).contains("Cantina")), "a hero booked at the Cantina can't be treated")
+	gs.cancel_activity(other)
 	c0 = gs.colones
 	gs.clinic_treat(h, "tos_de_perro", "remove")
 	_check(not QuirksScript.has(h, "tos_de_perro") and gs.colones == c0 - int(bal.arr("quirks.disease_cost")[0]), "diseases are cured any time")
@@ -95,7 +105,20 @@ func _run() -> void:
 	_check(QuirksScript.is_locked(h, "pura_vida"), "a good quirk can be locked")
 	_check(not gs.clinic_options(h).filter(func(o): return o["id"] == "pura_vida")[0]["actions"].any(func(a): return a["enabled"]), "…then it can't be removed (and the weekly good-quirk treatment is used)")
 	gs.week += 1
-	_check(gs.clinic_treat(h, "pachorra", "remove").begins_with("En la Clínica"), "next week the bad-quirk treatment is free again")
+	_check(not gs.in_clinic(h) and gs.set_in_party(h, true) == "", "next week they are free to go out")
+	_check(gs.clinic_treat(h, "pachorra", "remove").begins_with("En la Clínica"), "next week the bad-quirk treatment is available again")
+	# The last free hero can't be treated (someone has to go out).
+	for r in gs.roster:
+		if not is_same(r, h):
+			r["clinic"] = {"week": gs.week, "stay": true}
+	gs.week += 1
+	for r in gs.roster:
+		if not is_same(r, h):
+			r["clinic"] = {"week": gs.week, "stay": true}
+	QuirksScript.add(h, "tos_de_perro")
+	_check(gs.clinic_options(h).filter(func(o): return o["id"] == "tos_de_perro")[0]["actions"][0]["reason"].contains("único libre"), "the last free hero can't be treated")
+	for r in gs.roster:
+		r.erase("clinic")
 	h["resolve_level"] = 5
 	_check(QuirksScript.cost("remove_negative", h) == int(bal.arr("quirks.remove_negative_cost")[2]), "prices go up with resolve (tier 3 at level 5)")
 	gs.colones = 0
