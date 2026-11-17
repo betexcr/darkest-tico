@@ -38,7 +38,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
     - **Victory screen:** section bars in the card palette.
   - **Tests and tools:** `tests/test_ui.gd` (8 checks: theme, every hover card, every dialog, all 56 town-event cards). `tools/screens/clinic_screenshot.gd` also saves the hover cards and the dismiss card.
   - **Docs:** AGENTS (UI style note, test list), doc 02 §6.
-- **Verified:** `validate_data.py` 0 errors. The full test list (18) is in the commit message. Screenshots at 1280×720 checked: hub, Clínica, town event, provisions, dismiss, hover cards, trap, camp, victory.
+- **Verified:** `validate_data.py` 0 errors; smoke test and all 18 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`. Screenshots at 1280×720 checked: hub, Clínica, town event, provisions, dismiss, hover cards, trap, camp, victory.
 - **Not verified / risks:**
   - No human look yet. Godot only shows tooltips after a hover delay, which the screenshots fake with a mouse event.
   - Expedition-screen panels (trap, curio, camp, hunger) keep their scene cards; they only got the new buttons.
