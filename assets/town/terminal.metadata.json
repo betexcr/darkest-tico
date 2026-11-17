@@ -1,8 +1,8 @@
 {
   "id": "town_terminal",
-  "prompt": "dark fantasy painting, lone rural bus station at night, adobe ticket office with rusty tin roof, old bus painted with colorful oxcart flowers parked beside it, one lantern, isolated on black background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 5201,
+  "prompt": "dark fantasy painting, old colorful bus painted with oxcart flowers parked by a lone rural bus station at night, adobe ticket office with rusty tin roof, one lantern, isolated on black background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "other buildings, background buildings, street, town, village, landscape, sky, moon, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 5202,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,15 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-17T06:08:42+00:00"
+  "timestamp": "2026-11-17T06:13:06+00:00",
+  "cutout": {
+    "model": "openmmlab/upernet-convnext-small",
+    "tool": "tools/sd_cutout.py",
+    "crop": [
+      52,
+      124,
+      338,
+      301
+    ]
+  }
 }

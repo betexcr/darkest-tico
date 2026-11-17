@@ -2436,7 +2436,7 @@
         512,
         512
       ],
-      "seed": 5201,
+      "seed": 5202,
       "subject": "old colorful bus painted with oxcart flowers parked by a lone rural bus station at night, adobe ticket office with rusty tin roof, one lantern, isolated on black background",
       "cutout": true,
       "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
@@ -2449,9 +2449,9 @@
         512
       ],
       "seed": 5202,
-      "subject": "old wooden community hall at night, two storeys, clay tile roof, porch with columns, notice board, bronze bell by the door, lit windows, isolated on black background",
+      "subject": "exterior of a long single-storey wooden community hall at night, pale green planks, clay tile roof, front porch with posts, bronze bell, notice board, lit windows, isolated on black background",
       "cutout": true,
-      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_taller",
@@ -2460,7 +2460,7 @@
         512,
         512
       ],
-      "seed": 5203,
+      "seed": 5204,
       "subject": "blacksmith and oxcart workshop at night, open adobe shed, clay tile roof, glowing forge and anvil, big painted oxcart wheel leaning on the wall, isolated on black background",
       "cutout": true,
       "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
@@ -2473,9 +2473,9 @@
         512
       ],
       "seed": 5204,
-      "subject": "small eerie clinic at night, whitewashed adobe house, faded red cross over the door, barred windows glowing sickly green, bottles on the sill, isolated on black background",
+      "subject": "exterior facade of a small whitewashed adobe clinic at night, faded red cross painted over the door, barred windows glowing sickly green, clay tile roof, isolated on black background",
       "cutout": true,
-      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_iglesia",
@@ -2485,9 +2485,9 @@
         640
       ],
       "seed": 5205,
-      "subject": "old white colonial adobe church at night, single square bell tower, clay tile roof, wooden doors, candlelight in the doorway, iron cross, isolated on black background",
+      "subject": "exterior of a whitewashed colonial adobe church at night, plain white facade, one square white bell tower, red clay tile roof, wooden doors, candlelight, isolated on black background",
       "cutout": true,
-      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_cantina",
@@ -2497,9 +2497,9 @@
         512
       ],
       "seed": 5206,
-      "subject": "small-town cantina at night, wooden building, red tin roof, saloon doors, warm orange light, beer crates, bare light bulbs along the eaves, isolated on black background",
+      "subject": "exterior facade of a small wooden roadside cantina at night, red tin roof, swinging saloon doors, warm orange light inside, beer crates outside, string of bulbs, isolated on black background",
       "cutout": true,
-      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_pulperia",
@@ -2509,9 +2509,9 @@
         512
       ],
       "seed": 5207,
-      "subject": "tiny corner store at night, wooden house painted yellow and blue, clay tile roof, barred counter window, rice sacks, hanging plantains, warm lamplight, isolated on black background",
+      "subject": "exterior facade of a tiny wooden corner shop at night, walls painted yellow and blue, clay tile roof, barred serving window, sacks and hanging plantains outside, isolated on black background",
       "cutout": true,
-      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_bg",
