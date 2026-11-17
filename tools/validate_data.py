@@ -8,6 +8,7 @@ Checks that JSON parses and that cross-references resolve:
   - data/statuses.json mental_mods -> Quebranto/Virtud ids in scripts/domain/stress_system.gd
   - data/town_events.json: effect keys, categories, services, item/class/region references
   - data/hub_activities.json: Iglesia/Cantina activities (costs, slots, relief, side effects)
+  - data/town.json: the town view's buildings (art files, positions, event closures)
   - region start/objective nodes, edges, enemy_id -> nodes / data/enemies.json
     (regions with a "generator" block: enemy pools and boss -> data/enemies.json)
   - every non-start region node is reachable from start_node
@@ -200,6 +201,27 @@ def main() -> int:
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
     services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal", "clinica"}
+    # Town view (P4-17): one building per hub service, with its cut-out picture.
+    town = load(DATA / "town.json") or {}
+    town_ids = set()
+    if not (ROOT / str(town.get("background", "")).replace("res://", "")).exists():
+        errors.append("town.json: background file missing")
+    for b in town.get("buildings", []):
+        bid = b.get("id")
+        where = f"town.json: '{bid}'"
+        if bid in town_ids:
+            errors.append(f"{where} duplicate id")
+        town_ids.add(bid)
+        for f in ("name", "text", "art", "x", "bottom", "height"):
+            if f not in b:
+                errors.append(f"{where} missing '{f}'")
+        if not (ROOT / str(b.get("art", "")).replace("res://", "")).exists():
+            errors.append(f"{where} art file missing ({b.get('art')})")
+        for c in list(b.get("closed_by", [])) + list(b.get("note_by", {}).keys()):
+            if c not in services:
+                errors.append(f"{where} unknown service '{c}'")
+    if town_ids != {"iglesia", "casa_comunal", "clinica", "terminal", "taller", "pulperia", "cantina"}:
+        errors.append("town.json: needs exactly the 7 hub buildings (iglesia, casa_comunal, clinica, terminal, taller, pulperia, cantina)")
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"

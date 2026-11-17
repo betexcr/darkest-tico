@@ -140,8 +140,8 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame
-	var clinic: Array = hub._relief_box.get_children().filter(func(c): return c is Button and str(c.text).begins_with("Clínica de Espantos"))
-	_check(clinic.size() == 1, "the hub has the Clínica button for the selected hero")
+	var clinic: Array = hub._clinic_box.get_children().filter(func(c): return c is HBoxContainer and str(c.get_child(1).text).begins_with("Clínica de Espantos"))
+	_check(clinic.size() == gs.roster.size(), "the Clínica window has a button for every hero (P4-17)")
 	hub._show_clinic(gs.roster[0])
 	await process_frame
 	var dlg: Array = hub.get_children().filter(func(c): return c is AcceptDialog)

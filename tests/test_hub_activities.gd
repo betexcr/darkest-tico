@@ -159,7 +159,8 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame
-	_check(hub._relief_box != null and hub._relief_box.get_child_count() == 4, "hub shows the Iglesia/Cantina panel (title + 2 rows + the Clínica button, P3-06)")
+	_check(hub._relief_boxes.size() == 2 and hub._relief_boxes.values().all(func(bx): return bx.get_child_count() == 4),
+		"the Iglesia and Cantina windows each list their 3 activities under a header (P4-17)")
 	hub.queue_free()
 
 	print("%d failure(s)" % _fail)

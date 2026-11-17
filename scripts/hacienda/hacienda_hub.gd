@@ -1,8 +1,11 @@
 extends Control
 
-## Hacienda hub: Pulpería (items), Iglesia Vieja + Cantina (stress activities), Terminal de Buses (recruiting),
-## roster with party selection/order and EBAIS healing, Casa Comunal (skill ranks of the
-## selected hero), and expedition start.
+## Hacienda hub. Since P4-17 it is a painted town (data/town.json): each building is a
+## picture you can hover and click, and a click opens that building's window — Pulpería
+## (items), Iglesia Vieja + Cantina (stress activities), Terminal de Buses (recruiting),
+## Clínica de Espantos (quirks), Casa Comunal (skill ranks of the selected hero) and Taller
+## (equipment). The roster (party, order, EBAIS) and the alforja are on the right; colones,
+## region, difficulty and the start button on the bottom bar.
 
 signal start_mission_requested
 
@@ -21,30 +24,39 @@ const QuirksScript := preload("res://scripts/domain/quirks.gd")
 const CardScript := preload("res://scripts/ui/tooltip_card.gd")
 const HeroCardScript := preload("res://scripts/ui/hero_card.gd")
 const CardButtonScript := preload("res://scripts/ui/card_button.gd")
+const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
+const TOWN_PATH := "res://data/town.json"
+## Pages that are about one hero show who at the top (click another hero on the right).
+const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller"]
 
 @onready var _bg: TextureRect = $BgTexture
-@onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
-@onready var _week: Label = $Columns/Left/VBox/InfoRow/WeekLabel
-@onready var _region_option: OptionButton = $Columns/Left/VBox/RegionRow/RegionOption
-@onready var _shop_grid: HFlowContainer = $Columns/Left/VBox/ShopScroll/ShopGrid
-@onready var _btn_sell: Button = $Columns/Left/VBox/ShopHead/BtnSell
-@onready var _shop_filters: HBoxContainer = $Columns/Left/VBox/ShopFilters
+@onready var _town: Control = $Town
+@onready var _gold: Label = $BottomBar/Row/GoldLabel
+@onready var _week: Label = $Banner/Row/WeekLabel
+@onready var _region_option: OptionButton = $BottomBar/Row/RegionOption
+@onready var _window: PanelContainer = $Building
+@onready var _pages: Control = $Building/VBox/Pages
+@onready var _who: HBoxContainer = $Building/VBox/Who
+@onready var _shop_grid: HFlowContainer = $Building/VBox/Pages/pulperia/ShopScroll/ShopGrid
+@onready var _btn_sell: Button = $Building/VBox/Pages/pulperia/ShopHead/BtnSell
+@onready var _shop_filters: HBoxContainer = $Building/VBox/Pages/pulperia/ShopFilters
 
 const SHOP_FILTERS := [
 	["todo", "Todo"], ["consumable", "Consumibles"], ["weapon", "Armas"],
 	["armor", "Armaduras"], ["accessory", "Accesorios"],
 ]
 var _shop_filter: String = "todo"
-@onready var _equip_title: Label = $Columns/Right/VBox/EquipTitle
-@onready var _equip_row: HBoxContainer = $Columns/Right/VBox/EquipRow
-@onready var _pack_grid: GridContainer = $Columns/Right/VBox/PackGrid
-@onready var _recruit_box: VBoxContainer = $Columns/Left/VBox/RecruitBox
-@onready var _hub_status: Label = $Columns/Left/VBox/HubStatus
-@onready var _roster_title: Label = $Columns/Right/VBox/RosterTitle
-@onready var _roster_list: VBoxContainer = $Columns/Right/VBox/Scroll/RosterList
-@onready var _btn_start: Button = $Columns/Right/VBox/BtnStart
-@onready var _skills_title: Label = $Columns/Right/VBox/SkillsTitle
-@onready var _skills_row: HBoxContainer = $Columns/Right/VBox/SkillsRow
+@onready var _equip_title: Label = $Building/VBox/Pages/taller/EquipTitle
+@onready var _equip_row: HBoxContainer = $Building/VBox/Pages/taller/EquipRow
+@onready var _pack_grid: GridContainer = $Right/VBox/PackGrid
+@onready var _recruit_box: VBoxContainer = $Building/VBox/Pages/terminal/RecruitBox
+@onready var _hub_status: Label = $HubStatus
+@onready var _roster_title: Label = $Right/VBox/RosterTitle
+@onready var _roster_list: VBoxContainer = $Right/VBox/Scroll/RosterList
+@onready var _btn_start: Button = $BottomBar/Row/BtnStart
+@onready var _skills_title: Label = $Building/VBox/Pages/casa_comunal/SkillsTitle
+@onready var _skills_row: HBoxContainer = $Building/VBox/Pages/casa_comunal/SkillsRow
+@onready var _clinic_box: VBoxContainer = $Building/VBox/Pages/clinica/Box
 
 ## Hero whose equipment is shown (click a name in the roster).
 var _selected: Dictionary = {}
@@ -53,8 +65,13 @@ var _difficulty_option: OptionButton
 var _pura_vida: CheckBox
 ## "Evento de la semana" button in the info row; opens the event card.
 var _event_btn: Button
-## Iglesia Vieja + Cantina activities for the selected hero (P3-03), under ReliefTitle.
-var _relief_box: VBoxContainer
+## Iglesia Vieja + Cantina activities for the selected hero (P3-03): building id -> its page's box.
+var _relief_boxes: Dictionary = {}
+## The town's buildings (P4-17): id -> TownBuilding, and the data rows from data/town.json.
+var _buildings: Dictionary = {}
+var _town_data: Dictionary = {}
+## The building whose window is open ("" = looking at the town).
+var _open_building: String = ""
 
 
 func _ready() -> void:
@@ -66,22 +83,22 @@ func _ready() -> void:
 	_region_option.item_selected.connect(_on_region_selected)
 	_build_difficulty_picker()
 	_btn_start.pressed.connect(_on_start_pressed)
-	$Columns/Right/VBox/BtnQuit.pressed.connect(_on_quit_pressed)
-	_relief_box = VBoxContainer.new()
-	_relief_box.add_theme_constant_override("separation", 4)
-	$Columns/Left/VBox.add_child(_relief_box)
-	$Columns/Left/VBox.move_child(_relief_box, $Columns/Left/VBox/ReliefTitle.get_index() + 1)
+	$BottomBar/Row/BtnQuit.pressed.connect(_on_quit_pressed)
+	for bid in ["iglesia", "cantina"]:
+		_relief_boxes[bid] = _pages.get_node("%s/Box" % bid)
+	$Building/VBox/Head/Close.pressed.connect(close_building)
 	_sync_region_option_from_state()
 	_try_load_hub_background()
+	_build_town()
 	_build_shop_filters()
 	_build_shop()
 	_btn_sell.toggled.connect(func(_on: bool): _refresh())
 	# Drop any inventory item on the shop list to sell one.
-	$Columns/Left/VBox/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
+	$Building/VBox/Pages/pulperia/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
 	for slot in GameState.EQUIP_SLOTS:
 		var es = EquipSlotScript.new()
 		es.setup(slot)
-		es.custom_minimum_size = Vector2(60, 48)
+		es.custom_minimum_size = Vector2(72, 60)
 		es.changed.connect(func(msg: String): _say(msg))
 		_equip_row.add_child(es)
 		_equip_slots.append(es)
@@ -115,14 +132,15 @@ func _on_region_selected(idx: int) -> void:
 ## Expedition difficulty (docs/01 §6): Aprendiz / Veterano / Campeón, next to the region.
 func _build_difficulty_picker() -> void:
 	var row := HBoxContainer.new()
-	var box: VBoxContainer = $Columns/Left/VBox
-	box.add_child(row)
-	box.move_child(row, $Columns/Left/VBox/RegionRow.get_index() + 1)
+	row.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var bar: HBoxContainer = $BottomBar/Row
+	bar.add_child(row)
+	bar.move_child(row, _region_option.get_index() + 1)
 	var lbl := Label.new()
 	lbl.text = "Dificultad:"
 	row.add_child(lbl)
 	_difficulty_option = OptionButton.new()
-	_difficulty_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_difficulty_option.custom_minimum_size = Vector2(170, 0)
 	var diffs: Array = ResolveSystemScript.difficulties()
 	for i in diffs.size():
 		_difficulty_option.add_item(str(diffs[i].get("name", "?")))
@@ -174,7 +192,8 @@ func _try_optional_hub_ambient() -> void:
 
 
 func _try_load_hub_background() -> void:
-	var p := "res://assets/ui_bg/hub_bg.png"
+	_town_data = _load_town()
+	var p: String = str(_town_data.get("background", "res://assets/ui_bg/hub_bg.png"))
 	if ResourceLoader.exists(p):
 		var tex := load(p) as Texture2D
 		if tex != null:
@@ -192,20 +211,24 @@ func _say(msg: String) -> void:
 
 
 func _refresh() -> void:
-	_gold.text = "Colones: %d" % GameState.colones
-	_week.text = "Semana: %d" % GameState.week
+	_gold.text = "%d ₡" % GameState.colones
+	_gold.tooltip_text = "Colones de la hacienda"
+	_week.text = "Semana %d" % GameState.week
 	_refresh_equipment()
 	_refresh_skills()
 	for b in _shop_grid.get_children():
 		if not b.is_queued_for_deletion():
 			b.refresh()
 	_refresh_relief()
+	_refresh_clinic_page()
+	_refresh_town()
+	_refresh_who()
 	_refresh_event_button()
 	_refresh_recruits()
 	_refresh_roster()
 	var refusing: Array = GameState.party_refusals()
 	_btn_start.disabled = GameState.living_party_count() <= 0 or not refusing.is_empty()
-	_btn_start.text = "Iniciar expedición (%d en la cuadrilla)" % GameState.living_party_count()
+	_btn_start.text = "Salir de expedición (%d en la cuadrilla)" % GameState.living_party_count()
 	if not refusing.is_empty():
 		_btn_start.text = "%s no quiere ir a una expedición tan fácil" % ", ".join(refusing.map(func(h): return str(h.get("name", "?"))))
 
@@ -254,97 +277,104 @@ func _build_shop() -> void:
 
 # --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------
 
-## One row per building: the selected hero can be sent to one activity for the week
-## (pays now, skips the next expedition, stress comes off when the week ends).
+## One page per building (P4-17): the selected hero can be sent to one of its activities
+## for the week (pays now, skips the next expedition, stress comes off when the week ends).
 func _refresh_relief() -> void:
-	if _relief_box == null:
-		return
-	for c in _relief_box.get_children():
+	for b in HubActivitiesScript.buildings():
+		var bid: String = str(b.get("id", ""))
+		if _relief_boxes.has(bid):
+			_fill_relief(_relief_boxes[bid], b)
+
+
+func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
+	for c in box.get_children():
 		c.queue_free()
+	var bid: String = str(b.get("id", ""))
 	var h: Dictionary = _selected
-	var head := Label.new()
-	head.add_theme_font_size_override("font_size", 13)
-	head.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_relief_box.add_child(head)
+	var head := CardScript.label("", 14, CardScript.TEXT, true, 0.0)
+	box.add_child(head)
 	if h.is_empty():
-		head.text = "Iglesia Vieja y Cantina del Centro: elige un héroe."
+		head.text = "Elija un héroe a la derecha."
 		return
 	if GameState.in_clinic(h):
 		head.text = "%s pasa la semana en la Clínica de Espantos. No sale de expedición." % h.get("name", "?")
-		_add_clinic_button(h)
 		return
 	if HubActivitiesScript.is_busy(h):
 		var act: Dictionary = HubActivitiesScript.booked(h)
 		var bname: String = HubActivitiesScript.building_name(str(h["busy"].get("building", "")))
 		if HubActivitiesScript.is_pending(h):
 			head.text = "%s pasa la semana en %s: %s. No sale de expedición." % [h.get("name", "?"), bname, act.get("name", "?")]
-			var cancel := Button.new()
-			cancel.text = "Cancelar %s (+%d ₡ de vuelta)" % [act.get("name", "?"), int(h["busy"].get("cost", 0))]
-			cancel.add_theme_font_size_override("font_size", 13)
-			cancel.pressed.connect(func(): _say(GameState.cancel_activity(h)))
-			_relief_box.add_child(cancel)
+			if str(h["busy"].get("building", "")) == bid:
+				var cancel := Button.new()
+				cancel.text = "Cancelar %s (+%d ₡ de vuelta)" % [act.get("name", "?"), int(h["busy"].get("cost", 0))]
+				cancel.pressed.connect(func(): _say(GameState.cancel_activity(h)))
+				box.add_child(cancel)
 		else:
 			head.text = "%s sigue en %s una semana más (%s)." % [h.get("name", "?"), bname, act.get("name", "?")]
-		_add_clinic_button(h)
 		return
-	head.text = "Mandar a %s (estrés %d) una semana a descansar — no sale de expedición:" % [h.get("name", "?"), int(h.get("stress", 0))]
-	for b in HubActivitiesScript.buildings():
-		var bid: String = str(b.get("id", ""))
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 4)
-		var lbl := Label.new()
-		# Short name ("Iglesia", "Cantina") so the three buttons fit; the full name is in the tooltip.
-		lbl.text = str(b.get("name", bid)).get_slice(" ", 0)
-		lbl.custom_minimum_size = Vector2(60, 0)
-		lbl.add_theme_font_size_override("font_size", 13)
-		lbl.tooltip_text = "%s\n%s" % [b.get("name", bid), b.get("text", "")]
-		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-		row.add_child(lbl)
-		var closed: bool = TownEventsScript.is_closed(GameState.active_event(), bid)
-		for a in b.get("activities", []):
-			var aid: String = str(a.get("id", ""))
-			var btn = CardButtonScript.new()
-			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			btn.clip_text = true
-			btn.add_theme_font_size_override("font_size", 12)
-			var price: int = GameState.activity_cost(bid, aid)
-			var rel: Array = GameState.activity_relief_range(bid, aid)
-			var used: int = GameState.activity_slots_used(bid, aid)
-			var cap: int = HubActivitiesScript.slots(a)
-			btn.text = "Cerrada" if closed else "%s %s · %d/%d" % [a.get("name", aid), "gratis" if price == 0 else "%d ₡" % price, used, cap]
-			var why: String = GameState.activity_block_reason(h, bid, aid)
-			var lines: PackedStringArray = PackedStringArray([str(a.get("name", aid)), str(a.get("text", "")),
-				"Quita %d–%d de estrés y el Quebranto al terminar la semana." % [int(rel[0]), int(rel[1])],
-				"Cupos ocupados: %d de %d. Puede tener efectos secundarios." % [used, cap]])
-			if why != "":
-				lines.append(why)
-			btn.tooltip_text = "\n".join(lines)
-			btn.card = _activity_card.bind(b, a, price, rel, used, cap, why)
-			btn.disabled = why != ""
-			btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
-			row.add_child(btn)
-		_relief_box.add_child(row)
-	_add_clinic_button(h)
+	head.text = "Mandar a %s (estrés %d) una semana — no sale de expedición:" % [h.get("name", "?"), int(h.get("stress", 0))]
+	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), bid)
+	if closed:
+		box.add_child(CardScript.label("Cerrada esta semana: no recibe a nadie.", 14, CardScript.BAD, false))
+	for a in b.get("activities", []):
+		var aid: String = str(a.get("id", ""))
+		var btn = CardButtonScript.new()
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		btn.custom_minimum_size = Vector2(0, 40)
+		var price: int = GameState.activity_cost(bid, aid)
+		var rel: Array = GameState.activity_relief_range(bid, aid)
+		var used: int = GameState.activity_slots_used(bid, aid)
+		var cap: int = HubActivitiesScript.slots(a)
+		btn.text = "%s — %s · quita %d–%d de estrés · cupos %d/%d" % [a.get("name", aid),
+			"gratis" if price == 0 else "%d ₡" % price, int(rel[0]), int(rel[1]), used, cap]
+		var why: String = GameState.activity_block_reason(h, bid, aid)
+		var lines: PackedStringArray = PackedStringArray([str(a.get("name", aid)), str(a.get("text", "")),
+			"Quita %d–%d de estrés y el Quebranto al terminar la semana." % [int(rel[0]), int(rel[1])],
+			"Cupos ocupados: %d de %d. Puede tener efectos secundarios." % [used, cap]])
+		if why != "":
+			lines.append(why)
+		btn.tooltip_text = "\n".join(lines)
+		btn.card = _activity_card.bind(b, a, price, rel, used, cap, why)
+		btn.disabled = why != ""
+		btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
+		box.add_child(btn)
 
 
 # --- Clínica de Espantos (P3-06) -----------------------------------------------------
 
-## "Clínica de Espantos" for the selected hero: opens the card with their quirks.
-func _add_clinic_button(h: Dictionary) -> void:
-	var b = CardButtonScript.new()
-	var n: int = QuirksScript.of(h).size()
+## The Clínica page (P4-17): every hero with their quirks; a click opens that hero's card.
+func _refresh_clinic_page() -> void:
+	for c in _clinic_box.get_children():
+		c.queue_free()
 	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "clinica")
-	b.text = "Clínica de Espantos: cerrada esta semana" if closed else "Clínica de Espantos — rasgos de %s (%d)" % [h.get("name", "?"), n]
-	b.add_theme_font_size_override("font_size", 13)
+	_clinic_box.add_child(CardScript.label("Cerrada esta semana." if closed else
+		"Un rasgo malo y uno bueno por semana; las enfermedades, cuando sea. Cada tratamiento deja al héroe aquí el resto de la semana.",
+		13, CardScript.BAD if closed else CardScript.MUTED, true, 0.0))
+	for h in GameState.roster:
+		_add_clinic_button(h, closed)
+
+
+func _add_clinic_button(h: Dictionary, closed: bool = false) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	row.add_child(HeroCardScript.header(h, 40.0))
+	row.get_child(0).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var b = CardButtonScript.new()
+	var qs: Array = QuirksScript.of(h)
+	var n: int = qs.size()
+	b.text = "Clínica de Espantos — rasgos de %s (%d)" % [h.get("name", "?"), n]
+	b.custom_minimum_size = Vector2(250, 0)
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	b.clip_text = true
 	b.tooltip_text = "Clínica de Espantos\nQuitar rasgos malos, fijar o quitar los buenos y curar enfermedades."
-	b.card = func(): return CardScript.text_card("Clínica de Espantos",
-		["Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades.",
-		"Cada tratamiento deja al héroe en la Clínica el resto de la semana."],
-		["Un rasgo malo y uno bueno por semana", "Enfermedades: cuando sea"],
-		"Clic para abrir la ficha de %s." % h.get("name", "?") if n > 0 else "%s no tiene rasgos ni enfermedades." % h.get("name", "?"))
-	b.disabled = n == 0
+	var names: Array = qs.map(func(e): return str(QuirksScript.get_quirk(str(e["id"])).get("name", "")))
+	b.card = func(): return CardScript.text_card("Rasgos de %s" % h.get("name", "?"),
+		["Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades."], names,
+		"Clic para abrir su ficha." if n > 0 else "%s no tiene rasgos ni enfermedades." % h.get("name", "?"))
+	b.disabled = n == 0 or closed
 	b.pressed.connect(_show_clinic.bind(h))
-	_relief_box.add_child(b)
+	row.add_child(b)
+	_clinic_box.add_child(row)
 
 
 ## The Clínica card for one hero (P3-06, restyled P4-15): hero header, then one row per
@@ -519,11 +549,14 @@ static func _side_effect_name(s: Dictionary) -> String:
 func _refresh_equipment() -> void:
 	if _selected.is_empty() or not GameState.roster.has(_selected):
 		_selected = GameState.roster[0] if not GameState.roster.is_empty() else {}
+	_equip_title.text = "Arrastre armas, armaduras y accesorios desde la alforja (a la derecha) hasta un espacio, o haga clic en la pieza en la alforja. Clic en un espacio para quitarla. En expedición no se cambia el equipo en plena pelea."
+	var pack_title: Label = $Right/VBox/PackTitle
 	if _btn_sell.button_pressed:
-		_equip_title.text = "MODO VENDER: clic en un artículo de la alforja para venderlo (mitad de precio)"
+		pack_title.text = "MODO VENDER: clic en un artículo para venderlo (mitad de precio)"
+		pack_title.add_theme_color_override("font_color", Color(1, 0.7, 0.45))
 	else:
-		_equip_title.text = "Equipo de %s — arrastra desde la alforja (%d/%d espacios)" % [
-			_selected.get("name", "—"), GameState.inventory.size(), GameState.inventory_slots()]
+		pack_title.text = "Alforja (%d/%d espacios)" % [GameState.inventory.size(), GameState.inventory_slots()]
+		pack_title.remove_theme_color_override("font_color")
 	for es in _equip_slots:
 		es.show_hero(_selected)
 	for c in _pack_grid.get_children():
@@ -649,7 +682,7 @@ func _refresh_recruits() -> void:
 func _refresh_roster() -> void:
 	for c in _roster_list.get_children():
 		c.queue_free()
-	_roster_title.text = "Héroes (%d/%d) — cuadrilla %d/%d, en orden de rango" % [
+	_roster_title.text = "Héroes %d/%d · cuadrilla %d/%d (en orden de posición)" % [
 		GameState.roster.size(), GameState.roster_cap(), GameState.party.size(), GameState.PARTY_SIZE]
 	# Party first (rank order), then the rest.
 	var ordered: Array = GameState.party.duplicate()
@@ -660,9 +693,17 @@ func _refresh_roster() -> void:
 		_roster_list.add_child(_roster_row(h))
 
 
+## Two lines (P4-17, the roster panel is narrow): portrait + name and numbers, then the
+## buttons (EBAIS, order, party, dismiss). The card on hover has everything else.
 func _roster_row(h: Dictionary) -> Control:
+	var outer := VBoxContainer.new()
+	outer.add_theme_constant_override("separation", 2)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
+	outer.add_child(row)
+	var btns := HBoxContainer.new()
+	btns.add_theme_constant_override("separation", 4)
+	btns.alignment = BoxContainer.ALIGNMENT_END
 	var pic := TextureRect.new()
 	pic.custom_minimum_size = Vector2(44, 44)
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -674,7 +715,7 @@ func _roster_row(h: Dictionary) -> Control:
 	var info = CardButtonScript.new()
 	info.flat = true
 	info.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	info.tooltip_text = "Clic para ver su equipo y sus habilidades."
+	info.tooltip_text = "Clic para elegirlo en los edificios (equipo, habilidades, descanso)."
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_font_size_override("font_size", 13)
 	if is_same(h, _selected):
@@ -712,10 +753,11 @@ func _roster_row(h: Dictionary) -> Control:
 	var ideal_txt: String = FormationScript.ranks_text(ideal) if not ideal.is_empty() else "1–4"
 	if in_party and not ideal.is_empty() and not ideal.map(func(x): return int(x)).has(GameState.party.find(h) + 1):
 		warn += " ⚠ fuera de posición (ideal %s)" % ideal_txt
-	info.text = "%s%s — %s%s\nRes. %d (%s)%s · PV %d/%d · Estrés %d · Prot %d%% · Daño %+d" % [
-		rank, h.get("name", "?"), h.get("class_name", ""), extra, lvl, xp, warn,
-		int(h.get("hp", 0)), int(h.get("hp_max", 0)),
-		int(h.get("stress", 0)), int(h.get("prot", 0)), int(h.get("dmg_bonus", 0))]
+	info.text = "%s%s — %s%s\nPV %d/%d · Estrés %d · Res. %d%s" % [
+		rank, h.get("name", "?"), h.get("class_name", ""), extra,
+		int(h.get("hp", 0)), int(h.get("hp_max", 0)), int(h.get("stress", 0)), lvl, warn]
+	if warn != "":
+		info.add_theme_color_override("font_color", Color(1, 0.9, 0.55) if is_same(h, _selected) else Color(0.95, 0.7, 0.5))
 	# Long lines clip instead of pushing the buttons off-screen; the tooltip has everything.
 	info.clip_text = true
 	var ranks: PackedStringArray = PackedStringArray()
@@ -739,7 +781,7 @@ func _roster_row(h: Dictionary) -> Control:
 		heal.tooltip_text = "Curar todos los PV en el EBAIS del pueblo."
 		heal.disabled = ebais_closed or GameState.colones < cost
 		heal.pressed.connect(func(): _say(GameState.heal_hero(h)))
-		row.add_child(heal)
+		btns.add_child(heal)
 	if in_party:
 		var up := Button.new()
 		up.text = "↑"
@@ -748,7 +790,7 @@ func _roster_row(h: Dictionary) -> Control:
 			GameState.move_in_party(h, -1)
 			_say("")
 		)
-		row.add_child(up)
+		btns.add_child(up)
 		var down := Button.new()
 		down.text = "↓"
 		down.tooltip_text = "Bajar de rango (más atrás)"
@@ -756,21 +798,26 @@ func _roster_row(h: Dictionary) -> Control:
 			GameState.move_in_party(h, 1)
 			_say("")
 		)
-		row.add_child(down)
+		btns.add_child(down)
 	var fire := Button.new()
 	fire.text = "Despedir"
 	fire.tooltip_text = "Despedir a este héroe para siempre. Su equipo vuelve a la alforja."
 	fire.add_theme_color_override("font_color", Color(0.95, 0.55, 0.5))
 	fire.disabled = GameState.roster.size() <= 1
 	fire.pressed.connect(_confirm_dismiss.bind(h))
-	row.add_child(fire)
+	btns.add_child(fire)
 	var cb := CheckBox.new()
 	cb.text = "Cuadrilla"
 	cb.button_pressed = in_party
 	cb.disabled = GameState.hero_busy(h) and not in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))
-	row.add_child(cb)
-	return row
+	btns.add_child(cb)
+	for c in btns.get_children():
+		if c is Button:
+			c.add_theme_font_size_override("font_size", 12)
+	outer.add_child(btns)
+	outer.add_child(HSeparator.new())
+	return outer
 
 
 func _confirm_dismiss(h: Dictionary) -> void:
@@ -855,15 +902,122 @@ func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 
+# --- Town view (P4-17) ------------------------------------------------------------------
+
+static func _load_town() -> Dictionary:
+	var f := FileAccess.open(TOWN_PATH, FileAccess.READ)
+	if f == null:
+		return {}
+	var parsed = JSON.parse_string(f.get_as_text())
+	return parsed if parsed is Dictionary else {}
+
+
+## One TownBuilding per data/town.json row, drawn back to front (by where it stands).
+func _build_town() -> void:
+	var rows: Array = _town_data.get("buildings", []).duplicate()
+	rows.sort_custom(func(a, b): return float(a.get("bottom", 0)) < float(b.get("bottom", 0)))
+	for row in rows:
+		var art: String = str(row.get("art", ""))
+		var tex: Texture2D = load(art) as Texture2D if ResourceLoader.exists(art) else null
+		if tex == null:
+			continue
+		var b = TownBuildingScript.new()
+		b.setup(row, tex)
+		b.set_meta("row", row)
+		b.chosen.connect(open_building)
+		_town.add_child(b)
+		_buildings[str(row.get("id", ""))] = b
+	_town.resized.connect(_layout_town)
+	_layout_town()
+
+
+## Places the buildings: design coordinates scaled to the screen, keeping the art's aspect.
+func _layout_town() -> void:
+	var design: Array = _town_data.get("design_size", [1280, 720])
+	var k: float = minf(_town.size.x / float(design[0]), _town.size.y / float(design[1]))
+	if k <= 0.0:
+		k = 1.0
+	for bid in _buildings:
+		var b = _buildings[bid]
+		var row: Dictionary = b.get_meta("row")
+		var tex: Texture2D = b.texture
+		var h: float = float(row.get("height", 200)) * k
+		var w: float = h * float(tex.get_width()) / float(maxi(tex.get_height(), 1))
+		b.size = Vector2(w, h)
+		b.position = Vector2(float(row.get("x", 0)) * k - w / 2.0, float(row.get("bottom", 0)) * k - h)
+
+
+## Greys out what a town event closed and notes partial closures on the name plate.
+func _refresh_town() -> void:
+	var ev: Dictionary = GameState.active_event()
+	for bid in _buildings:
+		var b = _buildings[bid]
+		var row: Dictionary = b.get_meta("row")
+		var closed: bool = false
+		for c in row.get("closed_by", []):
+			closed = closed or TownEventsScript.is_closed(ev, str(c))
+		var notes: PackedStringArray = PackedStringArray()
+		if closed:
+			notes.append("Cerrada esta semana")
+		var note_by: Dictionary = row.get("note_by", {})
+		for c in note_by:
+			if TownEventsScript.is_closed(ev, str(c)):
+				notes.append(str(note_by[c]))
+		b.set_closed(closed, " · ".join(notes))
+
+
+## Opens a building's window (its page of the hub). Clicking the same one again closes it.
+func open_building(bid: String) -> void:
+	if not _buildings.has(bid) and _pages.get_node_or_null(bid) == null:
+		return
+	_open_building = bid
+	var row: Dictionary = _buildings[bid].get_meta("row") if _buildings.has(bid) else {}
+	$Building/VBox/Head/Texts/Name.text = str(row.get("name", bid))
+	$Building/VBox/Head/Texts/Blurb.text = str(row.get("text", ""))
+	$Building/VBox/Head/Picture.texture = _buildings[bid].texture if _buildings.has(bid) else null
+	for page in _pages.get_children():
+		page.visible = page.name == bid
+	_window.visible = true
+	_refresh_who()
+
+
+func close_building() -> void:
+	_open_building = ""
+	_window.visible = false
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and _window.visible:
+		close_building()
+		get_viewport().set_input_as_handled()
+
+
+## "Para: <hero>" strip on the pages that work on the selected hero.
+func _refresh_who() -> void:
+	if _who == null:
+		return
+	for c in _who.get_children():
+		c.queue_free()
+	_who.visible = _window.visible and _open_building in HERO_PAGES and not _selected.is_empty()
+	if not _who.visible:
+		return
+	var head: Control = HeroCardScript.header(_selected, 44.0)
+	head.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_who.add_child(head)
+	_who.add_child(CardScript.label("Clic en otro héroe a la derecha para cambiar.", 12, CardScript.HINT, false))
+	_who.get_child(1).size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+
 # --- Town event of the week (docs/02 §12) -----------------------------------------------
 
 func _build_event_button() -> void:
 	_event_btn = Button.new()
 	_event_btn.add_theme_font_size_override("font_size", 14)
-	_event_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_event_btn.custom_minimum_size = Vector2(250, 0)
+	_event_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_event_btn.clip_text = true
 	_event_btn.pressed.connect(_show_event_card)
-	$Columns/Left/VBox/InfoRow.add_child(_event_btn)
+	$Banner/Row.add_child(_event_btn)
 
 
 func _refresh_event_button() -> void:

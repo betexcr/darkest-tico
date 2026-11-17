@@ -61,7 +61,7 @@ func _run() -> void:
 	print("Hover cards")
 	var ok: bool = true
 	for row in hub._roster_list.get_children():
-		var info = row.get_child(1)
+		var info = row.get_child(0).get_child(1)
 		ok = ok and _builds(info.card)
 	_check(ok, "every roster hero has a hero card")
 	ok = true
@@ -69,11 +69,10 @@ func _run() -> void:
 		ok = ok and b.get("card") != null and _builds(b.card)
 	_check(ok and hub._recruit_box.get_child_count() > 0, "every candidate at the terminal has a hero card")
 	var acts: Array = []
-	for row in hub._relief_box.get_children():
-		if row is HBoxContainer:
-			for c in row.get_children():
-				if c is Button:
-					acts.append(c)
+	for bx in hub._relief_boxes.values():
+		for c in bx.get_children():
+			if c is Button and c.get("card") != null:
+				acts.append(c)
 	_check(acts.size() == 6 and acts.all(func(b): return _builds(b.card)), "the 6 Iglesia/Cantina activities have cards")
 
 	print("Card dialogs")
@@ -105,6 +104,7 @@ func _run() -> void:
 	gs.active_event_id = ""
 	hub.queue_free()
 	await process_frame
+	await _town(gs)
 	await _combat_bar(gs)
 
 	print("%d failure(s)" % _fail)
@@ -186,3 +186,60 @@ func _combat_bar(gs) -> void:
 	screen.queue_free()
 	gs.end_mission_abandon()
 	await process_frame
+
+
+## The town view (P4-17): a picture per building; hover lights it and names it, a click
+## opens its window with its page, Esc or "Volver al pueblo" closes it.
+func _town(gs) -> void:
+	print("Town view")
+	gs.reset_party_from_catalog()
+	gs.active_event_id = ""
+	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
+	root.add_child(hub)
+	await process_frame
+	await process_frame
+	var ids: Array = hub._buildings.keys()
+	ids.sort()
+	_check(ids == ["cantina", "casa_comunal", "clinica", "iglesia", "pulperia", "taller", "terminal"], "the town has the 7 buildings (%s)" % ", ".join(ids))
+	var ok: bool = true
+	for bid in hub._buildings:
+		var b = hub._buildings[bid]
+		ok = ok and b.size.x > 40.0 and b.size.y > 40.0 and Rect2(Vector2.ZERO, hub.size).encloses(Rect2(b.position, b.size).grow(-4.0))
+	_check(ok, "every building is on screen")
+	var ig = hub._buildings.get("iglesia")
+	if ig != null:
+		_check(not ig._has_point(Vector2(1, 1)), "a transparent corner of the picture is not the building")
+		_check(ig._has_point(ig.size / 2.0), "its middle is")
+		ig._set_hover(true)
+		await process_frame
+		_check(ig._plate.visible and ig._plate.is_inside_tree() and ig._plate_label.text.begins_with("Iglesia Vieja"), "hovering shows the name plate")
+		ig._set_hover(false)
+		_check(not ig._plate.visible, "and leaving hides it")
+	ok = true
+	for bid in hub._buildings:
+		hub._buildings[bid].chosen.emit(bid)
+		await process_frame
+		var shown: Array = hub._pages.get_children().filter(func(p): return p.visible).map(func(p): return str(p.name))
+		ok = ok and hub._window.visible and shown == [bid] and hub.get_node("Building/VBox/Head/Texts/Name").text == str(hub._buildings[bid].title)
+		hub.close_building()
+	_check(ok, "clicking each building opens its own window and page")
+	_check(not hub._window.visible, "Volver al pueblo closes it")
+	hub.open_building("casa_comunal")
+	await process_frame
+	_check(hub._who.visible and hub._skills_row.get_child_count() > 0, "the Casa Comunal shows whose skills they are")
+	hub.close_building()
+	hub.queue_free()
+	await process_frame
+	# A town event that closes the terminal greys it out.
+	var te = gs.TownEventsScript
+	var closing: Array = te.all().filter(func(e): return e.get("effects", {}).get("closed", []).has("terminal"))
+	if not closing.is_empty():
+		gs.active_event_id = str(closing[0]["id"])
+		hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
+		root.add_child(hub)
+		await process_frame
+		var t = hub._buildings.get("terminal")
+		_check(t != null and t.closed and t.note.contains("Cerrada"), "a building closed by the town event is greyed out")
+		hub.queue_free()
+		gs.active_event_id = ""
+		await process_frame

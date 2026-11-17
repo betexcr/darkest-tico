@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://bhaciendahub01"]
+[gd_scene load_steps=5 format=3 uid="uid://bhaciendahub01"]
 
 [ext_resource type="Script" path="res://scripts/hacienda/hacienda_hub.gd" id="1_hub"]
 
@@ -7,12 +7,39 @@ content_margin_left = 12.0
 content_margin_top = 10.0
 content_margin_right = 12.0
 content_margin_bottom = 10.0
-bg_color = Color(0.05, 0.035, 0.03, 0.82)
+bg_color = Color(0.05, 0.035, 0.03, 0.88)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.38, 0.27, 0.16, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.04, 0.028, 0.022, 0.96)
+border_width_top = 2
+border_color = Color(0.45, 0.32, 0.18, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_win"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.075, 0.055, 0.045, 0.97)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.62, 0.46, 0.25, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
 
 [node name="HaciendaHub" type="Control"]
 layout_mode = 3
@@ -34,7 +61,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Darken" type="ColorRect" parent="."]
+[node name="Town" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -42,165 +69,295 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.3)
 
-[node name="Columns" type="HBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 16
-
-[node name="Left" type="PanelContainer" parent="Columns"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="Banner" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 58.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_col")
 
-[node name="VBox" type="VBoxContainer" parent="Columns/Left"]
+[node name="Row" type="HBoxContainer" parent="Banner"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="Columns/Left/VBox"]
+[node name="Title" type="Label" parent="Banner/Row"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
 theme_override_font_sizes/font_size = 22
 text = "Hacienda del Abuelo"
 
-[node name="InfoRow" type="HBoxContainer" parent="Columns/Left/VBox"]
+[node name="WeekLabel" type="Label" parent="Banner/Row"]
 layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="GoldLabel" type="Label" parent="Columns/Left/VBox/InfoRow"]
-layout_mode = 2
-text = "Colones: 0"
-
-[node name="WeekLabel" type="Label" parent="Columns/Left/VBox/InfoRow"]
-layout_mode = 2
+size_flags_vertical = 4
 text = "Semana: 1"
 
-[node name="RegionRow" type="HBoxContainer" parent="Columns/Left/VBox"]
-layout_mode = 2
+[node name="HubStatus" type="Label" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 880.0
+offset_bottom = 110.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.95, 0.86, 0.66, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+autowrap_mode = 3
+text = ""
 
-[node name="RegionLabel" type="Label" parent="Columns/Left/VBox/RegionRow"]
+[node name="Right" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -380.0
+offset_bottom = -64.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_col")
+
+[node name="VBox" type="VBoxContainer" parent="Right"]
 layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RosterTitle" type="Label" parent="Right/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+autowrap_mode = 3
+text = "Héroes"
+
+[node name="Scroll" type="ScrollContainer" parent="Right/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="RosterList" type="VBoxContainer" parent="Right/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PackTitle" type="Label" parent="Right/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 13
+text = "Alforja"
+
+[node name="PackGrid" type="GridContainer" parent="Right/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 8
+
+[node name="BottomBar" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -64.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar")
+
+[node name="Row" type="HBoxContainer" parent="BottomBar"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="GoldLabel" type="Label" parent="BottomBar/Row"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.98, 0.84, 0.4, 1)
+theme_override_font_sizes/font_size = 20
+text = "0 ₡"
+
+[node name="RegionLabel" type="Label" parent="BottomBar/Row"]
+layout_mode = 2
+size_flags_vertical = 4
 text = "Región:"
 
-[node name="RegionOption" type="OptionButton" parent="Columns/Left/VBox/RegionRow"]
+[node name="RegionOption" type="OptionButton" parent="BottomBar/Row"]
+custom_minimum_size = Vector2(170, 0)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Spacer" type="Control" parent="BottomBar/Row"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ShopHead" type="HBoxContainer" parent="Columns/Left/VBox"]
+[node name="BtnStart" type="Button" parent="BottomBar/Row"]
+custom_minimum_size = Vector2(260, 42)
 layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(1, 0.86, 0.6, 1)
+theme_override_font_sizes/font_size = 17
+text = "Salir de expedición"
 
-[node name="ShopTitle" type="Label" parent="Columns/Left/VBox/ShopHead"]
+[node name="BtnQuit" type="Button" parent="BottomBar/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Salir del juego"
+
+[node name="Building" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = 70.0
+offset_right = -396.0
+offset_bottom = -80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_win")
+
+[node name="VBox" type="VBoxContainer" parent="Building"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Head" type="HBoxContainer" parent="Building/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Picture" type="TextureRect" parent="Building/VBox/Head"]
+custom_minimum_size = Vector2(84, 64)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Texts" type="VBoxContainer" parent="Building/VBox/Head"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="Name" type="Label" parent="Building/VBox/Head/Texts"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Pulpería La Hacienda — clic para comprar, arrastra aquí para vender"
+theme_override_font_sizes/font_size = 22
+text = "Edificio"
 
-[node name="BtnSell" type="Button" parent="Columns/Left/VBox/ShopHead"]
+[node name="Blurb" type="Label" parent="Building/VBox/Head/Texts"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.7, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+text = ""
+
+[node name="Close" type="Button" parent="Building/VBox/Head"]
+layout_mode = 2
+size_flags_vertical = 0
+tooltip_text = "Volver al pueblo (Esc)"
+text = "Volver al pueblo"
+
+[node name="Who" type="HBoxContainer" parent="Building/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Pages" type="MarginContainer" parent="Building/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="pulperia" type="VBoxContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ShopHead" type="HBoxContainer" parent="Building/VBox/Pages/pulperia"]
+layout_mode = 2
+
+[node name="ShopTitle" type="Label" parent="Building/VBox/Pages/pulperia/ShopHead"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.76, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+text = "Clic en un artículo para comprarlo. Para vender, arrastre algo de la alforja hasta aquí o use el modo vender."
+
+[node name="BtnSell" type="Button" parent="Building/VBox/Pages/pulperia/ShopHead"]
 layout_mode = 2
 tooltip_text = "Modo vender: clic en un artículo de la alforja para venderlo a la mitad del precio."
 toggle_mode = true
 text = "Vender"
 
-[node name="ShopFilters" type="HBoxContainer" parent="Columns/Left/VBox"]
+[node name="ShopFilters" type="HBoxContainer" parent="Building/VBox/Pages/pulperia"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="ShopScroll" type="ScrollContainer" parent="Columns/Left/VBox"]
+[node name="ShopScroll" type="ScrollContainer" parent="Building/VBox/Pages/pulperia"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ShopGrid" type="HFlowContainer" parent="Columns/Left/VBox/ShopScroll"]
+[node name="ShopGrid" type="HFlowContainer" parent="Building/VBox/Pages/pulperia/ShopScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 
-[node name="ReliefTitle" type="Label" parent="Columns/Left/VBox"]
+[node name="terminal" type="ScrollContainer" parent="Building/VBox/Pages"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Iglesia Vieja y Cantina del Centro — una semana de descanso"
+horizontal_scroll_mode = 0
 
-[node name="TerminalTitle" type="Label" parent="Columns/Left/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Terminal de Buses de Sarchí — candidatos de la semana"
-
-[node name="RecruitBox" type="VBoxContainer" parent="Columns/Left/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="HubStatus" type="Label" parent="Columns/Left/VBox"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.8, 0.6, 1)
-autowrap_mode = 3
-text = ""
-
-[node name="Right" type="PanelContainer" parent="Columns"]
+[node name="RecruitBox" type="VBoxContainer" parent="Building/VBox/Pages/terminal"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_col")
+theme_override_constants/separation = 6
 
-[node name="VBox" type="VBoxContainer" parent="Columns/Right"]
+[node name="iglesia" type="ScrollContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="Building/VBox/Pages/iglesia"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="cantina" type="ScrollContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="Building/VBox/Pages/cantina"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="clinica" type="ScrollContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="Building/VBox/Pages/clinica"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="casa_comunal" type="VBoxContainer" parent="Building/VBox/Pages"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="RosterTitle" type="Label" parent="Columns/Right/VBox"]
+[node name="SkillsTitle" type="Label" parent="Building/VBox/Pages/casa_comunal"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-text = "Héroes"
-
-[node name="Scroll" type="ScrollContainer" parent="Columns/Right/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="RosterList" type="VBoxContainer" parent="Columns/Right/VBox/Scroll"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-
-[node name="EquipTitle" type="Label" parent="Columns/Right/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_colors/font_color = Color(0.85, 0.76, 0.6, 1)
 theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+text = ""
+
+[node name="SkillsRow" type="HBoxContainer" parent="Building/VBox/Pages/casa_comunal"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="taller" type="VBoxContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="EquipTitle" type="Label" parent="Building/VBox/Pages/taller"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.76, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
 text = "Equipo"
 
-[node name="EquipRow" type="HBoxContainer" parent="Columns/Right/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="PackGrid" type="GridContainer" parent="Columns/Right/VBox"]
-layout_mode = 2
-theme_override_constants/h_separation = 3
-theme_override_constants/v_separation = 3
-columns = 12
-
-[node name="SkillsTitle" type="Label" parent="Columns/Right/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
-theme_override_font_sizes/font_size = 13
-text = "Casa Comunal de Oficios"
-
-[node name="SkillsRow" type="HBoxContainer" parent="Columns/Right/VBox"]
+[node name="EquipRow" type="HBoxContainer" parent="Building/VBox/Pages/taller"]
 layout_mode = 2
 theme_override_constants/separation = 6
-
-[node name="BtnStart" type="Button" parent="Columns/Right/VBox"]
-custom_minimum_size = Vector2(0, 40)
-layout_mode = 2
-text = "Iniciar expedición"
-
-[node name="BtnQuit" type="Button" parent="Columns/Right/VBox"]
-layout_mode = 2
-text = "Salir"

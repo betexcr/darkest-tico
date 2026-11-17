@@ -31,10 +31,14 @@ func _run() -> void:
 	root.add_child(hub)
 	await _snap(out_dir, "clinic_hub.png")
 	# Hover cards (P4-15): an Iglesia activity, a candidate at the terminal, a roster hero.
-	for pair in [["hover_activity.png", hub._relief_box.get_child(1).get_child(1)],
-			["hover_recruit.png", hub._recruit_box.get_child(0)],
-			["hover_roster.png", hub._roster_list.get_child(0).get_child(1)]]:
-		var ctl: Control = pair[1]
+	# The town view (P4-17): each list lives in its building's window.
+	for pair in [["hover_activity.png", "iglesia", func(): return hub._relief_boxes["iglesia"].get_child(1)],
+			["hover_recruit.png", "terminal", func(): return hub._recruit_box.get_child(0)],
+			["hover_roster.png", "", func(): return hub._roster_list.get_child(0).get_child(0).get_child(1)]]:
+		if str(pair[1]) != "":
+			hub.open_building(str(pair[1]))
+		await create_timer(0.2).timeout
+		var ctl: Control = pair[2].call()
 		var ev := InputEventMouseMotion.new()
 		ev.position = ctl.get_global_rect().get_center()
 		ev.global_position = ev.position
@@ -46,6 +50,7 @@ func _run() -> void:
 		away.global_position = away.position
 		root.push_input(away)
 		await create_timer(0.3).timeout
+		hub.close_building()
 	hub._show_clinic(h)
 	await _snap(out_dir, "clinic.png")
 	hub._confirm_dismiss(h)

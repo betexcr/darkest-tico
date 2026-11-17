@@ -1,0 +1,15 @@
+{
+  "id": "town_terminal",
+  "prompt": "dark fantasy painting, Terminal de Buses de Sarchi: a small old rural Costa Rican bus station, low adobe building with a rusty corrugated tin roof and a long wooden bench, a faded painted destination board, an old round-nosed bus painted with colorful Sarchi oxcart flower patterns parked beside it, one lantern, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 5201,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-17T06:06:07+00:00"
+}

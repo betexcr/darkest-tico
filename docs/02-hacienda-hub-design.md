@@ -12,6 +12,28 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
   - Town events
   - Recovery and treatment resolution
 
+### Town view (P4-17, owner 2026-11-17)
+
+The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one cut-out picture per building over a night backdrop (`data/town.json`, art in `assets/town/`, generated from `tools/art_manifest.json` and cut out with `tools/sd_cutout.py`).
+
+- **Hover:** the building gets a warm outline and its name plate.
+- **Click:** opens that building's window (Esc or "Volver al pueblo" closes it).
+- **Closed buildings:** a building closed by the week's town event (`closed_by`) is drawn grey. Partial closures, like the Pulpería not buying, go on the plate (`note_by`).
+- **Roster:** on the right, with the alforja under it.
+- **Bottom bar:** colones, region, difficulty, Pura Vida and "Salir de expedición".
+- **Top-left banner:** the week and the town event.
+
+| Building | Window |
+|---|---|
+| Pulpería | shop (buy, sell mode, drop to sell) |
+| Terminal de Buses | the week's candidates |
+| Iglesia Vieja / Cantina del Centro | the selected hero's week of rest |
+| Clínica de Espantos | every hero, with a button to their quirk card |
+| Casa Comunal | the selected hero's skill ranks |
+| Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) |
+
+The EBAIS stays a button on each roster row. The Feria Nocturna, Guardabosques and Mejoras de Hacienda have no picture until they are built.
+
 ## 2) Building Mapping
 
 | Darkest Dungeon | Tico Gothic Equivalent | Primary Function |
