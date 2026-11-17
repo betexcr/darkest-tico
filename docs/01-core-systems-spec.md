@@ -41,6 +41,7 @@ Implemented (P1-03a). Rules: `scripts/domain/formation.gd`; combat: `combat_cont
   - Enemy-target skills also have `target_ranks`, the enemy positions they reach.
   - Unusable skills are greyed out on the action bar, and the turn text says how many don't reach. Tooltips show "Desde posición 1–2, alcanza 1–2".
   - Ally and party skills only check `use_ranks`.
+  - **The last one standing** on a side ignores `use_ranks` (P1-21, 2026-11-17): with nobody beside them they can't "Moverse", so a lone hero (or enemy) can always use their skills. `target_ranks` still apply. The validator already guarantees every class has an attack that reaches enemy position 1.
 - **Moverse:** an action-bar button that swaps the acting hero with a living neighbour (forward or back). It spends the turn.
 - **Enemies** (`data/enemies.json`):
   - `ranks` are their preferred positions (doc 05 §2.6). Squads are sorted by them when a fight starts; ties keep the generator's order, so the leader or boss stays in front.

@@ -56,6 +56,16 @@ func _test_rules(fm) -> void:
 	se.remove(foes[0], "agazapado")
 	_check(fm.valid_targets({}, foes).size() == 3, "no target_ranks: every enemy")
 
+	# P1-21: the last one standing ignores use_ranks (can't Moverse, positions mean nothing),
+	# but still needs a target in reach.
+	var back_only := {"kind": "attack", "target": "enemy", "use_ranks": [3, 4], "target_ranks": [1, 2, 3, 4]}
+	var lone := {"name": "lone"}
+	var party2: Array = [lone, {"name": "p2", "dead": true}, {"name": "p3", "dead": true}]
+	_check(fm.can_use(back_only, lone, party2, foes, true), "a lone hero in position 1 can use a position 3-4 attack")
+	_check(not fm.can_use(back_only, a, side, foes, true), "with others standing, use_ranks still applies")
+	var short := {"kind": "attack", "target": "enemy", "use_ranks": [3, 4], "target_ranks": [4]}
+	_check(not fm.can_use(short, lone, party2, foes, true), "alone, it still needs someone in reach (target_ranks)")
+
 	var bat := {"name": "bat", "ranks": [3, 4]}
 	var x := {"name": "x"}
 	_check(fm.step_toward(bat, [bat, x], [3, 4]) == x, "an enemy out of place steps back toward its ranks")

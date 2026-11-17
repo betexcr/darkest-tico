@@ -71,9 +71,13 @@ static func valid_targets(skill: Dictionary, other_side: Array) -> Array:
 
 ## Whether `user` can use `skill` right now. `hits_other_side`: the skill picks one unit on
 ## the other side (hero attacks, enemy single-target skills); it then needs a valid target.
+## The last one standing on a side ignores use_ranks (P1-21): with nobody beside them they
+## can't Moverse, and positions mean nothing, so a lone hero is never stuck.
 static func can_use(skill: Dictionary, user: Dictionary, own_side: Array, other_side: Array, hits_other_side: bool) -> bool:
 	var pos: int = position_of(user, own_side)
-	if pos == 0 or not use_ranks(skill).has(pos):
+	if pos == 0:
+		return false
+	if not use_ranks(skill).has(pos) and living(own_side).size() > 1:
 		return false
 	return not hits_other_side or not valid_targets(skill, other_side).is_empty()
 
