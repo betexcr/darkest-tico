@@ -33,16 +33,16 @@ MANIFEST = ROOT / "tools" / "art_manifest.json"
 OUT = ROOT / "assets" / "town" / "town_painted.png"
 CROPS = ROOT / "assets" / "town" / "painted"
 PROMPT = (
-    "dark fantasy painting, a small rural Costa Rican village plaza at night, adobe and wooden houses "
-    "with clay tile roofs around a dirt square, white colonial church, warm lamplight, fog, volcano behind, "
-    "dark gothic oil painting, folk horror, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
+    "dark fantasy painting, Costa Rican village plaza at night, white colonial church, old painted bus, "
+    "blue and yellow corner shop, adobe houses, clay tile roofs, warm lamplight, fog, volcano, "
+    "dark gothic oil painting, folk horror, painterly brushstrokes, game art"
 )
 SEED = 5300
 STRENGTH = 0.7
 ## ControlNet (canny edges of the layout) keeps every building where the layout put it even
 ## at a strength high enough to repaint the town as one scene. openrail licence, native diffusers.
 CONTROLNET = "lllyasviel/sd-controlnet-canny"
-CONTROL_SCALE = 0.8
+CONTROL_SCALE = 1.0
 
 
 def res(p: str) -> Path:
@@ -180,6 +180,7 @@ def main() -> int:
         out.mkdir(parents=True, exist_ok=True)
         layout.save(out / "layout.png")
         for s in args.strengths or [args.strength]:
+            # (one ControlNet pipeline per strength: slow but simple)
             t0 = time.time()
             edges(layout).save(out / "edges.png")
             paint(layout, s, args.seed, manifest).save(out / f"cn_{s:.2f}_{args.seed}.png")
