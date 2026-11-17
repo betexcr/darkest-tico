@@ -245,6 +245,23 @@ func _hub(row: Dictionary) -> void:
 			hired += 1
 	row["hired"] = hired
 	row["hires"] = c0 - _gs.colones
+	# Stress relief before picking the party (P3-03 after the 2026-11-17 merge; the group misa
+	# is gone): heroes at REST_AT or with a Quebranto spend the week at the Iglesia/Cantina,
+	# most stressed first, as long as 4 others can still go out (recruits are free: hire one
+	# when needed). The rest of the week's bookings are made after the party is picked.
+	if _opts["party"].is_empty():
+		var frayed: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h) \
+			and (int(h.get("stress", 0)) >= REST_AT or str(h.get("affliction_id", "")) != ""))
+		frayed.sort_custom(func(a, b): return int(a.get("stress", 0)) > int(b.get("stress", 0)))
+		for h in frayed:
+			if _living_roster().filter(func(x): return not _gs.hero_busy(x)).size() <= 4:
+				var idx: int = _pick_recruit()
+				if idx < 0 or not _gs.hire_recruit(idx).contains("se une"):
+					break
+				hired += 1
+			if _book_relief(h) == "":
+				break
+		row["hired"] = hired
 	# Difficulty and party together: for each difficulty, the best party of 4 the roster can
 	# send (heroes of that range first, the most seasoned, at most one dedicated healer; then
 	# under-leveled ones, the highest level first; heroes above the range refuse). On the
@@ -311,13 +328,7 @@ func _hub(row: Dictionary) -> void:
 	for h in _living_roster():
 		if chosen.has(h) or _gs.hero_busy(h) or (int(h.get("stress", 0)) < IGLESIA_AT and str(h.get("affliction_id", "")) == ""):
 			continue
-		var best_act: Array = []
-		for b in ["iglesia", "cantina"]:
-			for a in ["meditacion", "rezo", "penitencia", "guaro_conversa", "juegos_de_azar", "noche_de_fiesta"]:
-				if _gs.activity_block_reason(h, b, a) == "" and (best_act.is_empty() or _gs.activity_cost(b, a) < int(best_act[2])):
-					best_act = [b, a, _gs.activity_cost(b, a)]
-		if not best_act.is_empty() and _gs.colones - int(best_act[2]) >= RESERVE:
-			_gs.send_to_activity(h, str(best_act[0]), str(best_act[1]))
+		_book_relief(h)
 	row["iglesia"] = mark - _gs.colones
 	mark = _gs.colones
 	# The kit that fits the plan (P5-02e): every room, or straight to the boss.
@@ -472,6 +483,20 @@ func _is_healer(h: Dictionary) -> bool:
 
 
 ## The cheapest recruit the bot can pay for; one who isn't a second healer when there is a choice.
+## Books the cheapest Iglesia/Cantina activity with a free slot for `h`, keeping RESERVE.
+## Returns the activity id, or "" if none could be booked.
+func _book_relief(h: Dictionary) -> String:
+	var best_act: Array = []
+	for b in ["iglesia", "cantina"]:
+		for a in ["meditacion", "rezo", "penitencia", "guaro_conversa", "juegos_de_azar", "noche_de_fiesta"]:
+			if _gs.activity_block_reason(h, b, a) == "" and (best_act.is_empty() or _gs.activity_cost(b, a) < int(best_act[2])):
+				best_act = [b, a, _gs.activity_cost(b, a)]
+	if best_act.is_empty() or _gs.colones - int(best_act[2]) < RESERVE:
+		return ""
+	_gs.send_to_activity(h, str(best_act[0]), str(best_act[1]))
+	return str(best_act[1])
+
+
 func _pick_recruit() -> int:
 	var has_healer: bool = _living_roster().any(func(h): return _is_healer(h))
 	var best: int = -1
