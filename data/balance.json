@@ -14,9 +14,9 @@
     "miss_stress": 3,
     "encarrerado_turns": 2,
     "enemy_base_crit": 5,
-    "enemy_stress_pct": 0,
-    "long_fight_from": 0,
-    "long_fight_stress": 0
+    "enemy_stress_pct": 150,
+    "long_fight_from": 12,
+    "long_fight_stress": 4
   },
   "crits": {
     "_doc": "Doc 01 §2.3 stress shock (owner 2026-11-11, Darkest Dungeon style): a hero's crit relieves party_relief stress for every living hero; an enemy crit adds enemy_crit_stress to the hero hit.",
@@ -86,7 +86,7 @@
     "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia Vieja / Cantina activity prices are in hub_activities.json.",
     "start_colones": 5000,
     "sell_rate": 0.5,
-    "heal_cost_per_hp": 15,
+    "heal_cost_per_hp": 20,
     "heal_min_cost": 100
   },
   "quirks": {

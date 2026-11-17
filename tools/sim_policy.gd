@@ -19,7 +19,9 @@ const FormationScript := preload("res://scripts/domain/formation.gd")
 ## Smart policy: heal an ally below this share of PV (or Al Borde)…
 const HEAL_BELOW := 0.4
 ## …and calm one at or above this stress.
-const CALM_AT := 50
+const CALM_AT := 70
+## P5-02: a target this weak (share of its PV) is worth finishing before any support.
+const FINISH_BELOW := 0.35
 
 var cc  ## CombatController
 var gs  ## GameState
@@ -46,7 +48,11 @@ func act(hero: Dictionary) -> void:
 		var sk: Dictionary = gs.hero_skill(hero, str(sid))
 		if not sk.is_empty() and cc.skill_usable(hero, sk):
 			usable.append(sk)
-	if mode == "smart" and _smart_support(hero, usable):
+	# P5-02: finish a weak enemy (or the last one) before healing or calming, unless someone
+	# is Al Borde. Without this the bot calmed stress forever while a boss sat at 10 PV.
+	if mode == "smart" and not _someone_al_borde() and _finishing(usable):
+		pass
+	elif mode == "smart" and _smart_support(hero, usable):
 		return
 	var best: Dictionary = {}
 	var best_t: Dictionary = {}
@@ -132,6 +138,22 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 					_count(hero, str(sk.get("name", "?")))
 					cc.use_skill(sk, hero)
 					return true
+	return false
+
+
+func _someone_al_borde() -> bool:
+	return cc.party.any(func(h): return not h.get("dead", false) and bool(h.get("al_borde", false)))
+
+
+## An attack can reach the last enemy standing, or one below FINISH_BELOW of its PV.
+func _finishing(usable: Array) -> bool:
+	var alive: int = cc.enemies.filter(func(e): return not e.get("dead", false)).size()
+	for sk in usable:
+		if str(sk.get("kind", "")) != "attack":
+			continue
+		for t in cc.targets_for(sk):
+			if alive == 1 or float(t.get("hp", 0)) < float(t.get("hp_max", 1)) * FINISH_BELOW:
+				return true
 	return false
 
 
