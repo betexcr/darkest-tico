@@ -17,6 +17,10 @@ const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 const QuirksScript := preload("res://scripts/domain/quirks.gd")
+# P4-15: menus in the item-card style.
+const CardScript := preload("res://scripts/ui/tooltip_card.gd")
+const HeroCardScript := preload("res://scripts/ui/hero_card.gd")
+const CardButtonScript := preload("res://scripts/ui/card_button.gd")
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _gold: Label = $Columns/Left/VBox/InfoRow/GoldLabel
@@ -299,7 +303,7 @@ func _refresh_relief() -> void:
 		var closed: bool = TownEventsScript.is_closed(GameState.active_event(), bid)
 		for a in b.get("activities", []):
 			var aid: String = str(a.get("id", ""))
-			var btn := Button.new()
+			var btn = CardButtonScript.new()
 			btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			btn.clip_text = true
 			btn.add_theme_font_size_override("font_size", 12)
@@ -315,6 +319,7 @@ func _refresh_relief() -> void:
 			if why != "":
 				lines.append(why)
 			btn.tooltip_text = "\n".join(lines)
+			btn.card = _activity_card.bind(b, a, price, rel, used, cap, why)
 			btn.disabled = why != ""
 			btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
 			row.add_child(btn)
@@ -326,64 +331,188 @@ func _refresh_relief() -> void:
 
 ## "Clínica de Espantos" for the selected hero: opens the card with their quirks.
 func _add_clinic_button(h: Dictionary) -> void:
-	var b := Button.new()
+	var b = CardButtonScript.new()
 	var n: int = QuirksScript.of(h).size()
 	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "clinica")
 	b.text = "Clínica de Espantos: cerrada esta semana" if closed else "Clínica de Espantos — rasgos de %s (%d)" % [h.get("name", "?"), n]
 	b.add_theme_font_size_override("font_size", 13)
-	b.tooltip_text = "Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades.\nCada héroe: un tratamiento de rasgos malos y uno de buenos por semana; las enfermedades, cuando sea."
+	b.tooltip_text = "Clínica de Espantos\nQuitar rasgos malos, fijar o quitar los buenos y curar enfermedades."
+	b.card = func(): return CardScript.text_card("Clínica de Espantos",
+		["Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades.",
+		"Cada tratamiento deja al héroe en la Clínica el resto de la semana."],
+		["Un rasgo malo y uno bueno por semana", "Enfermedades: cuando sea"],
+		"Clic para abrir la ficha de %s." % h.get("name", "?") if n > 0 else "%s no tiene rasgos ni enfermedades." % h.get("name", "?"))
 	b.disabled = n == 0
 	b.pressed.connect(_show_clinic.bind(h))
 	_relief_box.add_child(b)
 
 
+## The Clínica card for one hero (P3-06, restyled P4-15): hero header, then one row per
+## quirk grouped by kind, each with its effects and the treatments it allows.
 func _show_clinic(h: Dictionary) -> void:
-	var dlg := AcceptDialog.new()
-	dlg.title = "Clínica de Espantos — %s (Resolución %d)" % [h.get("name", "?"), int(h.get("resolve_level", 0))]
+	var made: Array = _card_dialog("Clínica de Espantos — %s" % h.get("name", "?"), 600.0)
+	var dlg: AcceptDialog = made[0]
+	var col: VBoxContainer = made[1]
 	dlg.ok_button_text = "Cerrar"
-	var box := VBoxContainer.new()
-	box.custom_minimum_size = Vector2(560, 0)
-	box.add_theme_constant_override("separation", 6)
+	col.add_child(HeroCardScript.header(h, 64.0))
+	var stay: String = "%s pasa esta semana en la Clínica." % h.get("name", "?") if GameState.in_clinic(h) else \
+		"Cada tratamiento deja a %s en la Clínica el resto de la semana (no sale de expedición)." % h.get("name", "?")
+	col.add_child(CardScript.label(stay, 12, CardScript.HINT, true, 576.0))
+	col.add_child(CardScript.label("Por semana: un tratamiento de rasgos malos y uno de rasgos buenos; las enfermedades, cuando sea. Precios según la resolución.", 12, CardScript.MUTED, true, 576.0))
 	var opts: Array = GameState.clinic_options(h)
 	if opts.is_empty():
-		var none := Label.new()
-		none.text = "%s no tiene rasgos ni enfermedades." % h.get("name", "?")
-		box.add_child(none)
-	var tags: Dictionary = {"positive": "Bueno", "negative": "Malo", "disease": "Enfermedad"}
-	var colors: Dictionary = {"positive": Color(0.6, 0.85, 0.55), "negative": Color(0.95, 0.55, 0.5), "disease": Color(0.85, 0.75, 0.45)}
-	for o in opts:
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 6)
-		var lbl := Label.new()
-		lbl.text = "%s%s — %s: %s" % [o["name"], " (fijado)" if o["locked"] else "", tags.get(o["kind"], ""), o["effects"]]
-		lbl.tooltip_text = "%s\n%s\n%s" % [o["name"], o["desc"], o["effects"]]
-		lbl.mouse_filter = Control.MOUSE_FILTER_PASS
-		lbl.add_theme_color_override("font_color", colors.get(o["kind"], Color.WHITE))
-		lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lbl.custom_minimum_size = Vector2(300, 0)
-		row.add_child(lbl)
-		for a in o["actions"]:
-			var b := Button.new()
-			b.text = str(a["label"])
-			b.disabled = not bool(a["enabled"])
-			b.tooltip_text = str(a["reason"]) if not bool(a["enabled"]) else str(a["label"])
-			var qid: String = str(o["id"])
-			var act: String = str(a["action"])
-			b.pressed.connect(func():
-				dlg.hide()
-				_say(GameState.clinic_treat(h, qid, act))
-			)
-			row.add_child(b)
-		box.add_child(row)
-	dlg.add_child(box)
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.label("%s no tiene rasgos ni enfermedades." % h.get("name", "?"), 14, CardScript.TEXT, false))
+	# Long lists scroll inside the card so the dialog always fits the screen.
+	var list := VBoxContainer.new()
+	list.add_theme_constant_override("separation", 8)
+	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if opts.size() > 3:
+		var scroll := ScrollContainer.new()
+		scroll.custom_minimum_size = Vector2(600, 400)
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		list.custom_minimum_size = Vector2(584, 0)
+		scroll.add_child(list)
+		col.add_child(scroll)
+	else:
+		col.add_child(list)
+	for kind in ["disease", "negative", "positive"]:
+		var group: Array = opts.filter(func(o): return str(o["kind"]) == kind)
+		if group.is_empty():
+			continue
+		list.add_child(CardScript.rule())
+		list.add_child(CardScript.section({"disease": "Enfermedades", "negative": "Rasgos malos", "positive": "Rasgos buenos"}[kind]))
+		for o in group:
+			list.add_child(_clinic_row(dlg, h, o))
+	add_child(dlg)
+	_popup_card(dlg)
+
+
+## One quirk in the Clínica: coloured edge, name + tag, description, effects, buttons.
+func _clinic_row(dlg: AcceptDialog, h: Dictionary, o: Dictionary) -> Control:
+	var hue: Color = HeroCardScript.QUIRK_COLORS.get(str(o["kind"]), CardScript.MUTED)
+	var panel := PanelContainer.new()
+	var box := CardScript.flat(Color(0.11, 0.085, 0.07), Color(hue, 0.5), 1, 4, 8)
+	box.border_width_left = 4
+	box.border_color = hue
+	panel.add_theme_stylebox_override("panel", box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	panel.add_child(row)
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation", 3)
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 6)
+	var nm := CardScript.title_label(str(o["name"]), 15, 0.0)
+	nm.add_theme_color_override("font_color", hue.lightened(0.35))
+	name_row.add_child(nm)
+	name_row.add_child(CardScript.chip(HeroCardScript.QUIRK_TAGS.get(str(o["kind"]), ""), hue))
+	if bool(o["locked"]):
+		name_row.add_child(CardScript.chip("Fijado", CardScript.GOLD.darkened(0.2)))
+	info.add_child(name_row)
+	info.add_child(CardScript.label(str(o["desc"]), 12, CardScript.MUTED, true, 340.0))
+	info.add_child(CardScript.bullet_list(str(o["effects"]).split(", "), true))
+	row.add_child(info)
+	var acts := VBoxContainer.new()
+	acts.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	acts.add_theme_constant_override("separation", 4)
+	for a in o["actions"]:
+		var b := Button.new()
+		b.text = str(a["label"])
+		b.custom_minimum_size = Vector2(150, 0)
+		b.disabled = not bool(a["enabled"])
+		b.tooltip_text = str(a["reason"]) if not bool(a["enabled"]) else "%s\n%s" % [a["label"], "Se queda la semana en la Clínica."]
+		var qid: String = str(o["id"])
+		var act: String = str(a["action"])
+		b.pressed.connect(func():
+			dlg.hide()
+			_say(GameState.clinic_treat(h, qid, act))
+		)
+		acts.add_child(b)
+		if not bool(a["enabled"]):
+			acts.add_child(CardScript.label(str(a["reason"]), 11, CardScript.BAD, true, 150.0))
+	row.add_child(acts)
+	return panel
+
+
+## A themed dialog with a card column inside (P4-15). Returns [dialog, column].
+func _card_dialog(title: String, width: float = 520.0, confirm: bool = false) -> Array:
+	var dlg: AcceptDialog = ConfirmationDialog.new() if confirm else AcceptDialog.new()
+	dlg.title = title
+	var col := VBoxContainer.new()
+	col.custom_minimum_size = Vector2(width, 0)
+	col.add_theme_constant_override("separation", 8)
+	dlg.add_child(col)
 	dlg.visibility_changed.connect(func():
 		if not dlg.visible:
 			dlg.queue_free()
 	)
-	add_child(dlg)
-	dlg.popup_centered(Vector2i(620, 0))
+	return [dlg, col]
 
+
+## Autowrapped labels report a huge height on the first pass: size to content after layout.
+func _popup_card(dlg: AcceptDialog) -> void:
+	dlg.popup_centered()
+	await get_tree().process_frame
+	if is_instance_valid(dlg):
+		dlg.reset_size()
+		dlg.popup_centered()
+
+
+## Card shown when hovering an Iglesia/Cantina activity.
+func _activity_card(b: Dictionary, a: Dictionary, price: int, rel: Array, used: int, cap: int, why: String) -> Control:
+	var made: Array = CardScript.new_card()
+	var col: VBoxContainer = made[1]
+	var hue: Color = Color(0.45, 0.58, 0.78) if str(b.get("id", "")) == "iglesia" else Color(0.82, 0.6, 0.3)
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 8)
+	var t := CardScript.title_label(str(a.get("name", "")), 17, 0.0)
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	head.add_child(t)
+	head.add_child(CardScript.chip(str(b.get("name", "")), hue))
+	col.add_child(head)
+	col.add_child(CardScript.label(str(a.get("text", "")), 13, CardScript.MUTED))
+	col.add_child(CardScript.rule())
+	col.add_child(CardScript.bullet_list([
+		"Quita %d–%d de estrés al terminar la semana" % [int(rel[0]), int(rel[1])],
+		"Le quita el Quebranto",
+		"No sale de expedición esta semana",
+		"Cupos: %d de %d ocupados" % [used, cap],
+	]))
+	var fx: Array = a.get("side_effects", [])
+	if not fx.is_empty():
+		col.add_child(CardScript.section("Puede pasar (%d%%)" % int(round(float(a.get("side_chance", 0)) * 100.0))))
+		var names: PackedStringArray = PackedStringArray()
+		for s in fx:
+			names.append(_side_effect_name(s))
+		col.add_child(CardScript.label(", ".join(names), 12, CardScript.TEXT))
+	col.add_child(CardScript.rule())
+	col.add_child(CardScript.label("Cuesta %s" % ("gratis" if price == 0 else "%d ₡" % price), 14, CardScript.GOLD, false))
+	if why != "":
+		col.add_child(CardScript.label(why, 12, CardScript.BAD))
+	else:
+		col.add_child(CardScript.label("Clic para mandarlo esta semana.", 12, CardScript.HINT))
+	return made[0]
+
+
+static func _side_effect_name(s: Dictionary) -> String:
+	match str(s.get("kind", "")):
+		"buff":
+			return "%s (bueno)" % s.get("name", "")
+		"debuff":
+			return "%s (malo)" % s.get("name", "")
+		"lose_colones":
+			return "pierde plata"
+		"gain_colones":
+			return "gana plata"
+		"lose_item":
+			return "empeña algo"
+		"extra_week":
+			return "una semana más"
+		"stress":
+			return "más estrés"
+	return str(s.get("kind", ""))
 
 # --- Equipment (drag from the alforja onto a slot; click a slot to unequip) ---------
 
@@ -499,13 +628,16 @@ func _refresh_recruits() -> void:
 		return
 	for i in GameState.recruit_pool.size():
 		var h: Dictionary = GameState.recruit_pool[i]
-		var b := Button.new()
+		var b = CardButtonScript.new()
 		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %d ₡" % [
 			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)), GameState.hire_cost(h)]
 		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
 			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
 		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.roster_cap() \
 			or TownEventsScript.is_closed(GameState.active_event(), "terminal")
+		var hire_why: String = "" if not b.disabled else ("La terminal está cerrada esta semana." if TownEventsScript.is_closed(GameState.active_event(), "terminal")
+			else ("No hay más camas en la hacienda." if GameState.roster.size() >= GameState.roster_cap() else "No alcanza la plata."))
+		b.card = HeroCardScript.build.bind(h, "Clic para contratar por %d ₡." % GameState.hire_cost(h), hire_why)
 		b.pressed.connect(func(): _say(GameState.hire_recruit(i)))
 		_recruit_box.add_child(b)
 
@@ -537,7 +669,7 @@ func _roster_row(h: Dictionary) -> Control:
 	if ResourceLoader.exists(p):
 		pic.texture = load(p) as Texture2D
 	row.add_child(pic)
-	var info := Button.new()
+	var info = CardButtonScript.new()
 	info.flat = true
 	info.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	info.tooltip_text = "Clic para ver su equipo y sus habilidades."
@@ -592,6 +724,10 @@ func _roster_row(h: Dictionary) -> Control:
 	var quirk_names: Array = QuirksScript.of(h).map(func(e): return "%s%s" % [QuirksScript.get_quirk(str(e["id"])).get("name", ""), " (fijado)" if e.get("locked", false) else ""])
 	if not quirk_names.is_empty():
 		info.tooltip_text += "\nRasgos: " + ", ".join(quirk_names)
+	var card_lines: Array = ["Posiciones ideales: %s" % ideal_txt]
+	if GameState.busy_place(h) != "":
+		card_lines.append("Esta semana en %s." % GameState.busy_place(h))
+	info.card = HeroCardScript.build.bind(h, "Clic para ver su equipo y sus habilidades.", warn.strip_edges().trim_prefix("⚠ "), card_lines)
 	row.add_child(info)
 	var cost: int = GameState.heal_cost(h)
 	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):
@@ -636,10 +772,13 @@ func _roster_row(h: Dictionary) -> Control:
 
 
 func _confirm_dismiss(h: Dictionary) -> void:
-	var dlg := ConfirmationDialog.new()
-	dlg.title = "Despedir"
-	dlg.dialog_text = "¿Despedir a %s (%s)? No vuelve. Su equipo regresa a la alforja." % [
-		h.get("name", "?"), h.get("class_name", "")]
+	var made: Array = _card_dialog("Despedir a %s" % h.get("name", "?"), 460.0, true)
+	var dlg: ConfirmationDialog = made[0]
+	var col: VBoxContainer = made[1]
+	col.add_child(HeroCardScript.header(h))
+	col.add_child(CardScript.rule())
+	col.add_child(CardScript.label("Se va de la hacienda y no vuelve.", 14, CardScript.BAD, false))
+	col.add_child(CardScript.label("Su equipo regresa a la alforja.", 12, CardScript.MUTED, false))
 	dlg.ok_button_text = "Despedir"
 	dlg.cancel_button_text = "Cancelar"
 	dlg.confirmed.connect(func():
@@ -647,12 +786,8 @@ func _confirm_dismiss(h: Dictionary) -> void:
 			_selected = {}
 		_say(GameState.dismiss_hero(h))
 	)
-	dlg.visibility_changed.connect(func():
-		if not dlg.visible:
-			dlg.queue_free()
-	)
 	add_child(dlg)
-	dlg.popup_centered()
+	_popup_card(dlg)
 
 
 func _on_start_pressed() -> void:
@@ -672,14 +807,32 @@ func _on_start_pressed() -> void:
 ## DD-style provisioning (P1-18): warn when the alforja lacks the region's recommended
 ## food and candles, and offer to buy what is missing at the Pulpería.
 func _confirm_provisions(missing: Array) -> void:
-	var lines: PackedStringArray = PackedStringArray()
+	var made: Array = _card_dialog("Provisiones", 460.0, true)
+	var dlg: ConfirmationDialog = made[0]
+	var col: VBoxContainer = made[1]
+	col.add_child(CardScript.label("Para esta expedición se recomienda llevar más:", 14, CardScript.TEXT, false))
 	var total: int = 0
 	for m in missing:
-		lines.append("· %d × %s (%d ₡)" % [int(m["missing"]), m["name"], int(m["price"])])
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		row.add_child(CardScript.picture("res://assets/items/%s.png" % str(m["id"]), 34.0))
+		var nm := CardScript.label("%d × %s" % [int(m["missing"]), m["name"]], 14, CardScript.TEXT, false)
+		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		nm.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		row.add_child(nm)
+		var pr := CardScript.label("%d ₡" % int(m["price"]), 14, CardScript.GOLD, false)
+		pr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		row.add_child(pr)
+		col.add_child(row)
 		total += int(m["price"])
-	var dlg := ConfirmationDialog.new()
-	dlg.title = "Provisiones"
-	dlg.dialog_text = "Para esta expedición se recomienda llevar más:\n%s\n\nSin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras." % "\n".join(lines)
+	col.add_child(CardScript.rule())
+	var tot := HBoxContainer.new()
+	var tl := CardScript.label("Todo lo que falta", 13, CardScript.MUTED, false)
+	tl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tot.add_child(tl)
+	tot.add_child(CardScript.label("%d ₡" % total, 15, CardScript.GOLD, false))
+	col.add_child(tot)
+	col.add_child(CardScript.label("Sin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras.", 12, CardScript.HINT, true, 436.0))
 	dlg.ok_button_text = "Salir así"
 	dlg.cancel_button_text = "Volver"
 	dlg.add_button("Comprar lo que falta (%d ₡)" % total, true, "buy")
@@ -689,12 +842,8 @@ func _confirm_provisions(missing: Array) -> void:
 			dlg.hide()
 			_say(GameState.buy_missing_provisions())
 	)
-	dlg.visibility_changed.connect(func():
-		if not dlg.visible:
-			dlg.queue_free()
-	)
 	add_child(dlg)
-	dlg.popup_centered()
+	_popup_card(dlg)
 
 
 func _on_quit_pressed() -> void:
@@ -730,37 +879,37 @@ func _show_event_card() -> void:
 		return
 	GameState.event_seen = true
 	SaveService.save_game()
-	var dlg := AcceptDialog.new()
-	dlg.title = "%s — %s" % [TownEventsScript.kind_label(ev), ev.get("name", "")]
+	var made: Array = _card_dialog(str(ev.get("name", "")), 540.0)
+	var dlg: AcceptDialog = made[0]
+	var col: VBoxContainer = made[1]
 	dlg.ok_button_text = "Entendido"
-	var box := VBoxContainer.new()
-	box.custom_minimum_size = Vector2(520, 0)
-	box.add_theme_constant_override("separation", 8)
-	var body := Label.new()
-	body.text = str(ev.get("text", ""))
-	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.custom_minimum_size = Vector2(520, 0)
-	box.add_child(body)
+	var hue: Color = {"positive": Color(0.45, 0.72, 0.4), "negative": Color(0.82, 0.38, 0.32)}.get(str(ev.get("kind", "")), Color(0.78, 0.64, 0.3))
+	col.add_child(CardScript.chip(TownEventsScript.kind_label(ev), hue, 11))
+	col.add_child(CardScript.label(str(ev.get("text", "")), 14, CardScript.TEXT, true, 540.0))
 	# What happened right away (if we still have the report) + what lasts the week.
 	var lines: PackedStringArray = GameState.event_report.duplicate()
 	lines.append_array(TownEventsScript.effect_lines(ev, GameState.event_report.is_empty()))
 	if not lines.is_empty():
-		var fx := Label.new()
-		fx.text = "• " + "\n• ".join(lines)
-		fx.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		fx.custom_minimum_size = Vector2(520, 0)
-		fx.add_theme_color_override("font_color", Color(0.95, 0.82, 0.55))
-		box.add_child(fx)
-	for h in GameState.resurrect_candidates():
-		var b := Button.new()
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("Esta semana"))
+		col.add_child(CardScript.bullet_list(Array(lines), true))
+	var back: Array = GameState.resurrect_candidates()
+	if not back.is_empty():
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("Traer de vuelta a uno"))
+	for h in back:
+		var b = CardButtonScript.new()
 		b.text = "Traer de vuelta a %s — %s, Resolución %d" % [h.get("name", "?"), h.get("class_name", ""), int(h.get("resolve_level", 0))]
+		b.tooltip_text = b.text
+		b.card = HeroCardScript.build.bind(h, "Vuelve con su resolución, pero sin equipo.")
 		b.pressed.connect(func():
 			dlg.hide()
 			_say(GameState.resurrect(int(h.get("uid", 0))))
 		)
-		box.add_child(b)
+		col.add_child(b)
 	var offer: Dictionary = GameState.event_offer()
 	if not offer.is_empty():
+		col.add_child(CardScript.rule())
 		var ob := Button.new()
 		ob.text = "%s — %d ₡" % [offer.get("label", ""), int(offer.get("cost", 0))]
 		ob.disabled = GameState.colones < int(offer.get("cost", 0))
@@ -768,17 +917,6 @@ func _show_event_card() -> void:
 			dlg.hide()
 			_say(GameState.take_event_offer())
 		)
-		box.add_child(ob)
-	dlg.add_child(box)
-	dlg.visibility_changed.connect(func():
-		if not dlg.visible:
-			dlg.queue_free()
-	)
+		col.add_child(ob)
 	add_child(dlg)
-	# Autowrapped labels report a huge height on the first pass: size to content after layout.
-	dlg.popup_centered(Vector2i(560, 0))
-	await get_tree().process_frame
-	if is_instance_valid(dlg):
-		dlg.reset_size()
-		dlg.popup_centered()
-
+	_popup_card(dlg)

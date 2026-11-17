@@ -17,6 +17,36 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (8) — P3-19 + P4-15 — Clínica keeps the hero home; menus in the item-card style
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P3-19 `done`; P4-15 `review` (owner to look at the screens).
+- **Changed:**
+  - **P3-19** (owner: "yes, like the Iglesia and Cantina"):
+    - A Clínica treatment keeps the hero home for the rest of the week (`GameState.in_clinic`, `hero_busy`, `busy_place`; `clinic["stay"]`): out of the cuadrilla, can't rejoin or book the Iglesia/Cantina.
+    - A hero booked at the Iglesia/Cantina can't be treated, nor can the last free hero.
+    - The hub and the bot use `hero_busy`; tests in `test_quirks`.
+  - **P4-15 menus** (owner: "make all menus better, including the Clínica, similar to the item tooltips"):
+    - `scripts/ui/ui_theme.gd`: one theme in the card palette for buttons (warm wood, gold hover and press), dialogs (opaque card, gold title bar, shadow), dropdown lists, check boxes and scroll bars. `TooltipStyler` puts it on the root window, so every screen gets it.
+    - `tooltip_card.gd` gains `chip`, `picture`, `section` and `is_bad_line`. Bullets are red when a line is bad, including "+X% estrés recibido" and "no va a…".
+    - `scripts/ui/hero_card.gd` (portrait, resolve and Quebranto/Virtud chips, stats, skills, quirk chips) and `scripts/ui/card_button.gd` (a button with a card on hover).
+    - **Hub:**
+      - the Clínica is a card: hero header, quirks grouped by kind with coloured edges, tags, effects and priced buttons, the reason under a disabled button, scrolling when long;
+      - the town-event card: kind chip, text, "Esta semana" bullets, revive buttons with hero cards;
+      - the provisions card: item pictures, prices, total;
+      - the dismiss card: hero header, red warning;
+      - hover cards on the 6 Iglesia/Cantina activities, the Terminal's candidates and the roster heroes.
+    - **Victory screen:** section bars in the card palette.
+  - **Tests and tools:** `tests/test_ui.gd` (8 checks: theme, every hover card, every dialog, all 56 town-event cards). `tools/screens/clinic_screenshot.gd` also saves the hover cards and the dismiss card.
+  - **Docs:** AGENTS (UI style note, test list), doc 02 §6.
+- **Verified:** `validate_data.py` 0 errors. The full test list (18) is in the commit message. Screenshots at 1280×720 checked: hub, Clínica, town event, provisions, dismiss, hover cards, trap, camp, victory.
+- **Not verified / risks:**
+  - No human look yet. Godot only shows tooltips after a hover delay, which the screenshots fake with a mouse event.
+  - Expedition-screen panels (trap, curio, camp, hunger) keep their scene cards; they only got the new buttons.
+- **Decisions needed:** none.
+- **Next step:** owner looks at the hub, then P5-02 (balance to 55–70%). Run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 8 --telemetry <path>` and `tools/telemetry_report.py <path>` for the baseline.
+
+---
+
 ## 2026-11-17 (7) — P3-06 — Quirks, diseases and the Clínica de Espantos
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-06 `review`.

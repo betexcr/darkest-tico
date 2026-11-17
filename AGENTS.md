@@ -30,7 +30,7 @@ Do this before you stop for **any** reason: task finished, context running out, 
    - If Godot is installed (see [.cursor/rules/godot-runtime.mdc](.cursor/rules/godot-runtime.mdc); cloud agents may download the official 4.7.2 Linux build into their scratchpad, owner-approved 2026-11-07):
      - `godot --headless --path . --import` (first run / new files; generates `.uid` files — commit them)
      - `godot --headless --path . -s tests/smoke_expedition.gd` plays 3 full expeditions; must print `0 failure(s)` and no `SCRIPT ERROR`
-     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`, `tests/test_feedback.gd`, `tests/test_combat_items.gd`, `tests/test_progression.gd`, `tests/test_town_events.gd`, `tests/test_formation.gd`, `tests/test_balance.gd`, `tests/test_expedition_systems.gd`, `tests/test_save.gd`, `tests/test_hub_activities.gd`, `tests/test_enemies.gd`, `tests/test_telemetry.gd`, `tests/test_quirks.gd`
+     - `godot --headless --path . -s tests/test_guard.gd`, `tests/test_status.gd`, `tests/test_hub.gd`, `tests/test_equipment.gd`, `tests/test_feedback.gd`, `tests/test_combat_items.gd`, `tests/test_progression.gd`, `tests/test_town_events.gd`, `tests/test_formation.gd`, `tests/test_balance.gd`, `tests/test_expedition_systems.gd`, `tests/test_save.gd`, `tests/test_hub_activities.gd`, `tests/test_enemies.gd`, `tests/test_telemetry.gd`, `tests/test_quirks.gd`, `tests/test_ui.gd`
    - If you could not verify something (for example, no Godot in a cloud container), **say so explicitly** in the handoff.
 2. **Update the plan**: set your task's status to `done`, `review` (works but needs a human check), `blocked — <why>`, or leave it `in-progress` with a note. Tick any finished acceptance checkboxes.
 3. **Write the handoff entry**: add it at the **top** of [docs/HANDOFF.md](docs/HANDOFF.md) using the template there. The **Next step** line must be specific enough that a fresh agent can act on it without reading the conversation.
@@ -74,6 +74,12 @@ Do this before you stop for **any** reason: task finished, context running out, 
 - Telemetry (P5-01): the `Telemetry` autoload appends JSON lines to `user://telemetry.jsonl` (mission_end, stress_spike, week, session); off in `-s` runs. `tools/playtest_campaign.gd -- --telemetry <path>` writes one from bot campaigns; `python3 tools/telemetry_report.py [path]` summarises it.
 - Tone guardrails: [docs/08-content-standards-satire.md](docs/08-content-standards-satire.md). Read it before writing any flavor text.
 - Tooltips: just set `tooltip_text` ("Title\nbody" or "Title — body"); the `TooltipStyler` autoload draws it as the shared card (`scripts/ui/tooltip_card.gd`). Custom tooltips call `TooltipCard.clear_frame(self)` and return a card from `_make_custom_tooltip`.
+- UI style (P4-15, owner 2026-11-17: every menu in the item-card style):
+  - `scripts/ui/ui_theme.gd` is the game-wide theme (buttons, dialogs, dropdowns, check boxes, scroll bars); `TooltipStyler` sets it on the root window. Don't restyle those per screen.
+  - Build menus and cards from `tooltip_card.gd` parts: `new_card`, `title_label`, `chip`, `picture`, `section`, `rule`, `bullet_list` (bad lines turn red via `is_bad_line`).
+  - Hero cards: `scripts/ui/hero_card.gd`.
+  - A button with a card on hover: `scripts/ui/card_button.gd` (set `card` to a Callable).
+  - Hub dialogs: `_card_dialog` + `_popup_card` in `hacienda_hub.gd`.
 - Art: follow [.cursor/rules/stable-diffusion-assets.mdc](.cursor/rules/stable-diffusion-assets.mdc). Never call SD from game code. Every PNG needs a `.metadata.json`.
 - Balance experiments: `godot --headless --path . -s tools/sim_combat.gd -- --runs 10000 [--chain 3] [--set path=value]` plays the real combat controller headless (doc 10 "Combat sim"). Rerun it after changing combat numbers. `tools/playtest_campaign.gd -- [--campaigns 3] [--weeks 8] [--route full|direct]` plays whole campaigns (hub + expeditions) through the real expedition screen with a careful-player bot (doc 09 §5). Both share the hero policy in `tools/sim_policy.gd`.
 - The Godot path in `.cursor/rules/godot-runtime.mdc` is the owner's Windows machine. Cloud containers usually have no Godot.

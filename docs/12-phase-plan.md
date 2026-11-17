@@ -457,9 +457,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] every plain `tooltip_text` tooltip (hub, expedition, status icons, map, option lists) shows as the opaque card, with "Title\nbody" or "Title — body" split into a gold title and wrapped body; [x] skill and item tooltips use the same card; [ ] owner looks at it in-game
 
 ### P4-15 · M · Menus in the item-card style (owner 2026-11-17)
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: —
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): owner to look at the screenshots / play the hub · Depends: —
+- Files: `scripts/ui/ui_theme.gd` (new), `scripts/ui/hero_card.gd` (new), `scripts/ui/card_button.gd` (new), `scripts/ui/tooltip_card.gd` (`chip`, `picture`, `section`, `is_bad_line`), `scripts/autoload/tooltip_styler.gd` (sets the theme), `scripts/hacienda/hacienda_hub.gd` (Clínica, event, provisions and dismiss cards; hover cards on activities, candidates and the roster), `scripts/expedition/victory_screen.gd` (section bars), `tests/test_ui.gd` (new), `tools/screens/clinic_screenshot.gd`
 - Spec: owner request "make all menus better in the UX, including Clínica de Espantos, similar to the style of the item tooltips"; style source `scripts/ui/tooltip_card.gd`, `scripts/ui/item_tooltip.gd`
-- Done when: [ ] one UI theme in the card palette for buttons, dialogs, option buttons and check boxes; [ ] the Clínica, the town-event card and the hub confirmations are built from card parts (header, chips, rules, bullets); [ ] hub menus that list things (Iglesia/Cantina activities, recruits, roster) show item-style cards on hover; [ ] screenshots for review
+- Done when: [x] one UI theme in the card palette for buttons, dialogs, option buttons and check boxes; [x] the Clínica, the town-event card and the hub confirmations are built from card parts (header, chips, rules, bullets); [x] hub menus that list things (Iglesia/Cantina activities, recruits, roster) show item-style cards on hover; [x] screenshots for review
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01

@@ -255,8 +255,9 @@ func _label(text: String, size: int, color: Color, centered: bool) -> Label:
 
 func _banner(text: String) -> Control:
 	var p := PanelContainer.new()
-	p.add_theme_stylebox_override("panel", _box(Color(0.14, 0.2, 0.26), Color(0.4, 0.5, 0.58), 1))
-	p.add_child(_label(text, 15, Color(0.9, 0.9, 0.85), true))
+	# Section bar in the item-card palette (P4-15): warm wood with a gold edge and title.
+	p.add_theme_stylebox_override("panel", _box(Color(0.2, 0.15, 0.1), Color(0.72, 0.56, 0.3), 1))
+	p.add_child(_label(text, 15, Color(0.96, 0.84, 0.56), true))
 	return p
 
 

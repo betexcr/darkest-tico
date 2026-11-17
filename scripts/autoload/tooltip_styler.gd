@@ -1,7 +1,8 @@
 extends Node
 
 ## Restyles every plain tooltip in the game (any control with `tooltip_text`, option
-## lists, future ones) as a `TooltipCard`, so no screen has to do anything.
+## lists, future ones) as a `TooltipCard`, so no screen has to do anything. Also sets the
+## game-wide UI theme (scripts/ui/ui_theme.gd) on the root window.
 ##
 ## Godot shows a default tooltip as a PopupPanel ("TooltipPanel") holding one Label
 ## ("TooltipLabel"). When that popup enters the tree we hide the label and put the card
@@ -9,10 +10,13 @@ extends Node
 ## left alone.
 
 const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
+const UiThemeScript := preload("res://scripts/ui/ui_theme.gd")
 
 
 func _ready() -> void:
 	get_tree().node_added.connect(_on_node_added)
+	# P4-15: buttons, dialogs and dropdowns in the item-card palette, for every screen.
+	get_tree().root.theme = UiThemeScript.build()
 
 
 func _on_node_added(node: Node) -> void:

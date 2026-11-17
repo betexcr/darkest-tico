@@ -96,14 +96,27 @@ static func text_card(title: String, lines: Array, bullets: Array = [], hint: St
 	return made[0]
 
 
-## One row per entry with a small diamond; entries with a negative number are red.
+## Whether a bullet line is bad news: a negative number ("-5 precisión", "daño -10%"),
+## except for stress taken, where more is worse ("+5 % estrés recibido").
+static func is_bad_line(s: String) -> bool:
+	var t: String = s.strip_edges()
+	# "no va a la Iglesia Vieja": a refusal (quirks) is a drawback too.
+	if t.begins_with("no "):
+		return true
+	var negative: bool = t.begins_with("-") or t.contains(" -")
+	if t.contains("estrés recibido"):
+		return not negative
+	return negative
+
+
+## One row per entry with a small diamond; bad entries (is_bad_line) are red.
 static func bullet_list(entries: Array, wrap: bool = true) -> Control:
 	var list := VBoxContainer.new()
 	list.add_theme_constant_override("separation", 2)
 	for s in entries:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
-		var negative: bool = str(s).contains(" -")
+		var negative: bool = is_bad_line(str(s))
 		row.add_child(label("◆", 9, BAD if negative else GOOD, false))
 		var l := label(str(s), 14, BAD if negative else TEXT, wrap, INNER - 20.0)
 		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -128,6 +141,42 @@ static func label(text: String, size: int, color: Color, wrap: bool = true, widt
 	if wrap:
 		l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		l.custom_minimum_size = Vector2(width, 0)
+	return l
+
+
+## Small rounded tag ("BUENO", "Resolución 2"): `color` is the tag's hue.
+static func chip(text: String, color: Color, size: int = 10) -> Control:
+	var c := PanelContainer.new()
+	c.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	c.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var box := flat(color.darkened(0.55), color, 1, 8, 0)
+	box.content_margin_left = 8
+	box.content_margin_right = 8
+	box.content_margin_top = 1
+	box.content_margin_bottom = 1
+	c.add_theme_stylebox_override("panel", box)
+	c.add_child(label(text.to_upper(), size, color.lightened(0.55), false))
+	return c
+
+
+## Framed square picture (portrait, item icon); empty frame if the file doesn't exist.
+static func picture(path: String, side: float = 52.0) -> Control:
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", flat(Color(0.14, 0.11, 0.09), BORDER.darkened(0.3), 1, 4, 3))
+	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var tex := TextureRect.new()
+	if ResourceLoader.exists(path):
+		tex.texture = load(path) as Texture2D
+	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tex.custom_minimum_size = Vector2(side, side)
+	frame.add_child(tex)
+	return frame
+
+
+## Section heading inside a card: small gold capitals.
+static func section(text: String) -> Label:
+	var l := label(text.to_upper(), 11, Color(GOLD, 0.85), false)
 	return l
 
 

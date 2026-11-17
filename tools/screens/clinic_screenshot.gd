@@ -2,7 +2,7 @@ extends SceneTree
 
 ## Renders the hub's Clínica de Espantos card (P3-06), for review.
 ##   xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/clinic_screenshot.gd -- <out_dir>
-## Saves clinic.png.
+## Saves clinic_hub.png, hover_activity.png, hover_recruit.png, hover_roster.png, clinic.png, dismiss.png.
 
 func _initialize() -> void:
 	_run.call_deferred()
@@ -30,7 +30,25 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await _snap(out_dir, "clinic_hub.png")
+	# Hover cards (P4-15): an Iglesia activity, a candidate at the terminal, a roster hero.
+	for pair in [["hover_activity.png", hub._relief_box.get_child(1).get_child(1)],
+			["hover_recruit.png", hub._recruit_box.get_child(0)],
+			["hover_roster.png", hub._roster_list.get_child(0).get_child(1)]]:
+		var ctl: Control = pair[1]
+		var ev := InputEventMouseMotion.new()
+		ev.position = ctl.get_global_rect().get_center()
+		ev.global_position = ev.position
+		root.push_input(ev)
+		await create_timer(1.2).timeout
+		await _snap(out_dir, str(pair[0]))
+		var away := InputEventMouseMotion.new()
+		away.position = Vector2(5, 5)
+		away.global_position = away.position
+		root.push_input(away)
+		await create_timer(0.3).timeout
 	hub._show_clinic(h)
 	await _snap(out_dir, "clinic.png")
+	hub._confirm_dismiss(h)
+	await _snap(out_dir, "dismiss.png")
 	print("saved to ", out_dir)
 	quit(0)
