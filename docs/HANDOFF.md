@@ -17,6 +17,47 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (10) — Merge — happy-faraday (P5-02a–f, P5-04, P5-05) + this branch into main
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` → `main`
+- **Status after session:** both lines of work are on `main`. P2-11 is `cut` (done as P5-04). My P5-02 pass is superseded (plan note; doc 09 §7).
+- **What happened:**
+  - The owner asked to merge pending work to `main`.
+  - `betomm/happy-faraday-5yrmcr` (22 commits, 14–15 Nov) and this branch (32 commits, 16–17 Nov) had grown from the same `main`. They conflicted in 15 files.
+  - The owner chose "merge both, reconciled".
+- **Reconciliation:**
+  - **Kept from happy-faraday:**
+    - the P5-02a–f numbers: difficulty table with `enemy_stress`, lower relief on support skills, dragging-fight stress (`combat.drag_*`);
+    - P5-04 retreat from a fight (`combat.retreat_*`, `tests/test_retreat.gd`);
+    - free recruits (owner 2026-11-15), the Darkest Dungeon XP curve, two provision kits;
+    - its campaign bot and `sim_policy.gd`.
+  - **Kept from this branch:**
+    - Iglesia/Cantina, quirks and the Clínica (week-long stay), enemy gimmicks and bosses, 36 room events, choice-event conditions;
+    - telemetry, the UI theme and cards, lone-survivor rule, `hub.idle_stress_relief`.
+  - **Dropped:**
+    - my `combat.enemy_stress_pct` and `combat.long_fight_*` (their per-difficulty stress and drag rule do the same);
+    - my difficulty numbers;
+    - the EBAIS back at 15 ₡/PV.
+  - **Adapted:**
+    - the campaign bot books the Iglesia/Cantina instead of misas (the group misa has been gone since 2026-11-16) and skips busy heroes; `--telemetry` added back;
+    - the provisions card shows both kits;
+    - recruit card buttons show "gratis";
+    - enemies get `stress_mult` in `make_enemy`.
+  - **Save version 12:** v10 now also covers their XP-curve floor. All migrations are "fill missing fields", so any older save loads.
+  - **Tests:** `test_retreat` now measures retreat stress from the hero's turn (bigger squads let enemies act first). `test_ui` updated for the new provisions dialog.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests (AGENTS list + `test_retreat`): 0 failures, no `SCRIPT ERROR`.
+  - Post-merge bot measurement: see the next entry or the commit.
+- **Not verified / risks:**
+  - No human play of the merged game.
+  - happy-faraday's numbers were tuned with misas available; resting at home and the Iglesia/Cantina replace them, so their stress balance may have shifted. See the measurement.
+- **Decisions needed:**
+  - "Rest at home" (15 stress a week, free): keep?
+  - The open items in happy-faraday's last handoff (P5-06 blocked; Veterano/Campeón bands) still stand.
+- **Next step:** owner plays a campaign on `main`. Then P5-06 (see happy-faraday's 2026-11-15 (4) entry below) or P3-05 (Taller + Feria).
+
+---
+
 ## 2026-11-17 (9) — P5-02 — First balance pass
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-02 `review` (first pass; deaths still above target). New `todo` P2-11 (retreat from a fight).
