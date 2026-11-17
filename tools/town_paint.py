@@ -38,7 +38,11 @@ PROMPT = (
     "dark gothic oil painting, folk horror, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
 )
 SEED = 5300
-STRENGTH = 0.5
+STRENGTH = 0.7
+## ControlNet (canny edges of the layout) keeps every building where the layout put it even
+## at a strength high enough to repaint the town as one scene. openrail licence, native diffusers.
+CONTROLNET = "lllyasviel/sd-controlnet-canny"
+CONTROL_SCALE = 0.8
 
 
 def res(p: str) -> Path:
@@ -59,16 +63,24 @@ def compose(town: dict):
 
     W, H = town["design_size"]
     canvas = Image.open(res(town["background"])).convert("RGBA").resize((W, H), Image.LANCZOS)
-    # Dirt plaza fading in, and a road coming toward the viewer.
+    # Earth under the town (not fog, or the buildings float), with a lighter dirt road and
+    # some grain so the painter reads it as ground.
+    import random
+
     top = int(town.get("ground_top", 330))
     ground = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     gd = ImageDraw.Draw(ground)
     for y in range(top, H):
         t = (y - top) / max(H - top, 1)
-        gd.line([(0, y), (W, y)], fill=(46, 33, 26, int(min(1.0, t * 1.6) * 235)))
+        gd.line([(0, y), (W, y)], fill=(40 + int(20 * t), 29 + int(12 * t), 22 + int(8 * t), int(min(1.0, t * 3.0) * 255)))
+    rnd = random.Random(7)
+    for _ in range(2200):
+        x, y = rnd.randrange(W), rnd.randrange(top + 30, H)
+        c = rnd.randrange(-14, 14)
+        gd.ellipse([x, y, x + rnd.randrange(2, 7), y + rnd.randrange(1, 3)], fill=(58 + c, 43 + c, 33 + c, 200))
     road = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(road).polygon([(380, 430), (560, 430), (700, H), (230, H)], fill=(92, 70, 52, 120))
-    ground.alpha_composite(road.filter(ImageFilter.GaussianBlur(18)))
+    ImageDraw.Draw(road).polygon([(400, 410), (540, 410), (720, H), (210, H)], fill=(105, 82, 60, 150))
+    ground.alpha_composite(road.filter(ImageFilter.GaussianBlur(14)))
     canvas.alpha_composite(ground)
     rows = []
     for f in town.get("filler", []):
@@ -96,12 +108,22 @@ def compose(town: dict):
     return canvas.convert("RGB"), placed
 
 
-def paint(layout, strength: float, seed: int, manifest: dict):
-    import torch
-    from diffusers import DPMSolverMultistepScheduler, StableDiffusionImg2ImgPipeline
+def edges(layout):
+    import cv2
+    import numpy as np
+    from PIL import Image
 
-    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
-        manifest["model"], torch_dtype=torch.float32, safety_checker=None, requires_safety_checker=False
+    e = cv2.Canny(np.asarray(layout.convert("L")), 60, 160)
+    return Image.fromarray(np.stack([e, e, e], axis=-1))
+
+
+def paint(layout, strength: float, seed: int, manifest: dict, control_scale: float = CONTROL_SCALE):
+    import torch
+    from diffusers import ControlNetModel, DPMSolverMultistepScheduler, StableDiffusionControlNetImg2ImgPipeline
+
+    cn = ControlNetModel.from_pretrained(CONTROLNET, torch_dtype=torch.float32)
+    pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
+        manifest["model"], controlnet=cn, torch_dtype=torch.float32, safety_checker=None, requires_safety_checker=False
     )
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(
         pipe.scheduler.config, use_karras_sigmas=True, algorithm_type="dpmsolver++"
@@ -112,6 +134,8 @@ def paint(layout, strength: float, seed: int, manifest: dict):
         prompt=PROMPT,
         negative_prompt=manifest["negative_prompt"],
         image=layout,
+        control_image=edges(layout),
+        controlnet_conditioning_scale=control_scale,
         strength=strength,
         num_inference_steps=int(manifest["steps"]) + 5,
         guidance_scale=float(manifest["cfg_scale"]),
@@ -128,8 +152,10 @@ def meta(strength: float, seed: int, manifest: dict, extra: dict) -> dict:
         "steps": int(manifest["steps"]) + 5,
         "cfg_scale": float(manifest["cfg_scale"]),
         "sampler": "DPM++ 2M Karras",
-        "mode": "img2img",
+        "mode": "img2img + ControlNet canny",
         "strength": strength,
+        "controlnet": CONTROLNET,
+        "controlnet_conditioning_scale": CONTROL_SCALE,
         "init": "layout from data/town.json (tools/town_paint.py compose)",
         "model": manifest["model"],
         "generator": "tools/town_paint.py (diffusers)",
@@ -155,7 +181,8 @@ def main() -> int:
         layout.save(out / "layout.png")
         for s in args.strengths or [args.strength]:
             t0 = time.time()
-            paint(layout, s, args.seed, manifest).save(out / f"painted_{s:.2f}_{args.seed}.png")
+            edges(layout).save(out / "edges.png")
+            paint(layout, s, args.seed, manifest).save(out / f"cn_{s:.2f}_{args.seed}.png")
             print(f"strength {s}: {time.time() - t0:.0f}s")
         return 0
     painted = paint(layout, args.strength, args.seed, manifest)
