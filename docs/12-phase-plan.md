@@ -185,6 +185,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `07` §5 (Condition column)
 - Done when: [x] Choice events can require a situation when the room is entered (`mercado_clandestino` after a fight, `vision_del_abuelo` at Luz ≤ 50); otherwise a fallback curio is used
 
+### P2-11 · M · Retreat from a fight (found in P5-02)
+- Status: `todo` · Depends: —
+- Spec: `01` §5.3 (failure/retreat); Darkest Dungeon's combat retreat
+- Why: in the P5-02 bot runs most deaths came from full wipes (16 of 25 in 48 expeditions). Once a fight turns there is no way out, so the deaths target (1 per 5–8 missions, doc 04 §4) can't be reached by numbers alone.
+- Done when: [ ] a "Retirarse" combat action (chance by position/speed, failure costs the turn) that ends the expedition as a retreat; [ ] the campaign bot uses it when 2 heroes are Al Borde; [ ] re-measure deaths with `tools/playtest_campaign.gd -- --telemetry`
+
 ### P2-03 · M · Classes 5–8
 - Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints added in P1-03a) · Depends: P1-03, P1-04
 - Spec: `03`. **Owner confirmed 2026-11-06:** classes 3 Guachimán Jubilado, 5 Médica Josefina, 6 Curandero Nicoyano, 9 Exorcista de Barrio.
