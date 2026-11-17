@@ -516,8 +516,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 ## P5 — Slice validation (roadmap Phase 2 exit)
 
 ### P5-01 · M · Local telemetry log
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P3-01
-- Done when: [ ] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17) · Depends: P3-01
+- Files: `scripts/autoload/telemetry.gd` (new autoload), `project.godot`, `scripts/autoload/game_state.gd` (`colones` setter, `week_colones_*`, `log_mission_end`, `_log_week`, spike hook, save v11), `scripts/domain/stress_system.gd` (`spike_hook`), `scripts/expedition/expedition_screen.gd` (`_end_expedition`), `tools/playtest_campaign.gd` (`--telemetry`), `tools/telemetry_report.py` (new), `tests/test_telemetry.gd` (new)
+- Done when: [x] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
 ### P5-02 · M · Balance pass to 55–70% mission success
 - Status: `todo` · Depends: P1-07, P2-*, P5-01

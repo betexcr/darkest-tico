@@ -17,6 +17,37 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (6) — P5-01 — Local telemetry log
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-01 `done`.
+- **Changed:**
+  - **New `Telemetry` autoload** (`scripts/autoload/telemetry.gd`, registered in `project.godot`). It appends JSON lines to `user://telemetry.jsonl`.
+    - Every line has `kind`, `t` and `week`.
+    - It is off during `-s` runs and rotates to `.1` past 2 MB.
+  - **Events:**
+    - `session`: the game starts.
+    - `mission_end`: logged by the expedition screen via `GameState.log_mission_end`: result, region, difficulty, rooms, ledger, each hero.
+    - `stress_spike`: StressSystem `spike_hook` (Quebranto or Virtud at 100, collapse).
+    - `week`: `end_of_expedition_week`: colones, in, out, roster, fallen, busy.
+  - **Money in and out:** a setter on `GameState.colones` counts every change into `week_colones_in/out`. Save v11 keeps them; loading or starting a campaign resets them.
+  - **Bot:** `tools/playtest_campaign.gd -- --telemetry <path>`.
+  - **Report:** `tools/telemetry_report.py [path]` prints success by difficulty, heroes lost, stress spikes and a weekly money table. It finds Godot's user folder by itself.
+  - **Tests:** `tests/test_telemetry.gd` (11 checks).
+  - **Docs:** AGENTS (autoloads, test list, telemetry note), doc 13 (layer table, save v11).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 16 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+  - Bot run, 2 × 6 weeks with `--telemetry`, then the report: 27 events.
+    - Success 92% (Aprendiz 100%, Veterano 67%), 0.42 heroes lost per mission.
+    - 3 stress spikes; the weekly money table filled in.
+- **Not verified / risks:**
+  - The real game writing the log on the owner's Windows machine was not run (no desktop here); the user-folder path in the report is Godot's documented default.
+  - Two campaigns in one file make the week column repeat; the report doesn't separate campaigns.
+- **Decisions needed:** none.
+- **Next step:** P3-06 (Clínica de Espantos + quirks), as the owner asked. Spec: doc 02 §6 and doc 04 §3.5 (prices).
+
+---
+
 ## 2026-11-17 (5) — P2-10 — Conditions for choice events
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P2-10 `done`.
