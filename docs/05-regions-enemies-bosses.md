@@ -165,8 +165,8 @@ Each region includes:
    - Mechanics: summon servants, darkness pulses, anti-guard attacks.
    - **Built (P2-05, 2026-11-17):**
      - He is the boss in the last room of every generated Sótanos map, with 2 *Sirvientes ahogados* as escort.
-     - *Summons* (`summon`): from round 3, every 2 rounds, he "toca la campanita del servicio" for another servant while fewer than 2 are standing.
-     - *Darkness pulses* (`cycle`): every 3rd round he always uses *Pulso de oscuridad* (party damage, −10 Luz, Chiva on himself).
+     - *Summons* (`summon`): every 3 rounds (rounds 4 and 7), he "toca la campanita del servicio" for another servant while fewer than 2 are standing, at most 2 per fight (with no cap the fight could stall: 77% clears in the sim).
+     - *Darkness pulses* (`cycle`): every 4th round he always uses *Pulso de oscuridad* (party damage, −10 Luz, Chiva on himself). Every 3rd round drove long fights to Luz 0 and into stalls in the sim.
      - *Anti-guard*: *Golpe al escudo* ignores Guard, goes for a guarding hero, and does +50% to them (`vs_guard_pct`).
 2. `La Segua de Niebla` (Bosque)
    - Mechanics: stress charm, mirror image phases.

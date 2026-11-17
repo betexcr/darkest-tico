@@ -286,26 +286,30 @@ func _test_mayordomo() -> void:
 	_check(str(gen["boss_enemy_id"]) == "mayordomo_hundido", "the Mayordomo is the Sótanos boss (last room)")
 	var boss: Dictionary = gs.make_enemy("mayordomo_hundido", 0)
 	_setup([boss])
-	# Summons: from round 3, every 2 rounds, up to 2 servants standing.
+	# Summons: every 3 rounds from round 4, while fewer than 2 servants stand, at most 2 per fight.
+	var sm: Dictionary = boss["summon"]
 	var counts: Array = []
-	for r in range(1, 8):
+	for r in range(1, 9):
 		cc._round = r
 		cc._boss_round_start()
 		counts.append(cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado" and not e["dead"]).size())
-	_check(counts == [0, 0, 1, 1, 2, 2, 2], "servants arrive on rounds 3 and 5, never more than 2 (%s)" % str(counts))
-	var servant: Dictionary = cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado")[0]
-	servant["dead"] = true
-	cc._round = 9
-	cc._boss_round_start()
-	_check(cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado" and not e["dead"]).size() == 2, "a fallen servant is replaced")
+	_check(counts == [0, 0, 0, 1, 1, 1, 2, 2], "servants arrive on rounds 4 and 7 (%s)" % str(counts))
+	for e in cc.enemies:
+		if str(e["id"]) == "sirviente_ahogado":
+			e["dead"] = true
+	for r in range(9, 20):
+		cc._round = r
+		cc._boss_round_start()
+	_check(int(boss.get("summoned", 0)) == int(sm["max_total"]) and cc.enemies.filter(func(e): return not e["dead"] and str(e["id"]) == "sirviente_ahogado").is_empty(),
+		"no more than %d per fight: killing them ends it" % int(sm["max_total"]))
 	# Darkness beat: every 3rd round the pulse, whatever the dice say.
 	var beat: bool = true
-	for r in [3, 6, 9]:
+	for r in [4, 8, 12]:
 		cc._round = r
 		for _k in 10:
 			beat = beat and str(cc._pick_enemy_skill(boss).get("id", "")) == "pulso_de_oscuridad"
-	_check(beat, "rounds 3, 6, 9: always Pulso de oscuridad")
-	cc._round = 4
+	_check(beat, "rounds 4, 8, 12: always Pulso de oscuridad")
+	cc._round = 5
 	var other: bool = false
 	for _k in 40:
 		other = other or str(cc._pick_enemy_skill(boss).get("id", "")) != "pulso_de_oscuridad"

@@ -8,11 +8,13 @@ extends RefCounted
 ##          expected damage (a likely kill first). With `use_items`, a hero who can't heal an
 ##          ally in trouble uses a healing item from the alforja instead.
 ##   basic: the first usable attack on the current target.
-## Nothing to hit: smart uses any support skill that helps, then Moverse, then Guardia.
+## Nothing to hit: smart steps back toward its class's positions if it was shoved out, else uses
+## any support skill that helps, then Moverse, then Guardia.
 
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const FormationScript := preload("res://scripts/domain/formation.gd")
 
 ## Smart policy: heal an ally below this share of PV (or Al Borde)…
 const HEAL_BELOW := 0.4
@@ -68,6 +70,14 @@ func act(hero: Dictionary) -> void:
 		cc.use_skill(best)
 		return
 	if mode == "smart":
+		# Nothing to hit from here and out of the class's positions: step back toward them
+		# (a careful player would; otherwise a shoved hero buffs forever and the fight stalls).
+		var home: Array = gs.get_hero_template(str(hero.get("hero_id", ""))).get("ranks", [])
+		var step: Dictionary = FormationScript.step_toward(hero, cc.party, home)
+		if not step.is_empty() and cc.move_options(hero).has(step):
+			_count(hero, "Moverse")
+			cc.move_hero(step)
+			return
 		# Nothing to hit: any support skill that does something beats standing still.
 		for sk in usable:
 			var who: Dictionary = _support_target(hero, sk)

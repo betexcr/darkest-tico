@@ -427,8 +427,9 @@ def main() -> int:
         # P2-05 bosses: summons, a skill on a beat, fleeing mini-bosses, anti-guard skills.
         sm = en.get("summon")
         if sm is not None and not (sm.get("id") in enemies and isinstance(sm.get("every"), int) and sm["every"] >= 1
-                                   and isinstance(sm.get("max_alive"), int) and 1 <= sm["max_alive"] <= 3 and sm.get("text")):
-            errors.append(f"{where} summon needs a known id, every >= 1, max_alive 1-3 and text")
+                                   and isinstance(sm.get("max_alive"), int) and 1 <= sm["max_alive"] <= 3 and sm.get("text")
+                                   and isinstance(sm.get("max_total"), int) and 1 <= sm["max_total"] <= 4):
+            errors.append(f"{where} summon needs a known id, every >= 1, max_alive 1-3, max_total 1-4 (so the fight ends) and text")
         cy = en.get("cycle")
         if cy is not None and not (cy.get("skill") in {x.get("id") for x in en.get("skills", [])} and isinstance(cy.get("every"), int) and cy["every"] >= 2):
             errors.append(f"{where} cycle needs one of its own skills and every >= 2")

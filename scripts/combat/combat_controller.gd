@@ -976,7 +976,7 @@ func _call_reinforcements() -> void:
 
 
 ## Round start for bosses and mini-bosses (P2-05): the Mayordomo rings for servants
-## ("summon": {id, every, max_alive}); the Cadejo runs off if not killed fast ("flee_after").
+## ("summon": {id, every, max_alive, max_total}); the Cadejo runs off if not killed fast ("flee_after").
 func _boss_round_start() -> void:
 	for e in enemies.duplicate():
 		if e.get("dead", false):
@@ -994,12 +994,16 @@ func _boss_round_start() -> void:
 		var sm = e.get("summon", null)
 		if not sm is Dictionary or _round <= 1 or (_round - 1) % maxi(int(sm.get("every", 1)), 1) != 0:
 			continue
+		# A cap per fight, or a party that keeps killing servants never reaches him.
+		if int(e.get("summoned", 0)) >= int(sm.get("max_total", 1)):
+			continue
 		var sid: String = str(sm.get("id", ""))
 		var alive: int = enemies.filter(func(x): return not x.get("dead", false) and str(x.get("id", "")) == sid).size()
 		if alive >= int(sm.get("max_alive", 1)):
 			continue
 		var ne: Dictionary = spawn_enemy(sid)
 		if not ne.is_empty():
+			e["summoned"] = int(e.get("summoned", 0)) + 1
 			_log("%s %s: llega %s." % [e.get("name", "?"), str(sm.get("text", "llama refuerzos")), ne.get("name", "?")], "dd8866")
 	_collapse_ranks()
 

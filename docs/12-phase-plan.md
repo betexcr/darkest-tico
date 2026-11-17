@@ -411,6 +411,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when:
   - [ ] The smoke passes 30 runs in a row (raise `MAX_STEPS`, cap a fight's rounds in the bot, or seed `randi`), and still fails when an expedition really hangs
 
+### P1-21 · S · A lone hero stuck where none of their skills work
+- Status: `todo` · Depends: —
+- Spec: `01` §2.1 (formation)
+- Found in P2-05 sim runs (about 1 stall in 300 chains): the last hero standing (e.g. the Tecnólogo) ends up in position 1, where none of their attacks can be used, and can't Moverse with nobody beside them. The fight never ends.
+- Done when: [ ] a lone hero can always act on the enemy (e.g. allow the class's basic attack from any position when alone, or let enemies close in), with a test
+
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
