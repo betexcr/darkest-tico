@@ -1,5 +1,5 @@
 {
-  "_doc": "Town view of the Hacienda (P4-17): one painted building per hub service. Positions are in a 1280x720 design space (the right 380 px hold the roster): x = centre, bottom = where it stands, height = drawn height (width follows the picture). Buildings are drawn back to front by `bottom`. `ground_top` is where the dirt of the plaza starts fading in over the backdrop. `closed_by` lists the town-event closures (data/town_events.json `closed`) that grey the building out; `note_by` adds a line to its name plate.",
+  "_doc": "Town view of the Hacienda (P4-17): one painted building per hub service. Positions are in a 1280x720 design space (the right 380 px hold the roster): x = centre, bottom = where it stands, height = drawn height (width follows the picture). Buildings are drawn back to front by `bottom`. `ground_top` is where the dirt of the plaza starts fading in over the backdrop. `closed_by` lists the town-event closures (data/town_events.json `closed`) that grey the building out; `note_by` adds a line to its name plate. `filler` houses are only in the painted town (tools/town_paint.py), not clickable.",
   "background": "res://assets/town/town_bg.png",
   "design_size": [
     1280,
@@ -87,5 +87,37 @@
       ]
     }
   ],
-  "ground_top": 330
+  "ground_top": 330,
+  "filler": [
+    {
+      "art": "res://assets/town/filler/house_1.png",
+      "x": 75,
+      "bottom": 395,
+      "height": 120
+    },
+    {
+      "art": "res://assets/town/filler/house_3.png",
+      "x": 330,
+      "bottom": 372,
+      "height": 80
+    },
+    {
+      "art": "res://assets/town/filler/house_2.png",
+      "x": 585,
+      "bottom": 378,
+      "height": 105
+    },
+    {
+      "art": "res://assets/town/filler/house_4.png",
+      "x": 840,
+      "bottom": 420,
+      "height": 120
+    },
+    {
+      "art": "res://assets/town/filler/house_3.png",
+      "x": 20,
+      "bottom": 540,
+      "height": 90
+    }
+  ]
 }

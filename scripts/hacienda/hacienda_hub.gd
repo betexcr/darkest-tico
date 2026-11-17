@@ -76,6 +76,11 @@ var _buildings: Dictionary = {}
 var _town_data: Dictionary = {}
 ## The building whose window is open ("" = looking at the town).
 var _open_building: String = ""
+## The town painted as one picture (P4-19) and where each building's crop of it sits.
+const PAINTED_PATH := "res://assets/town/town_painted.png"
+const PAINTED_LAYOUT := "res://assets/town/painted/layout.json"
+var _painted: Texture2D = null
+var _painted_rects: Dictionary = {}
 
 
 func _ready() -> void:
@@ -956,6 +961,24 @@ static func _load_town() -> Dictionary:
 
 ## One TownBuilding per data/town.json row, drawn back to front (by where it stands).
 func _build_town() -> void:
+	# P4-19: the town painted as one picture (tools/town_paint.py). Each building is then its
+	# crop of that painting, at the exact rect the tool wrote, so the town reads as one place.
+	_painted = _load_texture(PAINTED_PATH) if ResourceLoader.exists(PAINTED_PATH) or FileAccess.file_exists(PAINTED_PATH) else null
+	_painted_rects = {}
+	if _painted != null:
+		var f := FileAccess.open(PAINTED_LAYOUT, FileAccess.READ)
+		var parsed = JSON.parse_string(f.get_as_text()) if f != null else null
+		if parsed is Dictionary:
+			_painted_rects = parsed.get("rects", {})
+		var pic := TextureRect.new()
+		pic.name = "Painting"
+		pic.texture = _painted
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.stretch_mode = TextureRect.STRETCH_SCALE
+		_town.add_child(pic)
+		_bg.texture = _painted
+		_bg.modulate = Color(0.55, 0.5, 0.55)
 	# The plaza: dirt fading in under the buildings, so they stand on something.
 	var grad := Gradient.new()
 	grad.set_color(0, Color(0.09, 0.06, 0.05, 0.0))
@@ -971,12 +994,18 @@ func _build_town() -> void:
 	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	ground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	ground.stretch_mode = TextureRect.STRETCH_SCALE
-	_town.add_child(ground)
+	if _painted == null:
+		_town.add_child(ground)
 	var rows: Array = _town_data.get("buildings", []).duplicate()
 	rows.sort_custom(func(a, b): return float(a.get("bottom", 0)) < float(b.get("bottom", 0)))
 	for row in rows:
 		var art: String = str(row.get("art", ""))
-		var tex: Texture2D = _load_texture(art)
+		var bid: String = str(row.get("id", ""))
+		var tex: Texture2D = null
+		if _painted_rects.has(bid):
+			tex = _load_texture("%s/%s.png" % [PAINTED_PATH.get_base_dir().path_join("painted"), bid])
+		if tex == null:
+			tex = _load_texture(art)
 		if tex == null:
 			continue
 		var b = TownBuildingScript.new()
@@ -995,6 +1024,10 @@ func _layout_town() -> void:
 	var k: float = minf(_town.size.x / float(design[0]), _town.size.y / float(design[1]))
 	if k <= 0.0:
 		k = 1.0
+	var pic: Control = _town.get_node_or_null("Painting")
+	if pic != null:
+		pic.position = Vector2.ZERO
+		pic.size = Vector2(float(design[0]), float(design[1])) * k
 	var ground: Control = _town.get_node_or_null("Ground")
 	if ground != null:
 		var top: float = float(_town_data.get("ground_top", 360)) * k
@@ -1003,6 +1036,11 @@ func _layout_town() -> void:
 	for bid in _buildings:
 		var b = _buildings[bid]
 		var row: Dictionary = b.get_meta("row")
+		if _painted_rects.has(bid):
+			var r: Array = _painted_rects[bid]
+			b.position = Vector2(float(r[0]), float(r[1])) * k
+			b.size = Vector2(float(r[2]), float(r[3])) * k
+			continue
 		var tex: Texture2D = b.texture
 		var h: float = float(row.get("height", 200)) * k
 		var w: float = h * float(tex.get_width()) / float(maxi(tex.get_height(), 1))
