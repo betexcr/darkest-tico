@@ -1095,6 +1095,8 @@ func heal_hero(hero: Dictionary) -> String:
 ## One week passes after every expedition (doc 02 §1): the fallen leave the roster,
 ## survivors leave Al Borde, recruits rotate.
 func end_of_expedition_week() -> void:
+	# P5-02: who stayed home this week without a booking (decided before the week turns).
+	var rested: Array = roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and not is_in_party(h) and not hero_busy(h))
 	week += 1
 	var fallen: PackedStringArray = PackedStringArray()
 	for k in range(roster.size() - 1, -1, -1):
@@ -1116,6 +1118,16 @@ func end_of_expedition_week() -> void:
 		if bool(party[k].get("dead", false)):
 			party.remove_at(k)
 	var quirk_lines: PackedStringArray = _roll_expedition_quirks()
+	# P5-02: a week at home without a booking takes the edge off (no money needed, so a
+	# broke hacienda can still recover). The Iglesia/Cantina do much more.
+	var rest: int = BalanceScript.int_of("hub.idle_stress_relief")
+	var rested_names: PackedStringArray = PackedStringArray()
+	for h in rested:
+		if rest > 0 and int(h.get("stress", 0)) > 0:
+			StressSystemScript.add_stress(h, -rest)
+			rested_names.append(str(h.get("name", "?")))
+	if not rested_names.is_empty():
+		quirk_lines.append("Descansaron en la hacienda (-%d estrés): %s." % [rest, ", ".join(rested_names)])
 	var activity_lines: PackedStringArray = _resolve_hub_activities()
 	_log_week(fallen.size(), roster.filter(func(h): return hero_busy(h)).size())
 	refresh_recruits()

@@ -157,7 +157,8 @@ func _hub(row: Dictionary) -> void:
 	# Party: the 4 least stressed, in their classes' preferred order.
 	# Heroes still away at the Iglesia/Cantina (an extra week) can't go out.
 	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h))
-	pool.sort_custom(func(a, b): return int(a.get("stress", 0)) < int(b.get("stress", 0)))
+	# P5-02: a careful player leaves the frayed at home (a Quebranto or 100+ stress sorts last).
+	pool.sort_custom(func(a, b): return _frayed_key(a) < _frayed_key(b))
 	var chosen: Array = pool.slice(0, 4)
 	chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
 	_gs.party = chosen
@@ -221,6 +222,12 @@ func _hub(row: Dictionary) -> void:
 
 func _last_result() -> String:
 	return str(_all_rows[-1].get("result", "")) if not _all_rows.is_empty() else ""
+
+
+## Sort key for picking the party: fresh heroes first; a Quebranto or 100+ stress goes last.
+func _frayed_key(h: Dictionary) -> int:
+	var frayed: bool = str(h.get("affliction_id", "")) != "" or int(h.get("stress", 0)) >= 100
+	return int(h.get("stress", 0)) + (1000 if frayed else 0)
 
 
 ## P5-02: retreat when 2 heroes are down, 2 carry a Quebranto, or one is at RETREAT_STRESS.

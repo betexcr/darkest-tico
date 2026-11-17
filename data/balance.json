@@ -83,11 +83,12 @@
     ]
   },
   "hub": {
-    "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia Vieja / Cantina activity prices are in hub_activities.json.",
+    "_doc": "Hacienda prices (item prices are in items.json). The Pulpería buys back at sell_rate of the price (owner rule). EBAIS: heal_cost_per_hp per missing PV, at least heal_min_cost. Iglesia Vieja / Cantina activity prices are in hub_activities.json. idle_stress_relief (P5-02): a hero who spends the week at home without a booking loses this much stress.",
     "start_colones": 5000,
     "sell_rate": 0.5,
     "heal_cost_per_hp": 20,
-    "heal_min_cost": 100
+    "heal_min_cost": 100,
+    "idle_stress_relief": 15
   },
   "quirks": {
     "_doc": "Quirks (P3-06, data/quirks.json). After each expedition every hero who went may gain a positive (positive_chance), a negative (negative_chance) and a disease (disease_chance); at max_positive / max_negative a new one replaces a random unlocked one (none if all are locked). Recruits arrive with one of each with recruit_positive_chance / recruit_negative_chance. Clínica prices (doc 04 §3.5) by resolve tier: levels below tier_levels[0], below tier_levels[1], the rest. Each hero: one negative removal and one positive lock/removal per week; diseases any time.",

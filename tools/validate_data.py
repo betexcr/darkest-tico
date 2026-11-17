@@ -835,7 +835,7 @@ BALANCE_KEYS = {
     "afflictions.abnegacion_chance": "chance",
     "enemies.boss_hp_mult": "mult", "enemies.elite_hp_mult": "mult",
     "hub.start_colones": "int>=0", "hub.sell_rate": "chance", "hub.heal_cost_per_hp": "int>=0",
-    "hub.heal_min_cost": "int>=0",
+    "hub.heal_min_cost": "int>=0", "hub.idle_stress_relief": "int>=0",
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
     "limits.graveyard_cap": "pos", "light.max": "pos", "light.snuff": "int>=0",
     "hunger.every_moves": "pos", "hunger.hp_pct": "pct", "hunger.stress": "int>=0",
