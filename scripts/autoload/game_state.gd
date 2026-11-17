@@ -45,13 +45,24 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 10
+const SAVE_VERSION := 11
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
 
 
-var colones: int = BalanceScript.int_of("hub.start_colones")
+## Colones gained / spent since the last week ended (P5-01 telemetry; saved).
+var week_colones_in: int = 0
+var week_colones_out: int = 0
+## Every change goes through the setter, so the week's money in and out is counted without
+## touching the many places that pay or charge.
+var colones: int = BalanceScript.int_of("hub.start_colones"):
+	set(v):
+		if v > colones:
+			week_colones_in += v - colones
+		elif v < colones:
+			week_colones_out += colones - v
+		colones = v
 
 
 # --- Balance limits and prices (data/balance.json, P1-06) ---------------------------
@@ -195,6 +206,48 @@ var event_report: PackedStringArray = PackedStringArray()
 func _ready() -> void:
 	_load_registries()
 	reset_inventory_to_starter()
+	StressSystemScript.spike_hook = _on_stress_spike
+
+
+# --- Telemetry (P5-01; scripts/autoload/telemetry.gd) ----------------------------------------
+
+func _on_stress_spike(hero: Dictionary, result: String) -> void:
+	Telemetry.log_event("stress_spike", {"hero": str(hero.get("hero_id", "")), "level": int(hero.get("resolve_level", 0)),
+		"result": result, "stress": int(hero.get("stress", 0)), "in_mission": mission_active,
+		"light": mission_light if mission_active else -1, "difficulty": str(mission_difficulty.get("id", "")) if mission_active else ""})
+
+
+## The expedition is over (the screen calls this once): result objective | defeat | flee.
+func log_mission_end(result: String) -> void:
+	Telemetry.log_event("mission_end", {
+		"result": result,
+		"region": current_region_id,
+		"difficulty": str(mission_difficulty.get("id", "")),
+		"level": int(mission_difficulty.get("level", 1)),
+		"event": active_event_id,
+		"rooms_visited": visited_node_ids.size(),
+		"rooms_total": mission_nodes_index.size(),
+		"light": mission_light,
+		"ledger": mission_ledger.duplicate(true),
+		"roaming_left": not mission_roaming.is_empty(),
+		"party": party.map(func(h): return {"hero": str(h.get("hero_id", "")), "level": int(h.get("resolve_level", 0)),
+			"hp": int(h.get("hp", 0)), "hp_max": int(h.get("hp_max", 1)), "stress": int(h.get("stress", 0)),
+			"affliction": str(h.get("affliction_id", "")), "virtud": str(h.get("virtud_id", "")), "dead": bool(h.get("dead", false))}),
+	})
+
+
+## Money in and out during the week that just ended; the counters start again.
+func _log_week(fallen: int, busy: int) -> void:
+	Telemetry.log_event("week", {"colones": colones, "colones_in": week_colones_in, "colones_out": week_colones_out,
+		"roster": roster.size(), "fallen": fallen, "busy": busy, "event": active_event_id})
+	week_colones_in = 0
+	week_colones_out = 0
+
+
+## Loading a save or starting over is not income: zero the week's counters.
+func reset_week_counters() -> void:
+	week_colones_in = 0
+	week_colones_out = 0
 
 
 func _load_registries() -> void:
@@ -634,6 +687,7 @@ func reset_party_from_catalog() -> void:
 			roster.append(h)
 			party.append(h)
 	refresh_recruits()
+	reset_week_counters()
 
 
 func _take_uid() -> int:
@@ -1059,6 +1113,7 @@ func end_of_expedition_week() -> void:
 		if bool(party[k].get("dead", false)):
 			party.remove_at(k)
 	var activity_lines: PackedStringArray = _resolve_hub_activities()
+	_log_week(fallen.size(), roster.filter(func(h): return HubActivitiesScript.is_busy(h)).size())
 	refresh_recruits()
 	last_week_report = "Semana %d." % week
 	if not fallen.is_empty():
@@ -1905,6 +1960,10 @@ func apply_save_data(data: Dictionary) -> void:
 		refresh_recruits()
 	# Never resume mid-expedition in this slice.
 	end_mission_abandon()
+	# v11 (P5-01): the week's money in / out so far (older saves: start counting now).
+	var wc = data.get("week_colones", {})
+	week_colones_in = maxi(int(wc.get("in", 0)), 0) if wc is Dictionary else 0
+	week_colones_out = maxi(int(wc.get("out", 0)), 0) if wc is Dictionary else 0
 
 
 func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
@@ -1996,6 +2055,7 @@ func to_save_dict() -> Dictionary:
 		"graveyard": graveyard.duplicate(true),
 		"stolen_items": stolen_items.duplicate(),
 		"inventory": inventory.duplicate(true),
+		"week_colones": {"in": week_colones_in, "out": week_colones_out},
 	}
 
 

@@ -10,6 +10,15 @@ const BalanceScript := preload("res://scripts/domain/balance.gd")
 ## Town events shift the Virtud chance for one expedition (+0.15 Fiesta patronal, -0.15 Se viene
 ## el temporal). GameState sets it at mission start and clears it at mission end.
 static var virtue_bonus: float = 0.0
+## Telemetry (P5-01): called as spike_hook.call(hero, result) when a hero reaches the resolve
+## check (result: the Quebranto / Virtud id) or collapses ("colapso", "colapso_muere",
+## "colapso_sobrevive"). GameState sets it; the rules stay free of logging.
+static var spike_hook: Callable
+
+
+static func _spike(hero: Dictionary, result: String) -> void:
+	if spike_hook.is_valid():
+		spike_hook.call(hero, result)
 
 const AFFLICTIONS := ["paranoia", "cobardia", "ira_ciega", "bravata", "desesperanza", "nervios", "fatalismo"]
 const VIRTUDES := ["serenidad", "firmeza", "valentia", "punteria", "esperanza", "vigor", "abnegacion"]
@@ -47,12 +56,14 @@ static func _resolve_at_100(hero: Dictionary) -> PackedStringArray:
 		hero["affliction_id"] = aff
 		hero["virtud_id"] = ""
 		logs.append("%s: ¡Quebranto! (%s)" % [hero.get("name", "?"), affliction_name(aff)])
+		_spike(hero, "quebranto:" + aff)
 	else:
 		var v: String = VIRTUDES[randi() % VIRTUDES.size()]
 		hero["virtud_id"] = v
 		hero["affliction_id"] = ""
 		hero["stress"] = BalanceScript.int_of("stress.virtud_reset")
 		logs.append("%s: ¡Virtud! (%s)" % [hero.get("name", "?"), virtud_name(v)])
+		_spike(hero, "virtud:" + v)
 	return logs
 
 
@@ -106,6 +117,7 @@ static func _apply_colapso(hero: Dictionary) -> PackedStringArray:
 		hero["al_borde"] = true
 		hero["hp"] = 0
 		logs.append("%s cae a Al Borde por el colapso." % hero.get("name", "?"))
+		_spike(hero, "colapso")
 		return logs
 	# Doc 01 §3.4: already Al Borde -> death roll with a severe penalty. Surviving keeps them
 	# Al Borde at 0 PV (owner 2026-11-11) with stress just below the collapse line.
@@ -115,10 +127,12 @@ static func _apply_colapso(hero: Dictionary) -> PackedStringArray:
 		hero["hp"] = 0
 		hero["stress"] = BalanceScript.int_of("stress.colapso_survive")
 		logs.append("%s se aferra a la vida tras el colapso (%d%%)." % [hero.get("name", "?"), int(round(chance * 100))])
+		_spike(hero, "colapso_sobrevive")
 	else:
 		hero["dead"] = true
 		hero["hp"] = 0
 		logs.append("%s no sobrevive el colapso." % hero.get("name", "?"))
+		_spike(hero, "colapso_muere")
 	return logs
 
 

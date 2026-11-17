@@ -20,6 +20,7 @@ TooltipStyler="*res://scripts/autoload/tooltip_styler.gd"
 
 GameState="*res://scripts/autoload/game_state.gd"
 SaveService="*res://scripts/autoload/save_service.gd"
+Telemetry="*res://scripts/autoload/telemetry.gd"
 
 [display]
 

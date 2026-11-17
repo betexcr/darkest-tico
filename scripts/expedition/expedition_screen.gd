@@ -1330,6 +1330,7 @@ func _on_combat_over(victory: bool) -> void:
 
 
 func _end_expedition(reason: String, text: String) -> void:
+	GameState.log_mission_end(reason)
 	_mode = Mode.ENDED
 	_clear_skills()
 	_open_event("Fin de la expedición", text)

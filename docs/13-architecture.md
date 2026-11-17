@@ -12,10 +12,11 @@ Written 2026-11-12 (P1-08), against save version 9.
 | Domain rules | `scripts/domain/*.gd` | Pure static functions on plain dictionaries. No nodes, no autoloads, no numeric literals (balance comes from `Balance.num("section.key")`). |
 | State | `scripts/autoload/game_state.gd` (`GameState`) | Owns the campaign (roster, colones, week, inventory) and the current expedition. Calls domain rules, holds the results. |
 | Save | `scripts/autoload/save_service.gd` (`SaveService`) | Reads and writes `user://save.json` (§2). |
+| Telemetry | `scripts/autoload/telemetry.gd` (`Telemetry`) | Appends JSON lines to `user://telemetry.jsonl` (P5-01): `session`, `mission_end` (the screen's `_end_expedition` → `GameState.log_mission_end`), `stress_spike` (StressSystem's `spike_hook`), `week` (`end_of_expedition_week`; money in/out via the `colones` setter). Off in `-s` runs; rotates to `.1` past 2 MB. |
 | Screens | `scripts/bootstrap/`, `scripts/hacienda/`, `scripts/expedition/`, `scripts/combat/`, `scripts/ui/` | UI and flow. `CombatController` runs a fight; the screens own the nodes. |
 | Tests and tools | `tests/*.gd`, `tools/*.gd`, `tools/*.py` | Headless Godot `-s` scripts and Python checks. |
 
-Autoloads, in order: `GameState`, `SaveService`, `TooltipStyler` (draws every `tooltip_text` as the shared card).
+Autoloads, in order: `TooltipStyler`, `GameState`, `SaveService`, `Telemetry` (draws every `tooltip_text` as the shared card).
 
 Units are plain dictionaries everywhere. A hero is one dictionary that lives in `GameState.roster`. The same dictionary sits in `GameState.party` and is what combat changes, so PV, stress and statuses carry over between fights without copying. An enemy is a deep copy of its `data/enemies.json` entry, scaled for the fight.
 
@@ -37,7 +38,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 
 | Key | Contents |
 |---|---|
-| `version` | `GameState.SAVE_VERSION` (10) |
+| `version` | `GameState.SAVE_VERSION` (11) |
 | `colones`, `week` | Campaign money and week |
 | `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`; `busy` = Iglesia/Cantina booking, `town_buffs` = side-effect buffs waiting for the next expedition) |
 | `party_uids` | The expedition party in formation order (position 1 first) |
@@ -47,6 +48,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | `active_event_id`, `event_seen`, `event_deck`, `events_done_once`, `event_flags` | Town events (doc 02 §12) |
 | `graveyard`, `stolen_items` | The fallen (for resurrection) and items a town event took |
 | `inventory` | `[{id, qty}]`, the shared alforja |
+| `week_colones` | `{in, out}`: colones gained and spent since the last week ended (telemetry) |
 
 **Not saved:** the expedition in progress. Loading always calls `end_mission_abandon()`, so quitting mid-expedition abandons it. Mission state (map, Luz, hunger count, firewood, ledger) lives only in `GameState` while the expedition runs.
 
@@ -62,6 +64,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | v8 | Casa Comunal skill ranks; older saves start every skill at rank 1 |
 | v9 | A hero's `skill_ids` always follow the class; a rank in a replaced skill moves to the new skill in the same slot |
 | v10 | Iglesia Vieja / Cantina (P3-03): hero `busy` {building, activity, cost, weeks_left, resolved} and `town_buffs`; a busy hero is never loaded into the party |
+| v11 | `week_colones` {in, out}: the week's money so far, for telemetry (P5-01) |
 
 `_sanitize_runtime_hero()` fills hero fields added after a save was written, so new hero keys don't need a version bump on their own. Change the version when a key is renamed or its meaning changes:
 1. Bump `SAVE_VERSION`.

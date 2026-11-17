@@ -13,6 +13,8 @@ extends SceneTree
 ##                     through the camp (default full)
 ##   --difficulty ID   starting difficulty: aprendiz | veterano | campeon (default aprendiz);
 ##                     the bot moves up when a hero refuses (too seasoned)
+##   --telemetry PATH  also write the game's telemetry log (P5-01) to PATH, e.g.
+##                     /tmp/tel.jsonl; summarise it with tools/telemetry_report.py PATH
 ##
 ## The player bot:
 ##   Hub: hires up to 4 living heroes (a 5th and 6th when colones ≥ HIRE_SPARE_AT), takes the 4
@@ -94,6 +96,12 @@ func _parse_args() -> void:
 			"--route", "--difficulty":
 				_opts[flag.trim_prefix("--")] = val
 				k += 1
+			"--telemetry":
+				# P5-01: write the game's telemetry log here (tools/telemetry_report.py reads it).
+				var tel = root.get_node("Telemetry")
+				tel.path = val
+				tel.enabled = true
+				k += 1
 			_:
 				push_warning("playtest_campaign: unknown option %s" % flag)
 		k += 1
@@ -103,6 +111,7 @@ func _new_campaign() -> void:
 	_gs.reset_party_from_catalog()
 	_gs.reset_inventory_to_starter()
 	_gs.colones = BalanceScript.int_of("hub.start_colones")
+	_gs.reset_week_counters()
 	_gs.week = 1
 	_gs.graveyard = []
 	_gs.active_event_id = ""
