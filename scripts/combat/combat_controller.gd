@@ -307,6 +307,7 @@ func _start_round() -> void:
 		# Virtudes Esperanza (calms companions) and Vigor (regains PV) at the top of each round.
 		_log_all(StressSystemScript.round_start_effects(party))
 	_call_reinforcements()
+	_boss_round_start()
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
@@ -620,6 +621,12 @@ func _pick_enemy_skill(enemy: Dictionary) -> Dictionary:
 	var all: Array = enemy.get("skills", [])
 	if all.is_empty():
 		all = [{"name": "Zarpazo", "type": "physical", "damage": [4, 9], "target": "single", "stress": 5}]
+	# El Mayordomo (P2-05): some skills come on a beat ("cycle": every N rounds).
+	var cyc = enemy.get("cycle", null)
+	if cyc is Dictionary and _round > 0 and _round % maxi(int(cyc.get("every", 1)), 1) == 0:
+		for s in all:
+			if str(s.get("id", "")) == str(cyc.get("skill", "")) and FormationScript.can_use(s, enemy, enemies, party, str(s.get("target", "single")) != "party"):
+				return s
 	var list: Array = all.filter(func(s):
 		if str(s.get("target", "")) == "allies":
 			return FormationScript.can_use(s, enemy, enemies, party, false) and not _ally_targets(enemy, s).is_empty()
@@ -690,6 +697,10 @@ func _enemy_turn(enemy: Dictionary) -> void:
 		var held: Array = reach.filter(func(h): return int(h.get("uid", -1)) == int(enemy.get("grudge_uid", -2)) and not StatusEffectsScript.has(h, "agazapado"))
 		if int(enemy.get("grudge_stacks", 0)) > 0 and not held.is_empty():
 			pick = held[0]
+		# Anti-guard (Mayordomo's Golpe al escudo, P2-05): goes for a hero who is guarding.
+		var guarding: Array = reach.filter(func(h): return bool(h.get("guarding", false)) and not StatusEffectsScript.has(h, "agazapado"))
+		if int(skill.get("vs_guard_pct", 0)) > 0 and not guarding.is_empty():
+			pick = guarding[randi() % guarding.size()]
 		# Al cuido: the guardian steps in front of single-target attacks.
 		var guard: Dictionary = StatusEffectsScript.guardian_of(pick, party)
 		if not guard.is_empty():
@@ -821,6 +832,9 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 	var pct: int = StatusEffectsScript.stat(attacker, "dmg_pct")
 	if StatusEffectsScript.has(target, "fichado"):
 		pct += int(skill.get("vs_marked_pct", 0))
+	# Anti-guard (P2-05): extra damage against a hero who is guarding.
+	if bool(target.get("guarding", false)):
+		pct += int(skill.get("vs_guard_pct", 0))
 	# Rencor (P2-04): extra damage against the hero it holds a grudge against.
 	if attacker.get("grudge", null) is Dictionary and int(attacker.get("grudge_stacks", 0)) > 0 \
 			and int(target.get("uid", -1)) == int(attacker.get("grudge_uid", -2)):
@@ -959,6 +973,35 @@ func _call_reinforcements() -> void:
 			_log("%s pita, pero no cabe nadie más." % e.get("name", "?"), "999999")
 		else:
 			_log("¡%s pitó: llegan refuerzos! %s." % [e.get("name", "?"), ", ".join(came)], "dd8866")
+
+
+## Round start for bosses and mini-bosses (P2-05): the Mayordomo rings for servants
+## ("summon": {id, every, max_alive}); the Cadejo runs off if not killed fast ("flee_after").
+func _boss_round_start() -> void:
+	for e in enemies.duplicate():
+		if e.get("dead", false):
+			continue
+		var fl: int = int(e.get("flee_after", 0))
+		if fl > 0 and _round > fl:
+			e["dead"] = true
+			e["fled"] = true
+			e["hp"] = maxi(int(e["hp"]), 1)
+			_log("¡%s se escapa por los túneles! Ya no lo van a alcanzar." % e.get("name", "?"), "dd8866")
+			var fu = _unit_for_enemy(e)
+			if fu != null:
+				fu.float_text("¡Se escapó!", COLOR_MISS)
+			continue
+		var sm = e.get("summon", null)
+		if not sm is Dictionary or _round <= 1 or (_round - 1) % maxi(int(sm.get("every", 1)), 1) != 0:
+			continue
+		var sid: String = str(sm.get("id", ""))
+		var alive: int = enemies.filter(func(x): return not x.get("dead", false) and str(x.get("id", "")) == sid).size()
+		if alive >= int(sm.get("max_alive", 1)):
+			continue
+		var ne: Dictionary = spawn_enemy(sid)
+		if not ne.is_empty():
+			_log("%s %s: llega %s." % [e.get("name", "?"), str(sm.get("text", "llama refuerzos")), ne.get("name", "?")], "dd8866")
+	_collapse_ranks()
 
 
 ## Adds an enemy mid-fight at the back of the living ones (P2-04: reinforcements; P2-05 will

@@ -160,6 +160,8 @@ var mission_difficulty: Dictionary = {}
 ## Camping (P3-07): firewood left this mission, rooms already camped in.
 var mission_firewood: int = 0
 var camped_node_ids: Array = []
+## Roaming mini-boss this expedition (P2-05, region generator "roaming"): {node, moves} or {}.
+var mission_roaming: Dictionary = {}
 ## What this expedition earned (victory screen): colones by source, items found, fights won.
 var mission_ledger: Dictionary = {}
 ## Per hero (by uid) at mission start: mental state, to spot new Quebrantos/Virtudes.
@@ -1213,6 +1215,7 @@ func start_mission(region_path: String = "") -> bool:
 	mission_difficulty = ResolveSystemScript.expedition(selected_difficulty_id, int(r.get("region_level", 0)))
 	mission_event = TownEventsScript.mission_mods(active_event(), current_region_id)
 	_apply_mission_event_to_difficulty()
+	_place_roaming()
 	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1))) + int(mission_event.get("firewood", 0))
 	camped_node_ids = []
 	mission_ledger = {"loot_colones": 0, "objective_colones": 0, "items": {}, "fights": 0, "elites": 0,
@@ -1353,6 +1356,7 @@ func end_mission_abandon() -> void:
 			h["underlevel_stress_pct"] = 0
 	mission_region_data.clear()
 	mission_nodes_index.clear()
+	mission_roaming = {}
 	combat_context.clear()
 	combat_return_node_id = ""
 	combat_return_victory = false
@@ -1373,7 +1377,103 @@ func move_to_node(target_id: String) -> bool:
 	if not visited_node_ids.has(target_id):
 		visited_node_ids.append(target_id)
 	_apply_low_light_stress_on_travel()
+	roaming_tick()
 	return true
+
+
+# --- Roaming mini-boss (P2-05, doc 05 §3.2; region "roaming") ----------------------------
+
+func _roaming_cfg() -> Dictionary:
+	var rc = mission_region_data.get("generator", {}).get("roaming", null)
+	return rc if rc is Dictionary else {}
+
+
+## Rooms the mini-boss may stand in: fights, empty rooms, curios and traps, away from the
+## entrance, the camp and the boss.
+func _roaming_rooms() -> Array:
+	var start: String = str(mission_region_data.get("start_node", ""))
+	var near_start: Array = ExpeditionLoaderScript.neighbors(mission_region_data, start)
+	return mission_nodes_index.keys().filter(func(id):
+		var nd: Dictionary = mission_nodes_index[id]
+		return str(id) != start and not near_start.has(str(id)) and str(id) != objective_node_id \
+			and not bool(nd.get("is_boss", false)) and ["combat", "empty", "curio", "trap"].has(str(nd.get("type", ""))))
+
+
+## A room the mini-boss fight "uses up" (fights and empty rooms); a curio or trap room
+## still holds its event after the fight.
+func roaming_clears_room(node_id: String) -> bool:
+	return ["combat", "empty"].has(str(mission_nodes_index.get(node_id, {}).get("type", "")))
+
+
+## Rolls the region's chance for this difficulty and drops the mini-boss in a room.
+func _place_roaming() -> void:
+	mission_roaming = {}
+	var rc: Dictionary = _roaming_cfg()
+	if rc.is_empty():
+		return
+	var pct: int = int(rc.get("chance_pct", {}).get(str(mission_difficulty.get("id", "")), 0))
+	var rooms: Array = _roaming_rooms()
+	if rooms.is_empty() or randi() % 100 >= pct:
+		return
+	mission_roaming = {"node": str(rooms[randi() % rooms.size()]), "moves": 0}
+
+
+func roaming_node() -> String:
+	return str(mission_roaming.get("node", ""))
+
+
+func roaming_here() -> bool:
+	return not mission_roaming.is_empty() and roaming_node() == current_node_id
+
+
+## After each party move: every move_every moves it prowls to a neighbouring room
+## (one it may stand in, never the party's).
+func roaming_tick() -> void:
+	if mission_roaming.is_empty() or roaming_here():
+		return
+	mission_roaming["moves"] = int(mission_roaming.get("moves", 0)) + 1
+	if int(mission_roaming["moves"]) % maxi(int(BalanceScript.req(_roaming_cfg(), "move_every", "region roaming")), 1) != 0:
+		return
+	var ok: Array = _roaming_rooms()
+	var next: Array = ExpeditionLoaderScript.neighbors(mission_region_data, roaming_node()).filter(func(id):
+		return ok.has(str(id)) and str(id) != current_node_id)
+	if not next.is_empty():
+		mission_roaming["node"] = str(next[randi() % next.size()])
+
+
+## The mini-boss fight in the current room (like an ambush: no room reward; the bounty is
+## paid by finish_roaming). The mini-boss is the elite leader.
+func build_roaming_context(node_id: String) -> void:
+	var rc: Dictionary = _roaming_cfg()
+	var nd: Dictionary = mission_nodes_index.get(node_id, {})
+	var saved: Dictionary = nd.duplicate()
+	nd["enemy_ids"] = [str(rc.get("enemy_id", "cadejo_negro"))] + Array(rc.get("escort", []))
+	nd.erase("is_boss")
+	nd["is_elite"] = true
+	nd["reward_colones"] = 0
+	build_combat_context_for_node(node_id)
+	nd.clear()
+	nd.merge(saved)
+	combat_context["is_roaming"] = true
+	combat_context["is_elite"] = true
+	combat_context["surprise"] = ""
+
+
+## The roaming fight is won: a bounty if the mini-boss died, nothing if it fled. Either way
+## it is gone for this expedition. Returns log lines.
+func finish_roaming(killed: bool) -> PackedStringArray:
+	var rc: Dictionary = _roaming_cfg()
+	mission_roaming = {}
+	var out: PackedStringArray = PackedStringArray()
+	if not killed:
+		out.append("Se escapó: esta vez no hay recompensa.")
+		return out
+	var b: Array = BalanceScript.req(rc, "bounty_colones", "region roaming")
+	var pay: int = int(round(randi_range(int(b[0]), int(b[1])) * float(mission_difficulty.get("reward", 1.0))))
+	ledger_add("elites")
+	out.append("¡Cazaron al %s!" % str(_enemies_by_id.get(str(rc.get("enemy_id", "")), {}).get("name", "mini-jefe")))
+	out.append_array(apply_event_outcome({"colones": pay, "random_equipment": bool(rc.get("bounty_equipment", false))}))
+	return out
 
 
 ## Walking in the dark (Luz tiers, P1-17): the tier's move_stress to one random living hero,

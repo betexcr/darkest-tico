@@ -2,7 +2,8 @@ extends SceneTree
 
 ## Sótanos enemy gimmicks (P2-04, doc 05 §2.6): pairs of rats, authored squads, Embargado,
 ## Rencor, riposte when marked, the Monaguillo's blessing, the Vigía's reinforcements, the
-## Murciélago's light drain and the Duende's stolen colones.
+## Murciélago's light drain and the Duende's stolen colones. Bosses (P2-05, doc 05 §3): the
+## Mayordomo's summons, darkness beat and anti-guard; the Cadejo as a roaming mini-boss.
 ##   godot --headless --path . -s tests/test_enemies.gd
 
 var _fail: int = 0
@@ -76,6 +77,8 @@ func _run() -> void:
 	_test_reinforcements()
 	await _test_light_and_theft()
 	await _test_stage_spawn()
+	_test_mayordomo()
+	await _test_cadejo()
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -275,3 +278,138 @@ func _test_stage_spawn() -> void:
 	screen.queue_free()
 	for i in 5:
 		await process_frame
+
+
+func _test_mayordomo() -> void:
+	print("El Mayordomo Hundido (P2-05)")
+	var gen: Dictionary = gs.ExpeditionLoaderScript.load_region(gs.DEFAULT_REGION_PATH)["generator"]
+	_check(str(gen["boss_enemy_id"]) == "mayordomo_hundido", "the Mayordomo is the Sótanos boss (last room)")
+	var boss: Dictionary = gs.make_enemy("mayordomo_hundido", 0)
+	_setup([boss])
+	# Summons: from round 3, every 2 rounds, up to 2 servants standing.
+	var counts: Array = []
+	for r in range(1, 8):
+		cc._round = r
+		cc._boss_round_start()
+		counts.append(cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado" and not e["dead"]).size())
+	_check(counts == [0, 0, 1, 1, 2, 2, 2], "servants arrive on rounds 3 and 5, never more than 2 (%s)" % str(counts))
+	var servant: Dictionary = cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado")[0]
+	servant["dead"] = true
+	cc._round = 9
+	cc._boss_round_start()
+	_check(cc.enemies.filter(func(e): return str(e["id"]) == "sirviente_ahogado" and not e["dead"]).size() == 2, "a fallen servant is replaced")
+	# Darkness beat: every 3rd round the pulse, whatever the dice say.
+	var beat: bool = true
+	for r in [3, 6, 9]:
+		cc._round = r
+		for _k in 10:
+			beat = beat and str(cc._pick_enemy_skill(boss).get("id", "")) == "pulso_de_oscuridad"
+	_check(beat, "rounds 3, 6, 9: always Pulso de oscuridad")
+	cc._round = 4
+	var other: bool = false
+	for _k in 40:
+		other = other or str(cc._pick_enemy_skill(boss).get("id", "")) != "pulso_de_oscuridad"
+	_check(other, "other rounds: the usual mix")
+	# Anti-guard: more damage against a guarding hero.
+	var golpe: Dictionary = boss["skills"].filter(func(x): return str(x["id"]) == "golpe_al_escudo")[0]
+	var h: Dictionary = gs.party[0]
+	h["guarding"] = false
+	var plain: int = cc._scaled_damage(20, boss, h, golpe)
+	h["guarding"] = true
+	var vs_guard: int = cc._scaled_damage(20, boss, h, golpe)
+	h["guarding"] = false
+	_check(vs_guard == 30 and plain == 20, "Golpe al escudo: +50%% against a guarding hero (%d vs %d)" % [vs_guard, plain])
+
+
+func _test_cadejo() -> void:
+	print("Cadejo Negro, roaming mini-boss (P2-05)")
+	gs.reset_party_from_catalog()
+	var gen: Dictionary = gs.ExpeditionLoaderScript.load_region(gs.DEFAULT_REGION_PATH)["generator"]
+	_check(not gen["elite_pool"].has("cadejo_negro"), "the Cadejo is no longer a plain elite")
+	gs.selected_difficulty_id = "aprendiz"
+	var seen: int = 0
+	for _k in 20:
+		gs.start_mission()
+		seen += 1 if not gs.mission_roaming.is_empty() else 0
+	_check(seen == 0, "never in an Aprendiz expedition")
+	gs.selected_difficulty_id = "campeon"
+	seen = 0
+	for _k in 40:
+		gs.start_mission()
+		if not gs.mission_roaming.is_empty():
+			seen += 1
+	_check(seen > 10 and seen < 40, "sometimes in a Campeón expedition (%d of 40)" % seen)
+	while gs.mission_roaming.is_empty():
+		gs.start_mission()
+	var room: String = gs.roaming_node()
+	var nd: Dictionary = gs.mission_nodes_index[room]
+	_check(["combat", "empty", "curio", "trap"].has(str(nd["type"])) and room != gs.current_node_id and not gs.mission_neighbors().has(room), "it waits in a fight, empty, curio or trap room away from the entrance (%s, %s)" % [room, nd["type"]])
+	# It prowls: every move_every party moves it changes room, never into the party's.
+	var ok_rooms: Array = gs._roaming_rooms()
+	var from: String = ""
+	for id in ok_rooms:
+		var nb: Array = gs.ExpeditionLoaderScript.neighbors(gs.mission_region_data, str(id)).filter(func(n): return ok_rooms.has(str(n)))
+		if nb.size() >= 2:
+			from = str(id)
+			break
+	if from != "":
+		var every: int = int(gen["roaming"]["move_every"])
+		gs.mission_roaming = {"node": from, "moves": 0}
+		gs.current_node_id = str(gs.ExpeditionLoaderScript.neighbors(gs.mission_region_data, from).filter(func(n): return ok_rooms.has(str(n)))[0])
+		for _k in every - 1:
+			gs.roaming_tick()
+		_check(gs.roaming_node() == from, "it stays put for %d moves" % (every - 1))
+		gs.roaming_tick()
+		var now: String = gs.roaming_node()
+		_check(now != from and ok_rooms.has(now) and now != gs.current_node_id, "then it moves to another room, not the party's (%s -> %s)" % [from, now])
+	else:
+		_check(true, "(no room with two roaming neighbours on this map; movement not tested)")
+	gs.current_node_id = str(gs.mission_region_data["start_node"])
+	gs.mission_roaming = {"node": room, "moves": 0}
+	# Meeting it: an elite fight led by the Cadejo with its rats; the room reward is 0.
+	gs.current_node_id = gs.roaming_node()
+	_check(gs.roaming_here(), "walking into its room meets it")
+	var room_before: Dictionary = gs.mission_nodes_index[gs.current_node_id].duplicate(true)
+	gs.build_roaming_context(gs.current_node_id)
+	var ids: Array = gs.combat_context["enemies"].map(func(e): return str(e["id"]))
+	_check(ids.has("cadejo_negro") and ids.count("rata_de_troje") == 2 and bool(gs.combat_context["is_roaming"]), "the fight: Cadejo + a pair of rats (%s)" % str(ids))
+	_check(gs.mission_nodes_index[gs.current_node_id] == room_before, "the room's own data is left as it was")
+	# It flees after 4 rounds.
+	var cad: Dictionary = gs.combat_context["enemies"].filter(func(e): return str(e["id"]) == "cadejo_negro")[0]
+	_setup(gs.combat_context["enemies"])
+	for r in range(1, 6):
+		cc._round = r
+		cc._boss_round_start()
+		if r == 4:
+			_check(not cad["dead"], "still there at round 4")
+	_check(cad["dead"] and bool(cad.get("fled", false)), "round 5: it has fled")
+	# Bounty only if killed; either way it is gone.
+	var c0: int = gs.colones
+	gs.finish_roaming(false)
+	_check(gs.colones == c0 and gs.mission_roaming.is_empty(), "fled: no bounty, gone for the expedition")
+	gs.mission_roaming = {"node": gs.current_node_id, "moves": 0}
+	gs.inventory.clear()
+	gs.finish_roaming(true)
+	var b: Array = gen["roaming"]["bounty_colones"]
+	_check(gs.colones - c0 >= int(b[0]) and gs.inventory.any(func(e): return gs.is_equipment(str(e["id"]))), "killed: a bounty (+%d ₡) and a piece of equipment" % (gs.colones - c0))
+	# On the real screen: entering its room starts the fight; winning pays the bounty.
+	gs.mission_roaming = {"node": gs.current_node_id, "moves": 0}
+	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	screen._resolve_room()
+	_check(int(screen._mode) == 2 and bool(gs.combat_context.get("is_roaming", false)), "the screen opens the Cadejo fight")
+	screen._combat._ended = true
+	for e in screen._combat.enemies:
+		e["dead"] = true
+	var c1: int = gs.colones
+	await screen._on_combat_over(true)
+	_check(gs.colones > c1 and gs.mission_roaming.is_empty() and gs.is_node_cleared(gs.current_node_id) == gs.roaming_clears_room(gs.current_node_id), "after the win: bounty paid, Cadejo gone; the room is cleared only if it was a fight or empty")
+	screen.queue_free()
+	for i in 5:
+		await process_frame
+	gs.end_mission_abandon()
+	gs.selected_difficulty_id = "aprendiz"
+	if cc != null:
+		cc.queue_free()
+		cc = null

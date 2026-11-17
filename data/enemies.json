@@ -1,5 +1,5 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento. P2-04 gimmicks: riposte_when_marked (Respondón while Fichado), grudge {dmg_pct, max} (stacks against the hero who heals; prefers that hero), pack N (comes in groups of N), on_hit_light (Luz change per hit), reinforce {after_round, ids, count} (calls help at the start of the round after `after_round` if alive and there's room; once). Skill target 'allies' + ally_ranks: applies its `applies` to living allies in those positions (no damage). Stolen colones come back if the thief dies.",
+  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento. P2-04 gimmicks: riposte_when_marked (Respondón while Fichado), grudge {dmg_pct, max} (stacks against the hero who heals; prefers that hero), pack N (comes in groups of N), on_hit_light (Luz change per hit), reinforce {after_round, ids, count} (calls help at the start of the round after `after_round` if alive and there's room; once). Skill target 'allies' + ally_ranks: applies its `applies` to living allies in those positions (no damage). Stolen colones come back if the thief dies. P2-05 bosses: summon {id, every, max_alive, text} (from round 3, every `every` rounds, rings for one more while fewer than max_alive are standing), cycle {skill, every} (that skill on every Nth round), flee_after N (alive when round N+1 starts: escapes; no bounty). Skill vs_guard_pct: extra damage against a guarding hero, who it prefers.",
   "enemies": {
     "espanto": {
       "id": "espanto",
@@ -273,7 +273,8 @@
           ],
           "weight": 20,
           "ignores_guard": true,
-          "description": "Conoce cada guardia: esta no la frena."
+          "description": "Conoce cada guardia: esta no la frena, y al que se cubre le pega más (+50%).",
+          "vs_guard_pct": 50
         },
         {
           "id": "la_cuenta_por_favor",
@@ -315,6 +316,16 @@
         "sangrado": 40,
         "salado": 40,
         "movimiento": 60
+      },
+      "summon": {
+        "id": "sirviente_ahogado",
+        "every": 2,
+        "max_alive": 2,
+        "text": "toca la campanita del servicio"
+      },
+      "cycle": {
+        "skill": "pulso_de_oscuridad",
+        "every": 3
       }
     },
     "nuboso_spectre": {
@@ -490,7 +501,8 @@
         "sangrado": 20,
         "salado": 30,
         "movimiento": 50
-      }
+      },
+      "flee_after": 4
     },
     "segua_boss": {
       "id": "segua_boss",

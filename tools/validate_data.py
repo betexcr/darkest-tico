@@ -424,6 +424,19 @@ def main() -> int:
             errors.append(f"{where} on_hit_light must be a negative whole number")
         if "riposte_when_marked" in en and not isinstance(en["riposte_when_marked"], bool):
             errors.append(f"{where} riposte_when_marked must be true/false")
+        # P2-05 bosses: summons, a skill on a beat, fleeing mini-bosses, anti-guard skills.
+        sm = en.get("summon")
+        if sm is not None and not (sm.get("id") in enemies and isinstance(sm.get("every"), int) and sm["every"] >= 1
+                                   and isinstance(sm.get("max_alive"), int) and 1 <= sm["max_alive"] <= 3 and sm.get("text")):
+            errors.append(f"{where} summon needs a known id, every >= 1, max_alive 1-3 and text")
+        cy = en.get("cycle")
+        if cy is not None and not (cy.get("skill") in {x.get("id") for x in en.get("skills", [])} and isinstance(cy.get("every"), int) and cy["every"] >= 2):
+            errors.append(f"{where} cycle needs one of its own skills and every >= 2")
+        if "flee_after" in en and not (isinstance(en["flee_after"], int) and en["flee_after"] >= 1):
+            errors.append(f"{where} flee_after must be a whole number >= 1")
+        for x in en.get("skills", []):
+            if "vs_guard_pct" in x and not (isinstance(x["vs_guard_pct"], int) and x["vs_guard_pct"] > 0):
+                errors.append(f"{where}.{x.get('id')} vs_guard_pct must be a whole number > 0")
         rf = en.get("reinforce")
         if rf is not None:
             if not (isinstance(rf.get("after_round"), int) and rf["after_round"] >= 1 and isinstance(rf.get("count"), int) and 1 <= rf["count"] <= 3):
@@ -681,6 +694,20 @@ def main() -> int:
                 errors.append(f"regions/{rp.name}: generator.squads entry {sq} must list 1-4 known enemies")
         if gen.get("squads") and not (isinstance(gen.get("squad_template_pct"), int) and 0 <= gen["squad_template_pct"] <= 100):
             errors.append(f"regions/{rp.name}: generator.squad_template_pct must be 0-100 when squads are listed")
+        rm = gen.get("roaming")
+        if rm is not None:
+            diffs = {d.get("id") for d in (load(DATA / "progression.json") or {}).get("difficulties", [])}
+            bc = rm.get("bounty_colones")
+            if rm.get("enemy_id") not in enemy_ids_all or any(e not in enemy_ids_all for e in rm.get("escort", [])):
+                errors.append(f"regions/{rp.name}: roaming enemy_id / escort must be known enemies")
+            if not isinstance(rm.get("chance_pct"), dict) or any(k not in diffs or not 0 <= v <= 100 for k, v in rm["chance_pct"].items()):
+                errors.append(f"regions/{rp.name}: roaming chance_pct must be {{difficulty id: 0-100}}")
+            if not (isinstance(rm.get("move_every"), int) and rm["move_every"] >= 1) or not rm.get("encounter_text"):
+                errors.append(f"regions/{rp.name}: roaming needs move_every >= 1 and encounter_text")
+            if not (isinstance(bc, list) and len(bc) == 2 and 0 <= bc[0] <= bc[1]):
+                errors.append(f"regions/{rp.name}: roaming bounty_colones must be [min, max]")
+            if not enemies.get(rm.get("enemy_id"), {}).get("flee_after"):
+                errors.append(f"regions/{rp.name}: the roaming mini-boss needs flee_after (doc 05 §3.2: it escapes if not killed fast)")
         if rp.stem == "sotanos" and len(gen.get("squads", [])) < 3:
             errors.append(f"regions/{rp.name}: P2-04 wants at least 3 mixed squads")
         if rp.stem == "sotanos" and len(set(gen.get("curios", [])) | set(gen.get("traps", []))) < 30:

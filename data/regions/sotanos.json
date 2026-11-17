@@ -7,7 +7,7 @@
   "objective_reward_colones": 800,
   "region_level": 0,
   "generator": {
-    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching. squads + squad_template_pct (P2-04): authored mixed squads used for that share of regular fights (doc 05 §2.6); Ratas de troje add their pack.",
+    "_doc": "Random grid dungeon, see scripts/domain/map_generator.gd. Last room = boss. branch_newest_chance: how often the map grows from the newest room (long corridors) instead of branching; max_exits: most corridors a room may have when branching. squads + squad_template_pct (P2-04): authored mixed squads used for that share of regular fights (doc 05 §2.6); Ratas de troje add their pack. roaming (P2-05, doc 05 §3.2): a mini-boss placed in a combat, empty, curio or trap room (a curio/trap room keeps its event after the fight) with chance_pct by difficulty; it moves to a neighbouring room every move_every party moves (never into the party); killing it pays bounty_colones (+ one equipment); it flees after its flee_after rounds.",
     "rooms": [
       10,
       13
@@ -38,7 +38,7 @@
     ],
     "elite_pool": [
       "sombra_cuadrilla",
-      "cadejo_negro"
+      "mandador_en_pena"
     ],
     "boss_enemy_id": "mayordomo_hundido",
     "reward_colones": [
@@ -131,6 +131,15 @@
       "barriles_sueltos",
       "vapor_de_cava"
     ],
+    "roaming": {
+      "enemy_id": "cadejo_negro",
+      "encounter_text": "Un perro negro, enorme, les cierra el paso. Arrastra una cadena y tiene los ojos como brasas.",
+      "escort": ["rata_de_troje"],
+      "chance_pct": { "aprendiz": 0, "veterano": 50, "campeon": 75 },
+      "move_every": 3,
+      "bounty_colones": [600, 900],
+      "bounty_equipment": true
+    },
     "squad_template_pct": 50,
     "squads": [
       ["peon_penado", "vigia_porton", "monaguillo_porton"],

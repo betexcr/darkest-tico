@@ -163,6 +163,11 @@ Each region includes:
 
 1. `El Mayordomo Hundido` (Sotanos)
    - Mechanics: summon servants, darkness pulses, anti-guard attacks.
+   - **Built (P2-05, 2026-11-17):**
+     - He is the boss in the last room of every generated Sótanos map, with 2 *Sirvientes ahogados* as escort.
+     - *Summons* (`summon`): from round 3, every 2 rounds, he "toca la campanita del servicio" for another servant while fewer than 2 are standing.
+     - *Darkness pulses* (`cycle`): every 3rd round he always uses *Pulso de oscuridad* (party damage, −10 Luz, Chiva on himself).
+     - *Anti-guard*: *Golpe al escudo* ignores Guard, goes for a guarding hero, and does +50% to them (`vs_guard_pct`).
 2. `La Segua de Niebla` (Bosque)
    - Mechanics: stress charm, mirror image phases.
 3. `Capataz de Ceniza` (Canaverales)
@@ -182,6 +187,14 @@ Rules:
 - Randomly inserted in high-risk missions.
 - Drop high-value trinkets and infernal shards.
 - Escape if not killed quickly, reducing reward quality.
+
+**Built (P2-05, 2026-11-17): Cadejo Negro in the Sótanos** (`generator.roaming` in `data/regions/sotanos.json`; rules in `GameState` and `CombatController._boss_round_start`).
+- **When:** 0% Aprendiz, 50% Veterano, 75% Campeón. It starts in a fight, empty, curio or trap room away from the entrance, the camp and the boss.
+- **Roaming:** every 3 party moves it moves to a neighbouring room of those kinds, never into the party's room. Once its room is revealed, the map marks it with a red dot (tooltip: *Rastro del Cadejo*).
+- **The fight:** entering its room starts it: the Cadejo (elite HP) and a pair of Ratas de troje. The room's own reward is not paid. A curio or trap room still holds its event afterwards.
+- **Flees:** if alive when round 5 starts (`flee_after 4`), it escapes, with no bounty.
+- **Bounty:** killing it pays 600–900 ₡ × the difficulty's reward × loot multiplier, plus one random piece of equipment. Infernal shards wait for the material system (doc 02 §11).
+- It is no longer in the regular elite pool; the Mandador en pena took its place.
 
 ## 3.3 Final Arc Boss Sequence
 

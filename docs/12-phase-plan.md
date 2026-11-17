@@ -202,7 +202,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] ≥12 Sótanos enemies with skills, ranks, statuses (13, each with its doc 05 gimmick); 3+ mixed squads used in the map (4 authored squads, 50% of regular fights)
 
 ### P2-05 · M · Bosses: Mayordomo Hundido (apex) + 1 mini-boss
-- Status: `todo` · Depends: P2-04
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P2-04
 - Spec: `05` §3.1–3.2 (Mayordomo: summon servants, darkness pulses, anti-guard)
 - Files: `data/enemies.json`, `scripts/domain/boss_scripts.gd` (new) or data-driven phases, `data/regions/sotanos.json`
 - Done when:

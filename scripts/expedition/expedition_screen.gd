@@ -708,6 +708,12 @@ func _enter_room() -> void:
 func _resolve_room() -> void:
 	var nd: Dictionary = GameState.current_node()
 	var nid: String = GameState.current_node_id
+	# The roaming mini-boss (P2-05) is waiting here, cleared room or not.
+	if GameState.roaming_here():
+		_narrate(str(GameState.mission_region_data.get("generator", {}).get("roaming", {}).get("encounter_text", "Algo les cierra el paso.")))
+		GameState.build_roaming_context(nid)
+		_start_combat_from_context(nid)
+		return
 	if GameState.is_node_cleared(nid):
 		_narrate("%s (despejado)." % nd.get("label", nid))
 		return
@@ -1276,9 +1282,16 @@ func _on_combat_over(victory: bool) -> void:
 	if not victory:
 		_end_expedition("defeat", "La cuadrilla ha caído. La hacienda guarda silencio.")
 		return
-	GameState.mark_node_cleared(_combat_node_id)
+	var roaming: bool = bool(GameState.combat_context.get("is_roaming", false))
+	if not roaming or GameState.roaming_clears_room(_combat_node_id):
+		GameState.mark_node_cleared(_combat_node_id)
 	GameState.ledger_add("fights")
-	if _combat_is_ambush:
+	if roaming:
+		# Roaming mini-boss (P2-05): a bounty if it died, nothing if it ran off.
+		var fled: bool = GameState.combat_context.get("enemies", []).any(func(e): return bool(e.get("fled", false)))
+		for l in GameState.finish_roaming(not fled):
+			_log_line(l, "66aa66" if not fled else "cc9944")
+	elif _combat_is_ambush:
 		var at_camp: bool = str(nd.get("type", "")) == "camp"
 		_log_line("Repelieron la emboscada.%s" % (" Amanece." if at_camp else ""), "66aa66")
 	else:
@@ -1305,6 +1318,9 @@ func _on_combat_over(victory: bool) -> void:
 	_narrate("La sala queda en silencio.")
 	_view_hero(_viewed_hero if not _viewed_hero.get("dead", false) else _first_living_hero())
 	_refresh_all()
+	# After a roaming mini-boss in a curio or trap room, the room's own event is still there.
+	if roaming and not GameState.is_node_cleared(_combat_node_id):
+		_resolve_room()
 
 
 func _end_expedition(reason: String, text: String) -> void:

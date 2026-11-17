@@ -99,6 +99,9 @@ func _draw() -> void:
 			border = COLOR_REACHABLE
 			width = 3.0
 		draw_rect(r, border, false, width)
+		# Roaming mini-boss (P2-05): a red mark on its room once the room is revealed.
+		if id == GameState.roaming_node() and id != GameState.current_node_id:
+			draw_circle(r.position + Vector2(ROOM - 7, 7), 6.0, COLOR_BOSS)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -123,5 +126,7 @@ func _get_tooltip(at_position: Vector2) -> String:
 		if r.has_point(at_position):
 			var nd: Dictionary = GameState.mission_nodes_index[id]
 			var tag: String = " (despejado)" if GameState.is_node_cleared(id) else ""
+			if id == GameState.roaming_node():
+				tag += "\n¡Rastro del Cadejo! Anda rondando: se mueve de sala en sala."
 			return "%s%s" % [nd.get("label", id), tag]
 	return ""
