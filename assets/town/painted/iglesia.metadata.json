@@ -1,0 +1,25 @@
+{
+  "id": "town_painted_iglesia",
+  "prompt": "dark fantasy painting, Costa Rican village plaza at night, white colonial church, old painted bus, blue and yellow corner shop, adobe houses, clay tile roofs, warm lamplight, fog, volcano, dark gothic oil painting, folk horror, painterly brushstrokes, game art",
+  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 5300,
+  "steps": 30,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "mode": "img2img + ControlNet canny",
+  "strength": 0.7,
+  "controlnet": "lllyasviel/sd-controlnet-canny",
+  "controlnet_conditioning_scale": 1.0,
+  "init": "layout from data/town.json (tools/town_paint.py compose)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/town_paint.py (diffusers)",
+  "timestamp": "2026-11-17T17:57:10+00:00",
+  "crop_of": "assets/town/town_painted.png",
+  "rect": [
+    361,
+    98,
+    189,
+    320
+  ],
+  "alpha_from": "its cut-out in data/town.json"
+}

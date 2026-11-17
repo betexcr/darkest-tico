@@ -17,6 +17,31 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (17) — P4-19 — The town painted as one picture
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-19 `review`.
+- **Changed:**
+  - Owner: the buildings looked like "a collage of splattered images, not a town".
+  - `tools/town_paint.py` (new):
+    - lays out `data/town.json` (backdrop, dirt ground and road, contact shadows, `filler` houses, buildings);
+    - repaints it with SD img2img + ControlNet canny (`lllyasviel/sd-controlnet-canny`, strength 0.7, control 1.0, seed 5300);
+    - cuts each building out of the painting with its cut-out's alpha (`assets/town/painted/<id>.png` + `layout.json` rects).
+    - `--preview-dir/--strengths` for candidates; `--from` keeps one.
+  - Hub: draws `town_painted.png` as `Painting` in the town at design scale and places the crops at their exact rects. Without a painting it falls back to the P4-17 cut-outs.
+  - `assets/town/filler/`: 4 unused takes, cut out.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+  - Town and hover screenshots.
+- **Not verified / risks:**
+  - Plain img2img at 0.6 made a lovely village but moved and dropped buildings; ControlNet fixed that.
+  - Each building's hover outline follows its old cut-out shape, which may differ slightly from the repainted roofline.
+  - Moving a building in `data/town.json` now needs a repaint (~10 min on CPU).
+- **Decisions needed:** none.
+- **Next step:** owner review of P4-17/18/19. Otherwise P5-07.
+
+---
+
 ## 2026-11-17 (16) — P4-18 — Only the Taller buys equipment back
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-18 `review`.

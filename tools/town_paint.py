@@ -15,7 +15,8 @@ sense together, not a collage").
 
 Setup: same venv as tools/sd_local.py. Usage (from repo root):
   python tools/town_paint.py                       # writes assets/town/town_painted.png + painted/*.png
-  python tools/town_paint.py --preview-dir DIR --strengths 0.45 0.6   # candidates only
+  python tools/town_paint.py --preview-dir DIR --strengths 0.6 0.7    # candidates only
+  python tools/town_paint.py --from DIR/cn_0.70_5300.png              # keep a candidate (cuts the crops)
 Every PNG gets a .metadata.json. Game code never calls this.
 """
 
@@ -171,6 +172,7 @@ def main() -> int:
     ap.add_argument("--strengths", nargs="*", type=float)
     ap.add_argument("--seed", type=int, default=SEED)
     ap.add_argument("--strength", type=float, default=STRENGTH)
+    ap.add_argument("--from", dest="from_png", help="use this already painted candidate (from --preview-dir, same seed/strength) instead of painting again")
     args = ap.parse_args()
     town = json.loads(TOWN.read_text(encoding="utf-8"))
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
@@ -186,7 +188,12 @@ def main() -> int:
             paint(layout, s, args.seed, manifest).save(out / f"cn_{s:.2f}_{args.seed}.png")
             print(f"strength {s}: {time.time() - t0:.0f}s")
         return 0
-    painted = paint(layout, args.strength, args.seed, manifest)
+    if args.from_png:
+        from PIL import Image
+
+        painted = Image.open(args.from_png).convert("RGB")
+    else:
+        painted = paint(layout, args.strength, args.seed, manifest)
     if painted.size != layout.size:
         painted = painted.resize(layout.size)
     OUT.parent.mkdir(parents=True, exist_ok=True)

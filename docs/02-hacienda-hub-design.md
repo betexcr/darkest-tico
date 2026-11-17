@@ -14,7 +14,7 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
 
 ### Town view (P4-17, owner 2026-11-17)
 
-The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one cut-out picture per building over a night backdrop (`data/town.json`, art in `assets/town/`, generated from `tools/art_manifest.json` and cut out with `tools/sd_cutout.py`).
+The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one painting of the whole village at night (`assets/town/town_painted.png`, P4-19), made by laying out the buildings from `data/town.json` (cut-outs from `tools/sd_cutout.py`, plus unclickable `filler` houses) and repainting the layout as one scene with `tools/town_paint.py`. Each building is its own crop of that painting, so it can light up on hover.
 
 - **Hover:** the building gets a warm outline and its name plate.
 - **Click:** opens that building's window (Esc or "Volver al pueblo" closes it).

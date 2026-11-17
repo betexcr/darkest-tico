@@ -1,0 +1,47 @@
+{
+  "_doc": "Where each crop sits in town_painted.png (design pixels), written by tools/town_paint.py.",
+  "rects": {
+    "casa_comunal": [
+      93,
+      230,
+      245,
+      175
+    ],
+    "clinica": [
+      559,
+      240,
+      271,
+      170
+    ],
+    "iglesia": [
+      361,
+      98,
+      189,
+      320
+    ],
+    "taller": [
+      455,
+      360,
+      239,
+      165
+    ],
+    "pulperia": [
+      289,
+      452,
+      222,
+      200
+    ],
+    "terminal": [
+      20,
+      490,
+      240,
+      165
+    ],
+    "cantina": [
+      620,
+      505,
+      284,
+      155
+    ]
+  }
+}

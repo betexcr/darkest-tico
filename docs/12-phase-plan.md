@@ -486,6 +486,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "make the weapons, armours and accessories also be sold at the taller and the pulpería will only sell consumables"
 - Done when: [x] the Pulpería lists only consumables; [x] the Taller lists weapons, armor and accessories with a filter and buys used equipment back; [x] town-event closures are per shop; [x] tests; [x] each shop buys back only what it sells (owner decision 2026-11-17: the Pulpería no longer buys equipment)
 
+### P4-19 · M · The town painted as one picture (owner 2026-11-17)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): owner to look at it in-game · Depends: P4-17
+- Files: `tools/town_paint.py` (new), `assets/town/town_painted.png`, `assets/town/painted/` (crops + `layout.json`), `assets/town/filler/` (unclickable houses), `data/town.json` (`filler`), `scripts/hacienda/hacienda_hub.gd` (`Painting`, crops placed at their rects), `AGENTS.md`, `docs/02`
+- Spec: owner "make the buildings make sense in their design; right now they look like a collage of splattered images and not like a town"
+- Done when: [x] the town is one painting with shared light, ground and fog (layout → SD img2img + ControlNet canny); [x] each building is its crop of that painting, so hover and clicks stay exact; [x] the buildings keep their identity (bus, white church, blue-and-yellow pulpería, forge, cantina lights); [x] screenshot
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)
