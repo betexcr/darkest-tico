@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (4) — P1-09 — Phase 1 signed off
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P1-09 `done`. **Current phase is now P2.** The owner signed off Phase 1 on 2026-11-17.
+- **Changed:** `docs/12-phase-plan.md` only (current phase, P1-09).
+- **Verified:** docs only; `validate_data.py` 0 errors.
+- **Not verified / risks:** P1 tasks still open move along as they are: P1-01 (single test runner, `in-progress`), P1-15 (expedition sim, `todo`), P1-20 (smoke frame-cap flake, `todo`).
+- **Decisions needed:** none.
+- **Next step:** P2-10 (conditions for choice events), the only `todo` in P2. Open `data/curios.json` and `GameState.curio_options`. Every other P2 task is in `review`, waiting for the owner's play-test.
+
+---
+
 ## 2026-11-17 (3) — P1-21 — The last one standing ignores use_ranks
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P1-21 `done`.
