@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (11) — Merge measured; main updated
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (= `main`)
+- **Status after session:**
+  - `main` holds both lines of work (fast-forward to `132acb2`, then this entry).
+  - New `todo` P5-07: rebalance after the merge.
+- **Verified:**
+  - Smoke test and all 19 tests: 0 failures.
+  - Bot measurement on the merged game (48 expeditions, seeds 1 and 2), success / retreats / deaths:
+    - first run: 19%, 39 retreats, 0.38 deaths;
+    - after the bot books heroes at 60+ stress into the Iglesia/Cantina before picking the party (free recruits fill the gaps): **29%**, 34 retreats, 0.29 deaths.
+  - Party stress at departure is 35–57.
+  - Money: about 2.0k in and 2.4k out a week; some campaigns end at 0–330 ₡.
+- **Not done:**
+  - **Deleting the merged remote branches:** this session's GitHub access returns 403 on branch deletion. Every `betomm/*` branch has 0 commits outside `main`. The owner can delete them with `git push origin --delete betomm/amazing-clarke-lv3whd betomm/happy-faraday-5yrmcr betomm/sleepy-ramanujan-78dwh9 betomm/tender-brown-x04ghq betomm/vigilant-babbage-jovigc`, and later `claude/p3-03-followup-48gkar`.
+  - **Rebalancing:** see P5-07.
+- **Decisions needed:** "rest at home" (15/week) stays pending.
+- **Next step:** P5-07. Start from `data/progression.json` (Aprendiz `enemy_stress` 1.5) and the support skills' `stress_relief` in `data/skills.json`. Measure with `tools/playtest_campaign.gd -- --campaigns 3 --weeks 8 --seed 1/2 --telemetry <path>` and `tools/telemetry_report.py`.
+
+---
+
 ## 2026-11-17 (10) — Merge — happy-faraday (P5-02a–f, P5-04, P5-05) + this branch into main
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` → `main`
 - **Status after session:** both lines of work are on `main`. P2-11 is `cut` (done as P5-04). My P5-02 pass is superseded (plan note; doc 09 §7).
