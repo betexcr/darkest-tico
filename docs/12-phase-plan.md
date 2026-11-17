@@ -534,7 +534,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
 ### P5-02 · M · Balance pass to 55–70% mission success
-- Status: `todo` · Depends: P1-07, P2-*, P5-01
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P1-07, P2-*, P5-01
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

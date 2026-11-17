@@ -1,7 +1,7 @@
 {
   "_doc": "Balance numbers (P1-06, doc 04). Read through scripts/domain/balance.gd (Balance.num('section.key')); tools/validate_data.py checks every key, type and range. Chances are 0-1; percent points are 0-100. Other tuning lives next to its system: statuses.json (status durations, caps), progression.json (XP, difficulty, skill ranks), camp_skills.json, town_events.json, items.json (prices), region JSONs (map generator, light).",
   "combat": {
-    "_doc": "Hit = hit_base + (accuracy + skill accuracy - dodge) * hit_per_point, clamped hit_min..hit_max. Crit chance capped at crit_cap; crits deal x crit_mult. Protection is capped at prot_cap %. Guard: physical damage x guard_mult. A hero who misses gains miss_stress; a crit leaves them Encarrerado for encarrerado_turns. Enemies without 'crit' in enemies.json use enemy_base_crit.",
+    "_doc": "Hit = hit_base + (accuracy + skill accuracy - dodge) * hit_per_point, clamped hit_min..hit_max. Crit chance capped at crit_cap; crits deal x crit_mult. Protection is capped at prot_cap %. Guard: physical damage x guard_mult. A hero who misses gains miss_stress; a crit leaves them Encarrerado for encarrerado_turns. Enemies without 'crit' in enemies.json use enemy_base_crit. P5-02: enemy_stress_pct scales the stress enemy skills put on heroes; from round long_fight_from (0 = off) every hero gains long_fight_stress each round (long fights wear everyone down; ends healer stalls).",
     "hit_base": 0.7,
     "hit_per_point": 0.02,
     "hit_min": 0.05,
@@ -13,7 +13,10 @@
     "guard_mult": 0.5,
     "miss_stress": 3,
     "encarrerado_turns": 2,
-    "enemy_base_crit": 5
+    "enemy_base_crit": 5,
+    "enemy_stress_pct": 0,
+    "long_fight_from": 0,
+    "long_fight_stress": 0
   },
   "crits": {
     "_doc": "Doc 01 §2.3 stress shock (owner 2026-11-11, Darkest Dungeon style): a hero's crit relieves party_relief stress for every living hero; an enemy crit adds enemy_crit_stress to the hero hit.",

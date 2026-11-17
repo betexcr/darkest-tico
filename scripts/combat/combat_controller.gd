@@ -308,6 +308,7 @@ func _start_round() -> void:
 		_log_all(StressSystemScript.round_start_effects(party))
 	_call_reinforcements()
 	_boss_round_start()
+	_long_fight_stress()
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
@@ -762,6 +763,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			_log("  Las alas apagan un poco la luz (%d)." % GameState.mission_light, "aa8866")
 		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
 		var base_stress: int = int(skill.get("stress", 0)) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
+		# P5-02: one knob for how much stress enemies put on heroes.
+		base_stress = int(round(base_stress * (1.0 + BalanceScript.num("combat.enemy_stress_pct") / 100.0)))
 		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):
@@ -973,6 +976,19 @@ func _call_reinforcements() -> void:
 			_log("%s pita, pero no cabe nadie más." % e.get("name", "?"), "999999")
 		else:
 			_log("¡%s pitó: llegan refuerzos! %s." % [e.get("name", "?"), ", ".join(came)], "dd8866")
+
+
+## P5-02: a fight that drags wears everyone down. From round long_fight_from, every hero
+## gains long_fight_stress at the top of each round (0 turns it off). Ends healer stalls.
+func _long_fight_stress() -> void:
+	var from: int = BalanceScript.int_of("combat.long_fight_from")
+	var amt: int = BalanceScript.int_of("combat.long_fight_stress")
+	if from <= 0 or amt <= 0 or _round < from:
+		return
+	_log("La pelea se alarga: los nervios se gastan (+%d estrés a todos)." % amt, "aa88cc")
+	for h in party:
+		if h is Dictionary and not h.get("dead", false):
+			_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, amt)))
 
 
 ## Round start for bosses and mini-bosses (P2-05): the Mayordomo rings for servants

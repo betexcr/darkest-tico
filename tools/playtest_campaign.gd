@@ -23,7 +23,8 @@ extends SceneTree
 ##        missing provisions, tops up agua de pipa and vendas, and after a won expedition buys
 ##        one Casa Comunal rank. It always keeps RESERVE colones.
 ##   Expedition: between rooms uses healing items under half PV, stress items at ≥ 50 stress
-##        and a candle below Tenue; flees when 2 heroes are down; eats when hungry; disarms
+##        and a candle below Tenue; flees when 2 heroes are down, 2 carry a Quebranto or one is at
+##        RETREAT_STRESS (P5-02: a careful player retreats a breaking party); eats when hungry; disarms
 ##        traps at ≥ 50% (else passes with care); uses a curio's key item, else examines it;
 ##        camps at the fogata (best meal that leaves a travel meal, a watch first, then the
 ##        most stressed or hurt ally); fights with tools/sim_policy.gd "smart" + healing items.
@@ -38,6 +39,8 @@ const MAX_STEPS := 60000
 const RESERVE := 1000
 const HIRE_SPARE_AT := 4000
 const IGLESIA_AT := 30
+## A hero this stressed is one hit from a Colapso: a careful player goes home (P5-02).
+const RETREAT_STRESS := 150
 const RANK_AT := 2500
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
 
@@ -220,6 +223,15 @@ func _last_result() -> String:
 	return str(_all_rows[-1].get("result", "")) if not _all_rows.is_empty() else ""
 
 
+## P5-02: retreat when 2 heroes are down, 2 carry a Quebranto, or one is at RETREAT_STRESS.
+func _should_retreat() -> bool:
+	if _gs.living_party_count() <= 2:
+		return true
+	var living: Array = _gs.party.filter(func(h): return not h.get("dead", false))
+	var broken: int = living.filter(func(h): return str(h.get("affliction_id", "")) != "").size()
+	return broken >= 2 or living.any(func(h): return int(h.get("stress", 0)) >= RETREAT_STRESS)
+
+
 func _living_roster() -> Array:
 	return _gs.roster.filter(func(h): return not h.get("dead", false))
 
@@ -279,7 +291,7 @@ func _expedition(row: Dictionary) -> void:
 				if room_done != _gs.current_node_id:
 					room_done = _gs.current_node_id
 					row["items_used"] += _use_items_between_rooms()
-				if _gs.living_party_count() <= 2 and _gs.current_node_id != _gs.objective_node_id:
+				if _should_retreat() and _gs.current_node_id != _gs.objective_node_id:
 					row["fled"] = true
 					screen._on_flee_pressed()
 					continue
