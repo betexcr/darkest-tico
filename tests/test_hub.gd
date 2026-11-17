@@ -104,6 +104,10 @@ func _run() -> void:
 	_check(gs.shop_of("gallo_pinto") == "pulperia" and gs.shop_of(str(equip_ids[0])) == "taller", "shop_of: food at the Pulpería, gear at the Taller")
 	gs.add_item("gallo_pinto", 1)
 	_check(gs.sell_item("gallo_pinto", "taller").begins_with("El taller solo compra"), "the Taller doesn't buy food")
+	gs.add_item("cotona_de_cuero", 1)
+	_check(gs.sell_item("cotona_de_cuero", "pulperia").begins_with("La pulpería no compra equipo"), "the Pulpería doesn't buy equipment")
+	var c2: int = gs.colones
+	_check(gs.sell_item("cotona_de_cuero").begins_with("Vendiste") and gs.colones - c2 == 350, "with no shop given, it sells at its own shop (the Taller)")
 	# Pulpería tiles are icons with a price; the full text lives in the tooltip card.
 	hub._shop_filter = "todo"
 	hub._build_shop()

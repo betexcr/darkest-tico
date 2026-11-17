@@ -297,9 +297,9 @@ func _selling() -> bool:
 	return _btn_sell.button_pressed
 
 
-## Where a sale happens: the Taller while its window is open, else the Pulpería.
+## Where a sale happens: the shop whose window is open, else the item's own shop ("").
 func _sell_shop() -> String:
-	return "taller" if _open_building == "taller" else "pulperia"
+	return _open_building if _open_building in ["pulperia", "taller"] else ""
 
 
 # --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------

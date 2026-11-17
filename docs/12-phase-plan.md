@@ -484,7 +484,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): owner to look at it in-game · Depends: P4-17
 - Files: `scripts/autoload/game_state.gd` (`shop_of`, per-shop closures, `sell_item(id, shop)`), `scripts/domain/town_events.gd`, `scripts/hacienda/hacienda_hub.gd` + `scenes/hacienda/hacienda_hub.tscn` (shop on the Taller page, shared sell mode), `data/town_events.json` (El herrero anda de buenas; Corte de luz also closes the Taller's buying), `data/town.json`, `tools/validate_data.py`, `tests/test_hub.gd`, `tests/test_town_events.gd`, `AGENTS.md`, `docs/02`
 - Spec: owner "make the weapons, armours and accessories also be sold at the taller and the pulpería will only sell consumables"
-- Done when: [x] the Pulpería lists only consumables; [x] the Taller lists weapons, armor and accessories with a filter and buys used equipment back; [x] town-event closures are per shop; [x] tests
+- Done when: [x] the Pulpería lists only consumables; [x] the Taller lists weapons, armor and accessories with a filter and buys used equipment back; [x] town-event closures are per shop; [x] tests; [x] each shop buys back only what it sells (owner decision 2026-11-17: the Pulpería no longer buys equipment)
 
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01

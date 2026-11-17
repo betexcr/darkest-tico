@@ -65,7 +65,7 @@
       "id": "pulperia",
       "name": "Pulpería La Hacienda",
       "art": "res://assets/town/pulperia.png",
-      "text": "Comida, candelas, vendas, remedios y llaves. Compra cualquier cosa a la mitad del precio.",
+      "text": "Comida, candelas, vendas, remedios y llaves. También compra consumibles a la mitad del precio.",
       "x": 400,
       "bottom": 652,
       "height": 200,

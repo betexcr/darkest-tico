@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (16) — P4-18 — Only the Taller buys equipment back
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-18 `review`.
+- **Changed:** owner answered entry 15's question ("yes"): each shop buys back only what it sells.
+  - `sell_item(id, shop = "")`: "" sells at the item's own shop; the Pulpería refuses equipment. The bot's default calls keep working.
+  - The hub sells at the open shop's window, else at the item's own shop.
+  - Pulpería texts, `AGENTS.md` selling rule, doc 02, `test_hub` updated.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+- **Not verified / risks:** not played by hand.
+- **Decisions needed:** none.
+- **Next step:** owner review of P4-17/P4-18. Otherwise P5-07.
+
+---
+
 ## 2026-11-17 (15) — P4-18 — Equipment at the Taller, consumables at the Pulpería
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-18 `review`.

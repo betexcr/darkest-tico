@@ -591,13 +591,18 @@ func sell_price(item_id: String) -> int:
 	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else BalanceScript.num("hub.sell_rate"))))
 
 
-## Buys back one unit at half price. The Pulpería buys anything; the Taller only weapons,
-## armor and accessories (P4-18). Returns a message for the hub.
-func sell_item(item_id: String, shop: String = "pulperia") -> String:
+## Buys back one unit at half price, at the shop that sells it (P4-18, owner 2026-11-17):
+## the Pulpería buys consumables, the Taller weapons, armor and accessories. `shop` = ""
+## sells at the item's own shop. Returns a message for the hub.
+func sell_item(item_id: String, shop: String = "") -> String:
 	if item_count(item_id) <= 0:
 		return "No tienes ese artículo."
+	if shop == "":
+		shop = shop_of(item_id)
 	if shop == "taller" and not is_equipment(item_id):
 		return "El taller solo compra armas, armaduras y accesorios; lo demás, en la pulpería."
+	if shop == "pulperia" and is_equipment(item_id):
+		return "La pulpería no compra equipo; las armas, armaduras y accesorios se venden en el taller."
 	if TownEventsScript.is_closed(active_event(), shop + "_venta"):
 		return "%s no compra nada esta semana (%s)." % [SHOP_NAMES.get(shop, shop), active_event().get("name", "")]
 	var price: int = sell_price(item_id)
