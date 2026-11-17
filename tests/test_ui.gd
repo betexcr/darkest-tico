@@ -86,7 +86,8 @@ func _run() -> void:
 	d = _dialogs(hub)
 	_check(d.size() == 1 and d[0] is ConfirmationDialog and d[0].ok_button_text == "Despedir", "the dismiss card opens")
 	await _close_all(hub)
-	hub._confirm_provisions([{"id": "gallo_pinto", "name": "Gallo pinto", "missing": 3, "price": 225}])
+	gs.inventory.clear()
+	hub._confirm_provisions()
 	await process_frame
 	d = _dialogs(hub)
 	_check(d.size() == 1 and d[0].ok_button_text == "Salir así", "the provisions card opens")

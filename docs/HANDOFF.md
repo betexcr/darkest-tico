@@ -361,6 +361,158 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Should activities cure the Quebranto (DD rule; implemented) or only lower stress?
   - DD-style activity restrictions by Quebranto (e.g. a hero who refuses the church) are not implemented. Do we want them?
 - **Next step:** owner play-tests P3-03 in the hub (select a stressed hero → panel under "Iglesia Vieja: misa rápida"). Otherwise take the next `todo` in the current phase (P1: P1-20 smoke frame-cap flake), or teach `tools/playtest_campaign.gd` to book stressed idle heroes into `GameState.send_to_activity`.
+## 2026-11-15 (4) — P5-05 — Bots that retreat; P5-06 blocked
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-05 `review`. P5-06 `blocked` (needs P3-03 and bigger samples). Nothing `in-progress` from this branch.
+- **Changed (tools and docs only; no game data):**
+  - `tools/sim_policy.gd`: `_should_retreat` (a death in this fight, two heroes Al Borde, or a dragging fight with someone at 150+ stress), `retreats` switch.
+  - `tools/sim_combat.gd`: `--no-retreat`; retreats counted.
+  - `tools/playtest_campaign.gd`: goes home after a Retirada or one death; up to three misas a week (`MISAS_MAX`); "Retreats" line and ↩ marks in the report.
+  - Doc 09 §6 (table and findings), `docs/playtests/2026-11-15-retreat-{full,direct}.md`, phase plan.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 13 test scripts pass, no `SCRIPT ERROR` (run after the last tool change).
+  - Playtest 3 × 24 weeks per route, data unchanged: heroes lost per expedition 0.18 full / 0.06 direct (were 0.76 / 0.25); direct route 94% / 96% / 55% cleared by tier; full route 28 of 72 cleared.
+- **Not verified / risks:**
+  - The saved reference was run before the bot paid for more than one misa a week; with three misas the totals differ (see doc 09 §6).
+  - Run-to-run noise is large. On the direct route Veterano was 96%, 76% and 68% in three runs that differed only in the Iglesia's relief (10, 20, 30), where more relief should not hurt.
+  - The combat sim's headline number changed meaning: the starting party now clears about 84% of Aprendiz chains and retreats from 16% (it was 96% fighting to the end). Use `--no-retreat` to compare with older tables in doc 10.
+- **Decisions needed:**
+  1. The full route can't be balanced until the hacienda can take off real stress. P3-03 (Iglesia Vieja + Cantina) is the task for that; should it come next, ahead of the P2 content tasks?
+  2. A retreat costs 10 stress and nothing else (no Luz, no hunger move). Enough?
+- **Next step:** P3-03 if the owner agrees (spec: doc 02 and doc 04 §3.2; first file `scripts/autoload/game_state.gd` `iglesia_misa_rapida`, which is still a stub). Then P5-06 with `tools/playtest_campaign.gd -- --campaigns 10 --weeks 24` per route and setting. Without a decision: P1-20 (smoke frame-cap flake) or P2-02.
+
+---
+
+## 2026-11-15 (3) — P5-04 — Retreat from a fight ("Retirada")
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-04 `review`. New `todo` tasks P5-05 (a bot that retreats) and P5-06 (retune Veterano and Campeón).
+- **Owner decisions (2026-11-15), answering the last handoff:** make failing cheaper than dying, then bring the later tiers into their bands; keep the economy tight; the event veteran stays at 6,000 ₡; bosses keep dragging from round 12; top hero's stress was not asked and stays as it is.
+- **Changed:**
+  - `data/balance.json` `combat.retreat_chance` 0.75, `combat.retreat_stress` 10; `BALANCE_KEYS`.
+  - `scripts/domain/combat_resolver.gd` `roll_retreat`; `scripts/combat/combat_controller.gd` `can_retreat`, `retreat`, signal `combat_fled`, `_close_fight` (split out of `_finish`).
+  - `scripts/autoload/game_state.gd` `previous_node_id`, `retreat_to_previous_room`.
+  - `scripts/expedition/expedition_screen.gd`: "Retirada" on the action row, `_on_combat_fled`, honest text for "Abandonar expedición", smaller icons when the row holds nine.
+  - `scripts/ui/skill_icon.gd`: a retreat glyph.
+  - `tests/test_retreat.gd` (new, 13 checks); `tools/screens/battle_screenshot.gd` also saves `battle_actions.png`.
+  - Docs: 01 §5.3, 13, AGENTS.md §3 and §4.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 13 test scripts pass, no `SCRIPT ERROR`.
+  - Screenshot under xvfb: the row of nine icons fits and the retreat icon draws. The first try overflowed the bottom panel; that is why the icons shrink.
+- **Not verified / risks:**
+  - The bots don't retreat yet, so no playtest numbers changed. That is P5-05.
+  - What I found before building this: retreating on the map already kept all colones and items; the old text ("con las manos vacías") was wrong. So "retreat keeps loot" needed no rule change, only a way out of a fight.
+  - A retreat costs no Luz and no hunger move. A player could walk in, look at the squad and retreat for 10 stress each; say if that should cost more.
+- **Decisions needed:** none.
+- **Next step:** P5-05: in `tools/sim_policy.gd` `act()`, call `cc.retreat()` when `cc.can_retreat()` and a hero died in this fight, or two are Al Borde, or the fight drags with someone at 150+ stress; in `tools/playtest_campaign.gd` listen to `screen._combat.combat_fled` and then press "Abandonar expedición" (`screen._on_flee_pressed()`), and abandon on the map after one death. Then rerun 3 × 24 weeks on both routes and compare with `docs/playtests/2026-11-15-final-*.md`.
+
+---
+
+## 2026-11-15 (2) — P5-02c, P5-02f — Stress and difficulty numbers; recruits are free
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02c `review`, P5-02f `review`. All of P5-02a–f is now in `review`; nothing is `in-progress` from this branch.
+- **Changed:**
+  - `data/skills.json`: `stress_relief` on *No Me Tumban* 2, *Círculo de Tiza* 3, *Humo de Hierbas* 3, *Regaño Santo* 8, *Rezo de Nicoya* 2; *Sopa Milagrosa* heals 1–3.
+  - `data/progression.json` difficulties, PV / damage / stress: Aprendiz 1.1 / 1.2 / 1.5, Veterano 1.75 / 1.6 / 2.0, Campeón 2.4 / 2.0 / 2.25.
+  - Recruits are free (owner 2026-11-15): `hire_cost` removed from `data/heroes.json`; `GameState.hire_cost`; the hub button says "gratis"; `tests/test_hub.gd`; AGENTS.md §4, doc 02 §3, doc 13.
+  - `tests/test_progression.gd`: the Veterano check follows the new multipliers.
+  - Tools: `tools/sim_combat.gd --level --ranks --gear`; `tools/playtest_campaign.gd --start-level --start-ranks --start-gear --start-colones`, a core-team party pick (`REST_AT` 60) and two free spares (`SPARE_ROSTER` 6).
+  - Docs: 01 §6.1 (difficulty table), 09 §6 (final table, targets, what the tuning showed), 10 (sim rerun); `docs/playtests/2026-11-15-final-{full,direct}.md`.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR`, on the final data.
+  - Sim, 10,000 chains each: Aprendiz 95.9% (fresh party), Veterano 98.7% and Campeón 92.3% (seasoned parties), 0 chains past 40 rounds.
+  - Playtest 3 × 24 weeks per route: 128 of 144 cleared; Aprendiz 91%, Veterano 86%, Campeón 4 of 5; all 12 campaigns solvent in week 24. It ran on a copy of the project with the same data values (checked key by key) and the bot as committed.
+- **Not verified / risks:**
+  - The final numbers rest on one pair of runs; an earlier pair with the same Aprendiz numbers but paid recruits gave very different totals. Three campaigns per route can tell "fine" from "broken", not 85% from 90%.
+  - Campeón: 5 expeditions in the final runs. Its multipliers come from tier-start runs with a prepared party (58 of 58 cleared at ×2.2 / ×1.9; 33 of 36 at ×2.6 / ×2.1).
+  - The first six weeks of a campaign are never lost (36 of 36); the Aprendiz losses come from parties rebuilt after a wipe.
+  - Nothing here was played by a person. The hub's "gratis" recruit buttons were checked in a screenshot (`tools/screens/expedition_events_screenshot.gd` under xvfb); the new difficulty tooltip (with "x… estrés") was not.
+- **Decisions needed:**
+  1. **Clear rate or hero deaths?** The bands (85–90 / 70–80 / 55–70) and doc 04 §4 (a death every 5–8 missions) can't both hold while a failed expedition is a wipe. Veterano on the full route is at 64% cleared and 1.5 heroes lost per expedition. Options: a retreat that keeps part of the loot, so failing is cheaper than dying; or accept higher clear rates on the later tiers. I stopped at the softer side.
+  2. **The economy is tight now** (bank 4–8k, was planned at 8–15k after week 8). Raise rewards, or keep it tight?
+  3. The level-6 veteran from a town event still costs 6,000 ₡. Free too?
+  4. Top hero's stress on the full route is 83 (target 60–80). Leave it, or give back a little relief (for example *Regaño Santo* 10)?
+  5. Still open from P5-02b: should bosses start dragging at round 8 instead of 12?
+- **Next step:** owner playtest of P5-02a–f (a direct run and a full run on Aprendiz, then one on Veterano), then the decisions above. For an agent with no decision yet: P1-20 (smoke frame-cap flake, `tests/smoke_expedition.gd`) or the first `todo` in P2 (P2-02, 30–40 Sótanos event variants). If decision 1 goes to "retreat keeps loot", add it as a new task in P5 and rerun `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24` on both routes against `docs/playtests/2026-11-15-final-*.md`.
+
+---
+
+## 2026-11-15 — P5-02d, P5-02e — Darkest Dungeon XP curve; two provision kits; reference run for the tuning
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02d `review`, P5-02e `review`. P5-02c (stress) is `in-progress`: the lever is in, the numbers are not set. P5-02f `todo`.
+- **Changed:**
+  - P5-02d: `data/progression.json` thresholds `[0, 2, 10, 24, 48, 84, 132]` (Pura Vida `[0, 2, 8, 19, 38, 67, 106]`); `SAVE_VERSION` 10 and the XP floor on load in `game_state.gd`; validator check for the Pura Vida curve; tests; doc 01 §6.1, doc 13.
+  - P5-02e: both region JSONs; `missing_provisions` / `buy_missing_provisions` take a kit; the hub prompt (`hacienda_hub.gd` `_confirm_provisions`); validator; `tests/test_expedition_systems.gd`; doc 01 §4.6, doc 04 §3.1, AGENTS.md §4; `tools/screens/expedition_events_screenshot.gd` call updated.
+  - P5-02c so far: `enemy_stress` per difficulty in `progression.json` (all 1.0), read in `game_state.gd` (`stress_mult`) and `combat_controller.gd`; shown in the hub's difficulty tooltip; validator.
+  - Tools: the bot steps back into position (`tools/sim_policy.gd` `_step_to_attack`) and plans its party per difficulty (`tools/playtest_campaign.gd` `_plan_party`).
+  - Doc 09 §6: table for these two tasks. `docs/playtests/2026-11-15-xp-kits-{full,direct}.md`.
+- **Why the order changed:** the first stress try (relief on four skills cut) did nothing on the direct route and far too much on the full one, because half the full route's hunger stops were short of food. So the kits and the curve went in before the stress numbers.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR` (run on commit `3495406` plus the bot change; no game code changed after).
+  - The provisions prompt rendered under xvfb (`tools/screens/expedition_events_screenshot.gd`): both kits and both buttons show.
+  - Playtest 3 × 24 weeks per route: Veterano in week 7–9, Campeón in week 15–17; 3 of 152 full-route hunger stops short of food; 144 of 144 cleared.
+- **Not verified / risks:**
+  - The game is now far too easy for the bot (no expedition lost, stress back at 12–16). That is the starting point for P5-02c and P5-02f, not a regression.
+  - Bosque's kits are a guess; the region is not playable in the slice.
+  - A v9 save was only tested through `apply_save_data` in the test, not by loading a real save file from the owner's machine.
+- **Decisions needed:** none new. (Still open from P5-02b: should bosses start dragging at round 8 instead of 12?)
+- **Next step:** P5-02c and P5-02f together. Copies of the project with data edits live in the scratchpad (`tools/variant.py`; recreate it if the container is new: it copies the repo and edits `data/skills.json` / `data/progression.json`). Compare 3 × 24-week runs on both routes with `docs/playtests/2026-11-15-xp-kits-*.md`. Levers tried so far in the sim: enemy damage alone barely moves the clear rate, because in-combat healing absorbs it; enemy PV and smaller heals move it more. Targets: stress back at the hub 30–50 with a resolve check in about 1 of 3 expeditions; clear rate 85–90% Aprendiz, 70–80% Veterano, 55–70% Campeón.
+
+---
+
+## 2026-11-14 (2) — P5-02b — Dragging-fight stress; a second Colapso in a fight is a death roll
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02b `review`. P5-02c (stress pass) is next.
+- **Changed:**
+  - `data/balance.json` `combat.drag_round` 8, `drag_round_boss` 12, `drag_stress` 4, `drag_stress_step` 2; `BALANCE_KEYS` in the validator.
+  - `scripts/domain/stress_system.gd`: `drag_stress`, `apply_drag`; `_apply_colapso` marks `collapsed_this_fight`, and a second Colapso in the fight is a death roll.
+  - `scripts/combat/combat_controller.gd`: `_apply_drag_stress()` in `_start_round()` (log lines and "+N estrés" over the heroes); the mark is cleared at the start and end of a fight.
+  - `tests/test_balance.gd`: 10 new checks.
+  - Tools: the smart bot plays to finish a dragging fight (`tools/sim_policy.gd`); `tools/sim_combat.gd` has `--party` and `--log-long N`; the campaign bot retreats after losing two heroes on the expedition.
+  - Docs: 01 §3.1 and §3.4, 09 §6, 10, AGENTS.md §4 and §6; `docs/playtests/2026-11-14-drag-{full,direct}.md`.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Smoke expedition `0 failure(s)`; all 12 test scripts pass, no `SCRIPT ERROR`.
+  - Sim, 10,000 chains each: 0 chains past 40 rounds for the starting party (99.2% cleared, was 99.8%), 3 Abuelas + Curandero (97.6%) and 3 Campesinos + Abuela (89.2%).
+  - Playtest, 3 × 16 weeks per route: 96 of 96 cleared, longest fight 23 rounds (was 58). Forced stall-prone parties: longest 13 and 12.
+- **Not verified / risks:**
+  - The two saved playtest runs were made before the second-Colapso rule. It only matters in fights past about 30 rounds, and none got there, so I did not rerun them.
+  - The second-Colapso rule also applies outside dragging fights: a hero who collapses, is healed up and reaches 200 again in the same fight now rolls for death. That was almost impossible to reach before.
+  - How the warning and the stress numbers feel in a real fight needs the owner.
+- **Decisions needed:**
+  - The plan said one threshold; I added a later one for bosses (round 12), because boss fights average 7–10 rounds. Say if bosses should use round 8 too.
+- **Next step:** P5-02c: lower `stress_relief` on *No Me Tumban*, *Círculo de Tiza*, *Humo de Hierbas* and *Regaño Santo* in `data/skills.json`, rerun `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compare with `docs/playtests/2026-11-14-drag-*.md`. Targets: top stress at the end 60–80, a resolve check in about 1 of 3 expeditions, party average back at the hub 30–50.
+
+---
+
+## 2026-11-14 — P5-02a — Balance pass planned; playtest bot spends like a player; 16-week baselines
+- **Agent / branch:** Claude Code (cloud container) / `betomm/happy-faraday-5yrmcr`
+- **Status after session:** P5-02a `review`. P5-02 is split into P5-02a–f (plan and owner decisions in the phase plan); P5-02b is next.
+- **Changed:**
+  - `docs/12-phase-plan.md`: P5-02 split into six tasks, with the owner's four decisions of 2026-11-14.
+  - `tools/playtest_campaign.gd`:
+    - `--set path=value` and `--party id,id,id,id`;
+    - the bot takes at most one dedicated healer, and buys skill ranks, equipment and stress items;
+    - the report adds stress on returning to the hub, a clear-rate table per difficulty, food, and colones by sink.
+  - `docs/playtests/2026-11-14-baseline-{full,direct}.md`: 3 campaigns × 16 weeks per route.
+  - Doc 09 §6: the baseline table and what it changes. AGENTS.md §6: the tool's new options.
+- **Verified:**
+  - `validate_data.py`: 0 errors, 1 warning (the known Amarrado icon).
+  - Godot 4.7.2 Linux (downloaded into the scratchpad): all 12 test scripts print `0 failure(s)`, no `SCRIPT ERROR`.
+  - Both baseline runs finished with no `SCRIPT ERROR` and no stuck expedition (675 s and 421 s, run in parallel).
+- **Findings (doc 09 §6):**
+  - With a spending bot the bank stays at 5–12k through week 16. The economy was not loose; the old bot just didn't buy anything.
+  - Still too easy: 93 of 96 cleared, Aprendiz and Veterano never lost.
+  - Stress is held under 50 by free relief skills; 5 of 96 expeditions had a resolve check.
+  - The two longest fights (51 and 58 rounds) had Campesinos healing with *Aguante de Campo*, so stalls are not only a healer-party problem.
+- **Not verified / risks:**
+  - `tests/smoke_expedition.gd` failed 2 of 6 runs with the P1-20 flake ("expedition ended () after 4 moves"). No game code changed in this task, and the baselines were running on the same CPU.
+  - The bot buys the dearest equipment it can afford, not the best for the class; a human would choose better.
+- **Decisions needed:** none.
+- **Next step:** P5-02b: add `combat.drag_round` / `drag_stress` / `drag_stress_step` to `data/balance.json` and `BALANCE_KEYS`, write the rule in `scripts/domain/stress_system.gd`, call it from `_start_round()` in `scripts/combat/combat_controller.gd`, then rerun the playtest with `--party campesino,campesino,campesino,abuela` and `--party abuela,abuela,abuela,curandero`.
 
 ---
 

@@ -130,6 +130,14 @@ Implemented (P1-05, `CombatResolver.death_save_chance`):
   - Ambushes and traps.
   - Low light state.
   - Horror events and failed curios.
+  - Fights that drag on (below).
+
+**Dragging fights** (P5-02b, owner 2026-11-14; Darkest Dungeon's stall penalty). A party that heals faster than the enemy hits could stay in a fight forever, so long fights wear everyone down:
+
+- At the start of every round from round 8 on (round 12 against a boss), each living hero gains 4 stress, and 2 more for every round after that: 4, 6, 8, 10…
+- Light and stress buffs change the amount like any other stress, and it can cause a resolve check or a Colapso (§3.4: a hero already at 200 collapses, and a second Colapso in the fight is a death roll).
+- The log warns one round before it starts ("La pelea se está alargando…").
+- Numbers: `data/balance.json` `combat.drag_round`, `drag_round_boss`, `drag_stress`, `drag_stress_step`. Rule: `StressSystem.drag_stress`, applied in `combat_controller.gd` `_start_round()`.
 
 ### 3.2 Resolve Check at 100
 
@@ -168,6 +176,11 @@ Seven `Virtud` breakthroughs (stress drops to 40):
 - If already at `Al Borde`: immediate death check with severe penalty.
 
 Implemented (P1-05): a −30 penalty on top of the usual ones (§2.4). Surviving keeps the hero Al Borde with stress 170.
+
+Two additions (P5-02b), so that a dragging fight always ends:
+
+- **A second Colapso in the same fight is a death roll**, even if a companion healed the hero out of Al Borde in between. Without this, two heroes could revive each other every round. The mark clears when the fight ends.
+- **Dragging stress on a hero already at 200 is a Colapso.** Other stress at 200 does nothing more, as before.
 
 ## 4) Expedition Map Structure
 
@@ -240,7 +253,10 @@ Implemented (P1-18, owner 2026-11-12: DD hunger checks). Data: `data/balance.jso
 - Short of food, the most hurt heroes eat first.
 - A hero who doesn't eat loses **10% of max PV (never below 1)** and gains **+10 stress**.
 - A camp meal (§4.4) resets the count.
-- **Provisions:** each region lists recommended provisions (Sótanos: 10 gallo pinto, 3 candelas de sebo). Before leaving, the hacienda warns when the alforja is short and offers to buy what is missing.
+- **Provisions:** each region lists two recommended kits (P5-02e, owner 2026-11-14). Before leaving, the hacienda shows both against the alforja and offers to buy what either lacks; it asks nothing when the full kit is already covered.
+  - **Vuelta corta** (straight to the boss, about 8 moves). Sótanos: 10 gallo pinto, 3 candelas de sebo (1,050 ₡).
+  - **Explorar todo** (every room, about 19 moves). Sótanos: 16 gallo pinto, 5 candelas de sebo (1,700 ₡).
+  - Data: region `provisions.short` and `provisions.full`; `GameState.missing_provisions(region, kit)`.
 - **Prices** (2026-11-12, DD ratio): gallo pinto 75 ₡, candela de sebo 100 ₡, fósforos 60 ₡. The full Sótanos kit costs 1,050 ₡, about 30% of what an Aprendiz run pays (≈3,500 ₡). Topping up the starter kit (4 gallo pinto, 2 candelas) costs 550 ₡.
 
 ### 4.7 Traps and curios
@@ -281,6 +297,13 @@ Longer missions increase reward multipliers and roster fatigue.
   - Possible random trinket loss
   - Reputation/morale hit event next week
 
+Implemented (P5-04, owner 2026-11-15: failing should be cheaper than dying):
+
+- **Retirada (in a fight).** On a hero's turn the player may order a retreat. It works 75% of the time; a failed try spends that hero's turn. On success the fight ends, every living hero gains 10 stress, and the party is back in the room it came from. The room they left keeps its enemies at full PV, so walking in again starts the fight over. There is no retreat from a night ambush.
+- **Abandonar expedición (on the map).** The party goes home with the colones and items it has already found. It gets no objective reward and no resolve XP.
+- Neither takes loot away. The trinket loss and the next-week event above are not built.
+- Numbers: `data/balance.json` `combat.retreat_chance`, `combat.retreat_stress`. Rule: `CombatResolver.roll_retreat`, `combat_controller.gd` `retreat()` (signal `combat_fled`), `GameState.retreat_to_previous_room()`.
+
 ## 6) Reward Resolution
 
 - Reward bundle is made of:
@@ -300,16 +323,19 @@ Grade impacts loot roll quality and town event weighting.
 
 Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/domain/resolve_system.gd`.
 
-- Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 8 / 14 / 24 / 36 / 48.
+- Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 10 / 24 / 48 / 84 / 132 (P5-02d, owner 2026-11-14: the Darkest Dungeon curve, where each level costs 2 / 8 / 14 / 24 / 36 / 48 more than the last). At 4 / 8 / 16 XP per expedition a hero outgrows Aprendiz after 6 expeditions and Veterano after 8 more. Save v10 keeps every saved hero at the level they had.
 - **Resolve XP is earned only by completing an expedition** (killing the boss). Fleeing or a wipe gives none, and the fallen get none.
 - Each level adds **+10% resistance** to Atarantado, Veneno, Sangrado and Salado, and **+5%** to Trampas.
-- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy scaling follows doc 05 §4:
+- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy accuracy and ailment resist follow doc 05 §4; PV, damage and stress were set by the P5-02c/f playtests (doc 09 §6):
 
-| Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / accuracy / ailment resist | Pay |
+| Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / stress / accuracy / ailment resist | Pay |
 |---|---|---|---|---|---|
-| Aprendiz | 1 | 0–2 | 4 | ×1 / ×1 / +0 / +0% | ×1 |
-| Veterano | 3 | 3–4 | 8 | ×1.15 / ×1.06 / +3 / +10% (P5-02) | ×1.6 |
-| Campeón | 5 | 5–6 | 16 | ×1.35 / ×1.15 / +6 / +20% (P5-02) | ×2.5 |
+| Aprendiz | 1 | 0–2 | 4 | ×1.1 / ×1.2 / ×1.5 / +0 / +0% | ×1 |
+| Veterano | 3 | 3–4 | 8 | ×1.75 / ×1.6 / ×2 / +3 / +10% | ×1.6 |
+| Campeón | 5 | 5–6 | 16 | ×2.4 / ×2 / ×2.25 / +6 / +20% | ×2.5 |
+
+- The stress multiplier applies to the stress an enemy skill causes; the extra stress of an enemy crit is not scaled.
+- Why the later tiers grow so much: skill ranks and equipment make a seasoned party about twice as strong. With the old ×1.22 and ×1.46 a seasoned party found Veterano and Campeón easier than a new party found Aprendiz.
 
 - **Regions have their own level** (owner 2026-11-08: "dungeons should have scaling difficulty, Sótanos the easiest"). Each region JSON has a `region_level` following the doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4. It **adds to the picked difficulty**:
   - The expedition level and the hero range both move up by the region level, capped at 6. For example, Aprendiz in Bosque is level 2 for heroes 1–3.
@@ -317,7 +343,7 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
   - The hub shows the combined level on each difficulty and the region's offset in the region list. The validator requires Sótanos to have the lowest `region_level`.
 
 - A hero **above** the difficulty's range refuses to go, and the expedition can't start with them in the party (same rule as Darkest Dungeon). Two exceptions, also from DD:
-  - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 7 / 13 / 21 / 29 / 40 XP.
+  - **Modo Pura Vida** (DD's Radiant mode; a checkbox in the hub, saved): heroes accept expeditions up to 2 levels below their range (`radiant_extra_levels`) and level up on a faster curve: 2 / 8 / 19 / 38 / 67 / 106 XP (about 20% less).
   - **Mano vuelta** (DD's Helping Hand town event): for that week nobody refuses. Under-leveled heroes still take the penalty.
 - A hero **below** it goes **under-leveled**: +20 stress per missing level on entering, plus 25% more stress taken per missing level for the whole mission.
 - Skill ranks gated by level: see §6.3. Not built yet: level-tiered treatment prices (doc 04 §3.5).

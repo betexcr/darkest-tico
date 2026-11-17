@@ -25,6 +25,8 @@ signal actor_changed(text: String)
 signal logged(text: String, color: String)
 signal enemy_changed
 signal combat_over(victory: bool)
+## The party got away (retreat()): the fight is over, nobody won.
+signal combat_fled
 
 ## Heroes in formation order (index 0 = position 1), index-aligned with hero_units.
 ## Positions count only the living; the dead are moved to the back (_collapse_ranks).
@@ -126,6 +128,9 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	_round = 0
 	_ended = false
 	_busy = false
+	for h in party:
+		if h is Dictionary:
+			h.erase("collapsed_this_fight")
 	var tier := ""
 	if note != "":
 		tier = note + " "
@@ -238,6 +243,40 @@ func guard() -> void:
 	_process_turn()
 
 
+## Retreat (P5-04, as in Darkest Dungeon): no way out of a night ambush.
+func can_retreat() -> bool:
+	return not is_ambush and not _ended
+
+
+## The acting hero calls the retreat. A failed try spends their turn. A good one ends the
+## fight for everyone and costs each living hero combat.retreat_stress; the screen then
+## takes the party back to the room it came from.
+func retreat() -> void:
+	var hero: Dictionary = active_hero()
+	if hero.is_empty() or not can_retreat():
+		return
+	_awaiting_hero = false
+	if not CombatResolverScript.roll_retreat():
+		_log("%s busca por dónde salir, pero les cierran el paso: no hay retirada este turno." % hero.get("name", "?"), "cc7744")
+		_turn_index += 1
+		_process_turn()
+		return
+	_log("¡Retirada! La cuadrilla sale de la pelea como puede.", "ffd27a")
+	var cost: int = BalanceScript.int_of("combat.retreat_stress")
+	for h in party:
+		if h is Dictionary and not h.get("dead", false) and cost > 0:
+			var before: int = int(h.get("stress", 0))
+			_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, cost)))
+			if int(h.get("stress", 0)) > before:
+				_log("  %s: estrés +%d" % [h.get("name", "?"), int(h.get("stress", 0)) - before], "aa88cc")
+	if _living_heroes() <= 0:
+		_finish(false)
+		return
+	_close_fight()
+	actor_changed.emit("Retirada")
+	combat_fled.emit()
+
+
 func pass_turn() -> void:
 	var hero: Dictionary = active_hero()
 	if hero.is_empty():
@@ -308,10 +347,33 @@ func _start_round() -> void:
 		_log_all(StressSystemScript.round_start_effects(party))
 	_call_reinforcements()
 	_boss_round_start()
-	_long_fight_stress()
+	_apply_drag_stress()
 	_roll_initiative_queue()
 	_turn_index = 0
 	_process_turn()
+
+
+## Dragging fights (P5-02b): from combat.drag_round on, every round wears the party down a
+## little more, so a party that out-heals the enemy can't sit in a fight forever. A hero
+## who breaks or collapses here is handled like any other stress (_process_turn checks the end).
+func _apply_drag_stress() -> void:
+	var drag: int = StressSystemScript.drag_stress(_round, is_boss)
+	if drag <= 0:
+		if StressSystemScript.drag_stress(_round + 1, is_boss) > 0:
+			_log("La pelea se está alargando: la cuadrilla empieza a desesperarse.", "aa88cc")
+		return
+	_log("La pelea se alarga y los nervios no dan más.", "aa88cc")
+	for k in party.size():
+		var h = party[k]
+		if not (h is Dictionary) or h.get("dead", false):
+			continue
+		var before: int = int(h.get("stress", 0))
+		_log_all(StressSystemScript.apply_drag(h, _stress_after_mods(h, drag)))
+		var up: int = int(h.get("stress", 0)) - before
+		if up > 0:
+			_log("  %s: estrés +%d" % [h.get("name", "?"), up], "aa88cc")
+			if k < hero_units.size():
+				hero_units[k].float_text("+%d estrés" % up, hero_units[k].COLOR_STRESS)
 
 
 func _roll_initiative_queue() -> void:
@@ -431,11 +493,24 @@ func _check_end() -> bool:
 
 
 func _finish(victory: bool) -> void:
+	_close_fight()
+	actor_changed.emit("Victoria" if victory else "Derrota")
+	if victory:
+		_log("Victoria. Cae el último enemigo.", "66aa66")
+	else:
+		_log("Derrota. La hacienda guarda silencio.", "aa4444")
+	await _pause(1.0)
+	combat_over.emit(victory)
+
+
+## The fight is over (won, lost or left): per-fight state goes away.
+func _close_fight() -> void:
 	_ended = true
 	_awaiting_hero = false
 	for h in party:
 		if h is Dictionary:
 			h["guarding"] = false
+			h.erase("collapsed_this_fight")
 			StatusEffectsScript.clear(h)
 			# Camp buffs last a number of fights (P3-07).
 			CampingSystemScript.tick_fight(h)
@@ -444,13 +519,6 @@ func _finish(victory: bool) -> void:
 	for u in hero_units:
 		u.set_active(false)
 		u.refresh()
-	actor_changed.emit("Victoria" if victory else "Derrota")
-	if victory:
-		_log("Victoria. Cae el último enemigo.", "66aa66")
-	else:
-		_log("Derrota. La hacienda guarda silencio.", "aa4444")
-	await _pause(1.0)
-	combat_over.emit(victory)
 
 
 # --- Rules (unchanged from the slice) ---------------------------------------------
@@ -762,9 +830,8 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			GameState.mission_light = clampi(GameState.mission_light + hit_light, 0, GameState.light_max())
 			_log("  Las alas apagan un poco la luz (%d)." % GameState.mission_light, "aa8866")
 		# Doc 01 §2.3 stress shock: an enemy crit shakes the hero it hits.
-		var base_stress: int = int(skill.get("stress", 0)) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
-		# P5-02: one knob for how much stress enemies put on heroes.
-		base_stress = int(round(base_stress * (1.0 + BalanceScript.num("combat.enemy_stress_pct") / 100.0)))
+		# The skill's own stress grows with the expedition difficulty (progression.json enemy_stress).
+		var base_stress: int = int(round(int(skill.get("stress", 0)) * float(enemy.get("stress_mult", 1.0)))) + (BalanceScript.int_of("crits.enemy_crit_stress") if crit else 0)
 		var stress: int = int(round(base_stress * (1.0 - int(t.get("stress_resist", 0)) / 100.0)))
 		stress = _stress_after_mods(t, stress)
 		if stress > 0 and not t.get("dead", false):
@@ -976,19 +1043,6 @@ func _call_reinforcements() -> void:
 			_log("%s pita, pero no cabe nadie más." % e.get("name", "?"), "999999")
 		else:
 			_log("¡%s pitó: llegan refuerzos! %s." % [e.get("name", "?"), ", ".join(came)], "dd8866")
-
-
-## P5-02: a fight that drags wears everyone down. From round long_fight_from, every hero
-## gains long_fight_stress at the top of each round (0 turns it off). Ends healer stalls.
-func _long_fight_stress() -> void:
-	var from: int = BalanceScript.int_of("combat.long_fight_from")
-	var amt: int = BalanceScript.int_of("combat.long_fight_stress")
-	if from <= 0 or amt <= 0 or _round < from:
-		return
-	_log("La pelea se alarga: los nervios se gastan (+%d estrés a todos)." % amt, "aa88cc")
-	for h in party:
-		if h is Dictionary and not h.get("dead", false):
-			_log_all(StressSystemScript.add_stress(h, _stress_after_mods(h, amt)))
 
 
 ## Round start for bosses and mini-bosses (P2-05): the Mayordomo rings for servants

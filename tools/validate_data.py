@@ -139,6 +139,9 @@ def main() -> int:
     thr = prog.get("resolve", {}).get("xp_thresholds", [])
     if len(thr) != 7 or thr != sorted(thr) or (thr and thr[0] != 0):
         errors.append("progression.json: xp_thresholds must be 7 rising values starting at 0")
+    rad = prog.get("resolve", {}).get("xp_thresholds_radiant", [])
+    if len(rad) != 7 or rad != sorted(rad) or (rad and rad[0] != 0) or (len(thr) == 7 and any(r > t for r, t in zip(rad, thr))):
+        errors.append("progression.json: xp_thresholds_radiant must be 7 rising values starting at 0, none above xp_thresholds")
     if len(prog.get("resolve", {}).get("level_names", [])) != 7:
         errors.append("progression.json: level_names needs 7 names (levels 0-6)")
     for k in prog.get("resolve", {}).get("resist_per_level", {}):
@@ -149,6 +152,10 @@ def main() -> int:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs 0 <= min_level <= level <= max_level <= 6")
         if int(d.get("xp", 0)) <= 0:
             errors.append(f"progression.json: difficulty '{d.get('id')}' needs xp > 0")
+        for k in ("enemy_hp", "enemy_dmg", "enemy_stress", "reward"):
+            v = d.get(k)
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
+                errors.append(f"progression.json: difficulty '{d.get('id')}' needs {k} > 0")
     if not prog.get("difficulties"):
         errors.append("progression.json: no difficulties")
     # Casa Comunal skill ranks (doc 02 §4, doc 04 §3.3); keys match skill_ranks.gd BONUS_KEYS.
@@ -771,17 +778,28 @@ def main() -> int:
                 errors.append(f"regions/{rp.name}: trap node '{n.get('id')}' needs a known trap_id")
     if "gallo_pinto" not in items:
         errors.append("items.json: 'gallo_pinto' is the food item (camp meal, travel hunger) and must exist")
-    # P1-18: recommended provisions per region (the hub offers to buy what is missing).
+    # P1-18, P5-02e: two recommended provision kits per region (the hub offers to buy what
+    # either lacks): "short" for a run straight to the boss, "full" for exploring every room.
     for rp in sorted((DATA / "regions").glob("*.json")):
-        prov = (load(rp) or {}).get("provisions", {})
-        if not isinstance(prov, dict):
-            errors.append(f"regions/{rp.name}: provisions must be {{item_id: qty}}")
+        kits = (load(rp) or {}).get("provisions", {})
+        if not isinstance(kits, dict) or set(kits) != {"short", "full"}:
+            errors.append(f"regions/{rp.name}: provisions must be {{\"short\": {{item_id: qty}}, \"full\": {{item_id: qty}}}}")
             continue
-        for iid, qty in prov.items():
-            if iid not in items:
-                errors.append(f"regions/{rp.name}: provisions references unknown item '{iid}'")
-            if not isinstance(qty, int) or qty < 1:
-                errors.append(f"regions/{rp.name}: provisions '{iid}' needs a whole number >= 1")
+        for kit, prov in kits.items():
+            if not isinstance(prov, dict) or not prov:
+                errors.append(f"regions/{rp.name}: provisions.{kit} must be {{item_id: qty}}")
+                continue
+            for iid, qty in prov.items():
+                if iid not in items:
+                    errors.append(f"regions/{rp.name}: provisions.{kit} references unknown item '{iid}'")
+                if not isinstance(qty, int) or qty < 1:
+                    errors.append(f"regions/{rp.name}: provisions.{kit} '{iid}' needs a whole number >= 1")
+        if isinstance(kits["short"], dict) and isinstance(kits["full"], dict):
+            for iid, qty in kits["short"].items():
+                if isinstance(qty, int) and isinstance(kits["full"].get(iid), int) and kits["full"][iid] < qty:
+                    errors.append(f"regions/{rp.name}: provisions.full '{iid}' can't be less than provisions.short")
+                if iid not in kits["full"]:
+                    errors.append(f"regions/{rp.name}: provisions.full is missing '{iid}' from provisions.short")
 
     manifest_path = ROOT / "tools" / "art_manifest.json"
     manifest = load(manifest_path)
@@ -820,7 +838,8 @@ BALANCE_KEYS = {
     "combat.hit_max": "chance", "combat.initiative_jitter": "int>=0", "combat.crit_cap": "chance",
     "combat.crit_mult": "mult", "combat.prot_cap": "pct", "combat.guard_mult": "chance",
     "combat.miss_stress": "int>=0", "combat.encarrerado_turns": "int>=0", "combat.enemy_base_crit": "pct",
-    "combat.enemy_stress_pct": "int", "combat.long_fight_from": "int>=0", "combat.long_fight_stress": "int>=0",
+    "combat.drag_round": "pos", "combat.drag_round_boss": "pos", "combat.drag_stress": "int>=0",
+    "combat.drag_stress_step": "int>=0", "combat.retreat_chance": "chance", "combat.retreat_stress": "int>=0",
     "crits.party_relief": "int>=0", "crits.enemy_crit_stress": "int>=0",
     "death.base": "pct", "death.check_penalty": "int>=0", "death.collapse_penalty": "int>=0",
     "stress.resolve_threshold": "pos", "stress.colapso": "pos", "stress.colapso_survive": "int>=0",

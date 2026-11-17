@@ -205,7 +205,7 @@ func _run() -> void:
 	_check(gs.party_refusals().is_empty(), "Pura Vida: Resolución 4 accepts Aprendiz (range 0-4)")
 	gs.party[0]["resolve_level"] = 5
 	_check(gs.party_refusals().size() == 1, "Pura Vida: Resolución 5 still refuses Aprendiz")
-	_check(rs.level_for_xp(7) == 2 and rs.level_for_xp(40) == 6, "Pura Vida XP curve (7 -> level 2, 40 -> level 6)")
+	_check(rs.level_for_xp(8) == 2 and rs.level_for_xp(106) == 6 and rs.level_for_xp(105) == 5, "Pura Vida XP curve (8 -> level 2, 106 -> level 6)")
 	gs.set_radiant_mode(false)
 	_check(rs.level_for_xp(7) == 1, "normal curve: 7 XP is level 1")
 

@@ -134,6 +134,9 @@ var rooms_since_fight: int = 99
 var current_node_id: String = ""
 
 var visited_node_ids: Array = []
+## The room the party was in before the current one ("" at the start): where a retreat
+## from a fight takes them back to (P5-04).
+var previous_node_id: String = ""
 
 var cleared_node_ids: Array = []
 
@@ -963,10 +966,10 @@ func party_can_scout() -> bool:
 
 # --- Roster, recruiting, party (P3-01 / P3-02) ------------------------------------
 
+## Recruits are free, as in Darkest Dungeon (owner 2026-11-15): only the beds limit hiring.
+## The one exception is a hero a town event offers at a price (hire_veteran sets hire_price).
 func hire_cost(hero: Dictionary) -> int:
-	if hero.has("hire_price"):
-		return int(hero["hire_price"])
-	return int(get_hero_template(str(hero.get("hero_id", ""))).get("hire_cost", 800))
+	return int(hero.get("hire_price", 0))
 
 
 func refresh_recruits() -> void:
@@ -999,7 +1002,7 @@ func hire_recruit(index: int) -> String:
 	recruit_pool.remove_at(index)
 	if party.size() < PARTY_SIZE:
 		party.append(h)
-	return "%s (%s) se baja del bus y se une a la hacienda (-%d ₡)." % [h.get("name", "?"), h.get("class_name", ""), cost]
+	return "%s (%s) se baja del bus y se une a la hacienda%s." % [h.get("name", "?"), h.get("class_name", ""), (" (-%d ₡)" % cost) if cost > 0 else ""]
 
 
 ## Dismiss a hero for good: equipment goes back to the inventory first (refused if it
@@ -1421,6 +1424,7 @@ func start_mission(region_path: String = "") -> bool:
 	current_node_id = str(r.get("start_node", "n0"))
 	objective_node_id = str(r.get("objective_node", ""))
 	visited_node_ids = [current_node_id]
+	previous_node_id = ""
 	cleared_node_ids = []
 	mission_active = true
 	mission_difficulty = ResolveSystemScript.expedition(selected_difficulty_id, int(r.get("region_level", 0)))
@@ -1582,6 +1586,7 @@ func move_to_node(target_id: String) -> bool:
 		return false
 	var decay: int = int(mission_params.get("light_decay", 5))
 	mission_light = maxi(mission_light - decay, 0)
+	previous_node_id = current_node_id
 	current_node_id = target_id
 	node_item_uses.clear()
 	moves_since_meal += 1
@@ -1725,12 +1730,14 @@ func travel_meal(fed: int) -> PackedStringArray:
 	return logs
 
 
-## Recommended provisions (region "provisions") the inventory is short of:
-## [{id, name, missing, price}] (price = this week's Pulpería price for all of them).
-func missing_provisions(region_path: String = "") -> Array:
+## Recommended provisions the inventory is short of: [{id, name, missing, price}] (price =
+## this week's Pulpería price for all of them). Each region has two kits (P5-02e):
+## "short" for a run straight to the boss, "full" for exploring every room.
+func missing_provisions(region_path: String = "", kit: String = "short") -> Array:
 	var r: Dictionary = ExpeditionLoaderScript.load_region(region_path if region_path != "" else selected_mission_region_path)
 	var out: Array = []
-	var prov = r.get("provisions", {})
+	var kits = r.get("provisions", {})
+	var prov = kits.get(kit, {}) if kits is Dictionary else {}
 	if not prov is Dictionary:
 		return out
 	for iid in prov:
@@ -1740,11 +1747,11 @@ func missing_provisions(region_path: String = "") -> Array:
 	return out
 
 
-## Buys every missing recommended provision it can. Returns a message for the hub.
-func buy_missing_provisions(region_path: String = "") -> String:
+## Buys every missing provision of that kit it can. Returns a message for the hub.
+func buy_missing_provisions(region_path: String = "", kit: String = "short") -> String:
 	var bought: int = 0
 	var last: String = ""
-	for m in missing_provisions(region_path):
+	for m in missing_provisions(region_path, kit):
 		for _k in int(m["missing"]):
 			var before: int = item_count(str(m["id"]))
 			last = buy_item(str(m["id"]))
@@ -1790,6 +1797,18 @@ func is_room_revealed(node_id: String) -> bool:
 
 func current_node() -> Dictionary:
 	return mission_nodes_index.get(current_node_id, {})
+
+
+## After a retreat from a fight: the party is back in the room it came from. No Luz or
+## hunger cost; the room they left keeps its enemies. False if there is no room to go back to.
+func retreat_to_previous_room() -> bool:
+	if previous_node_id == "" or not mission_nodes_index.has(previous_node_id):
+		return false
+	var left: String = current_node_id
+	current_node_id = previous_node_id
+	previous_node_id = left
+	node_item_uses.clear()
+	return true
 
 
 func is_node_cleared(node_id: String) -> bool:
@@ -1864,6 +1883,7 @@ func make_enemy(enemy_id: String, squad_size: int, hp_mult: float = 1.0) -> Dict
 	en["dead"] = false
 	en["accuracy"] = int(en.get("accuracy", 8)) + int(mission_difficulty.get("enemy_accuracy", 0))
 	en["dmg_mult"] = float(mission_difficulty.get("enemy_dmg", 1.0))
+	en["stress_mult"] = float(mission_difficulty.get("enemy_stress", 1.0))
 	# Tougher tiers resist ailments more (doc 05 §4: +10% Veterano, +20% Campeón).
 	var er: int = int(mission_difficulty.get("enemy_resist", 0))
 	if er != 0 and en.get("status_resist", null) is Dictionary:
@@ -2122,7 +2142,9 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 		out["equipment"] = {}
 	# v6: resolve XP and camp skills (older saves: XP at the floor of their level, class loadout).
 	out["resolve_level"] = clampi(int(out.get("resolve_level", 0)), 0, ResolveSystemScript.MAX_LEVEL)
-	out["resolve_xp"] = maxi(int(out.get("resolve_xp", ResolveSystemScript.xp_for_level(int(out["resolve_level"])))), 0)
+	# v10 (P5-02d): the XP curve got longer. A hero keeps their level: XP is never below the
+	# level's threshold, so the next expedition can't take a level away.
+	out["resolve_xp"] = maxi(int(out.get("resolve_xp", 0)), ResolveSystemScript.xp_for_level(int(out["resolve_level"])))
 	if not out.get("camp_skill_ids") is Array or (out["camp_skill_ids"] as Array).is_empty():
 		out["camp_skill_ids"] = t.get("camp_skill_ids", []).duplicate()
 	# v8: Casa Comunal skill ranks (older saves: every skill at rank 1). JSON numbers load as

@@ -154,9 +154,9 @@ func _refresh_difficulty_labels() -> void:
 	for i in diffs.size():
 		var e: Dictionary = GameState.selected_expedition(str(diffs[i].get("id", "")))
 		_difficulty_option.set_item_text(i, "%s (nivel %d)" % [e.get("name", "?"), int(e.get("level", 1))])
-		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño; paga x%.2f." % [
+		_difficulty_option.set_item_tooltip(i, "Héroes de resolución %d–%d. Sobrevivientes ganan %d XP de resolución. Enemigos x%.2f PV, x%.2f daño, x%.2f estrés; paga x%.2f." % [
 			int(e.get("min_level", 0)), int(e.get("max_level", 6)), int(e.get("xp", 0)),
-			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("reward", 1.0))])
+			float(e.get("enemy_hp", 1.0)), float(e.get("enemy_dmg", 1.0)), float(e.get("enemy_stress", 1.0)), float(e.get("reward", 1.0))])
 
 
 func _try_optional_hub_ambient() -> void:
@@ -629,15 +629,17 @@ func _refresh_recruits() -> void:
 	for i in GameState.recruit_pool.size():
 		var h: Dictionary = GameState.recruit_pool[i]
 		var b = CardButtonScript.new()
-		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %d ₡" % [
-			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)), GameState.hire_cost(h)]
+		var price: int = GameState.hire_cost(h)
+		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %s" % [
+			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)),
+			("%d ₡" % price) if price > 0 else "gratis"]
 		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
 			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
 		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.roster_cap() \
 			or TownEventsScript.is_closed(GameState.active_event(), "terminal")
 		var hire_why: String = "" if not b.disabled else ("La terminal está cerrada esta semana." if TownEventsScript.is_closed(GameState.active_event(), "terminal")
 			else ("No hay más camas en la hacienda." if GameState.roster.size() >= GameState.roster_cap() else "No alcanza la plata."))
-		b.card = HeroCardScript.build.bind(h, "Clic para contratar por %d ₡." % GameState.hire_cost(h), hire_why)
+		b.card = HeroCardScript.build.bind(h, ("Clic para contratar por %d ₡." % GameState.hire_cost(h)) if GameState.hire_cost(h) > 0 else "Clic para contratar (gratis).", hire_why)
 		b.pressed.connect(func(): _say(GameState.hire_recruit(i)))
 		_recruit_box.add_child(b)
 
@@ -797,50 +799,53 @@ func _on_start_pressed() -> void:
 	if not GameState.party_refusals().is_empty():
 		_hub_status.text = "Héroes de mucha resolución no salen a expediciones fáciles: sube la dificultad o cambia la cuadrilla."
 		return
-	var missing: Array = GameState.missing_provisions()
-	if missing.is_empty():
+	# Covered for exploring every room: nothing to ask.
+	if GameState.missing_provisions("", "full").is_empty():
 		start_mission_requested.emit()
 		return
-	_confirm_provisions(missing)
+	_confirm_provisions()
 
 
-## DD-style provisioning (P1-18): warn when the alforja lacks the region's recommended
-## food and candles, and offer to buy what is missing at the Pulpería.
-func _confirm_provisions(missing: Array) -> void:
-	var made: Array = _card_dialog("Provisiones", 460.0, true)
+## DD-style provisioning (P1-18, P5-02e; card P4-15): before leaving, show the region's two
+## recommended kits (a run straight to the boss, or exploring every room) against the
+## alforja, and offer to buy what either one lacks at the Pulpería.
+func _confirm_provisions() -> void:
+	var made: Array = _card_dialog("Provisiones", 480.0, true)
 	var dlg: ConfirmationDialog = made[0]
 	var col: VBoxContainer = made[1]
-	col.add_child(CardScript.label("Para esta expedición se recomienda llevar más:", 14, CardScript.TEXT, false))
-	var total: int = 0
-	for m in missing:
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 10)
-		row.add_child(CardScript.picture("res://assets/items/%s.png" % str(m["id"]), 34.0))
-		var nm := CardScript.label("%d × %s" % [int(m["missing"]), m["name"]], 14, CardScript.TEXT, false)
-		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		nm.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		row.add_child(nm)
-		var pr := CardScript.label("%d ₡" % int(m["price"]), 14, CardScript.GOLD, false)
-		pr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		row.add_child(pr)
-		col.add_child(row)
-		total += int(m["price"])
-	col.add_child(CardScript.rule())
-	var tot := HBoxContainer.new()
-	var tl := CardScript.label("Todo lo que falta", 13, CardScript.MUTED, false)
-	tl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	tot.add_child(tl)
-	tot.add_child(CardScript.label("%d ₡" % total, 15, CardScript.GOLD, false))
-	col.add_child(tot)
-	col.add_child(CardScript.label("Sin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras.", 12, CardScript.HINT, true, 436.0))
+	col.add_child(CardScript.label("Provisiones recomendadas para esta expedición:", 14, CardScript.TEXT, false))
+	var totals: Dictionary = {}
+	for kit in ["short", "full"]:
+		var missing: Array = GameState.missing_provisions("", kit)
+		var total: int = 0
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("Vuelta corta (directo al jefe)" if kit == "short" else "Explorar todo"))
+		if missing.is_empty():
+			col.add_child(CardScript.label("Ya está completa.", 13, CardScript.GOOD, false))
+		for m in missing:
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 10)
+			row.add_child(CardScript.picture("res://assets/items/%s.png" % str(m["id"]), 30.0))
+			var nm := CardScript.label("%d × %s" % [int(m["missing"]), m["name"]], 14, CardScript.TEXT, false)
+			nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			nm.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			row.add_child(nm)
+			var pr := CardScript.label("%d ₡" % int(m["price"]), 14, CardScript.GOLD, false)
+			pr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			row.add_child(pr)
+			col.add_child(row)
+			total += int(m["price"])
+		totals[kit] = total
+	col.add_child(CardScript.label("Sin comida, la cuadrilla pasa hambre; sin candelas, camina a oscuras.", 12, CardScript.HINT, true, 456.0))
 	dlg.ok_button_text = "Salir así"
 	dlg.cancel_button_text = "Volver"
-	dlg.add_button("Comprar lo que falta (%d ₡)" % total, true, "buy")
+	if int(totals["short"]) > 0:
+		dlg.add_button("Vuelta corta (%d ₡)" % int(totals["short"]), true, "short")
+	dlg.add_button("Explorar todo (%d ₡)" % int(totals["full"]), true, "full")
 	dlg.confirmed.connect(func(): start_mission_requested.emit())
 	dlg.custom_action.connect(func(action: StringName):
-		if action == &"buy":
-			dlg.hide()
-			_say(GameState.buy_missing_provisions())
+		dlg.hide()
+		_say(GameState.buy_missing_provisions("", str(action)))
 	)
 	add_child(dlg)
 	_popup_card(dlg)

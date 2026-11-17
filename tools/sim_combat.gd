@@ -21,6 +21,14 @@ extends SceneTree
 ##                       nothing healed in between (see _run_chains)
 ##   --light N           play every fight at this Luz (default: the region's starting Luz)
 ##   --log               print the combat log of the first fight of each room kind / chain
+##   --log-long N        print the combat log of the first fight that passes N rounds
+##   --party a,b,c,d     hero ids (data/heroes.json) in formation order, instead of the
+##                       starting party
+##   --level N           every hero starts at resolve level N (default 0); pick a --difficulty
+##                       whose range holds it, or the heroes refuse or go under-leveled
+##   --ranks R           every skill at Casa Comunal rank R (default 1)
+##   --gear              every hero wears the dearest weapon and armor the Pulpería sells
+##   --no-retreat        the smart policy fights to the end (it retreats by default, P5-05)
 ##
 ## Without --chain, every fight starts from the fresh starting party (full PV, 0 stress, no
 ## items used, no camp buffs), as at the first room of a new game. Squads are drawn the way
@@ -47,8 +55,12 @@ var _template: Array = []
 var _light0: int = 0
 var _rng := RandomNumberGenerator.new()
 var _opts := {"runs": 10000, "node": "all", "policy": "smart", "seed": 1, "chain": 0,
-	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false}
+	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false, "log-long": 0, "party": [],
+	"level": 0, "ranks": 1, "gear": false, "no-retreat": false}
 var _log_on: bool = false
+## --log-long: the current fight's log, printed once if the fight runs long.
+var _buffer: PackedStringArray = PackedStringArray()
+var _long_printed: bool = false
 
 
 ## Stand-in for BattleUnit: same calls, no drawing, returns at once.
@@ -105,6 +117,37 @@ func _run() -> void:
 			BalanceScript.override(parts[0], JSON.parse_string(parts[1]))
 	_gs = root.get_node("GameState")
 	_gs.reset_party_from_catalog()
+	if not _opts["party"].is_empty():
+		_gs.roster.clear()
+		_gs.party.clear()
+		for id in _opts["party"]:
+			var t: Dictionary = _gs.get_hero_template(str(id))
+			if t.is_empty():
+				push_error("sim_combat: --party has no hero '%s' in data/heroes.json" % id)
+				quit(1)
+				return
+			var h: Dictionary = _gs._instantiate_hero(t)
+			h["uid"] = _gs._take_uid()
+			_gs.roster.append(h)
+			_gs.party.append(h)
+	# A seasoned party (P5-02f): level, skill ranks and equipment as a campaign would have them.
+	var rs = load("res://scripts/domain/resolve_system.gd")
+	for h in _gs.party:
+		h["resolve_level"] = clampi(int(_opts["level"]), 0, rs.MAX_LEVEL)
+		h["resolve_xp"] = rs.xp_for_level(int(h["resolve_level"]))
+		if int(_opts["ranks"]) > 1:
+			for sid in h.get("skill_ids", []):
+				h["skill_ranks"][str(sid)] = int(_opts["ranks"])
+		if bool(_opts["gear"]):
+			for slot in ["weapon", "armor"]:
+				var best: String = ""
+				for id in _gs.all_item_ids():
+					if _gs.is_equipment(str(id)) and _gs.slots_for(str(id)).has(slot) and (best == "" or _gs.item_price(str(id)) > _gs.item_price(best)):
+						best = str(id)
+				if best != "" and _gs.add_item(best, 1) > 0:
+					_gs.equip(h, best, slot)
+		_gs.recompute_stats(h)
+		h["hp"] = int(h["hp_max"])
 	_gs.selected_difficulty_id = str(_opts["difficulty"])
 	if not _gs.start_mission(str(_opts["region"])):
 		push_error("sim_combat: could not start a mission in %s" % _opts["region"])
@@ -120,9 +163,14 @@ func _run() -> void:
 	_cc = load(CONTROLLER_PATH).new()
 	_cc.instant = true
 	root.add_child(_cc)
-	_cc.logged.connect(func(t, _c): if _log_on: print("    " + str(t)))
+	_cc.logged.connect(func(t, _c):
+		if _log_on:
+			print("    " + str(t))
+		elif int(_opts["log-long"]) > 0 and not _long_printed:
+			_buffer.append("    " + str(t)))
 	# Hero choices: tools/sim_policy.gd (shared with tools/playtest_campaign.gd).
 	_policy = SimPolicyScript.new(_cc, _gs, str(_opts["policy"]))
+	_policy.retreats = not bool(_opts["no-retreat"])
 
 	var chain: int = int(_opts["chain"])
 	print("## Combat sim — %s, %d %s, policy %s, seed %d%s\n" % [
@@ -130,8 +178,9 @@ func _run() -> void:
 		("chains of %d fights + elite + boss" % chain) if chain > 0 else "fights per room kind",
 		_opts["policy"], int(_opts["seed"]),
 		(", overrides " + ", ".join(PackedStringArray(_opts["set"]))) if not _opts["set"].is_empty() else ""])
-	print("Party (formation order): %s. Difficulty: %s. Luz %d (%s).\n" % [
-		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))), _gs.selected_difficulty_id,
+	print("Party (formation order): %s. Level %d, skill rank %d%s. Difficulty: %s. Luz %d (%s).\n" % [
+		", ".join(PackedStringArray(_template.map(func(h): return str(h.get("class_name", "?"))))),
+		int(_opts["level"]), int(_opts["ranks"]), ", best weapon and armor" if bool(_opts["gear"]) else "", _gs.selected_difficulty_id,
 		_light0, load("res://scripts/domain/light_system.gd").tier_name(_light0)])
 	var t0: int = Time.get_ticks_msec()
 	if chain > 0:
@@ -212,7 +261,14 @@ func _parse_args() -> void:
 		var flag: String = a[k]
 		var val: String = a[k + 1] if k + 1 < a.size() else ""
 		match flag:
-			"--runs", "--seed", "--chain", "--light":
+			"--party":
+				_opts["party"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
+				k += 1
+			"--gear":
+				_opts["gear"] = true
+			"--no-retreat":
+				_opts["no-retreat"] = true
+			"--runs", "--seed", "--chain", "--light", "--log-long", "--level", "--ranks":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
 			"--node", "--policy", "--region", "--difficulty":
@@ -262,9 +318,13 @@ func _fight(kind: String, party: Array) -> Dictionary:
 		stress0 += int(h.get("stress", 0))
 		hp0 += int(h.get("hp", 0))
 		hpmax += int(h.get("hp_max", 1))
+	_buffer.clear()
 	var won: Array = [false]
+	var fled: Array = [false]
 	var on_over := func(v: bool): won[0] = v
+	var on_fled := func(): fled[0] = true
 	_cc.combat_over.connect(on_over)
+	_cc.combat_fled.connect(on_fled)
 	# Luz tiers (P1-17): the same surprise roll the game makes when a fight starts.
 	var surprise: String = str(_gs.combat_context.get("surprise", ""))
 	_cc.enemy_spawner = func(e: Dictionary): return SimUnit.new(e)
@@ -286,9 +346,15 @@ func _fight(kind: String, party: Array) -> Dictionary:
 		actions += 1
 		_note_borde(party, before, went_borde)
 	_cc.combat_over.disconnect(on_over)
+	_cc.combat_fled.disconnect(on_fled)
 	if stalled:
 		_cc._ended = true
-	var r := {"leader": str(nd["enemy_ids"][0]), "won": won[0] and not stalled, "stalled": stalled,
+	if int(_opts["log-long"]) > 0 and not _long_printed and int(_cc._round) > int(_opts["log-long"]):
+		_long_printed = true
+		print("### First %s fight over %d rounds (%d rounds, %s)\n" % [kind, int(_opts["log-long"]), int(_cc._round), "stalled" if stalled else ("won" if won[0] else "lost")])
+		print("\n".join(_buffer))
+		print("")
+	var r := {"leader": str(nd["enemy_ids"][0]), "won": won[0] and not stalled, "stalled": stalled, "fled": fled[0],
 		"rounds": int(_cc._round), "actions": actions, "stress": 0, "max_stress": 0, "deaths": 0,
 		"borde": went_borde.size(), "breaks": 0, "hp_lost": 0.0}
 	var stress1: int = 0
@@ -325,13 +391,14 @@ func _act(hero: Dictionary) -> void:
 
 func _new_stats(label: String) -> Dictionary:
 	return {"label": label, "n": 0, "wins": 0, "stalls": 0, "rounds": 0, "actions": 0, "stress": 0,
-		"max_stress": 0, "deaths": 0, "death_fights": 0, "borde": 0, "breaks": 0, "hp_lost": 0.0}
+		"max_stress": 0, "deaths": 0, "death_fights": 0, "borde": 0, "breaks": 0, "hp_lost": 0.0, "fled": 0}
 
 
 func _add(s: Dictionary, r: Dictionary) -> void:
 	s["n"] += 1
 	s["wins"] += 1 if r["won"] else 0
 	s["stalls"] += 1 if r["stalled"] else 0
+	s["fled"] += 1 if r["fled"] else 0
 	s["rounds"] += r["rounds"]
 	s["actions"] += r["actions"]
 	s["stress"] += r["stress"]
@@ -353,4 +420,5 @@ func _print_table(title: String, rows: Array) -> void:
 			s["label"], s["n"], 100.0 * s["wins"] / n, s["rounds"] / n, s["actions"] / n, s["stress"] / n,
 			s["max_stress"] / n, s["deaths"] / n, 100.0 * s["death_fights"] / n, s["borde"] / n,
 			s["breaks"] / n, 100.0 * s["hp_lost"] / n])
-	print("\nStalls (over %d rounds, counted as losses): %d.\n" % [MAX_ROUNDS, rows.reduce(func(acc, s): return acc + int(s["stalls"]), 0)])
+	print("\nStalls (over %d rounds, counted as losses): %d. Retreats (P5-04; not a win, the chain ends): %d.\n" % [MAX_ROUNDS,
+		rows.reduce(func(acc, s): return acc + int(s["stalls"]), 0), rows.reduce(func(acc, s): return acc + int(s["fled"]), 0)])

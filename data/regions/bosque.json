@@ -4,7 +4,10 @@
   "start_node": "b0",
   "objective_node": "b6",
   "initial_light": 95,
-  "provisions": { "gallo_pinto": 9, "candela_sebo": 3 },
+  "provisions": {
+    "short": { "gallo_pinto": 9, "candela_sebo": 3 },
+    "full": { "gallo_pinto": 14, "candela_sebo": 4 }
+  },
   "light_decay_per_move": 8,
   "objective_reward_colones": 1100,
   "region_level": 1,

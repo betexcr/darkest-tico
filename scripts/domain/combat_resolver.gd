@@ -76,5 +76,10 @@ static func death_save_chance(hero: Dictionary, collapse: bool = false) -> float
 	return clampi(pts, 0, 100) / 100.0
 
 
+## Retreat from a fight (P5-04): true when the party gets away this try.
+static func roll_retreat() -> bool:
+	return randf() < BalanceScript.num("combat.retreat_chance")
+
+
 static func roll_death_save(chance: float) -> bool:
 	return randf() < chance

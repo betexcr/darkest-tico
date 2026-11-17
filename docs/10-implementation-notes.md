@@ -116,3 +116,35 @@ With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Ne
 
 - Missing more makes fights longer (boss 7.4 → 11.6 rounds in Negro), so stress and deaths climb. Careful play now actually loses runs in the dark.
 - 45 smart chains in Negro stalled past 40 rounds (0.9%): healers out-heal what a blind party can hit. Watch for this in P5-02.
+
+### Rerun with dragging-fight stress (2026-11-14, P5-02b)
+
+`--party a,b,c,d` plays another class mix; `--log-long N` prints the first fight that passes N rounds, which is how the stall below was found. Chains of 3 fights + elite + boss, 10,000 per row, smart policy, Aprendiz:
+
+| Party | Dragging stress | Boss cleared | Rounds in the boss fight | Top stress after the boss | Chains past 40 rounds |
+|---|---|---:|---:|---:|---:|
+| Starting party | off | 99.8% | 7.4 | 28.3 | 5 |
+| Starting party | on | 99.2% | 7.3 | 31.2 | 0 |
+| 3 Abuelas + Curandero | on | 97.6% | 12.7 | 70.9 | 0 |
+| 3 Campesinos + Abuela | on | 89.2% | 12.5 | 68.0 | 0 |
+
+- The rule costs the starting party almost nothing, because its fights last 4–7 rounds. Slow parties pay for it in stress: about 70 on the top hero after the boss, against 31.
+- **Why fights stalled.** The log of a 41-round boss fight showed the same loop every round: a hero collapses at 200 stress and drops to Al Borde, a companion heals them back up, and the next stress collapses them again. Nobody died and nobody attacked. A second Colapso in the same fight is now a death roll (doc 01 §3.4).
+- **The smart policy changed too.** Once a fight is about to drag it stops calming, heals only a hero Al Borde or under 25% PV, and attacks. Before that it spent every turn healing and calming while one self-healing enemy was left, which is what a player would not do. With the rule off the policy plays as before.
+
+### Rerun on the P5-02c/f numbers (2026-11-15)
+
+`--level N --ranks R --gear` plays a seasoned party: every hero at that resolve level, every skill at that rank, the dearest weapon and armor. Chains of 3 fights + elite + boss, 10,000 per row, smart policy:
+
+| Party | Difficulty | Boss cleared | Rounds in the boss fight | Top stress after the boss | Boss fights with a death | Chains past 40 rounds |
+|---|---|---:|---:|---:|---:|---:|
+| Starting party, level 0, rank 1 | Aprendiz | 95.9% | 9.7 | 57.8 | 8.3% | 0 |
+| Starting party, level 3, rank 3, weapon and armor | Veterano | 98.7% | 7.7 | 46.8 | 9.8% | 0 |
+| Starting party, level 5, rank 4, weapon and armor | Campeón | 92.3% | 10.5 | 65.1 | 22.8% | 0 |
+| 3 Abuelas + Curandero, level 0, rank 1 | Aprendiz | 48.2% | 17.4 | 163.1 | 49.1% | 0 |
+
+- **Aprendiz is no longer free.** The starting party cleared 99.2% of chains before; now 95.9%, with the top hero at 58 stress, up from 31.
+- **The tiers are in order for a seasoned party**, but the sim's seasoned party is better prepared than most parties that reach a tier in a campaign. In the campaign playtest Veterano on the full route was cleared 64% of the time (doc 09 §6). Use the sim to compare settings, not to predict the clear rate.
+- **Damage alone does little.** Raising enemy damage from ×1.25 to ×1.35 on Aprendiz moved the chain clear rate by under a point, because healing absorbs it. Enemy PV (longer fights, so more stress and more dragging) and smaller heals move it more.
+- **A healer-only party now loses most chains.** It can't kill fast enough, so the dragging stress gets it. That is the stall penalty doing its job.
+

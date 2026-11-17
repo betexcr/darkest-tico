@@ -186,7 +186,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] Choice events can require a situation when the room is entered (`mercado_clandestino` after a fight, `vision_del_abuelo` at Luz ≤ 50); otherwise a fallback curio is used
 
 ### P2-11 · M · Retreat from a fight (found in P5-02)
-- Status: `todo` · Depends: —
+- Status: `cut — done as P5-04 (Retirada) on betomm/happy-faraday-5yrmcr, merged 2026-11-17` · Depends: —
 - Spec: `01` §5.3 (failure/retreat); Darkest Dungeon's combat retreat
 - Why: in the P5-02 bot runs most deaths came from full wipes (16 of 25 in 48 expeditions). Once a fight turns there is no way out, so the deaths target (1 per 5–8 missions, doc 04 §4) can't be reached by numbers alone.
 - Done when: [ ] a "Retirarse" combat action (chance by position/speed, failure costs the turn) that ends the expedition as a retreat; [ ] the campaign bot uses it when 2 heroes are Al Borde; [ ] re-measure deaths with `tools/playtest_campaign.gd -- --telemetry`
@@ -539,14 +539,115 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `scripts/autoload/telemetry.gd` (new autoload), `project.godot`, `scripts/autoload/game_state.gd` (`colones` setter, `week_colones_*`, `log_mission_end`, `_log_week`, spike hook, save v11), `scripts/domain/stress_system.gd` (`spike_hook`), `scripts/expedition/expedition_screen.gd` (`_end_expedition`), `tools/playtest_campaign.gd` (`--telemetry`), `tools/telemetry_report.py` (new), `tests/test_telemetry.gd` (new)
 - Done when: [x] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
-### P5-02 · M · Balance pass to 55–70% mission success
-- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): first pass done (doc 09 §6); owner to play and judge the stress feel; deaths still above target (P2-11) · Depends: P1-07, P2-*, P5-01
-- Files: `data/balance.json` (`combat.enemy_stress_pct`, `combat.long_fight_*`, `hub.heal_cost_per_hp`, `hub.idle_stress_relief`), `data/progression.json` (Veterano/Campeón multipliers), `scripts/combat/combat_controller.gd` (enemy stress %, long-fight stress), `scripts/autoload/game_state.gd` (rest at home), `tools/playtest_campaign.gd` (retreat a breaking party, leave the frayed home), `tools/sim_policy.gd` (finish weak enemies first, calm at 70), `tools/validate_data.py`, doc 09 §6
-- Done when: [x] bot campaigns (48 expeditions) at 55–70% success (71%); [x] stress matters (~1 Quebranto/Virtud per mission); [x] economy balanced (in ≈ out); [ ] deaths at 1 per 5–8 missions (0.52 per mission; needs P2-11)
+### P5-02 · L→ split · Balance pass on the P1-09 playtest findings
+- Status: split into P5-02a–f (owner 2026-11-14: pulled ahead of P2 and P5-01 to fix the six findings in doc 09 §5). All six are in `review` (2026-11-15). They were done in the order a, b, d, e, c, f: stress and difficulty could only be tuned once food and levelling were right.
+- Owner decisions (2026-11-14):
+  - Clear rate for the careful bot: about 85–90% on Aprendiz, 70–80% on Veterano, 55–70% on Campeón. The doc 06 target of 55–70% applies to the hardest tier, since the bot plays near-perfectly.
+  - Healer stall: dragging-fight stress (Darkest Dungeon's stall penalty).
+  - Progression: Darkest Dungeon curve (XP thresholds become per-level costs).
+  - Provisions: two recommended kits, short run and full exploration.
+  - Recruits are free, as in Darkest Dungeon (2026-11-15).
+- Every task reruns `tools/playtest_campaign.gd -- --campaigns 3 --weeks 16` on both routes and compares with the P5-02a baseline in `docs/playtests/`.
+
+### P5-02a · M · Measurement first: a playtest bot that spends like a player
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-14; owner to check that the bot's shopping is how a player would spend) · Depends: P1-09
+- Why: part of the "loose economy" in doc 09 §5 is the bot. It bought one skill rank a week and no equipment, so prices can't be tuned against it.
+- Files: `tools/playtest_campaign.gd`, `docs/playtests/`, doc 09. No game data changes.
+- Done when:
+  - [x] `--set path=value` (balance.json overrides, as in `tools/sim_combat.gd`) and `--party id,id,id,id` (forced class mix)
+  - [x] The bot takes at most 1 dedicated healer unless `--party` is given
+  - [x] The bot buys every affordable skill rank, equipment for empty slots, and stress items for heroes at 50+ stress
+  - [x] The report shows stress on returning to the hub, colones by sink, and the clear rate per difficulty
+  - [x] Baseline of 3 campaigns × 16 weeks on both routes saved in `docs/playtests/`
+- Result (doc 09 §6): with a spending bot the bank stays at 5–12k through week 16, so the economy was not the problem. The game is still too easy (93 of 96 cleared), stress is held under 50 by free relief skills, and the longest stalls came from Campesinos healing, not only from healer-heavy parties.
+
+### P5-02b · S · Dragging-fight stress
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-14; owner to feel a long fight: does the warning read clearly, and are 8 and 12 rounds the right moments?) · Depends: P5-02a · Spec: `01` §3
+- From round `combat.drag_round` (8; `combat.drag_round_boss` 12 against a boss) every living hero gains `combat.drag_stress` (4) at the start of the round, plus `combat.drag_stress_step` (2) per round after. Rule in `scripts/domain/stress_system.gd` (`drag_stress`, `apply_drag`), called from `_start_round()` in `scripts/combat/combat_controller.gd`.
+- Also in this task:
+  - A second Colapso in the same fight is a death roll, and dragging stress on a hero already at 200 is a Colapso (doc 01 §3.4). Without it two heroes revived each other for ever.
+  - The boss threshold (12) is separate because boss fights average 7–10 rounds.
+  - `tools/sim_policy.gd`: the smart bot plays to finish once a fight is about to drag. `tools/sim_combat.gd`: `--party` and `--log-long N`. `tools/playtest_campaign.gd`: the bot retreats after losing two heroes on the expedition, not whenever two or fewer are alive.
+- Done when:
+  - [x] With `--party abuela,abuela,abuela,curandero` no fight passes 20 rounds (longest 12; with three Campesinos and an Abuela, 13)
+  - [x] `tools/sim_combat.gd` reports 0 chains past 40 rounds (starting party and both stall-prone parties, 10,000 chains each)
+- Result (doc 09 §6, doc 10): longest fight 58 → 23 rounds in the standard playtest; all 96 expeditions cleared, so the game is easier for the bot than before. One boss fight still reached 23 rounds.
+
+### P5-02c · M · Stress pass
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to play a full-route expedition and judge whether stress now matters without being unfair) · Depends: P5-02b, P5-02e · Spec: `01` §3, `04` §4
+- Done after P5-02d and P5-02e, not before: while half the full route's hunger stops were short of food, stress could not be tuned (the first try did nothing on the direct route and wrecked the full one).
+- What changed:
+  - `data/skills.json` `stress_relief`: *No Me Tumban* 5 → 2, *Círculo de Tiza* and *Humo de Hierbas* 6 → 3, *Regaño Santo* 12 → 8, *Rezo de Nicoya* 3 → 2.
+  - `enemy_stress` per difficulty in `data/progression.json`: 1.5 / 2.0 / 2.25. It scales the stress of enemy skills (`stress_mult` on the enemy; `combat_controller.gd`), not the extra stress of an enemy crit. Shown in the hub's difficulty tooltip; checked by the validator.
+  - Enemy basic-attack stress in `data/enemies.json` was not needed.
+- Done when (full route):
+  - [ ] Top hero's stress at the end 60–80 (measured 83; 55 on the direct route)
+  - [x] A resolve check in about 1 of 3 expeditions (26 of 72; 9 of 72 on the direct route)
+  - [x] Party average back at the hub 30–50 (38; 28 on the direct route)
+
+### P5-02d · S · Darkest Dungeon XP curve
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to judge whether Campeón in week 15–17 is the pace wanted) · Depends: P5-02a · Spec: `01` §6.1
+- `xp_thresholds` `[0, 2, 10, 24, 48, 84, 132]`, Pura Vida about 20% lower (`[0, 2, 8, 19, 38, 67, 106]`); XP per expedition stays 4 / 8 / 16. `SAVE_VERSION` 10: on load a hero's XP is raised to the threshold of their level, so nobody loses a level.
+- Done when:
+  - [x] Veterano around week 7 and Campeón around week 15 in the playtest (weeks 7–9 and 15–17; the spread is the bot resting heroes)
+  - [x] `tests/test_progression.gd` covers the curve and the migration (`tests/test_town_events.gd` the Pura Vida curve)
+  - [x] Doc 01 §6.1 and doc 13 updated
+
+### P5-02e · M · Two provision kits
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to try the prompt before leaving the hub) · Depends: P5-02a · Spec: `01` §4.6, `04` §3.1
+- Region `provisions` is `{ "short": {...}, "full": {...} }`. Sótanos: 10 gallo pinto + 3 candelas (1,050 ₡) and 16 + 5 (1,700 ₡); Bosque 9 + 3 and 14 + 4 (an estimate; Bosque is not in the slice). `GameState.missing_provisions(region, kit)` / `buy_missing_provisions(region, kit)`; the hub prompt lists both kits with a button for each and asks nothing when the full kit is covered; the validator requires both; the bot buys by `--route`.
+- Also in this task (tools only): the bot steps back into position when it can't attack, and plans its party per difficulty (`_plan_party` in `tools/playtest_campaign.gd`).
+- Done when:
+  - [x] Full-route hunger stops short of food fall from about half to under 10% (2%: 3 of 152)
+  - [x] Both kits covered by a test (`tests/test_expedition_systems.gd`, where the provision checks already were)
+- Result (doc 09 §6): with food sorted and the bot fixes, 144 of 144 expeditions are cleared and stress comes back at 12–16.
+
+### P5-02f · M · Economy and clear-rate tuning
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner decisions listed in the handoff of that date) · Depends: P5-02c, P5-02d, P5-02e
+- What changed:
+  - **Recruits are free** (owner 2026-11-15, as in Darkest Dungeon): `hire_cost` removed from `data/heroes.json`; `GameState.hire_cost` is 0 except for a hero a town event prices (`hire_veteran`). With paid recruits every full-route campaign went bankrupt after its first wipes.
+  - Enemies per difficulty in `data/progression.json`, PV / damage: Aprendiz ×1.1 / ×1.2, Veterano ×1.75 / ×1.6, Campeón ×2.4 / ×2 (were ×1 / ×1, ×1.22 / ×1.12, ×1.46 / ×1.24).
+  - *Sopa Milagrosa* heals 1–3 (was 2–4).
+  - Rewards, the Iglesia and the EBAIS were not changed: the bank no longer piles up.
+  - Tools: `tools/sim_combat.gd --level N --ranks R --gear` and `tools/playtest_campaign.gd --start-level N --start-ranks R --start-gear K --start-colones C` measure one difficulty on its own; the bot keeps a core team and two free spares.
+- Done when:
+  - [ ] Clear rates in the owner's bands: Aprendiz 91% (band 85–90), Veterano 86% (band 70–80; 64% full route, 96% direct), Campeón 4 of 5 (band 55–70; too few). See the note below.
+  - [x] The Iglesia and stress items take at least 10% of weekly spending on the full route (12%; 7% on the direct route)
+  - [ ] Colones after week 8 between 8k and 15k (measured 4.2–8.0k: the economy is now tight, and all 12 campaigns are solvent in week 24; loot was not raised)
+  - [x] Before/after tables in doc 09 §6 and doc 10
+- Why the later tiers are not pushed to the bottom of their bands: the bot retreats only after two heroes are down, so its failures are wipes. Veterano on the full route already loses 1.5 heroes per expedition at a 64% clear rate, against doc 04 §4's one death every 5–8 missions. Lowering the clear rate further this way would cost several heroes per expedition. Reaching the bands needs a decision first (see the handoff): a bot and a player who retreat earlier, or a retreat that keeps part of the loot.
+- Known limits: Campeón has almost no data (no full-route campaign reached it in 24 weeks); the first six weeks of a campaign are still never lost (36 of 36).
+- Parallel pass (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17, made without knowing about P5-02a–f): bot campaigns that never bought gear, tuned to 71% success (doc 09 §7). **Superseded by the 2026-11-17 merge**: its difficulty and stress numbers were dropped for P5-02a–f's. Two parts were kept:
+  - `hub.idle_stress_relief` (15 stress off a hero home all week without a booking; replaces the misas the bot relied on, since the group misa is gone, owner 2026-11-16);
+  - the campaign bot's Iglesia/Cantina bookings.
+  The re-measurement after the merge is in the handoff.
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5
 - Done when: [ ] Roadmap Phase 2 exit criteria checked by owner → Current phase = Alpha (break down roadmap Phase 3 into P6+ tasks then)
+
+### P5-04 · M · Retreat from a fight ("Retirada")
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to try a retreat in a fight that is going badly) · Depends: P5-02f · Spec: `01` §5.3
+- Why (owner 2026-11-15): failing should be cheaper than dying. Retreating on the map already kept every colón and item found, but there was no way out of a fight, where nearly all deaths happen.
+- Rule: on a hero's turn, "Retirada" works with `combat.retreat_chance` (0.75; a failed try spends the turn), costs every living hero `combat.retreat_stress` (10) and takes the party back to the room it came from; the room keeps its enemies. Not from a night ambush. `CombatResolver.roll_retreat`, `combat_controller.gd` `retreat()` / `combat_fled`, `GameState.previous_node_id` / `retreat_to_previous_room()`, `expedition_screen.gd` `_on_combat_fled`.
+- Also: the "Abandonar expedición" tooltip and ending line now say what the party keeps; the action row shrinks its icons when it holds nine; a retreat icon; `tools/screens/battle_screenshot.gd` saves `battle_actions.png`.
+- Done when:
+  - [x] `tests/test_retreat.gd` (13 checks: failed try, good retreat, room not cleared, enemies back at full PV, no retreat from an ambush)
+  - [x] The button and the action row checked in a screenshot
+  - [x] Doc 01 §5.3, doc 13, AGENTS.md §3 and §4
+
+### P5-05 · S · A bot that retreats (tools only)
+- Status: `review` (Claude Code, `betomm/happy-faraday-5yrmcr`, 2026-11-15; owner to say whether these are the moments a player would retreat) · Depends: P5-04
+- `tools/sim_policy.gd`: the smart bot calls a retreat when a hero has died in this fight, two heroes are Al Borde, or the fight drags with someone at 150+ stress (`--no-retreat` in `tools/sim_combat.gd` turns it off; the sim counts retreats). `tools/playtest_campaign.gd`: the bot goes home after a Retirada and after one death on the map (was two), pays for up to three misas a week, and reports abandoned expeditions with the loot kept.
+- Done when: [x] 3 × 24 weeks on both routes with no data change saved as `docs/playtests/2026-11-15-retreat-{full,direct}.md`
+- Result (doc 09 §6): heroes lost per expedition fell from 0.76 to 0.18 (full) and 0.25 to 0.06 (direct). The direct route is near the bands (94% / 96% / 55%). The full route is a stress spiral: 28 of 72 cleared, parties leaving the hub at 84 stress.
+
+### P5-06 · M · Retune Veterano and Campeón
+- Status: `blocked — needs P3-03 (stress relief at the hacienda) and bigger playtest samples` · Depends: P5-05, P3-03
+- Why blocked (2026-11-15): with retreating bots the full route is a stress spiral (the Iglesia removes 10 per misa), so harder enemies would only deepen it. And three campaigns per route swing by 15–30 points between identical or near-identical settings (doc 09 §6), which is more than the change this task is after. Run about ten campaigns per setting (`--campaigns 10`, about 1.5 hours per pair of routes) once P3-03 is in. A try at `hub.iglesia_relief` 20 and 30 was inconclusive and was not kept.
+- Lever: `enemy_hp` / `enemy_dmg` / `enemy_stress` for Veterano and Campeón in `data/progression.json`; Aprendiz only if the P5-05 reference moves it out of 85–90%. Tier-start runs first (`--start-level 3 --start-ranks 3 --start-gear 2 --start-colones 6000` and `--start-level 5 --start-ranks 4 --start-gear 4 --start-colones 9000`, 4 × 8 weeks per route), then one 3 × 24-week pair.
+- Owner 2026-11-15: keep the economy tight (no reward changes), the event veteran stays at 6,000 ₡, bosses keep dragging from round 12.
+- Done when: [ ] Veterano 70–80% and Campeón 55–70% cleared, both routes together [ ] heroes lost per expedition at or under about 0.3 [ ] all campaigns solvent in week 24, bank 4–8k [ ] doc 01 §6.1, doc 09 §6, doc 10 updated
 
 ---
 

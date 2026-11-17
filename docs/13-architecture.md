@@ -63,7 +63,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 | v7 | Modo Pura Vida and town events |
 | v8 | Casa Comunal skill ranks; older saves start every skill at rank 1 |
 | v9 | A hero's `skill_ids` always follow the class; a rank in a replaced skill moves to the new skill in the same slot |
-| v10 | Iglesia Vieja / Cantina (P3-03): hero `busy` {building, activity, cost, weeks_left, resolved} and `town_buffs`; a busy hero is never loaded into the party |
+| v10 | Longer XP curve (P5-02d): on load a hero's `resolve_xp` is raised to the threshold of their `resolve_level`, so nobody loses a level. Also (P3-03) hero `busy` {building, activity, cost, weeks_left, resolved} and `town_buffs`; a busy hero is never loaded into the party. Both came from parallel branches merged on 2026-11-17 |
 | v11 | `week_colones` {in, out}: the week's money so far, for telemetry (P5-01) |
 | v12 | Hero `quirks` [{id, locked}] (unknown ids dropped) and `clinic` {week, remove_negative, positive} (P3-06) |
 
@@ -166,7 +166,7 @@ CombatController.start(party, enemies, hero_units, enemy_units, elite, boss, amb
   3. The screen pays the reward (`combat_reward × loot_mult`, which includes the Luz tier) unless it was an ambush.
   4. A boss or objective win calls `complete_mission()` and ends the expedition with `"objective"`.
   5. A loss ends it with `"defeat"`.
-- **Signals to the screen:** `hero_turn_started`, `actor_changed`, `logged`, `enemy_changed`, `combat_over`.
+- **Signals to the screen:** `hero_turn_started`, `actor_changed`, `logged`, `enemy_changed`, `combat_over`, and `combat_fled` when the party retreats (P5-04): the screen then calls `GameState.retreat_to_previous_room()` and the room stays uncleared.
 - **Instant mode:** `instant = true` (plus stub units) makes the controller resolve without timers. `tools/sim_combat.gd` uses it to play thousands of fights headless.
 
 ### 3.6 Back to the hub
@@ -212,7 +212,7 @@ Every file has a `_doc` string that explains its fields; the validator is the st
 | File | What | Loaded by |
 |---|---|---|
 | `balance.json` | Hit band, crits, death roll, stress, afflictions, enemy squad scaling, hub prices, limits, hunger, Luz tiers | `Balance` (`num`, `int_of`, `arr`, `req`) |
-| `heroes.json` | 8 classes: stats, preferred `ranks`, `skill_ids` (first = the class's basic attack), `camp_skill_ids`, `status_resist`, `names`, `hire_cost` | `GameState` |
+| `heroes.json` | 8 classes: stats, preferred `ranks`, `skill_ids` (first = the class's basic attack), `camp_skill_ids`, `status_resist`, `names` (recruits are free) | `GameState` |
 | `skills.json` | Hero skills: `kind`, `target`, `use_ranks`/`target_ranks`, damage/heal ranges, `applies`, `cure`, movement, stress, `rank_bonus` | `GameState` |
 | `enemies.json` | Enemies by id: stats, `ranks`, `elements` (affinities), `status_resist`, `crit`, `skills` (one `basic`, 1–3 specials with `type`, `element`, `applies`, `target_ranks`, `weight`, `light`, `steal_colones`) | `GameState` |
 | `statuses.json` | Status definitions and stat tables (§4) | `StatusEffects` |

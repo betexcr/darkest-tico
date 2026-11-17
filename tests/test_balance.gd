@@ -50,6 +50,47 @@ func _run() -> void:
 	stress.add_stress(s, 15)
 	_check(str(s.get("affliction_id", "")) != "" or str(s.get("virtud_id", "")) != "", "resolve_threshold 50: crossing 50 triggers the resolve check")
 
+	print("Dragging fights (P5-02b)")
+	bal.reset()
+	var first: int = bal.int_of("combat.drag_round")
+	var first_boss: int = bal.int_of("combat.drag_round_boss")
+	_check(stress.drag_stress(first - 1) == 0 and stress.drag_stress(1) == 0, "no drag stress before round combat.drag_round (%d)" % first)
+	_check(stress.drag_stress(first) == bal.int_of("combat.drag_stress"), "round %d: combat.drag_stress (%d)" % [first, bal.int_of("combat.drag_stress")])
+	_check(stress.drag_stress(first + 3) == bal.int_of("combat.drag_stress") + 3 * bal.int_of("combat.drag_stress_step"), "it grows by combat.drag_stress_step every round")
+	_check(first_boss >= first and stress.drag_stress(first_boss - 1, true) == 0 and stress.drag_stress(first_boss, true) == bal.int_of("combat.drag_stress"), "boss fights start at combat.drag_round_boss (%d)" % first_boss)
+	bal.override("combat.drag_round", 2)
+	bal.override("combat.drag_stress", 7)
+	bal.override("combat.drag_stress_step", 0)
+	_check(stress.drag_stress(1) == 0 and stress.drag_stress(2) == 7 and stress.drag_stress(9) == 7, "overrides: from round 2, a flat 7")
+	# The controller applies it at the start of the round, to every living hero.
+	var cc = load("res://scripts/combat/combat_controller.gd").new()
+	cc.instant = true
+	root.add_child(cc)
+	var alive := {"name": "Viva", "hp": 10, "hp_max": 10, "stress": 0}
+	var fallen := {"name": "Caída", "hp": 0, "hp_max": 10, "stress": 0, "dead": true}
+	cc.party = [alive, fallen]
+	gs.mission_light = int(bal.num("light.max"))
+	cc._round = 1
+	cc._apply_drag_stress()
+	_check(int(alive["stress"]) == 0, "round 1: nobody gains stress")
+	cc._round = 2
+	cc._apply_drag_stress()
+	_check(int(alive["stress"]) == 7 and int(fallen["stress"]) == 0, "round 2: every living hero gains 7, the fallen none")
+	cc.queue_free()
+	# A hero pinned at the cap collapses; a second Colapso in the fight is a death roll.
+	bal.override("death.base", 0)
+	var worn := {"name": "Rendida", "hp": 10, "hp_max": 10, "stress": bal.int_of("stress.colapso"), "status_resist": {"golpe_de_gracia": 0}}
+	stress.apply_drag(worn, 7)
+	_check(bool(worn.get("al_borde", false)) and not bool(worn.get("dead", false)), "drag at the stress cap: the first Colapso of the fight drops the hero to Al Borde")
+	worn["al_borde"] = false
+	worn["hp"] = 5
+	worn["stress"] = bal.int_of("stress.colapso") - 4
+	stress.add_stress(worn, 7)
+	_check(bool(worn.get("dead", false)), "healed back up and collapsing again in the same fight: death roll (0% here, so the hero dies)")
+	var fresh := {"name": "Nueva", "hp": 10, "hp_max": 10, "stress": 20}
+	stress.apply_drag(fresh, 7)
+	_check(int(fresh["stress"]) == 27 and not bool(fresh.get("al_borde", false)), "below the cap, drag is plain stress")
+
 	bal.reset()
 	_check(gs.sell_price("gallo_pinto") == int(floor(price * bal.num("hub.sell_rate"))) and gs.inventory_slots() == 24, "reset restores the data values")
 	print("%d failure(s)" % _fail)

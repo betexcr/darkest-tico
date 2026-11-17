@@ -28,6 +28,8 @@ This spec mirrors core Darkest Dungeon town systems with Costa Rican theming and
 
 ## 3) Terminal de Buses de Sarchi (Recruitment)
 
+**Recruits are free** (owner 2026-11-15, as in Darkest Dungeon's Stage Coach). The weekly candidates cost nothing; the roster cap is the only limit. The exception is the level-6 veteran a town event can offer for colones. Why: a wiped party used to cost about 3,000 ₡ in hires on top of its ranks and equipment, and the playtest campaigns that lost one went bankrupt (doc 09 §6).
+
 ### Upgrade Tracks
 
 1. `Rutas Regionales` (Stage Coach Network mirror)

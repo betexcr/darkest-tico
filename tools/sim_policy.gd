@@ -7,26 +7,42 @@ extends RefCounted
 ##          stressed one (CALM_AT), open with a self/party buff, else the attack with the best
 ##          expected damage (a likely kill first). With `use_items`, a hero who can't heal an
 ##          ally in trouble uses a healing item from the alforja instead.
+##          Once the fight drags (the round before combat.drag_round and after, P5-02b) it
+##          plays to finish: nobody calms, only a hero Al Borde or under FINISH_HEAL_BELOW of
+##          PV is healed, and everyone else attacks. Calming costs more turns than the
+##          dragging stress gives back.
+##          It calls a retreat (P5-04) when the fight has gone wrong: a hero died in it,
+##          two heroes are Al Borde, or it is dragging with someone at RETREAT_STRESS or more.
+##          Set `retreats` to false to make it fight to the end.
 ##   basic: the first usable attack on the current target.
-## Nothing to hit: smart steps back toward its class's positions if it was shoved out, else uses
-## any support skill that helps, then Moverse, then Guardia.
+## Nothing to hit: smart first steps back into a position where one of its attacks works
+## (after a push or a shuffle), else uses any support skill that helps, then Moverse, then
+## Guardia.
 
 const CombatResolverScript := preload("res://scripts/domain/combat_resolver.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
+const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 
 ## Smart policy: heal an ally below this share of PV (or Al Borde)…
 const HEAL_BELOW := 0.4
 ## …and calm one at or above this stress.
-const CALM_AT := 70
-## P5-02: a target this weak (share of its PV) is worth finishing before any support.
-const FINISH_BELOW := 0.35
+const CALM_AT := 50
+## In a dragging fight, a hero at this stress or more is reason to leave.
+const RETREAT_STRESS := 150
+## Once the fight drags: heal only below this share of PV (or Al Borde).
+const FINISH_HEAL_BELOW := 0.25
 
 var cc  ## CombatController
 var gs  ## GameState
 var mode: String = "smart"
 var use_items: bool = false
+## Smart policy: leave a fight that has gone wrong (see _should_retreat).
+var retreats: bool = true
+## The fight the policy is in (its enemies array) and how many heroes were dead when it began.
+var _fight: Array = []
+var _dead_at_start: int = 0
 ## "<class> · <skill or action>" -> times used (for reports).
 var uses: Dictionary = {}
 
@@ -43,16 +59,19 @@ func _count(hero: Dictionary, what: String) -> void:
 
 
 func act(hero: Dictionary) -> void:
+	if not is_same(_fight, cc.enemies):
+		_fight = cc.enemies
+		_dead_at_start = cc.party.filter(func(h): return h.get("dead", false)).size()
+	if mode == "smart" and retreats and cc.can_retreat() and _should_retreat():
+		_count(hero, "Retirada")
+		cc.retreat()
+		return
 	var usable: Array = []
 	for sid in hero.get("skill_ids", []):
 		var sk: Dictionary = gs.hero_skill(hero, str(sid))
 		if not sk.is_empty() and cc.skill_usable(hero, sk):
 			usable.append(sk)
-	# P5-02: finish a weak enemy (or the last one) before healing or calming, unless someone
-	# is Al Borde. Without this the bot calmed stress forever while a boss sat at 10 PV.
-	if mode == "smart" and not _someone_al_borde() and _finishing(usable):
-		pass
-	elif mode == "smart" and _smart_support(hero, usable):
+	if mode == "smart" and _smart_support(hero, usable):
 		return
 	var best: Dictionary = {}
 	var best_t: Dictionary = {}
@@ -76,11 +95,9 @@ func act(hero: Dictionary) -> void:
 		cc.use_skill(best)
 		return
 	if mode == "smart":
-		# Nothing to hit from here and out of the class's positions: step back toward them
-		# (a careful player would; otherwise a shoved hero buffs forever and the fight stalls).
-		var home: Array = gs.get_hero_template(str(hero.get("hero_id", ""))).get("ranks", [])
-		var step: Dictionary = FormationScript.step_toward(hero, cc.party, home)
-		if not step.is_empty() and cc.move_options(hero).has(step):
+		# Out of position (pushed or shuffled): step back to where an attack works.
+		var step: Dictionary = _step_to_attack(hero)
+		if not step.is_empty():
 			_count(hero, "Moverse")
 			cc.move_hero(step)
 			return
@@ -108,7 +125,8 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 	for h in living:
 		if hurt.is_empty() or _hurt_key(h) < _hurt_key(hurt):
 			hurt = h
-	if not hurt.is_empty() and (bool(hurt.get("al_borde", false)) or float(hurt["hp"]) / float(hurt["hp_max"]) < HEAL_BELOW):
+	var finishing: bool = _finishing()
+	if not hurt.is_empty() and (bool(hurt.get("al_borde", false)) or float(hurt["hp"]) / float(hurt["hp_max"]) < (FINISH_HEAL_BELOW if finishing else HEAL_BELOW)):
 		for sk in usable:
 			if int(sk.get("heal_min", 0)) > 0 and _reaches(sk, hero, hurt):
 				_count(hero, str(sk.get("name", "?")))
@@ -124,7 +142,7 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 	for h in living:
 		if tense.is_empty() or int(h.get("stress", 0)) > int(tense.get("stress", 0)):
 			tense = h
-	if not tense.is_empty() and int(tense.get("stress", 0)) >= CALM_AT:
+	if not finishing and not tense.is_empty() and int(tense.get("stress", 0)) >= CALM_AT:
 		for sk in usable:
 			if str(sk.get("kind", "")) != "attack" and int(sk.get("stress_relief", 0)) > 0 and _reaches(sk, hero, tense):
 				_count(hero, str(sk.get("name", "?")))
@@ -141,20 +159,52 @@ func _smart_support(hero: Dictionary, usable: Array) -> bool:
 	return false
 
 
-func _someone_al_borde() -> bool:
-	return cc.party.any(func(h): return not h.get("dead", false) and bool(h.get("al_borde", false)))
-
-
-## An attack can reach the last enemy standing, or one below FINISH_BELOW of its PV.
-func _finishing(usable: Array) -> bool:
-	var alive: int = cc.enemies.filter(func(e): return not e.get("dead", false)).size()
-	for sk in usable:
-		if str(sk.get("kind", "")) != "attack":
+## The fight has gone wrong: someone died in it, two heroes are Al Borde, or it drags and a
+## hero is close to a Colapso.
+func _should_retreat() -> bool:
+	var dead: int = 0
+	var borde: int = 0
+	var top: int = 0
+	for h in cc.party:
+		if h.get("dead", false):
+			dead += 1
 			continue
-		for t in cc.targets_for(sk):
-			if alive == 1 or float(t.get("hp", 0)) < float(t.get("hp_max", 1)) * FINISH_BELOW:
-				return true
+		borde += 1 if bool(h.get("al_borde", false)) else 0
+		top = maxi(top, int(h.get("stress", 0)))
+	if dead > _dead_at_start or borde >= 2:
+		return true
+	return StressSystemScript.drag_stress(int(cc._round), bool(cc.is_boss)) > 0 and top >= RETREAT_STRESS
+
+
+## A neighbour to swap with so that this hero can attack from the new position ({} if none).
+## A swap that leaves the neighbour able to attack too is preferred.
+func _step_to_attack(hero: Dictionary) -> Dictionary:
+	var here: int = FormationScript.position_of(hero, cc.party)
+	var best: Dictionary = {}
+	var best_both: bool = false
+	for other in cc.move_options(hero):
+		var there: int = FormationScript.position_of(other, cc.party)
+		if not _attacks_from(hero, there):
+			continue
+		var both: bool = _attacks_from(other, here)
+		if best.is_empty() or (both and not best_both):
+			best = other
+			best_both = both
+	return best
+
+
+## True if the hero has an attack that works from `pos` and has something to hit.
+func _attacks_from(hero: Dictionary, pos: int) -> bool:
+	for sid in hero.get("skill_ids", []):
+		var sk: Dictionary = gs.hero_skill(hero, str(sid))
+		if str(sk.get("kind", "")) == "attack" and FormationScript.use_ranks(sk).has(pos) and not cc.targets_for(sk).is_empty():
+			return true
 	return false
+
+
+## The fight is dragging, or will next round (P5-02b): time to finish it.
+func _finishing() -> bool:
+	return StressSystemScript.drag_stress(int(cc._round) + 1, bool(cc.is_boss)) > 0
 
 
 ## The biggest heal in the alforja that works in combat on an ally ("" if none).
