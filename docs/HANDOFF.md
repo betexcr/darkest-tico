@@ -33,7 +33,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - **Validator:** new keys added.
 - **Verified:**
   - `validate_data.py`: 0 errors.
-  - Full test list: see the commit.
+  - Smoke test and all 18 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR` (`test_progression` was updated for the new Veterano HP).
   - 8 measurement runs (24 or 48 expeditions each). The final numbers are iteration 6's, 48 expeditions:
     - success 71% (Aprendiz 91%, Veterano 31%);
     - deaths 0.52 per mission;
