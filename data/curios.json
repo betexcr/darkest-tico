@@ -1,5 +1,5 @@
 {
-  "_doc": "Curio rooms (doc 07 §3) and choice events (doc 07 §5, P2-02). A curio has either a blind 'Examinar' outcome table (weighted) or `choices` [{label, item? (spent), cost? (colones), outcomes [weighted]}] (a choice event: no 'Dejarlo', so one choice must be free), plus an optional key item with a better outcome (offered only when carried). Which region uses which curio: the region generator's `curios` pool. Outcome effects: heal_party, stress_party, stress_random (one hero), light (Luz delta), colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
+  "_doc": "Curio rooms (doc 07 §3) and choice events (doc 07 §5, P2-02). A curio has either a blind 'Examinar' outcome table (weighted) or `choices` [{label, item? (spent), cost? (colones), outcomes [weighted]}] (a choice event: no 'Dejarlo', so one choice must be free). A curio may have `requires` {after_fight (the room right after a won fight), max_light, min_light} checked on entering; if they fail it becomes its `fallback` curio for good and `missing_text` is narrated (P2-10). Plus an optional key item with a better outcome (offered only when carried). Which region uses which curio: the region generator's `curios` pool. Outcome effects: heal_party, stress_party, stress_random (one hero), light (Luz delta), colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
   "curios": [
     {
       "id": "altar_roto",
@@ -261,6 +261,8 @@
           { "weight": 100, "text": "Siguen. El peón se queda llamándolos un buen rato.", "stress_party": 4 } ] }
       ] },
     { "id": "mercado_clandestino", "name": "Mercado clandestino",
+    "requires": { "after_fight": true }, "fallback": "carreta_pintada",
+    "missing_text": "Quedan tres bultos vacíos y una candela apagada. El vendedor solo sale cuando huele pelea; ahora no hay nadie.",
       "text": "Tres bultos y una candela en medio. Un vendedor sin cara ofrece mercadería «sin factura».",
       "choices": [
         { "label": "Comprarle", "cost": 300, "outcomes": [
@@ -273,6 +275,8 @@
           { "weight": 100, "text": "Sin factura no se compra nada. El vendedor se encoge de hombros." } ] }
       ] },
     { "id": "vision_del_abuelo", "name": "Visión del abuelo",
+    "requires": { "max_light": 50 }, "fallback": "retrato_del_abuelo",
+    "missing_text": "Con tanta luz, el abuelo no se atreve a aparecer. Solo queda su retrato.",
       "text": "En lo oscuro aparece el abuelo, de sombrero y con el mandador en la mano. No está muerto, dice: solo está esperando.",
       "choices": [
         { "label": "Sostenerle la mirada", "outcomes": [

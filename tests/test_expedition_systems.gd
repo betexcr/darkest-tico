@@ -330,7 +330,10 @@ func _test_curios(gs) -> void:
 	var caja_bad: Dictionary = gs.get_curio("caja_abuelo")["blind"].filter(func(o): return o.has("ambush"))[0]
 	screen._apply_outcome(str(caja_bad["text"]), caja_bad)
 	var n: int = gs.combat_context.get("enemies", []).size()
-	_check(int(screen._mode) == 2 and bool(gs.combat_context.get("is_ambush", false)) and n >= 1 and n <= 2, "Caja del abuelo (blind): an ambush of %d enemies, enemies first" % n)
+	# 1-2 monsters rolled; a Rata de troje brings its pair (P2-04 pack), so up to 3.
+	var rats: int = gs.combat_context.get("enemies", []).filter(func(e): return str(e.get("id", "")) == "rata_de_troje").size()
+	var rolled: int = n - maxi(rats - 1, 0)
+	_check(int(screen._mode) == 2 and bool(gs.combat_context.get("is_ambush", false)) and rolled >= 1 and rolled <= 2, "Caja del abuelo (blind): an ambush of %d enemies (%d rolled), enemies first" % [n, rolled])
 	_check(screen._combat.is_ambush, "the fight opens as an ambush")
 	screen.queue_free()
 	for i in 5:
@@ -404,6 +407,26 @@ func _test_room_events(gs) -> void:
 	_check(opts.size() == 2 and str(opts[0]["label"]).begins_with("Usar"), "with a candle: Usar first")
 	got = gs.pick_curio_option(opts[0])
 	_check(gs.item_count("candela_sebo") == 0 and int(got.get("stress_party", 0)) == -12, "the key item is spent for its outcome")
+
+	# P2-10: conditions. The Mercado only right after a won fight; the Visión only in low Luz.
+	var mid: String = "sim_cond"
+	gs.mission_nodes_index[mid] = {"id": mid, "type": "curio", "curio_id": "mercado_clandestino", "label": "Mercado clandestino"}
+	gs.current_node_id = mid
+	gs.note_fight_won()
+	gs.rooms_since_fight += 1
+	var rc: Dictionary = gs.room_curio()
+	_check(str(rc["curio"]["id"]) == "mercado_clandestino" and str(rc["note"]) == "", "Mercado: there in the room right after a fight")
+	gs.rooms_since_fight = 3
+	rc = gs.room_curio()
+	_check(str(rc["curio"]["id"]) == "carreta_pintada" and str(rc["note"]) != "" and str(gs.mission_nodes_index[mid]["label"]) == "Carreta pintada", "Mercado later on: the room becomes its fallback (Carreta pintada) for good")
+	gs.mission_nodes_index[mid] = {"id": mid, "type": "curio", "curio_id": "vision_del_abuelo", "label": "Visión del abuelo"}
+	gs.mission_light = 30
+	_check(str(gs.room_curio()["curio"]["id"]) == "vision_del_abuelo", "Visión del abuelo: there at Luz 30")
+	gs.mission_light = 90
+	_check(str(gs.room_curio()["curio"]["id"]) == "retrato_del_abuelo", "Visión at Luz 90: only the Retrato del abuelo")
+	gs.mission_light = 100
+	_check(gs.curio_ready(gs.get_curio("caminante_perdido")), "events without requires are always there")
+	gs.mission_nodes_index.erase(mid)
 
 	# The screen shows the choices and no Dejarlo.
 	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()

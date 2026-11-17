@@ -872,7 +872,12 @@ func _spring_trap(trap: Dictionary) -> void:
 
 
 func _open_curio() -> void:
-	var curio: Dictionary = GameState.get_curio(str(GameState.current_node().get("curio_id", "")))
+	# P2-10: a choice event out of its moment turns into its fallback curio.
+	var rc: Dictionary = GameState.room_curio()
+	var curio: Dictionary = rc["curio"]
+	if str(rc["note"]) != "":
+		_narrate(str(rc["note"]))
+		_room_label.text = "%s — %s" % [GameState.mission_region_data.get("name", ""), GameState.current_node().get("label", "")]
 	if curio.is_empty():
 		_open_event("Lugar extraño", "%s. Algo te llama." % GameState.current_node().get("label", ""))
 		_event_button("Dejarlo", func(): _resolve_event("Siguen adelante sin mirar atrás."))
@@ -1286,6 +1291,7 @@ func _on_combat_over(victory: bool) -> void:
 	if not roaming or GameState.roaming_clears_room(_combat_node_id):
 		GameState.mark_node_cleared(_combat_node_id)
 	GameState.ledger_add("fights")
+	GameState.note_fight_won()
 	if roaming:
 		# Roaming mini-boss (P2-05): a bounty if it died, nothing if it ran off.
 		var fled: bool = GameState.combat_context.get("enemies", []).any(func(e): return bool(e.get("fled", false)))

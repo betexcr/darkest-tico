@@ -664,6 +664,26 @@ def main() -> int:
                 check_outcome(f"{cw} outcomes[{j}]", o)
                 if not o.get("text"):
                     errors.append(f"{cw} outcomes[{j}]: needs text")
+    # P2-10: conditions for choice events, with a fallback curio when they fail.
+    curio_map = {c.get("id"): c for c in curios_raw.get("curios", [])}
+    for c in curios_raw.get("curios", []):
+        req = c.get("requires")
+        if req is None:
+            continue
+        where = f"curios.json: '{c.get('id')}' requires"
+        if not isinstance(req, dict) or not req or any(k not in ("after_fight", "max_light", "min_light") for k in req):
+            errors.append(f"{where}: only after_fight, max_light, min_light")
+            continue
+        if "after_fight" in req and req["after_fight"] is not True:
+            errors.append(f"{where}: after_fight must be true")
+        for k in ("max_light", "min_light"):
+            if k in req and not (isinstance(req[k], int) and 0 <= req[k] <= 100):
+                errors.append(f"{where}: {k} must be 0-100")
+        fb = curio_map.get(c.get("fallback"))
+        if fb is None or fb.get("requires") or fb.get("id") == c.get("id"):
+            errors.append(f"{where}: needs a fallback curio without requires")
+        if not c.get("missing_text"):
+            errors.append(f"{where}: needs missing_text")
     traps_raw = load(DATA / "traps.json") or {}
     trap_ids = set()
     for k in ("disarm_min", "disarm_max", "disarm_relief", "careful_light", "careful_trigger_pct"):

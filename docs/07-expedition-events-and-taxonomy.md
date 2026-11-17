@@ -57,7 +57,7 @@ Data: `data/traps.json` (P2-01). Every trap triggers when the party enters its r
 | `mercado_clandestino` | After combat | Buy / Steal / Leave | Gold, trinket, fight |
 | `vision_abuelo` | Low light | Resist / Embrace | Virtud chance / stress |
 
-Built (P2-02, 2026-11-16) as **choice events**: curio rooms with `choices` in `data/curios.json` instead of a blind table. A choice may spend an item (`item`) or colones (`cost`); a choice event has no "Dejarlo", so one choice is always free. Built: `caminante_perdido`, `mercado_clandestino`, `vision_del_abuelo`, `mesa_de_domino`, `llanto_en_el_pasillo`, `duendes_juguetones`, `procesion_de_animas`. The conditions above (after combat, low light) are not implemented: choice events are placed like any curio.
+Built (P2-02, 2026-11-16) as **choice events**: curio rooms with `choices` in `data/curios.json` instead of a blind table. A choice may spend an item (`item`) or colones (`cost`); a choice event has no "Dejarlo", so one choice is always free. Built: `caminante_perdido`, `mercado_clandestino`, `vision_del_abuelo`, `mesa_de_domino`, `llanto_en_el_pasillo`, `duendes_juguetones`, `procesion_de_animas`. Conditions (P2-10, 2026-11-17): a curio may have `requires` {`after_fight`, `max_light`, `min_light`}, checked when the party enters. `mercado_clandestino` needs the room right after a won fight; `vision_del_abuelo` needs Luz 50 or less. If the moment has passed, the room turns into the event's `fallback` curio for good (Carreta pintada / Retrato del abuelo) and its `missing_text` is narrated.
 
 ## 5.1) Sótanos room event pool (P2-02)
 

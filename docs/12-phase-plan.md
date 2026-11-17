@@ -180,9 +180,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Follow-up: P2-10 (event conditions: after combat, low light).
 
 ### P2-10 · S · Conditions for choice events
-- Status: `todo` · Depends: P2-02
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17) · Depends: P2-02
+- Files: `data/curios.json` (`requires`, `fallback`, `missing_text`), `scripts/autoload/game_state.gd` (`rooms_since_fight`, `note_fight_won`, `curio_ready`, `room_curio`), `scripts/expedition/expedition_screen.gd` (`_open_curio`, victory), `tools/validate_data.py`, `tests/test_expedition_systems.gd`
 - Spec: `07` §5 (Condition column)
-- Done when: [ ] Choice events can require a situation when the room is entered (e.g. `mercado_clandestino` after a fight, `vision_del_abuelo` in low Luz); otherwise a fallback curio is used
+- Done when: [x] Choice events can require a situation when the room is entered (`mercado_clandestino` after a fight, `vision_del_abuelo` at Luz ≤ 50); otherwise a fallback curio is used
 
 ### P2-03 · M · Classes 5–8
 - Status: `review` (done 2026-11-07 without ranks: Guachimán, Médica Josefina, Curandero Nicoyano, Exorcista in `heroes.json`, 4 skills each incl. ally/party support, guard-granting, cures and stun; hireable at the terminal. Rank constraints added in P1-03a) · Depends: P1-03, P1-04

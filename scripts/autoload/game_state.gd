@@ -116,6 +116,8 @@ var mission_light: int = 100
 
 ## Moves since the party last ate (travel hunger, P1-18; a camp meal resets it).
 var moves_since_meal: int = 0
+## Rooms walked since the last fight won (P2-10 choice-event conditions); high = none yet.
+var rooms_since_fight: int = 99
 
 var current_node_id: String = ""
 
@@ -254,6 +256,40 @@ func curio_options(curio: Dictionary) -> Array:
 	else:
 		out.append({"label": "Examinar", "enabled": true, "reason": "", "item": "", "cost": 0, "outcomes": curio.get("blind", [])})
 	return out
+
+
+## P2-10: a won fight, for "after_fight" choice events (the very next room).
+func note_fight_won() -> void:
+	rooms_since_fight = 0
+
+
+## Whether a curio's "requires" hold right now: after_fight (the room right after a won
+## fight), max_light / min_light (the Luz when entering).
+func curio_ready(curio: Dictionary) -> bool:
+	var req = curio.get("requires", null)
+	if not req is Dictionary:
+		return true
+	if bool(req.get("after_fight", false)) and rooms_since_fight != 1:
+		return false
+	if req.has("max_light") and mission_light > int(req["max_light"]):
+		return false
+	if req.has("min_light") and mission_light < int(req["min_light"]):
+		return false
+	return true
+
+
+## The curio this room holds now. A choice event whose moment has passed becomes its
+## "fallback" curio for good (the room's id and label change). Returns {curio, note}: the
+## note (its missing_text) says what happened, or "".
+func room_curio() -> Dictionary:
+	var nd: Dictionary = current_node()
+	var curio: Dictionary = get_curio(str(nd.get("curio_id", "")))
+	if curio.is_empty() or curio_ready(curio) or get_curio(str(curio.get("fallback", ""))).is_empty():
+		return {"curio": curio, "note": ""}
+	var fb: Dictionary = get_curio(str(curio["fallback"]))
+	nd["curio_id"] = str(fb["id"])
+	nd["label"] = str(fb.get("name", nd.get("label", "")))
+	return {"curio": fb, "note": str(curio.get("missing_text", ""))}
 
 
 ## Choice events offer their own way out; plain curios get "Dejarlo".
@@ -1206,6 +1242,7 @@ func start_mission(region_path: String = "") -> bool:
 	current_region_id = str(r.get("region_id", ""))
 	mission_light = mini(light_max(), int(r.get("initial_light", light_max())))
 	moves_since_meal = 0
+	rooms_since_fight = 99
 	node_item_uses.clear()
 	current_node_id = str(r.get("start_node", "n0"))
 	objective_node_id = str(r.get("objective_node", ""))
@@ -1374,6 +1411,7 @@ func move_to_node(target_id: String) -> bool:
 	current_node_id = target_id
 	node_item_uses.clear()
 	moves_since_meal += 1
+	rooms_since_fight += 1
 	if not visited_node_ids.has(target_id):
 		visited_node_ids.append(target_id)
 	_apply_low_light_stress_on_travel()

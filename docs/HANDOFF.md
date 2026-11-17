@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (5) — P2-10 — Conditions for choice events
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P2-10 `done`.
+- **Changed:**
+  - **`data/curios.json`:** a curio may have `requires` {`after_fight`, `max_light`, `min_light`}, a `fallback` curio and `missing_text`.
+    - *Mercado clandestino* needs the room right after a won fight (fallback: Carreta pintada).
+    - *Visión del abuelo* needs Luz ≤ 50 (fallback: Retrato del abuelo).
+  - **`GameState`:** `rooms_since_fight` (+1 per move, 0 on a won fight via `note_fight_won`), `curio_ready`, `room_curio()`. When the moment has passed, the room becomes the fallback for good, and its label changes.
+  - **Expedition screen:** `_open_curio` uses `room_curio()` and narrates `missing_text`; a win calls `note_fight_won()`.
+  - **Validator:** checks `requires`; the fallback must exist and have no `requires`; `missing_text` is required.
+  - **Tests:** `tests/test_expedition_systems.gd` gets 5 checks. I also fixed a flaky P2-04 check: a curio ambush that rolls a Rata brings its pair, so up to 3 enemies.
+  - Doc 07 §5.
+- **Verified:** `validate_data.py` 0 errors; smoke test and all 15 tests in the AGENTS list: 0 failures, no `SCRIPT ERROR`.
+- **Not verified / risks:** no human play-test. The map shows the event's name before entering, so a player can see *Mercado clandestino* on the map and then find the Carreta.
+- **Decisions needed:** none.
+- **Next step:** P5-01 (local telemetry log), then P3-06 (Clínica de Espantos + quirks), as the owner asked on 2026-11-17.
+
+---
+
 ## 2026-11-17 (4) — P1-09 — Phase 1 signed off
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P1-09 `done`. **Current phase is now P2.** The owner signed off Phase 1 on 2026-11-17.
