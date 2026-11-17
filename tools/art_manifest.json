@@ -2437,8 +2437,9 @@
         512
       ],
       "seed": 5201,
-      "subject": "Terminal de Buses de Sarchi: a small old rural Costa Rican bus station, low adobe building with a rusty corrugated tin roof and a long wooden bench, a faded painted destination board, an old round-nosed bus painted with colorful Sarchi oxcart flower patterns parked beside it, one lantern, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "old colorful bus painted with oxcart flowers parked by a lone rural bus station at night, adobe ticket office with rusty tin roof, one lantern, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_casa_comunal",
@@ -2448,8 +2449,9 @@
         512
       ],
       "seed": 5202,
-      "subject": "an old Costa Rican salon comunal, long two-storey wooden community hall painted pale green with a clay tile roof, a covered porch with wooden columns, a notice board covered in papers, a bronze bell hanging by the door, warm lamplight in the windows, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "old wooden community hall at night, two storeys, clay tile roof, porch with columns, notice board, bronze bell by the door, lit windows, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_taller",
@@ -2459,8 +2461,9 @@
         512
       ],
       "seed": 5203,
-      "subject": "a rural blacksmith and oxcart workshop, open adobe shed with a clay tile roof, a glowing orange forge and an anvil inside, a big wooden oxcart wheel painted with Sarchi geometric star patterns leaning on the wall, machetes and horseshoes hanging, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "blacksmith and oxcart workshop at night, open adobe shed, clay tile roof, glowing forge and anvil, big painted oxcart wheel leaning on the wall, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_clinica",
@@ -2470,8 +2473,9 @@
         512
       ],
       "seed": 5204,
-      "subject": "a small eerie rural clinic, whitewashed adobe house with peeling paint, a faded red cross painted above the door, iron barred windows glowing sickly green, glass bottles and dried herbs on the window sill, a crooked wooden sign, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "small eerie clinic at night, whitewashed adobe house, faded red cross over the door, barred windows glowing sickly green, bottles on the sill, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_iglesia",
@@ -2481,8 +2485,9 @@
         640
       ],
       "seed": 5205,
-      "subject": "an old colonial Costa Rican church, white adobe facade with a single square bell tower, clay tile roof, heavy wooden double doors, candlelight glowing in the doorway, a small iron cross on top, like the colonial church of Orosi, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "old white colonial adobe church at night, single square bell tower, clay tile roof, wooden doors, candlelight in the doorway, iron cross, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_cantina",
@@ -2492,8 +2497,9 @@
         512
       ],
       "seed": 5206,
-      "subject": "a small-town Costa Rican cantina, wooden building with a red tin roof, open saloon doors, warm orange light spilling out, beer crates stacked by the door, a string of bare light bulbs along the eaves, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "small-town cantina at night, wooden building, red tin roof, saloon doors, warm orange light, beer crates, bare light bulbs along the eaves, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_pulperia",
@@ -2503,8 +2509,9 @@
         512
       ],
       "seed": 5207,
-      "subject": "a Costa Rican pulperia corner store, small wooden house painted yellow and blue with a clay tile roof, a barred counter window, sacks of rice and beans, bunches of green plantains hanging, warm lamplight, single building standing alone, whole building in view from the street, centered, isolated on a plain black background, no people",
-      "cutout": true
+      "subject": "tiny corner store at night, wooden house painted yellow and blue, clay tile roof, barred counter window, rice sacks, hanging plantains, warm lamplight, isolated on black background",
+      "cutout": true,
+      "negative_extra": "other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
       "id": "town_bg",
@@ -2518,7 +2525,7 @@
         720
       ],
       "seed": 5200,
-      "subject": "wide night landscape behind a rural Costa Rican town, empty open dirt plaza in the foreground, coffee plantation hills and a volcano silhouette far behind, a few distant tiny house lights, misty moonlit cloudy purple sky, environment, no people, no buildings in the foreground"
+      "subject": "wide night landscape, empty dirt plaza in front, coffee hills and a volcano far behind, tiny distant lights, misty moonlit purple clouds, no buildings, no people"
     }
   ],
   "sprites": {
