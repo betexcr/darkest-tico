@@ -114,7 +114,7 @@ static func is_blocked(ev: Dictionary, item_id: String) -> bool:
 	return effects(ev).get("blocked_items", []).has(item_id)
 
 
-## service: iglesia | cantina | ebais | terminal | pulperia_compra | pulperia_venta | casa_comunal
+## service: iglesia | cantina | ebais | terminal | pulperia_compra | pulperia_venta | taller_compra | taller_venta | casa_comunal
 static func is_closed(ev: Dictionary, service: String) -> bool:
 	return effects(ev).get("closed", []).has(service)
 
@@ -155,7 +155,10 @@ static func kind_label(ev: Dictionary) -> String:
 
 const CATEGORY_NAMES := {"consumable": "consumibles", "healing": "remedios y vendas", "weapon": "armas", "armor": "armaduras", "accessory": "accesorios"}
 const SERVICE_NAMES := {"iglesia": "Iglesia Vieja", "cantina": "Cantina del Centro", "ebais": "EBAIS", "terminal": "Terminal de Buses",
-	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "casa_comunal": "Casa Comunal", "clinica": "Clínica de Espantos"}
+	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "taller_compra": "Taller (comprar)",
+	"taller_venta": "Taller (vender)", "casa_comunal": "Casa Comunal", "clinica": "Clínica de Espantos"}
+## Which shop sells each price category (P4-18): equipment at the Taller, the rest at the Pulpería.
+const CATEGORY_SHOP := {"consumable": "Pulpería", "healing": "Pulpería", "weapon": "Taller", "armor": "Taller", "accessory": "Taller"}
 
 
 static func _pct_text(pct: int) -> String:
@@ -189,11 +192,11 @@ static func effect_lines(ev: Dictionary, immediate: bool = true) -> PackedString
 		if fx.has("add_roster_free"):
 			out.append("Un héroe se une gratis a la hacienda")
 	for k in fx.get("price_pct", {}):
-		out.append("Pulpería, %s: %s" % [CATEGORY_NAMES.get(k, k), _pct_text(int(fx["price_pct"][k]))])
+		out.append("%s, %s: %s" % [CATEGORY_SHOP.get(k, "Pulpería"), CATEGORY_NAMES.get(k, k), _pct_text(int(fx["price_pct"][k]))])
 	for k in fx.get("first_buy_pct", {}):
 		out.append("Primer %s de la semana: %s" % [str(CATEGORY_NAMES.get(k, k)).trim_suffix("s"), _pct_text(int(fx["first_buy_pct"][k]))])
 	for k in fx.get("sell_rate", {}):
-		out.append("La pulpería compra %s al %d%% del precio" % [CATEGORY_NAMES.get(k, k), int(round(float(fx["sell_rate"][k]) * 100))])
+		out.append("%s compra %s al %d%% del precio" % ["El taller" if CATEGORY_SHOP.get(k, "") == "Taller" else "La pulpería", CATEGORY_NAMES.get(k, k), int(round(float(fx["sell_rate"][k]) * 100))])
 	for c in fx.get("closed", []):
 		out.append("Cerrado: %s" % SERVICE_NAMES.get(c, c))
 	for k in fx.get("service_pct", {}):

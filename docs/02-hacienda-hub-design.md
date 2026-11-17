@@ -25,12 +25,12 @@ The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one cut-out
 
 | Building | Window |
 |---|---|
-| Pulpería | shop (buy, sell mode, drop to sell) |
+| Pulpería | consumables shop (buy; sell mode or drop to sell anything) |
 | Terminal de Buses | the week's candidates |
 | Iglesia Vieja / Cantina del Centro | the selected hero's week of rest |
 | Clínica de Espantos | every hero, with a button to their quirk card |
 | Casa Comunal | the selected hero's skill ranks |
-| Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) |
+| Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) and the equipment shop: weapons, armor, accessories, with a filter; buys used equipment back (P4-18) |
 
 The EBAIS stays a button on each roster row. The Feria Nocturna, Guardabosques and Mejoras de Hacienda have no picture until they are built.
 

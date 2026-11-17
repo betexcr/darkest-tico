@@ -17,6 +17,30 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (15) — P4-18 — Equipment at the Taller, consumables at the Pulpería
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-18 `review`.
+- **Changed:**
+  - `GameState.shop_of(id)`: `taller` for equipment, `pulperia` for the rest.
+  - `buy_block_reason` checks `<shop>_compra`.
+  - `sell_item(id, shop = "pulperia")`: the Pulpería still buys anything; the Taller only equipment; closure `<shop>_venta`.
+  - Hub: the Taller page has the equipment shop (filters Todo / Armas / Armaduras / Accesorios, Vender, drop to sell) under the equipment slots. The Pulpería shows consumables only. One sell mode shared by both `Vender` buttons; selling from the alforja goes to whichever of the two windows is open.
+  - Town events:
+    - "La pulpera anda de buenas" (first accessory −80%) is now "El herrero anda de buenas"; the id `guino_de_la_pulpera` is kept for saves.
+    - "Corte de luz" also closes `taller_venta`.
+    - Price lines say Taller for equipment.
+  - Validator accepts `taller_compra` / `taller_venta`.
+  - `AGENTS.md` shop rule; doc 02 town table.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+  - Screenshots of both shops.
+- **Not verified / risks:** the playtest bot buys gear through `GameState.buy_item` (unchanged), so it still works.
+- **Decisions needed:** the Pulpería still buys equipment back (the old rule "buys any item"). Should only the Taller buy equipment?
+- **Next step:** owner review of P4-17/P4-18. Otherwise P5-07.
+
+---
+
 ## 2026-11-17 (14) — P4-17 fix — town art loads before Godot has imported it
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
 - **Status after session:** P4-17 `review`.

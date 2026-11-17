@@ -274,17 +274,13 @@ size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.85, 0.76, 0.6, 1)
 theme_override_font_sizes/font_size = 13
 autowrap_mode = 3
-text = "Clic en un artículo para comprarlo. Para vender, arrastre algo de la alforja hasta aquí o use el modo vender."
+text = "Clic en un artículo para comprarlo. Para vender cualquier cosa, arrastre de la alforja hasta aquí o use el modo vender."
 
 [node name="BtnSell" type="Button" parent="Building/VBox/Pages/pulperia/ShopHead"]
 layout_mode = 2
 tooltip_text = "Modo vender: clic en un artículo de la alforja para venderlo a la mitad del precio."
 toggle_mode = true
 text = "Vender"
-
-[node name="ShopFilters" type="HBoxContainer" parent="Building/VBox/Pages/pulperia"]
-layout_mode = 2
-theme_override_constants/separation = 4
 
 [node name="ShopScroll" type="ScrollContainer" parent="Building/VBox/Pages/pulperia"]
 layout_mode = 2
@@ -362,3 +358,35 @@ text = "Equipo"
 [node name="EquipRow" type="HBoxContainer" parent="Building/VBox/Pages/taller"]
 layout_mode = 2
 theme_override_constants/separation = 6
+
+[node name="ShopHead" type="HBoxContainer" parent="Building/VBox/Pages/taller"]
+layout_mode = 2
+
+[node name="ShopTitle" type="Label" parent="Building/VBox/Pages/taller/ShopHead"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.76, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+autowrap_mode = 3
+text = "A la venta: clic para comprar. El taller compra armas, armaduras y accesorios usados a la mitad del precio (arrastre aquí o use el modo vender)."
+
+[node name="BtnSell" type="Button" parent="Building/VBox/Pages/taller/ShopHead"]
+layout_mode = 2
+tooltip_text = "Modo vender: clic en una pieza de equipo de la alforja para venderla a la mitad del precio."
+toggle_mode = true
+text = "Vender"
+
+[node name="ShopFilters" type="HBoxContainer" parent="Building/VBox/Pages/taller"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ShopScroll" type="ScrollContainer" parent="Building/VBox/Pages/taller"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ShopGrid" type="HFlowContainer" parent="Building/VBox/Pages/taller/ShopScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4

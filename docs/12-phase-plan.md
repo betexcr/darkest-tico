@@ -480,6 +480,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `data/town.json` (new), `scripts/hacienda/town_building.gd` (new), `scripts/hacienda/hacienda_hub.gd`, `scenes/hacienda/hacienda_hub.tscn`, `assets/town/` (new art), `tools/art_manifest.json`, `tools/sd_cutout.py` (new), `tests/test_ui.gd`, `tests/test_hub_activities.gd`, `tests/test_quirks.gd`, `tools/screens/town_screenshot.gd` (new), `tools/screens/clinic_screenshot.gd`, `docs/02` (town view)
 - Done when: [x] the hub is a painted town with one picture per building (Terminal, Casa Comunal, Taller, Clínica, Iglesia, Cantina, Pulpería), the roster on the right and a bottom bar (colones, week, region, difficulty, start); [x] hovering a building highlights it and names it; [x] clicking opens that building's menu; [x] buildings closed by a town event look closed; [x] screenshot for review
 
+### P4-18 · S · Equipment sold at the Taller, consumables at the Pulpería (owner 2026-11-17)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): owner to look at it in-game · Depends: P4-17
+- Files: `scripts/autoload/game_state.gd` (`shop_of`, per-shop closures, `sell_item(id, shop)`), `scripts/domain/town_events.gd`, `scripts/hacienda/hacienda_hub.gd` + `scenes/hacienda/hacienda_hub.tscn` (shop on the Taller page, shared sell mode), `data/town_events.json` (El herrero anda de buenas; Corte de luz also closes the Taller's buying), `data/town.json`, `tools/validate_data.py`, `tests/test_hub.gd`, `tests/test_town_events.gd`, `AGENTS.md`, `docs/02`
+- Spec: owner "make the weapons, armours and accessories also be sold at the taller and the pulpería will only sell consumables"
+- Done when: [x] the Pulpería lists only consumables; [x] the Taller lists weapons, armor and accessories with a filter and buys used equipment back; [x] town-event closures are per shop; [x] tests
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

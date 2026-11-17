@@ -37,14 +37,18 @@ const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller"]
 @onready var _window: PanelContainer = $Building
 @onready var _pages: Control = $Building/VBox/Pages
 @onready var _who: HBoxContainer = $Building/VBox/Who
+## Two shops (P4-18, owner 2026-11-17): the Pulpería sells consumables, the Taller
+## weapons, armor and accessories (with a filter). Sell mode is shared by both.
 @onready var _shop_grid: HFlowContainer = $Building/VBox/Pages/pulperia/ShopScroll/ShopGrid
 @onready var _btn_sell: Button = $Building/VBox/Pages/pulperia/ShopHead/BtnSell
-@onready var _shop_filters: HBoxContainer = $Building/VBox/Pages/pulperia/ShopFilters
+@onready var _taller_grid: HFlowContainer = $Building/VBox/Pages/taller/ShopScroll/ShopGrid
+@onready var _btn_sell_taller: Button = $Building/VBox/Pages/taller/ShopHead/BtnSell
+@onready var _shop_filters: HBoxContainer = $Building/VBox/Pages/taller/ShopFilters
 
 const SHOP_FILTERS := [
-	["todo", "Todo"], ["consumable", "Consumibles"], ["weapon", "Armas"],
-	["armor", "Armaduras"], ["accessory", "Accesorios"],
+	["todo", "Todo"], ["weapon", "Armas"], ["armor", "Armaduras"], ["accessory", "Accesorios"],
 ]
+## The Taller's filter.
 var _shop_filter: String = "todo"
 @onready var _equip_title: Label = $Building/VBox/Pages/taller/EquipTitle
 @onready var _equip_row: HBoxContainer = $Building/VBox/Pages/taller/EquipRow
@@ -92,9 +96,11 @@ func _ready() -> void:
 	_build_town()
 	_build_shop_filters()
 	_build_shop()
-	_btn_sell.toggled.connect(func(_on: bool): _refresh())
-	# Drop any inventory item on the shop list to sell one.
-	$Building/VBox/Pages/pulperia/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
+	for b in [_btn_sell, _btn_sell_taller]:
+		b.toggled.connect(_set_selling)
+	# Drop an inventory item on a shop to sell one there.
+	$Building/VBox/Pages/pulperia/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("pulperia"))
+	$Building/VBox/Pages/taller/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("taller"))
 	for slot in GameState.EQUIP_SLOTS:
 		var es = EquipSlotScript.new()
 		es.setup(slot)
@@ -215,9 +221,10 @@ func _refresh() -> void:
 	_week.text = "Semana %d" % GameState.week
 	_refresh_equipment()
 	_refresh_skills()
-	for b in _shop_grid.get_children():
-		if not b.is_queued_for_deletion():
-			b.refresh()
+	for g in [_shop_grid, _taller_grid]:
+		for b in g.get_children():
+			if not b.is_queued_for_deletion():
+				b.refresh()
 	_refresh_relief()
 	_refresh_clinic_page()
 	_refresh_town()
@@ -260,20 +267,39 @@ func _category(item: Dictionary) -> String:
 	return "consumable"
 
 
-## One icon tile per item (data/items.json) in the selected category, in file order.
-## The tile shows the price; name, stats and description are in its tooltip card.
+## One icon tile per item (data/items.json), in file order: consumables at the Pulpería,
+## equipment in the Taller's chosen category. The tile shows the price; name, stats and
+## description are in its tooltip card.
 func _build_shop() -> void:
-	for c in _shop_grid.get_children():
-		c.queue_free()
+	for g in [_shop_grid, _taller_grid]:
+		for c in g.get_children():
+			c.queue_free()
 	for id in GameState.all_item_ids():
 		var item: Dictionary = GameState.get_item(str(id))
-		if _shop_filter != "todo" and _category(item) != _shop_filter:
+		var shop: String = GameState.shop_of(str(id))
+		if shop == "taller" and _shop_filter != "todo" and _category(item) != _shop_filter:
 			continue
 		var b = ShopSlotScript.new()
 		b.setup(str(id))
-		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell)
+		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind(shop))
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
-		_shop_grid.add_child(b)
+		(_taller_grid if shop == "taller" else _shop_grid).add_child(b)
+
+
+## Sell mode is one switch shown in both shops.
+func _set_selling(on: bool) -> void:
+	for b in [_btn_sell, _btn_sell_taller]:
+		b.set_pressed_no_signal(on)
+	_refresh()
+
+
+func _selling() -> bool:
+	return _btn_sell.button_pressed
+
+
+## Where a sale happens: the Taller while its window is open, else the Pulpería.
+func _sell_shop() -> String:
+	return "taller" if _open_building == "taller" else "pulperia"
 
 
 # --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------
@@ -552,7 +578,7 @@ func _refresh_equipment() -> void:
 		_selected = GameState.roster[0] if not GameState.roster.is_empty() else {}
 	_equip_title.text = "Arrastre armas, armaduras y accesorios desde la alforja (a la derecha) hasta un espacio, o haga clic en la pieza en la alforja. Clic en un espacio para quitarla. En expedición no se cambia el equipo en plena pelea."
 	var pack_title: Label = $Right/VBox/PackTitle
-	if _btn_sell.button_pressed:
+	if _selling():
 		pack_title.text = "MODO VENDER: clic en un artículo para venderlo (mitad de precio)"
 		pack_title.add_theme_color_override("font_color", Color(1, 0.7, 0.45))
 	else:
@@ -567,12 +593,12 @@ func _refresh_equipment() -> void:
 		if k < GameState.inventory.size():
 			b.setup(str(GameState.inventory[k]["id"]), int(GameState.inventory[k]["qty"]))
 			b.used.connect(func(id: String):
-				if _btn_sell.button_pressed:
-					_say(GameState.sell_item(id))
+				if _selling():
+					_say(GameState.sell_item(id, _sell_shop()))
 				elif GameState.is_equipment(id) and not _selected.is_empty():
 					_say(GameState.equip(_selected, id))
 			)
-			if _btn_sell.button_pressed:
+			if _selling():
 				b.modulate = Color(1, 0.85, 0.6)
 		else:
 			b.setup("", 0)
@@ -646,8 +672,8 @@ func _can_drop_sell(_at: Vector2, data: Variant) -> bool:
 	return data is Dictionary and str(data.get("kind", "")) == "item"
 
 
-func _drop_sell(_at: Vector2, data: Variant) -> void:
-	_say(GameState.sell_item(str(data.get("id", ""))))
+func _drop_sell(_at: Vector2, data: Variant, shop: String = "pulperia") -> void:
+	_say(GameState.sell_item(str(data.get("id", "")), shop))
 
 
 # --- Terminal de Buses ------------------------------------------------------------

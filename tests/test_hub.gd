@@ -83,21 +83,32 @@ func _run() -> void:
 	await process_frame
 	_check(hub._roster_list.get_child_count() == 4, "hub lists 4 heroes")
 	_check(hub._recruit_box.get_child_count() == 3, "hub lists 3 candidates")
+	# P4-18: the Pulpería sells consumables, the Taller weapons, armor and accessories.
+	var live := func(g): return g.get_children().filter(func(b): return not b.is_queued_for_deletion())
+	var equip_ids: Array = gs.all_item_ids().filter(func(i): return gs.is_equipment(str(i)))
+	hub._shop_filter = "todo"
+	hub._build_shop()
+	await process_frame
+	var pul: Array = live.call(hub._shop_grid)
+	_check(pul.size() == gs.all_item_ids().size() - equip_ids.size() and pul.all(func(t): return not gs.is_equipment(t.item_id)),
+		"the Pulpería sells only consumables (%d)" % pul.size())
+	_check(live.call(hub._taller_grid).size() == equip_ids.size(), "the Taller sells all %d pieces of equipment" % equip_ids.size())
 	var counts: Dictionary = {}
-	for f in ["todo", "consumable", "weapon", "armor", "accessory"]:
+	for f in ["weapon", "armor", "accessory"]:
 		hub._shop_filter = f
 		hub._build_shop()
 		await process_frame
-		counts[f] = hub._shop_grid.get_children().filter(func(b): return not b.is_queued_for_deletion()).size()
-	_check(counts["todo"] == gs.all_item_ids().size(), "store 'Todo' lists all %d items" % counts["todo"])
-	_check(counts["consumable"] + counts["weapon"] + counts["armor"] + counts["accessory"] == counts["todo"],
-		"filters split the store: %d consumibles, %d armas, %d armaduras, %d accesorios" % [
-		counts["consumable"], counts["weapon"], counts["armor"], counts["accessory"]])
+		counts[f] = live.call(hub._taller_grid).size()
+	_check(counts["weapon"] + counts["armor"] + counts["accessory"] == equip_ids.size(),
+		"the Taller's filters split it: %d armas, %d armaduras, %d accesorios" % [counts["weapon"], counts["armor"], counts["accessory"]])
+	_check(gs.shop_of("gallo_pinto") == "pulperia" and gs.shop_of(str(equip_ids[0])) == "taller", "shop_of: food at the Pulpería, gear at the Taller")
+	gs.add_item("gallo_pinto", 1)
+	_check(gs.sell_item("gallo_pinto", "taller").begins_with("El taller solo compra"), "the Taller doesn't buy food")
 	# Pulpería tiles are icons with a price; the full text lives in the tooltip card.
 	hub._shop_filter = "todo"
 	hub._build_shop()
 	await process_frame
-	var tiles: Array = hub._shop_grid.get_children().filter(func(b): return not b.is_queued_for_deletion())
+	var tiles: Array = live.call(hub._shop_grid)
 	var tile = tiles[0]
 	_check(tile.icon != null and tile.text == "%d ₡" % gs.item_price(tile.item_id), "store tile shows icon + price only (%s)" % tile.text)
 	var card = tile._make_custom_tooltip("")

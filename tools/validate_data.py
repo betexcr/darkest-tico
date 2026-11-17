@@ -200,7 +200,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "casa_comunal", "clinica"}
+    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "casa_comunal", "clinica"}
     # Town view (P4-17): one building per hub service, with its cut-out picture.
     town = load(DATA / "town.json") or {}
     town_ids = set()

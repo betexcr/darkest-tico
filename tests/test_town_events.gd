@@ -77,7 +77,7 @@ func _run() -> void:
 	gs.draw_town_event("guino_de_la_pulpera")
 	var acc: String = "escapulario"
 	var full: int = int(gs.get_item(acc)["price"])
-	_check(gs.item_price(acc) == int(round(full * 0.2)), "La pulpera anda de buenas: first accessory -80%")
+	_check(gs.item_price(acc) == int(round(full * 0.2)), "El herrero anda de buenas: first accessory -80%")
 	gs.buy_item(acc)
 	_check(gs.item_price(acc) == full, "…only the first one")
 	gs.draw_town_event("compraventa")
@@ -86,8 +86,11 @@ func _run() -> void:
 	_check(gs.buy_block_reason("guaro_contrabando") != "" and gs.buy_block_reason("gallo_pinto") == "", "Ley seca: no guaro, gallo pinto ok")
 	gs.draw_town_event("asalto_a_la_pulperia")
 	_check(gs.buy_item("gallo_pinto").begins_with("La pulpería está cerrada"), "Asaltaron la pulpería: can't buy")
+	_check(gs.buy_block_reason("cotona_de_cuero") == "", "…but the Taller still sells equipment (P4-18)")
 	gs.draw_town_event("corte_de_luz")
 	_check(gs.sell_item("gallo_pinto").begins_with("La pulpería no compra"), "Corte de luz: can't sell")
+	gs.add_item("cotona_de_cuero", 1)
+	_check(gs.sell_item("cotona_de_cuero", "taller").begins_with("El taller no compra"), "…not at the Taller either")
 	gs.draw_town_event("el_padre_de_gira")
 	_check(gs.activity_block_reason(gs.roster[0], "iglesia", "rezo").contains("cerrada"), "El padre anda de gira: Iglesia closed")
 	gs.party[0]["hp"] = 10

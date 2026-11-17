@@ -543,17 +543,27 @@ func item_price(item_id: String) -> int:
 	return maxi(int(round(int(item.get("price", 0)) * (1.0 + pct / 100.0))), 0)
 
 
-## Why the Pulpería won't sell this now ("" if it will).
+## Which hub shop sells an item (P4-18, owner 2026-11-17): the Taller de Herrería y
+## Carretas sells weapons, armor and accessories; the Pulpería sells everything else.
+func shop_of(item_id: String) -> String:
+	return "taller" if is_equipment(item_id) else "pulperia"
+
+
+const SHOP_NAMES := {"pulperia": "La pulpería", "taller": "El taller"}
+
+
+## Why its shop won't sell this now ("" if it will).
 func buy_block_reason(item_id: String) -> String:
 	var ev: Dictionary = active_event()
-	if TownEventsScript.is_closed(ev, "pulperia_compra"):
-		return "La pulpería está cerrada esta semana (%s)." % ev.get("name", "")
+	var shop: String = shop_of(item_id)
+	if TownEventsScript.is_closed(ev, shop + "_compra"):
+		return "%s está cerrad%s esta semana (%s)." % [SHOP_NAMES[shop], "a" if shop == "pulperia" else "o", ev.get("name", "")]
 	if TownEventsScript.is_blocked(ev, item_id):
 		return "Esta semana no se vende %s (%s)." % [get_item(item_id).get("name", item_id), ev.get("name", "")]
 	return ""
 
 
-## Pulpería. Returns a message for the hub status line.
+## Buys one at its shop (Pulpería or Taller). Returns a message for the hub status line.
 func buy_item(item_id: String) -> String:
 	var item: Dictionary = get_item(item_id)
 	if item.is_empty():
@@ -581,12 +591,15 @@ func sell_price(item_id: String) -> int:
 	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else BalanceScript.num("hub.sell_rate"))))
 
 
-## Pulpería buys back one unit at half price. Returns a message for the hub.
-func sell_item(item_id: String) -> String:
+## Buys back one unit at half price. The Pulpería buys anything; the Taller only weapons,
+## armor and accessories (P4-18). Returns a message for the hub.
+func sell_item(item_id: String, shop: String = "pulperia") -> String:
 	if item_count(item_id) <= 0:
 		return "No tienes ese artículo."
-	if TownEventsScript.is_closed(active_event(), "pulperia_venta"):
-		return "La pulpería no compra nada esta semana (%s)." % active_event().get("name", "")
+	if shop == "taller" and not is_equipment(item_id):
+		return "El taller solo compra armas, armaduras y accesorios; lo demás, en la pulpería."
+	if TownEventsScript.is_closed(active_event(), shop + "_venta"):
+		return "%s no compra nada esta semana (%s)." % [SHOP_NAMES.get(shop, shop), active_event().get("name", "")]
 	var price: int = sell_price(item_id)
 	remove_item(item_id, 1)
 	colones += price
