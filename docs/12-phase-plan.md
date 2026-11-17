@@ -540,7 +540,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] `user://telemetry.jsonl` records mission result, stress spikes, colones in/out per week
 
 ### P5-02 · M · Balance pass to 55–70% mission success
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-17)` · Depends: P1-07, P2-*, P5-01
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): first pass done (doc 09 §6); owner to play and judge the stress feel; deaths still above target (P2-11) · Depends: P1-07, P2-*, P5-01
+- Files: `data/balance.json` (`combat.enemy_stress_pct`, `combat.long_fight_*`, `hub.heal_cost_per_hp`, `hub.idle_stress_relief`), `data/progression.json` (Veterano/Campeón multipliers), `scripts/combat/combat_controller.gd` (enemy stress %, long-fight stress), `scripts/autoload/game_state.gd` (rest at home), `tools/playtest_campaign.gd` (retreat a breaking party, leave the frayed home), `tools/sim_policy.gd` (finish weak enemies first, calm at 70), `tools/validate_data.py`, doc 09 §6
+- Done when: [x] bot campaigns (48 expeditions) at 55–70% success (71%); [x] stress matters (~1 Quebranto/Virtud per mission); [x] economy balanced (in ≈ out); [ ] deaths at 1 per 5–8 missions (0.52 per mission; needs P2-11)
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

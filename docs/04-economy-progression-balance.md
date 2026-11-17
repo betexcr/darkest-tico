@@ -129,6 +129,10 @@ Weapon/armor costs per hero:
 - Positive trait lock/remove: 7,500 / 10,500 / 13,500
 - Disease cure: 750 / 1,050 / 1,350
 
+## 3.6 Measured (P5-02, 2026-11-17)
+
+The first balance pass against these targets is in doc 09 §6: 71% success, ~1 Quebranto/Virtud per mission, weekly money in ≈ out, deaths 0.52 per mission (above target; P2-11).
+
 ## 4) Attrition and Recovery Targets
 
 - On average successful mission should produce:

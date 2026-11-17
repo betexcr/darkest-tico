@@ -308,8 +308,8 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
 | Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / accuracy / ailment resist | Pay |
 |---|---|---|---|---|---|
 | Aprendiz | 1 | 0–2 | 4 | ×1 / ×1 / +0 / +0% | ×1 |
-| Veterano | 3 | 3–4 | 8 | ×1.22 / ×1.12 / +3 / +10% | ×1.6 |
-| Campeón | 5 | 5–6 | 16 | ×1.46 / ×1.24 / +6 / +20% | ×2.5 |
+| Veterano | 3 | 3–4 | 8 | ×1.15 / ×1.06 / +3 / +10% (P5-02) | ×1.6 |
+| Campeón | 5 | 5–6 | 16 | ×1.35 / ×1.15 / +6 / +20% (P5-02) | ×2.5 |
 
 - **Regions have their own level** (owner 2026-11-08: "dungeons should have scaling difficulty, Sótanos the easiest"). Each region JSON has a `region_level` following the doc 05 §4 order: Sótanos 0, Cañaverales/Bosque 1, Pueblo Fantasma 2, Ruinas Volcánicas 3, Portal 4. It **adds to the picked difficulty**:
   - The expedition level and the hero range both move up by the region level, capped at 6. For example, Aprendiz in Bosque is level 2 for heroes 1–3.

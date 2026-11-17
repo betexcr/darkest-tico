@@ -108,3 +108,49 @@ Both wipes came late, in Veterano week 7 and Campeón week 8. Each was a long fi
 3. Heroes reach Veterano by week 4–6 and Campeón by week 7–8. Decide whether progression is too fast.
 4. Decide whether recommended provisions should assume full exploration (about 16 gallo pinto).
 5. Give healer-heavy parties a way to end fights (or heal less), so they don't stall.
+
+## 6) Balance pass — 2026-11-17 (P5-02)
+
+**How it was measured.** `tools/playtest_campaign.gd -- --campaigns 3 --weeks 8 --telemetry <path>` (seeds 1 and 2 from iteration 5 on, so 48 expeditions per measurement), summarised with `tools/telemetry_report.py`. The combat sim (`tools/sim_combat.gd`) checked fights in between.
+
+**Bot changes.** These changed what "careful player" means; earlier numbers aren't directly comparable.
+- It retreats a breaking party: 2 Quebrantos, or a hero at 150 stress.
+- It leaves frayed heroes home (a Quebranto or 100+ stress sorts last; a hero at 150 stays home if 3 others can go).
+- In combat it finishes a weak or last enemy before healing or calming (`tools/sim_policy.gd`), and calms at 70 stress instead of 50. Without this the bot calmed forever while a boss sat at 10 PV.
+
+**Iterations** (success = objective reached; deaths per expedition):
+
+| # | Change | Success (Aprendiz / Veterano) | Deaths | Notes |
+|---|---|---:|---:|---|
+| 0 | baseline | 96% | 0.29 | 0.08 Quebranto/Virtud per mission; colones 5k → 11–22k |
+| 1 | enemy stress +150%, long fights +4/round from round 12, rewards −20% | 25% | 0.79 | 29 collapses; every campaign went broke |
+| 2 | stress +60%, +3/round, rewards −10% | 46% (65 / 0) | 0.21 | stressed parties fled the first room, earned nothing: a spiral |
+| 3 | + rest at home (15/week), bot leaves frayed heroes home | 54% | 0.71 | stress 150–200, collapses |
+| 4 | stress +35%, long fights from round 14 | 71% (89 / 17) | 0.50 | first good run |
+| 5 | Aprendiz enemy HP ×1.1, Veterano ×1.15 HP / ×1.06 damage | 40% | 0.54 | campaigns starved (2k in, 2.4k out a week) |
+| **6** | **rewards back to original, Aprendiz HP ×1.0** | **71% (91 / 31)** | **0.52** | **kept**: money balanced, ~1 Quebranto/Virtud per mission |
+| 7 | Aprendiz damage ×1.05, Veterano ×1.10 / ×1.03 | 56% (69 / 17) | 0.90 | 9 wipes, 53 collapses: reverted |
+
+**Final numbers (iteration 6), against doc 04:**
+
+| | Result | Target |
+|---|---:|---:|
+| Mission success | 71% | 55–70% |
+| Deaths per expedition | 0.52 | 0.12–0.2 (1 per 5–8) |
+| Heroes needing stress care | ~1 Quebranto/Virtud per mission; heroes come home at ~66 stress | ~1 per mission |
+| Weekly money (early game) | ~3.5k in, ~3.6k out; 1.5–10k after 8 weeks | mild pressure, no snowball |
+| Combat sim (300 chains) | boss cleared 97.3%, 0 stalls, top hero stress ~61 by the boss | — |
+
+**What changed in the data:**
+- `balance.json`:
+  - `combat.enemy_stress_pct` 35;
+  - `combat.long_fight_from` 14, `long_fight_stress` 3 (ends healer stalls);
+  - `hub.heal_cost_per_hp` 20;
+  - `hub.idle_stress_relief` 15 (new: a week at home without a booking).
+- `progression.json`: Veterano enemies ×1.15 HP / ×1.06 damage (were ×1.22 / ×1.12); Campeón ×1.35 / ×1.15 (were ×1.46 / ×1.24).
+
+**What the numbers say:**
+- **The game is now stress-driven.** Missions fail mostly by retreat, Quebrantos show up every mission, and the Iglesia/Cantina matter.
+- **Deaths stay above target.** Most come from full wipes, because a fight can't be fled (new task **P2-11**).
+- **The jump from Aprendiz (91%) to Veterano (31%) is steep.** The bot reaches Veterano because seasoned heroes refuse easy runs, so parties of mixed level go out.
+- **The system has strong feedback loops.** A 5–10% change in enemy damage or rewards swings success by 15–30 points, so retune in small steps and measure 48+ expeditions.

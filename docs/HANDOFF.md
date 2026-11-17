@@ -17,6 +17,41 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-17 (9) — P5-02 — First balance pass
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-02 `review` (first pass; deaths still above target). New `todo` P2-11 (retreat from a fight).
+- **Changed:** full write-up with the 8 iterations in doc 09 §6.
+  - **`balance.json`:**
+    - new `combat.enemy_stress_pct` 35;
+    - new `combat.long_fight_from` 14 / `long_fight_stress` 3 (code in `combat_controller.gd`);
+    - `hub.heal_cost_per_hp` 15 → 20;
+    - new `hub.idle_stress_relief` 15: `end_of_expedition_week` takes 15 stress off anyone home all week without a booking.
+  - **`progression.json`:** Veterano enemy HP ×1.15 and damage ×1.06 (were 1.22/1.12); Campeón ×1.35 / ×1.15 (were 1.46/1.24). Sótanos rewards end where they started.
+  - **Bots:**
+    - `playtest_campaign.gd` retreats a breaking party (2 Quebrantos or a hero at `RETREAT_STRESS` 150) and leaves frayed heroes home;
+    - `sim_policy.gd` finishes the last or a weak enemy before support and calms at 70 (it used to calm forever while a boss sat at 10 PV).
+  - **Validator:** new keys added.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Full test list: see the commit.
+  - 8 measurement runs (24 or 48 expeditions each). The final numbers are iteration 6's, 48 expeditions:
+    - success 71% (Aprendiz 91%, Veterano 31%);
+    - deaths 0.52 per mission;
+    - about 1 Quebranto/Virtud per mission;
+    - about 3.5k ₡ in and 3.6k ₡ out per week.
+  - Combat sim on the final data: boss cleared 97.3%, 0 stalls.
+- **Not verified / risks:**
+  - The bot is not a human: it ignores gear and town-event offers.
+  - The system has strong feedback loops: 5–10% changes swing success by 15–30 points.
+  - Iteration 6's exact numbers weren't re-run after the iteration 7 revert. The data now matches iteration 6.
+- **Decisions needed:**
+  - Approve "rest at home" (15 stress per week without paying). It's new: Darkest Dungeon has no such thing. It was added to stop broke campaigns spiralling.
+  - Accept fights that drag (round 14+) costing stress to everyone?
+  - The Aprendiz → Veterano jump (91% → 31%): soften a seasoned hero's refusal of easy runs, or keep it?
+- **Next step:** P2-11 (retreat from a fight). Add a "Retirarse" action in `scripts/combat/combat_controller.gd` and the expedition action bar, then re-measure deaths with `tools/playtest_campaign.gd -- --campaigns 3 --weeks 8 --seed 1/2 --telemetry <path>`.
+
+---
+
 ## 2026-11-17 (8) — P3-19 + P4-15 — Clínica keeps the hero home; menus in the item-card style
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-19 `done`; P4-15 `review` (owner to look at the screens).
