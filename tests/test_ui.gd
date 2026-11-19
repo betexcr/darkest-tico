@@ -291,6 +291,31 @@ func _town(gs) -> void:
 	await process_frame
 	_check(hub._who.visible and hub._skills_row.get_child_count() > 0, "the Casa Comunal shows whose skills they are")
 	hub.close_building()
+	# With no building open, a hero click opens their full sheet (owner 2026-11-19).
+	await process_frame
+	info.call(2).pressed.emit()
+	await process_frame
+	var sheets: Array = hub.get_children().filter(func(c): return c is AcceptDialog and c.visible and c.title.begins_with("Ficha de"))
+	_check(sheets.size() == 1 and sheets[0].title == "Ficha de %s" % gs.party[2]["name"], "a hero click in the town opens their sheet")
+	if sheets.size() == 1:
+		var texts: Array = []
+		var stack: Array = [sheets[0]]
+		var skills: int = 0
+		var gear: int = 0
+		while not stack.is_empty():
+			var n: Node = stack.pop_back()
+			stack.append_array(n.get_children())
+			if n is Label:
+				texts.append(n.text)
+			if n is Button and n.get_script() == hub.SkillButtonScript:
+				skills += 1
+			if n.get_script() == hub.ItemHoverScript:
+				gear += 1
+		var all_t: String = " ".join(texts)
+		_check(all_t.contains("Precisión") and all_t.contains("Protección") and all_t.contains("RESISTENCIAS") and all_t.contains("EQUIPO"), "…with stats, resistances and equipment")
+		_check(skills == gs.party[2]["skill_ids"].size(), "…and every skill as an icon with its card (%d)" % skills)
+		sheets[0].hide()
+	_check(hub._roster_click_hint().contains("ficha"), "the roster hint says a click opens the sheet")
 	hub.queue_free()
 	await process_frame
 	# A town event that closes the terminal greys it out.

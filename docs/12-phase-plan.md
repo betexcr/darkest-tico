@@ -510,6 +510,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "in the Clínica de Espantos the traits should be listed as in the Terminal de Buses; trait badges need a tooltip with flavour text and explanation; add more Tico negative/positive traits; remove the traits from the button tooltip; make the hero limit 30 instead of 8"
 - Done when: [x] one card row per hero (portrait, PV/estrés, quirk badges, "Tratar (n)" button; no quirk list in the button tooltip); [x] every quirk badge (Clínica, Terminal, hero cards) has a tooltip: name, kind, flavour, effect; [x] 8 positive, 8 negative and 2 disease quirks added (16/16/5); [x] `limits.roster_cap` 30; [x] tests
 
+### P4-23 · S · Hero sheet from the town roster (owner 2026-11-19)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): owner to check the layout · Depends: P4-17
+- Files: `scripts/hacienda/hacienda_hub.gd` (`_show_hero_sheet`, `_roster_click_hint`), `tests/test_ui.gd`
+- Spec: owner "the characters tooltip says 'clic para ver su equipo y sus habilidades' but that window doesn't exist: build it, showing the profile picture and listing all the data/traits/skills/abilities of that character when clicked and no town spot is open"
+- Done when: [x] a roster click with no building open opens "Ficha de X" (with a building open it still picks the hero for it); [x] big portrait, class, resolve + XP, Quebranto/Virtud, party position, busy place, ideal positions; [x] every stat; status resistances and element resistances; [x] the 4 equipment slots (item card on hover); [x] the 4 skills with rank pips, description and effects (skill card on hover); [x] quirks with flavour and effect (badge tooltip); [x] camp skills; [x] the roster hint says what a click does; [x] test
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

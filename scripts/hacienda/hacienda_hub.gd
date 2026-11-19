@@ -25,6 +25,9 @@ const CardScript := preload("res://scripts/ui/tooltip_card.gd")
 const HeroCardScript := preload("res://scripts/ui/hero_card.gd")
 const CardButtonScript := preload("res://scripts/ui/card_button.gd")
 const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
+const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
+const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
 const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller"]
@@ -794,6 +797,179 @@ func _refresh_roster() -> void:
 
 ## Two lines (P4-17, the roster panel is narrow): portrait + name and numbers, then the
 ## buttons (EBAIS, order, party, dismiss). The card on hover has everything else.
+## What a click on a roster row does: the full sheet in the town view, else pick the hero
+## for the open building.
+func _roster_click_hint() -> String:
+	return "Clic para ver su ficha completa." if _open_building == "" else "Clic para elegirlo en este edificio."
+
+
+## The hero's full sheet (owner 2026-11-19), opened by clicking a roster row while no building
+## is open: big portrait, state, every stat, resistances, equipment (item cards on hover),
+## the four skills with their rank (skill cards on hover), quirks with what they do, and the
+## expedition record.
+func _show_hero_sheet(h: Dictionary) -> void:
+	var made: Array = _card_dialog("Ficha de %s" % h.get("name", "?"), 620.0)
+	var dlg: AcceptDialog = made[0]
+	var outer: VBoxContainer = made[1]
+	dlg.ok_button_text = "Cerrar"
+	var scroll := ScrollContainer.new()
+	scroll.name = "SheetScroll"
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size = Vector2(620, 560)
+	outer.add_child(scroll)
+	var col := VBoxContainer.new()
+	col.name = "Sheet"
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 8)
+	scroll.add_child(col)
+	var CW: float = 590.0
+	# Portrait, name, class, resolve and state.
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 14)
+	top.add_child(CardScript.picture(HeroCardScript.portrait_path(h), 150.0))
+	var titles := VBoxContainer.new()
+	titles.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	titles.add_theme_constant_override("separation", 4)
+	titles.add_child(CardScript.title_label(str(h.get("name", "?")), 22, 0.0))
+	titles.add_child(CardScript.label(str(h.get("class_name", "")), 15, CardScript.MUTED, false))
+	var lvl: int = int(h.get("resolve_level", 0))
+	var pr: Dictionary = ResolveSystemScript.progress(h)
+	var xp: String = "máxima" if lvl >= ResolveSystemScript.MAX_LEVEL else "%d/%d XP para la siguiente" % [int(pr["current"]), int(pr["needed"])]
+	titles.add_child(CardScript.label("Resolución %d · %s (%s)" % [lvl, ResolveSystemScript.level_name(lvl), xp], 13, CardScript.TEXT, false))
+	var chips := HFlowContainer.new()
+	chips.add_theme_constant_override("h_separation", 4)
+	chips.add_theme_constant_override("v_separation", 3)
+	var aff: String = str(h.get("affliction_id", ""))
+	if aff != "":
+		chips.add_child(CardScript.chip("Quebranto: %s" % StressSystemScript.affliction_name(aff), Color(0.82, 0.32, 0.28), 11))
+	elif str(h.get("virtud_id", "")) != "":
+		chips.add_child(CardScript.chip("Virtud: %s" % StressSystemScript.virtud_name(str(h["virtud_id"])), Color(0.45, 0.72, 0.4), 11))
+	if GameState.is_in_party(h):
+		chips.add_child(CardScript.chip("Cuadrilla · posición %d" % (GameState.party.find(h) + 1), Color(0.72, 0.56, 0.3), 11))
+	if GameState.busy_place(h) != "":
+		chips.add_child(CardScript.chip("Esta semana en %s" % GameState.busy_place(h), Color(0.5, 0.55, 0.7), 11))
+	titles.add_child(chips)
+	var ideal: Array = GameState.get_hero_template(str(h.get("hero_id", ""))).get("ranks", [])
+	titles.add_child(CardScript.label("Posiciones ideales en combate: %s" % (FormationScript.ranks_text(ideal) if not ideal.is_empty() else "1–4"), 12, CardScript.MUTED, false))
+	top.add_child(titles)
+	col.add_child(top)
+	col.add_child(CardScript.rule())
+	# Stats.
+	col.add_child(CardScript.section("Estadísticas"))
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 18)
+	grid.add_theme_constant_override("v_separation", 4)
+	var stat_rows: Array = [
+		["PV", "%d/%d" % [int(h.get("hp", 0)), int(h.get("hp_max", 0))]],
+		["Estrés", "%d/200" % int(h.get("stress", 0))],
+		["Velocidad", str(int(h.get("speed", 0)))],
+		["Precisión", str(int(h.get("accuracy", 0)))],
+		["Esquiva", str(int(h.get("dodge", 0)))],
+		["Crítico", "%d%%" % int(h.get("crit", 0))],
+		["Protección", "%d%%" % int(h.get("prot", 0))],
+		["Daño extra", "%+d" % int(h.get("dmg_bonus", 0))],
+		["Resist. estrés", "%d%%" % int(h.get("stress_resist", 0))],
+	]
+	if str(h.get("element", "")) != "":
+		stat_rows.append(["Arma de", str(GameState.ELEMENT_NAMES.get(str(h["element"]), h["element"]))])
+	for r in stat_rows:
+		grid.add_child(CardScript.label(str(r[0]), 13, CardScript.MUTED, false))
+		grid.add_child(CardScript.label(str(r[1]), 13, CardScript.TEXT, false))
+	col.add_child(grid)
+	# Resistances (status) and elements from equipment.
+	var res: PackedStringArray = PackedStringArray()
+	for cat in StatusEffectsScript.resist_categories():
+		res.append("%s %d%%" % [cat.get("name", ""), StatusEffectsScript.resist_value(h, str(cat.get("id", "")))])
+	col.add_child(CardScript.section("Resistencias"))
+	col.add_child(CardScript.label(" · ".join(res), 12, CardScript.TEXT, true, CW))
+	var el: PackedStringArray = PackedStringArray()
+	var rs = h.get("resist", {})
+	if rs is Dictionary:
+		for e in rs:
+			el.append("%s ×%s" % [GameState.ELEMENT_NAMES.get(str(e), e), String.num(float(rs[e]), 2)])
+	if not el.is_empty():
+		col.add_child(CardScript.label("Elementos: " + " · ".join(el), 12, CardScript.TEXT, true, CW))
+	col.add_child(CardScript.rule())
+	# Equipment.
+	col.add_child(CardScript.section("Equipo"))
+	var eq_row := HBoxContainer.new()
+	eq_row.add_theme_constant_override("separation", 8)
+	var eq = h.get("equipment", {})
+	var slot_names := {"weapon": "Arma", "armor": "Armadura", "accessory1": "Accesorio", "accessory2": "Accesorio"}
+	for slot in GameState.EQUIP_SLOTS:
+		var id: String = str(eq.get(slot, "")) if eq is Dictionary else ""
+		var box := VBoxContainer.new()
+		box.custom_minimum_size = Vector2(138, 0)
+		box.add_theme_constant_override("separation", 2)
+		box.add_child(CardScript.label(str(slot_names.get(slot, slot)), 11, CardScript.HINT, false))
+		if id == "":
+			box.add_child(CardScript.label("— vacío —", 12, CardScript.MUTED, false))
+		else:
+			var tile = ItemHoverScript.new()
+			tile.setup(id)
+			var tr := HBoxContainer.new()
+			tr.add_theme_constant_override("separation", 6)
+			tr.add_child(CardScript.picture("res://assets/items/%s.png" % id, 40.0))
+			tr.add_child(CardScript.label(str(GameState.get_item(id).get("name", id)), 12, CardScript.TEXT, true, 84.0))
+			tile.add_child(tr)
+			box.add_child(tile)
+		eq_row.add_child(box)
+	col.add_child(eq_row)
+	col.add_child(CardScript.rule())
+	# Skills: icon (card on hover) with rank pips, then name and what it does.
+	col.add_child(CardScript.section("Habilidades"))
+	for sid in h.get("skill_ids", []):
+		var sk: Dictionary = GameState.hero_skill(h, str(sid))
+		if sk.is_empty():
+			continue
+		var rank: int = int(sk.get("rank", 1))
+		var srow := HBoxContainer.new()
+		srow.add_theme_constant_override("separation", 10)
+		var icon = SkillButtonScript.new()
+		icon.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank],
+			SkillButtonScript.body_for(sk), rank, SkillRanksScript.max_rank())
+		icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		srow.add_child(icon)
+		var stext := VBoxContainer.new()
+		stext.add_theme_constant_override("separation", 1)
+		stext.add_child(CardScript.label("%s · rango %d/%d" % [sk.get("name", sid), rank, SkillRanksScript.max_rank()], 14, CardScript.GOLD, false))
+		var body: PackedStringArray = SkillButtonScript.body_for(sk).split("\n")
+		for line in body:
+			stext.add_child(CardScript.label(line, 12, CardScript.TEXT if line == body[body.size() - 1] else CardScript.MUTED, true, 520.0))
+		srow.add_child(stext)
+		col.add_child(srow)
+	col.add_child(CardScript.rule())
+	# Quirks: badge (tooltip) and the flavour + effect written out.
+	col.add_child(CardScript.section("Rasgos y enfermedades"))
+	var qs: Array = QuirksScript.of(h)
+	if qs.is_empty():
+		col.add_child(CardScript.label("Ninguno.", 12, CardScript.MUTED, false))
+	for e in qs:
+		var q: Dictionary = QuirksScript.get_quirk(str(e["id"]))
+		var qrow := HBoxContainer.new()
+		qrow.add_theme_constant_override("separation", 8)
+		var chip: Control = CardScript.chip(str(q.get("name", "")) + (" · fijado" if bool(e.get("locked", false)) else ""),
+			HeroCardScript.QUIRK_COLORS.get(str(q.get("kind", "")), CardScript.MUTED), 11)
+		chip.tooltip_text = HeroCardScript.quirk_tooltip(str(e["id"]), bool(e.get("locked", false)))
+		chip.mouse_filter = Control.MOUSE_FILTER_STOP
+		chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		qrow.add_child(chip)
+		qrow.add_child(CardScript.label("%s — %s" % [q.get("desc", ""), QuirksScript.mods_text(str(e["id"]))], 12, CardScript.TEXT, true, 400.0))
+		col.add_child(qrow)
+	# Camp skills (fogata).
+	var camp: Array = CampingSystemScript.hero_skills(h)
+	if not camp.is_empty():
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("Habilidades de fogata"))
+		for cs in camp:
+			col.add_child(CardScript.label("◆ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
+	if int(h.get("borde_checks", 0)) > 0:
+		col.add_child(CardScript.label("Ya sobrevivió %d golpe(s) de gracia en esta expedición." % int(h["borde_checks"]), 12, CardScript.BAD, true, CW))
+	add_child(dlg)
+	_popup_card(dlg)
+
+
 func _roster_row(h: Dictionary) -> Control:
 	var outer := VBoxContainer.new()
 	outer.add_theme_constant_override("separation", 2)
@@ -820,12 +996,17 @@ func _roster_row(h: Dictionary) -> Control:
 	var info = CardButtonScript.new()
 	info.flat = true
 	info.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	info.tooltip_text = "Clic para elegirlo en los edificios (equipo, habilidades, descanso)."
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	info.add_theme_font_size_override("font_size", 13)
 	if is_same(h, _selected):
 		info.add_theme_color_override("font_color", Color(1, 0.9, 0.55))
 	info.pressed.connect(func():
+		# With no building open, a click opens the hero's full sheet (owner 2026-11-19).
+		if _open_building == "":
+			_selected = h
+			_refresh()
+			_show_hero_sheet(h)
+			return
 		if _open_building == "taller":
 			_equip_open = not (_equip_open and is_same(_selected, h))
 		_selected = h
@@ -870,15 +1051,15 @@ func _roster_row(h: Dictionary) -> Control:
 	var ranks: PackedStringArray = PackedStringArray()
 	for sid in h.get("skill_ids", []):
 		ranks.append("%s %d" % [GameState.get_skill(str(sid)).get("name", sid), SkillRanksScript.rank(h, str(sid))])
-	info.tooltip_text = "%s\nResolución %d: %s (%s)\nPosiciones ideales en combate: %s (el orden de la cuadrilla es la posición: 1 = adelante)\nHabilidades (rango): %s\nClic para ver su equipo y sus habilidades." % [
-		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ideal_txt, ", ".join(ranks)]
+	info.tooltip_text = "%s\nResolución %d: %s (%s)\nPosiciones ideales en combate: %s (el orden de la cuadrilla es la posición: 1 = adelante)\nHabilidades (rango): %s\n%s" % [
+		info.text, lvl, ResolveSystemScript.level_name(lvl), xp, ideal_txt, ", ".join(ranks), _roster_click_hint()]
 	var quirk_names: Array = QuirksScript.of(h).map(func(e): return "%s%s" % [QuirksScript.get_quirk(str(e["id"])).get("name", ""), " (fijado)" if e.get("locked", false) else ""])
 	if not quirk_names.is_empty():
 		info.tooltip_text += "\nRasgos: " + ", ".join(quirk_names)
 	var card_lines: Array = ["Posiciones ideales: %s" % ideal_txt]
 	if GameState.busy_place(h) != "":
 		card_lines.append("Esta semana en %s." % GameState.busy_place(h))
-	info.card = HeroCardScript.build.bind(h, "Clic para ver su equipo y sus habilidades.", warn.strip_edges().trim_prefix("⚠ "), card_lines)
+	info.card = HeroCardScript.build.bind(h, _roster_click_hint(), warn.strip_edges().trim_prefix("⚠ "), card_lines)
 	mid.add_child(info)
 	row.add_child(mid)
 	var cost: int = GameState.heal_cost(h)

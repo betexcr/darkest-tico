@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (14) — P4-23: the hero sheet ("Ficha de X") from the town roster
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-23 review.
+- **Changed:**
+  - `hacienda_hub.gd`: `_show_hero_sheet(h)` — a scrolling 620 px card dialog: portrait 150, name/class/resolve/XP, state chips, ideal positions; stats grid; resistances (statuses + elements); equipment tiles (`ItemHoverScript`); skills (`SkillButtonScript` icons with pips + description + effects); quirks (badge with tooltip + flavour + effect); camp skills; Al Borde survivals this expedition.
+  - Roster row click: no building open → the sheet; a building open → pick the hero (as before). `_roster_click_hint()` sets the hover text accordingly (the old "Clic para ver su equipo y sus habilidades" pointed nowhere).
+  - `test_ui`: the click opens "Ficha de X" with stats, resistances, equipment and one skill icon per skill.
+- **Verified:** validator 0 errors; test_ui and test_hub 0 failures (full suite not finished before push, owner asked to push); screenshots at 1920×1080 (top and bottom of the sheet).
+- **Not verified / risks:** none known.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (13) — P4-20 follow-up: dev menu sets colones, resets the game, scrolls
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
 - **Status after session:** P4-20 done (follow-up).
