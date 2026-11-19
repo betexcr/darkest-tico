@@ -27,7 +27,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - `expedition_screen.gd`: `_camp_hands` dealt in `_camp_begin`; the respite menu shows `camp_hand(h)`; the hint says class skills change at every fogata.
   - `hacienda_hub.gd` hero sheet: the 2 shared skills, then the 6 class skills ("en cada fogata le salen 2 al azar").
   - `tools/playtest_campaign.gd` bot uses `screen.camp_hand`; `tools/validate_data.py` requires 2 shared ids, 6 class skills per class (one helping others), `class_skills_per_camp` 1..6; `tests/test_progression.gd` checks the hand and the draw.
-- **Verified:** validator 0 errors. Godot 4.7.2 (Linux, scratchpad): RESULTS_PENDING
+- **Verified:** validator 0 errors. Godot 4.7.2 (Linux, scratchpad): import; smoke_expedition + all 18 tests 0 failures, no SCRIPT ERROR (test_guard prints no count; all its checks ok).
 - **Not verified / risks:** camp balance: a hand of 2 random class skills may lack a watch (prevent_ambush) skill more often than the old fixed loadout; no playtest_campaign rerun.
 - **Decisions needed:** owner: review the 32 names/effects (doc 08 tone); is 2 class skills per fogata the right count?
 - **Next step:** owner playtest a fogata; then P3-13 (Guardabosques) — decide whether it picks the shared skills or raises `class_skills_per_camp`.
