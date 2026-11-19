@@ -225,6 +225,26 @@ func _town(gs) -> void:
 		hub.close_building()
 	_check(ok, "clicking each building opens its own window and page")
 	_check(not hub._window.visible, "Volver al pueblo closes it")
+	# Taller (owner 2026-11-19): the equipment section starts folded; a hero click toggles it.
+	hub.open_building("taller")
+	await process_frame
+	_check(not hub._equip_open and not hub._equip_row.visible and not hub._who.visible, "the Taller opens with the equipment folded away")
+	# The roster rebuilds after every click: fetch the hero's button each time.
+	var info := func(i: int): return hub._roster_list.get_children().filter(func(r): return not r.is_queued_for_deletion())[i].get_child(0).get_child(1)
+	info.call(1).pressed.emit()
+	await process_frame
+	_check(hub._equip_open and hub._equip_row.visible and is_same(hub._selected, gs.party[1]), "clicking a hero opens it for that hero")
+	info.call(1).pressed.emit()
+	await process_frame
+	_check(not hub._equip_open and not hub._equip_row.visible, "clicking the same hero again closes it")
+	info.call(1).pressed.emit()
+	await process_frame
+	info.call(0).pressed.emit()
+	await process_frame
+	_check(hub._equip_open and is_same(hub._selected, gs.party[0]), "clicking another hero while open switches to them")
+	hub._equip_bar.pressed.emit()
+	_check(not hub._equip_open and not hub._equip_row.visible, "the bar closes it too")
+	hub.close_building()
 	hub.open_building("casa_comunal")
 	await process_frame
 	_check(hub._who.visible and hub._skills_row.get_child_count() > 0, "the Casa Comunal shows whose skills they are")

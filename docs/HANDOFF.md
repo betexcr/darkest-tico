@@ -31,6 +31,10 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Not verified / risks:** a 0.15 s delay may make tooltips pop while the mouse just passes over the town and the battle bar.
 - **Decisions needed:** none.
 - **Also (same day):** scroll bars were invisible game-wide: the theme's styleboxes had no content margin, so the bar had no width. `ui_theme.gd` now draws them 10 px wide (`SCROLL_WIDTH`); the shops (and every other list) show a bar when they overflow.
+- **Also (same day):** in the Taller the equipment section (hero strip, help, 4 slots) folds away so the shop has room (owner request).
+  - It starts closed, as a "▸ Equipo de X" bar.
+  - Clicking a hero on the right opens it for that hero; clicking the same hero again closes it; the bar or its ✕ toggles it.
+  - `_equip_open`, `_refresh_equip_fold` in `hacienda_hub.gd`; 5 checks in `test_ui`.
 - **Next step:** owner playtest.
 
 ---

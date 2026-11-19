@@ -80,6 +80,10 @@ var _open_building: String = ""
 const PAINTED_PATH := "res://assets/town/town_painted.png"
 const PAINTED_LAYOUT := "res://assets/town/painted/layout.json"
 var _painted: Texture2D = null
+## Taller (owner 2026-11-19): the equipment section folds away so the shop has room. It
+## starts closed; clicking a hero opens it for that hero, clicking the same hero closes it.
+var _equip_open: bool = false
+var _equip_bar: Button
 var _painted_rects: Dictionary = {}
 
 
@@ -753,6 +757,8 @@ func _roster_row(h: Dictionary) -> Control:
 	if is_same(h, _selected):
 		info.add_theme_color_override("font_color", Color(1, 0.9, 0.55))
 	info.pressed.connect(func():
+		if _open_building == "taller":
+			_equip_open = not (_equip_open and is_same(_selected, h))
 		_selected = h
 		_refresh()
 	)
@@ -1079,6 +1085,8 @@ func open_building(bid: String) -> void:
 	for page in _pages.get_children():
 		page.visible = page.name == bid
 	_window.visible = true
+	if bid == "taller":
+		_equip_open = false
 	_refresh_who()
 
 
@@ -1099,7 +1107,9 @@ func _refresh_who() -> void:
 		return
 	for c in _who.get_children():
 		c.queue_free()
-	_who.visible = _window.visible and _open_building in HERO_PAGES and not _selected.is_empty()
+	_refresh_equip_fold()
+	_who.visible = _window.visible and _open_building in HERO_PAGES and not _selected.is_empty() \
+		and (_open_building != "taller" or _equip_open)
 	if not _who.visible:
 		return
 	var head: Control = HeroCardScript.header(_selected, 44.0)
@@ -1107,6 +1117,26 @@ func _refresh_who() -> void:
 	_who.add_child(head)
 	_who.add_child(CardScript.label("Clic en otro héroe a la derecha para cambiar.", 12, CardScript.HINT, false))
 	_who.get_child(1).size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+
+## The Taller's fold bar: "▸ Equipo de X" (closed) / "▾ Equipo de X ✕" (open), and the
+## slots and their help shown only while it is open.
+func _refresh_equip_fold() -> void:
+	if _equip_bar == null:
+		_equip_bar = Button.new()
+		_equip_bar.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		_equip_bar.tooltip_text = "Equipo del héroe\nClic aquí o en un héroe a la derecha para abrirlo; clic en el mismo héroe para cerrarlo."
+		_equip_bar.pressed.connect(func():
+			_equip_open = not _equip_open
+			_refresh_who()
+		)
+		var page: Control = _pages.get_node("taller")
+		page.add_child(_equip_bar)
+		page.move_child(_equip_bar, 0)
+	var who: String = str(_selected.get("name", "—"))
+	_equip_bar.text = ("▾ Equipo de %s  ✕" % who) if _equip_open else ("▸ Equipo de %s (clic en un héroe para ponerle o quitarle equipo)" % who)
+	_equip_title.visible = _equip_open
+	_equip_row.visible = _equip_open
 
 
 # --- Town event of the week (docs/02 §12) -----------------------------------------------
