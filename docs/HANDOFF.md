@@ -17,6 +17,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (18) — P3-13 follow-up: town events reach the Guardabosques
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-13 review (prices approved by the owner: 500 / 300 / 100 ₡).
+- **Changed:**
+  - New town-event service `guardabosques` (validator `services`, `TownEvents.SERVICE_NAMES`, `town_events.json` _doc). `data/town.json`: the building is `closed_by` it (greyed in town).
+  - `GameState.camp_price(kind)` = balance price × `service_mult(…, "guardabosques")`; `camp_closed_reason()` blocks learn / fix / swap; the page shows the closure in red and the event prices; the bot reads `camp_price("learn")`.
+  - 2 new events (58 now), `dd` "(Tico extra: Guardabosques)": *Día de los Parques Nacionales* (Guardabosques −50%) and *Quema en el Arenal* (closed; Casa Comunal −50%, the same "one closed, another cheaper" shape as the DD-style negatives).
+  - `test_town_events`: half price, lesson charged at the event price, closed blocks learn and fix, Casa Comunal half price.
+- **Verified:** validator 0 errors; test_town_events, test_ui, test_progression, test_hub 0 failures. FULL_SUITE_PENDING
+- **Not verified / risks:** the two new event texts need the owner's tone check (doc 08); they join the shuffled deck, so every other event comes up a little less often.
+- **Decisions needed:** none.
+- **Next step:** owner playtest the Guardabosques; then P3-21 once P3-16 brings building upgrades.
+
+---
+
 ## 2026-11-19 (17) — P3-13: Guardabosques del Arenal (learn, fix, swap camp skills)
 - **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
 - **Status after session:** P3-13 review; P3-21 (upgrade tracks) added as todo (owner: later).
@@ -31,7 +46,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Tests: `test_progression` (start with 3, draw from known, learn/fix/let go/swap, no money, v12 migration), `test_ui` (8 buildings, page rows, Aprender works). Docs 01 §4.4, 02 §9 and hub table.
 - **Verified:** validator 0 errors; test_progression, test_ui, test_hub, test_save 0 failures; screenshots of the town hover and the page (1280×720). Full run with Godot 4.7.2 (Linux, scratchpad): smoke + all 18 tests 0 failures, no SCRIPT ERROR; `playtest_campaign -- --campaigns 1 --weeks 4` runs clean (no SCRIPT ERROR).
 - **Not verified / risks:** the next `tools/town_paint.py` repaint uses the stand-in `guardabosques.png` (a dark 89×97 cut) and the Cantina cut-out still contains the shed, so run `sd_local.py` + `sd_cutout.py` for `town_guardabosques` first. Prices are guesses; the bot spends some money on lessons now, so P5-09 baselines shift a little.
-- **Decisions needed:** owner: prices (500 / 300 / 100 ₡)? Should town events close or discount the Guardabosques like the other buildings?
+- **Decisions needed:** answered 2026-11-19: prices kept; town events reach it (entry 18).
 - **Next step:** owner playtest the Guardabosques page; then P3-21 once P3-16 brings building upgrades.
 
 ---

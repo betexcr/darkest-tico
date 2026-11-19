@@ -221,7 +221,7 @@ Every file has a `_doc` string that explains its fields; the validator is the st
 | `curios.json` | Curios: `text`, `blind` outcome, `key_item` + `key_outcome` | `GameState` |
 | `traps.json` | Disarm settings and traps (`difficulty`, `effects` in the outcome vocabulary) | `TrapRules` |
 | `progression.json` | Resolve levels and XP, Casa Comunal skill rank costs, region scaling, the 3 difficulties | `ResolveSystem` |
-| `town_events.json` | 56 weekly town events (`effects`, `requires`, week range, `once`) | `TownEvents` |
+| `town_events.json` | 58 weekly town events (`effects`, `requires`, week range, `once`) | `TownEvents` |
 | `regions/*.json` | Region: Luz start and decay, `provisions`, rewards, `region_level`, then either `nodes` + `edges` or a `generator` block (§3.2) | `ExpeditionLoader`, `MapGenerator` |
 
 **Conventions:**

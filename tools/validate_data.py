@@ -203,7 +203,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "casa_comunal", "clinica"}
+    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "casa_comunal", "clinica", "guardabosques"}
     # Item effects (owner 2026-11-19: every item says what it does): only keys the item card
     # describes (GameState.item_tooltip_parts); a new key needs a line there first.
     ITEM_EFFECT_KEYS = {"heal", "stress", "damage", "element", "light", "hp_risk", "cure", "cure_all", "applies"}

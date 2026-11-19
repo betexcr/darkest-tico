@@ -28,7 +28,6 @@ const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
 const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
-const BalanceScript := preload("res://scripts/domain/balance.gd")
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
 const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "guardabosques"]
@@ -404,6 +403,9 @@ func _refresh_guardabosques() -> void:
 	if h.is_empty():
 		return
 	var per: int = CampingSystemScript.class_skills_per_camp()
+	var closed: String = GameState.camp_closed_reason()
+	if closed != "":
+		_ranger_box.add_child(CardScript.label(closed, 13, CardScript.BAD, true, 0.0))
 	_ranger_box.add_child(CardScript.label("En cada fogata, %s lleva sus 2 habilidades compartidas y %d de las de su oficio que conozca, al azar. Una fija sale siempre." % [h.get("name", "?"), per],
 		13, CardScript.MUTED, true, 0.0))
 	_ranger_box.add_child(CardScript.section("De su oficio — conoce %d de %d" % [CampingSystemScript.known_ids(h).size(), CampingSystemScript.class_pool(h).size()]))
@@ -414,7 +416,7 @@ func _refresh_guardabosques() -> void:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(150, 0)
 		if not known:
-			b.text = "Aprender — %d ₡" % BalanceScript.int_of("camp.learn_price")
+			b.text = "Aprender — %d ₡" % GameState.camp_price("learn")
 			var why: String = GameState.camp_learn_block_reason(h, sid)
 			b.disabled = why != ""
 			b.tooltip_text = "Aprender %s\n%s" % [sk.get("name", sid), why if why != "" else "Desde ahora puede salirle en las fogatas."]
@@ -424,7 +426,7 @@ func _refresh_guardabosques() -> void:
 			b.tooltip_text = "Soltar %s\nVuelve a salir al azar, como las demás." % sk.get("name", sid)
 			b.pressed.connect(func(): _say(GameState.fix_camp_skill(h, "")))
 		else:
-			b.text = "Fijar — %d ₡" % BalanceScript.int_of("camp.fix_price")
+			b.text = "Fijar — %d ₡" % GameState.camp_price("fix")
 			var why2: String = GameState.camp_fix_block_reason(h, sid)
 			b.disabled = why2 != ""
 			b.tooltip_text = "Fijar %s\n%s" % [sk.get("name", sid), why2 if why2 != "" else "Le sale en cada fogata%s." % (" (en vez de %s)" % CampingSystemScript.skill(fixed).get("name", "") if fixed != "" else "")]
@@ -438,7 +440,7 @@ func _refresh_guardabosques() -> void:
 		var btns: Array = []
 		for nid in others:
 			var b := Button.new()
-			b.text = "Cambiar por %s — %d ₡" % [CampingSystemScript.skill(nid).get("name", nid), BalanceScript.int_of("camp.shared_swap_price")]
+			b.text = "Cambiar por %s — %d ₡" % [CampingSystemScript.skill(nid).get("name", nid), GameState.camp_price("shared_swap")]
 			var why3: String = GameState.camp_swap_block_reason(h, str(sk["id"]), nid)
 			b.disabled = why3 != ""
 			b.tooltip_text = "%s\n%s" % [CampingSystemScript.skill(nid).get("name", nid), why3 if why3 != "" else str(CampingSystemScript.skill(nid).get("desc", ""))]

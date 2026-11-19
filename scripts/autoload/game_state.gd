@@ -704,13 +704,28 @@ func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
 
 # --- Guardabosques del Arenal (camp skills, P3-13, doc 02 §9) ------------------------------
 
+## This week's price of a Guardabosques service: learn | fix | shared_swap (balance.json
+## camp.<kind>_price, times the town event's guardabosques service_pct).
+func camp_price(kind: String) -> int:
+	return int(round(BalanceScript.int_of("camp.%s_price" % kind) * TownEventsScript.service_mult(active_event(), "guardabosques")))
+
+
+## "" when the Guardabosques is open this week; otherwise the reason.
+func camp_closed_reason() -> String:
+	if TownEventsScript.is_closed(active_event(), "guardabosques"):
+		return "El Guardabosques está cerrado esta semana (%s)." % active_event().get("name", "")
+	return ""
+
+
 ## "" when `sid` can be taught to the hero now; otherwise the reason (Spanish).
 func camp_learn_block_reason(hero: Dictionary, sid: String) -> String:
+	if camp_closed_reason() != "":
+		return camp_closed_reason()
 	if not CampingSystemScript.class_pool(hero).any(func(sk): return str(sk["id"]) == sid):
 		return "No es de su oficio."
 	if CampingSystemScript.knows(hero, sid):
 		return "Ya la conoce."
-	if colones < BalanceScript.int_of("camp.learn_price"):
+	if colones < camp_price("learn"):
 		return "No alcanza la plata."
 	return ""
 
@@ -720,7 +735,7 @@ func learn_camp_skill(hero: Dictionary, sid: String) -> String:
 	var why: String = camp_learn_block_reason(hero, sid)
 	if why != "":
 		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
-	var cost: int = BalanceScript.int_of("camp.learn_price")
+	var cost: int = camp_price("learn")
 	colones -= cost
 	hero["camp_known"] = CampingSystemScript.known_ids(hero) + [sid]
 	return "El guardabosques le enseña a %s: %s (-%d ₡)." % [hero.get("name", "?"), nm, cost]
@@ -728,11 +743,13 @@ func learn_camp_skill(hero: Dictionary, sid: String) -> String:
 
 ## "" when `sid` can be made the hero's fixed camp skill now; otherwise the reason.
 func camp_fix_block_reason(hero: Dictionary, sid: String) -> String:
+	if camp_closed_reason() != "":
+		return camp_closed_reason()
 	if not CampingSystemScript.knows(hero, sid):
 		return "Primero tiene que aprenderla."
 	if CampingSystemScript.fixed_id(hero) == sid:
 		return "Ya es la fija."
-	if colones < BalanceScript.int_of("camp.fix_price"):
+	if colones < camp_price("fix"):
 		return "No alcanza la plata."
 	return ""
 
@@ -747,7 +764,7 @@ func fix_camp_skill(hero: Dictionary, sid: String) -> String:
 	var why: String = camp_fix_block_reason(hero, sid)
 	if why != "":
 		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
-	var cost: int = BalanceScript.int_of("camp.fix_price")
+	var cost: int = camp_price("fix")
 	colones -= cost
 	hero["camp_fixed"] = sid
 	return "%s va a usar %s en cada fogata (-%d ₡)." % [hero.get("name", "?"), nm, cost]
@@ -761,9 +778,11 @@ func camp_shared_options(hero: Dictionary) -> Array:
 
 
 func camp_swap_block_reason(hero: Dictionary, old_id: String, new_id: String) -> String:
+	if camp_closed_reason() != "":
+		return camp_closed_reason()
 	if not hero.get("camp_skill_ids", []).has(old_id) or not camp_shared_options(hero).has(new_id):
 		return "No se puede cambiar."
-	if colones < BalanceScript.int_of("camp.shared_swap_price"):
+	if colones < camp_price("shared_swap"):
 		return "No alcanza la plata."
 	return ""
 
@@ -773,7 +792,7 @@ func swap_shared_camp_skill(hero: Dictionary, old_id: String, new_id: String) ->
 	var nm: String = str(CampingSystemScript.skill(new_id).get("name", new_id))
 	if why != "":
 		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
-	var cost: int = BalanceScript.int_of("camp.shared_swap_price")
+	var cost: int = camp_price("shared_swap")
 	colones -= cost
 	var ids: Array = hero["camp_skill_ids"].duplicate()
 	ids[ids.find(old_id)] = new_id

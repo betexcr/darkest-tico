@@ -314,7 +314,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `review` (Claude Code, `betomm/trusting-hamilton-bga408`, 2026-11-19) · Depends: P3-07, P3-20
 - Spec: `02` §9; owner 2026-11-19: "start knowing 3" (of the 6 class camp skills), upgrade tracks later
 - Files: `data/balance.json` (`camp.*`), `data/town.json` + `assets/town/guardabosques.png` + `assets/town/painted/` (the shed split off the Cantina crop), `scripts/domain/camping_system.gd` (`starting_known`, `known_ids`, `fixed_id`, `deal_hand`), `GameState` (learn/fix/swap, save v13), `hacienda_hub.gd/.tscn` (page `guardabosques`, hero sheet), `tools/playtest_campaign.gd`, `tools/art_manifest.json` (`town_guardabosques`), validator, `test_progression`, `test_ui`
-- Done when: [x] a new hero knows 3 of 6 class camp skills; the fogata draws only known ones; [x] learn / fix / let go / swap shared, with prices in balance.json; [x] town building + page; old saves know all 6; [x] tests; [ ] owner playtest and prices; [ ] upgrade tracks (P3-21)
+- Done when: [x] a new hero knows 3 of 6 class camp skills; the fogata draws only known ones; [x] learn / fix / let go / swap shared, with prices in balance.json; [x] town building + page; old saves know all 6; [x] tests; [x] prices approved (owner 2026-11-19); [x] town events close or discount it (service `guardabosques`, 2 new events); [ ] owner playtest; [ ] upgrade tracks (P3-21)
 
 ### P3-21 · S · Guardabosques upgrade tracks
 - Status: `todo` · Depends: P3-13, P3-16 (building-upgrade system)

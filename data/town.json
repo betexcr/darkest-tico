@@ -93,7 +93,10 @@
       "text": "La caseta del guardabosques: enseña habilidades de fogata, fija la que uno quiera llevar siempre y cambia las compartidas.",
       "x": 859,
       "bottom": 640,
-      "height": 97
+      "height": 97,
+      "closed_by": [
+        "guardabosques"
+      ]
     }
   ],
   "ground_top": 330,

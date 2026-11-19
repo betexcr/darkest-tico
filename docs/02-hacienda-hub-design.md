@@ -221,6 +221,7 @@ Built (P3-13, owner 2026-11-19). The ranger's shed next to the Cantina. Prices i
 - **Aprender** (500 ₡): teaches one more class skill.
 - **Fijar** (300 ₡): one known class skill comes up at every fogata and takes one of the two slots. Letting it go is free; fixing another replaces it.
 - **Cambiar** (100 ₡): swaps one of the 2 shared skills for the third.
+- Town events reach it like the other buildings (service `guardabosques`): `closed` shuts it for the week, `service_pct` scales all three prices.
 
 ### Upgrade Tracks (later: they wait for the building-upgrade system, P3-16)
 
@@ -263,7 +264,7 @@ Events should create short-term adaptation pressure without hard-locking progres
 
 ### 12.1 Implemented (P3-15, owner request 2026-11-08)
 
-- One Tico version of **every Darkest Dungeon town event**: 56 in `data/town_events.json`, each naming the DD event it mirrors (`dd`). Rules are in `scripts/domain/town_events.gd`, state in `GameState`.
+- One Tico version of **every Darkest Dungeon town event**: 56 in `data/town_events.json`, each naming the DD event it mirrors (`dd`), plus 2 Tico extras for the Guardabosques (owner 2026-11-19): *Día de los Parques Nacionales* (half price) and *Quema en el Arenal* (closed). Rules are in `scripts/domain/town_events.gd`, state in `GameState`.
 - **When:** the party returns (`main.gd` → `GameState.draw_town_event()` after `end_of_expedition_week`). There's a 60% chance (`chance_pct`) of an event, drawn from a shuffled deck. It respects `min_week`/`max_week`, `once`, and `requires` (graveyard, inventory, quebrantos). The event lasts until the next return.
 - **Hub:** an "Evento: …" button in the info row opens the event card automatically the first time. The card shows the text, every effect in plain words, what already happened, and any choices (who to bring back, paid offers). Shop buttons show "X ₡ (antes Y)". Closed services are greyed out.
 - **What the events can do,** adapted to the hub we have (no Taller, Cantina, quirks or trinkets yet):
