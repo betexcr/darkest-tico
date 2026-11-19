@@ -25,7 +25,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - `GameState.camp_price(kind)` = balance price × `service_mult(…, "guardabosques")`; `camp_closed_reason()` blocks learn / fix / swap; the page shows the closure in red and the event prices; the bot reads `camp_price("learn")`.
   - 2 new events (58 now), `dd` "(Tico extra: Guardabosques)": *Día de los Parques Nacionales* (Guardabosques −50%) and *Quema en el Arenal* (closed; Casa Comunal −50%, the same "one closed, another cheaper" shape as the DD-style negatives).
   - `test_town_events`: half price, lesson charged at the event price, closed blocks learn and fix, Casa Comunal half price.
-- **Verified:** validator 0 errors; test_town_events, test_ui, test_progression, test_hub 0 failures. FULL_SUITE_PENDING
+- **Verified:** validator 0 errors; test_town_events, test_ui, test_progression, test_hub 0 failures. Full run (Godot 4.7.2 Linux): smoke + all 18 tests 0 failures, no SCRIPT ERROR.
 - **Not verified / risks:** the two new event texts need the owner's tone check (doc 08); they join the shuffled deck, so every other event comes up a little less often.
 - **Decisions needed:** none.
 - **Next step:** owner playtest the Guardabosques; then P3-21 once P3-16 brings building upgrades.
