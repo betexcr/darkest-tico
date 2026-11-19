@@ -1282,9 +1282,20 @@ func _living_units(heroes: bool, action: Dictionary = {}) -> Array:
 		if bool(action.get("move", false)):
 			var near: Array = _combat.move_options(_combat.active_hero())
 			return _hero_units.filter(func(u): return near.has(u.data))
-		return _hero_units.filter(func(u): return not u.is_dead())
+		# A heal can't land on an Embargado ally (P2-04), so they are not a choice (owner 2026-11-19).
+		var heals: bool = _action_heals(action)
+		return _hero_units.filter(func(u): return not u.is_dead() and not (heals and StatusEffectsScript.has(u.data, "embargado")))
 	var open: Array = _combat.targets_for(action["skill"]) if action.has("skill") else _combat.targetable_enemies()
 	return _enemy_units.filter(func(u): return not u.is_dead() and open.has(u.data))
+
+
+## The skill or item heals PV (Embargado allies can't be picked for it).
+static func _action_heals(action: Dictionary) -> bool:
+	if action.has("skill"):
+		return int(action["skill"].get("heal_min", 0)) > 0
+	if action.has("item"):
+		return int(GameState.get_item(str(action["item"])).get("effects", {}).get("heal", 0)) > 0
+	return false
 
 
 ## Single-target skills/items ask for a click on an enemy (or ally); with one valid
@@ -1296,6 +1307,9 @@ func _begin_pending(action: Dictionary) -> void:
 		_execute_pending({}, action)
 		return
 	var options: Array = _living_units(side == "ally", action)
+	if options.is_empty() and side == "ally" and _action_heals(action):
+		_log_line("Nadie se puede curar: los heridos están embargados.", "c0a060")
+		return
 	if options.size() <= 1 and not bool(action.get("move", false)):
 		_execute_pending(options[0].data if not options.is_empty() else {}, action)
 		return
@@ -1314,6 +1328,10 @@ func _begin_pending(action: Dictionary) -> void:
 			what, "atacar" if side == "enemy" else "ayudar", "un enemigo" if side == "enemy" else "un héroe"]
 	for u in options:
 		u.set_selectable(true)
+	# Only what this skill can reach glows: the current-target marker steps aside meanwhile.
+	for u in _enemy_units:
+		if not options.has(u):
+			u.set_targeted(false)
 	var cancel := Button.new()
 	cancel.text = "Cancelar"
 	cancel.pressed.connect(_cancel_pending)
@@ -1323,6 +1341,8 @@ func _begin_pending(action: Dictionary) -> void:
 func _clear_selectable() -> void:
 	for u in _hero_units + _enemy_units:
 		u.set_selectable(false)
+	if _mode == Mode.COMBAT and _combat.is_running():
+		_combat._refresh_markers()
 
 
 func _cancel_pending() -> void:

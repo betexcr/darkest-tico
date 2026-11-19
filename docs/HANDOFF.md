@@ -39,6 +39,9 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Corpses still lie tipped over beside the living.
 - **Decisions needed:** none.
 - **Also:** dragging a piece of equipment lights up where it can go (owner request). `EquipSlot` and hero `BattleUnit`s listen for `NOTIFICATION_DRAG_BEGIN` / `DRAG_END` and reuse their own `_can_drop_data`: matching slots get a gold glowing border, heroes a green silhouette glow. `test_ui` drives a real drag with `force_drag` / `gui_cancel_drag`.
+- **Also:** target picks light only valid targets (owner request).
+  - The red "current target" marker no longer glows on enemies the chosen skill can't reach (e.g. Machetazo vs positions 3–4). It is cleared while picking and restored by `_clear_selectable` → `_combat._refresh_markers()`.
+  - Heals (skills with `heal_min`, items with a `heal` effect) can't pick Embargado allies (`_action_heals`). With nobody left the action doesn't fire and the log says why.
 - **Next step:** owner playtest.
 
 ---

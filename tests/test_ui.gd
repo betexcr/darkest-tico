@@ -159,6 +159,29 @@ func _combat_bar(gs) -> void:
 	screen._on_room_clicked(fight_room)
 	var hero: Dictionary = await _wait_turn(screen)
 	_check(fight_room != "" and not hero.is_empty(), "a hero's turn comes up in a fight (room %s, mode %d)" % [fight_room, int(screen._mode)])
+	# Picking a target lights only what the skill can reach (owner 2026-11-19).
+	if not hero.is_empty():
+		var atk: Dictionary = {}
+		for sid in hero.get("skill_ids", []):
+			var sk: Dictionary = gs.hero_skill(hero, str(sid))
+			if str(sk.get("kind", "")) == "attack" and screen._combat.skill_usable(hero, sk):
+				atk = sk
+				break
+		if not atk.is_empty():
+			screen._selected_enemy = {}
+			screen._begin_pending({"side": "enemy", "skill": atk})
+			var reach: Array = screen._combat.targets_for(atk)
+			var lit: Array = screen._enemy_units.filter(func(u): return u._selectable or u._targeted)
+			_check(lit.all(func(u): return reach.has(u.data)) and lit.size() == screen._enemy_units.filter(func(u): return reach.has(u.data) and not u.is_dead()).size(),
+				"%s lights exactly the enemies it can reach (%d)" % [atk.get("name", ""), lit.size()])
+			screen._cancel_pending()
+		var se = load("res://scripts/domain/status_effects.gd")
+		var victim: Dictionary = gs.party[1]
+		se.apply(victim, "embargado", 3, 0, {"ignore_resist": true})
+		var heal_pick: Array = screen._living_units(true, {"side": "ally", "item": "agua_pipa"}).map(func(u): return u.data)
+		var calm_pick: Array = screen._living_units(true, {"side": "ally", "item": "cafe_chorreado"}).map(func(u): return u.data)
+		_check(se.has(victim, "embargado") and not heal_pick.has(victim) and calm_pick.has(victim), "an Embargado ally can't be picked for a heal (but can for other help)")
+		se.remove(victim, "embargado")
 	var before: Array = _bar(screen)
 	var guard_b = before.filter(func(b): return str(b.get("title")) == "Guardia")
 	_check(guard_b.size() == 1, "the bar has Guardia")
