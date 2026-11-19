@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (16) — P3-20: 4 more class camp skills per class, drawn at random at every fogata
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-20 review.
+- **Changed:**
+  - `data/camp_skills.json`: 32 new class skills (4 per class, Tico names), so each class has 6; new `class_skills_per_camp: 2`.
+  - `data/heroes.json`: `camp_skill_ids` now lists only the hero's 2 shared skills (was 2 class + 2 shared).
+  - `camping_system.gd`: `shared_skills`, `class_pool`, `class_skills_per_camp`, `deal_hand` (shared + random class draw), `hand_skills`; `hero_skills` = shared + whole pool. Old saves with 4 ids keep only their shared ones (no save bump needed).
+  - `expedition_screen.gd`: `_camp_hands` dealt in `_camp_begin`; the respite menu shows `camp_hand(h)`; the hint says class skills change at every fogata.
+  - `hacienda_hub.gd` hero sheet: the 2 shared skills, then the 6 class skills ("en cada fogata le salen 2 al azar").
+  - `tools/playtest_campaign.gd` bot uses `screen.camp_hand`; `tools/validate_data.py` requires 2 shared ids, 6 class skills per class (one helping others), `class_skills_per_camp` 1..6; `tests/test_progression.gd` checks the hand and the draw.
+- **Verified:** validator 0 errors. Godot 4.7.2 (Linux, scratchpad): RESULTS_PENDING
+- **Not verified / risks:** camp balance: a hand of 2 random class skills may lack a watch (prevent_ambush) skill more often than the old fixed loadout; no playtest_campaign rerun.
+- **Decisions needed:** owner: review the 32 names/effects (doc 08 tone); is 2 class skills per fogata the right count?
+- **Next step:** owner playtest a fogata; then P3-13 (Guardabosques) — decide whether it picks the shared skills or raises `class_skills_per_camp`.
+
+---
+
 ## 2026-11-19 (15) — Quirks after an expedition: much rarer, one at most
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-06 tuning (no new task).

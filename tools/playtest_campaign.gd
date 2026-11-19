@@ -815,7 +815,7 @@ func _camp_skill(screen) -> bool:
 	var pick_user: Dictionary = {}
 	var pick_sk: Dictionary = {}
 	for h in living:
-		for sk in CampingSystemScript.hero_skills(h):
+		for sk in screen.camp_hand(h):
 			if not CampingSystemScript.can_use(h, sk, _gs.party, screen._camp_respite, screen._camp_used):
 				continue
 			if pick_sk.is_empty() or (bool(sk.get("prevent_ambush", false)) and not screen._camp_watch and not bool(pick_sk.get("prevent_ambush", false))):

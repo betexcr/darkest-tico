@@ -22,12 +22,7 @@
         "golpe_de_faena",
         "aguante_de_campo"
       ],
-      "camp_skill_ids": [
-        "afilar_machete",
-        "cuentos_de_finca",
-        "palabras_de_animo",
-        "vendaje_de_trapo"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "vendaje_de_trapo"],
       "names": [
         "Chepe",
         "Toño",
@@ -69,12 +64,7 @@
         "regano_santo",
         "cataplasma_casero"
       ],
-      "camp_skill_ids": [
-        "aguita_de_tilo",
-        "remedio_casero",
-        "palabras_de_animo",
-        "charla_de_fogon"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "charla_de_fogon"],
       "names": [
         "Doña Chela",
         "Doña Lela",
@@ -115,12 +105,7 @@
         "exploit_zero_day",
         "firewall_humano"
       ],
-      "camp_skill_ids": [
-        "dron_vigia",
-        "radio_con_rancheras",
-        "vendaje_de_trapo",
-        "charla_de_fogon"
-      ],
+      "camp_skill_ids": ["vendaje_de_trapo", "charla_de_fogon"],
       "names": [
         "Maikol",
         "Kevin",
@@ -160,12 +145,7 @@
         "patada_de_corral",
         "no_me_tumban"
       ],
-      "camp_skill_ids": [
-        "calentar_musculos",
-        "guardia_de_corral",
-        "palabras_de_animo",
-        "vendaje_de_trapo"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "vendaje_de_trapo"],
       "names": [
         "Chalo",
         "Cuco",
@@ -206,12 +186,7 @@
         "ronda_nocturna",
         "escudo_de_barrio"
       ],
-      "camp_skill_ids": [
-        "ronda_con_foco",
-        "cafe_de_termo",
-        "vendaje_de_trapo",
-        "charla_de_fogon"
-      ],
+      "camp_skill_ids": ["vendaje_de_trapo", "charla_de_fogon"],
       "names": [
         "Don Rigo",
         "Don Lalo",
@@ -250,12 +225,7 @@
         "antibiotico_de_guardia",
         "desfibrilar"
       ],
-      "camp_skill_ids": [
-        "chequeo_general",
-        "refuerzo_de_vacunas",
-        "palabras_de_animo",
-        "charla_de_fogon"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "charla_de_fogon"],
       "names": [
         "Dra. Josefina",
         "Dra. Marta",
@@ -295,12 +265,7 @@
         "humo_de_hierbas",
         "limpia_de_mal_de_ojo"
       ],
-      "camp_skill_ids": [
-        "sahumerio",
-        "sobada_de_hueso",
-        "palabras_de_animo",
-        "vendaje_de_trapo"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "vendaje_de_trapo"],
       "names": [
         "Don Nacho",
         "Don Chico",
@@ -340,12 +305,7 @@
         "sal_de_proteccion",
         "circulo_de_tiza"
       ],
-      "camp_skill_ids": [
-        "vigilia_de_oracion",
-        "bendecir_las_armas",
-        "palabras_de_animo",
-        "vendaje_de_trapo"
-      ],
+      "camp_skill_ids": ["palabras_de_animo", "vendaje_de_trapo"],
       "names": [
         "Padre Mauro",
         "Hermano Wilberth",

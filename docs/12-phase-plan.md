@@ -315,6 +315,13 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `02` §9
 - Done when: [ ] Hub building to swap a hero's 4 camp skills among the class + shared list, and the upgrade tracks from doc 02 §9
 
+### P3-20 · S · Random class camp skills at every fogata (owner request 2026-11-19)
+- Status: `review` (Claude Code, `betomm/trusting-hamilton-bga408`, 2026-11-19) · Depends: P3-07
+- Spec: owner: "add 4 more possible class specific respiros, they will be randomized on every campfire"; `01` §4.4
+- Files: `data/camp_skills.json` (32 new class skills, `class_skills_per_camp`), `data/heroes.json` (`camp_skill_ids` = the 2 shared skills), `scripts/domain/camping_system.gd` (`shared_skills`, `class_pool`, `deal_hand`, `hand_skills`), `scripts/expedition/expedition_screen.gd` (`_camp_hands`, `camp_hand`), `scripts/hacienda/hacienda_hub.gd` (hero sheet), `tools/playtest_campaign.gd`, `tools/validate_data.py`, `tests/test_progression.gd`
+- Done when: [x] every class has 6 class camp skills (2 old + 4 new, Tico names); [x] each fogata deals every hero their 2 shared skills + 2 random class skills; [x] hero sheet shows the pool; [x] validator + test; [ ] owner reviews names/balance
+- Note: P3-13 (Guardabosques swap) now means choosing the 2 shared skills, or how many class skills are drawn.
+
 ### P3-16 · M · Casa Comunal building upgrades
 - Status: `todo` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §4 (upgrade tracks), `04` §3.3 (discount up to 50% at cap)

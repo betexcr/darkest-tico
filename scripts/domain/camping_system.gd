@@ -115,13 +115,47 @@ static func travel_meal(party: Array, fed: int) -> PackedStringArray:
 
 # --- Respite (camp skills) ------------------------------------------------------------
 
-static func hero_skills(hero: Dictionary) -> Array:
+## The shared camp skills a hero always brings (heroes.json camp_skill_ids, classes "*").
+## Older saves also listed class skills there; those now come from the class pool.
+static func shared_skills(hero: Dictionary) -> Array:
 	var out: Array = []
 	for sid in hero.get("camp_skill_ids", []):
 		var sk: Dictionary = skill(str(sid))
-		if not sk.is_empty():
+		if not sk.is_empty() and "*" in sk.get("classes", []):
 			out.append(sk)
 	return out
+
+
+## Every camp skill of the hero's class (6 per class); a few are drawn at each fogata.
+static func class_pool(hero: Dictionary) -> Array:
+	data()
+	var cid: String = str(hero.get("class_id", ""))
+	return data().get("skills", []).filter(func(sk): return sk is Dictionary and cid in sk.get("classes", []))
+
+
+## How many class skills each hero gets at a fogata (camp_skills.json).
+static func class_skills_per_camp() -> int:
+	return int(BalanceScript.req(data(), "class_skills_per_camp", "camp_skills.json"))
+
+
+## Everything the hero could bring to a fogata: shared skills, then the whole class pool.
+static func hero_skills(hero: Dictionary) -> Array:
+	return shared_skills(hero) + class_pool(hero)
+
+
+## The skills this hero has tonight: their shared skills plus class_skills_per_camp class
+## skills drawn at random (owner 2026-11-19: a new draw at every fogata). Returns ids.
+static func deal_hand(hero: Dictionary) -> Array:
+	var ids: Array = shared_skills(hero).map(func(sk): return str(sk["id"]))
+	var pool: Array = class_pool(hero).map(func(sk): return str(sk["id"]))
+	pool.shuffle()
+	ids.append_array(pool.slice(0, class_skills_per_camp()))
+	return ids
+
+
+## A dealt hand (ids) back to skill dictionaries.
+static func hand_skills(ids: Array) -> Array:
+	return ids.map(func(sid): return skill(str(sid))).filter(func(sk): return not sk.is_empty())
 
 
 static func _use_key(user: Dictionary, sk: Dictionary) -> String:

@@ -229,7 +229,18 @@ func _run() -> void:
 	_check(camp.meal_cost(feast, gs.party) == 3, "…and 3 with one dead")
 	gs.party[3]["dead"] = false
 	for x in gs.party:
-		_check(camp.hero_skills(x).size() == 4, "%s has 4 camp skills" % x.get("class_name", "?"))
+		_check(camp.shared_skills(x).size() == 2 and camp.class_pool(x).size() == 6, "%s: 2 shared + 6 class camp skills" % x.get("class_name", "?"))
+		var hand: Array = camp.deal_hand(x)
+		var own: int = camp.hand_skills(hand).filter(func(sk): return not "*" in sk["classes"]).size()
+		_check(hand.size() == 4 and own == camp.class_skills_per_camp(), "%s: a fogata hand is 2 shared + %d class skills" % [x.get("class_name", "?"), camp.class_skills_per_camp()])
+	var seen: Dictionary = {}
+	for _k in 60:
+		for sid in camp.deal_hand(gs.party[0]):
+			seen[sid] = true
+	_check(seen.size() == 8, "the class draw changes between fogatas (all 6 class skills come up)")
+	var old_loadout: Dictionary = gs.party[0].duplicate(true)
+	old_loadout["camp_skill_ids"] = ["afilar_machete", "cuentos_de_finca", "palabras_de_animo", "vendaje_de_trapo"]
+	_check(camp.shared_skills(old_loadout).size() == 2, "an old 4-skill loadout keeps only its shared skills")
 	var tec: Dictionary = gs.party.filter(func(h): return str(h["hero_id"]) == "tecnologo")[0]
 	var dron: Dictionary = camp.skill("dron_vigia")
 	var used: Array = []
@@ -288,14 +299,14 @@ func _run() -> void:
 	gs.apply_save_data(data)
 	_check(gs.selected_difficulty_id == "veterano", "difficulty saved")
 	_check(int(gs.party[1]["resolve_xp"]) == xp_before and int(gs.party[1]["resolve_level"]) == 1, "resolve XP and level saved")
-	_check(gs.party[1]["camp_skill_ids"].size() == 4, "camp skills saved")
+	_check(gs.party[1]["camp_skill_ids"].size() == 2, "camp skills saved")
 	var old: Dictionary = data.duplicate(true)
 	for e in old["roster"]:
 		e.erase("resolve_xp")
 		e.erase("camp_skill_ids")
 	old.erase("selected_difficulty_id")
 	gs.apply_save_data(old)
-	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 4, "v5 save migrates (XP at level floor, class camp skills)")
+	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 2, "v5 save migrates (XP at level floor, class camp skills)")
 	_check(gs.selected_difficulty_id == "aprendiz", "v5 save defaults to Aprendiz")
 	# v9 -> v10 (P5-02d): the curve got longer; a saved hero keeps the level they had.
 	var v9: Dictionary = data.duplicate(true)

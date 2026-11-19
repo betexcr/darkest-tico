@@ -962,8 +962,11 @@ func _show_hero_sheet(h: Dictionary) -> void:
 	if not camp.is_empty():
 		col.add_child(CardScript.rule())
 		col.add_child(CardScript.section("Habilidades de fogata"))
-		for cs in camp:
+		for cs in CampingSystemScript.shared_skills(h):
 			col.add_child(CardScript.label("◆ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
+		col.add_child(CardScript.label("De su oficio (en cada fogata le salen %d al azar):" % CampingSystemScript.class_skills_per_camp(), 12, CardScript.MUTED, true, CW))
+		for cs in CampingSystemScript.class_pool(h):
+			col.add_child(CardScript.label("◇ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
 	if int(h.get("borde_checks", 0)) > 0:
 		col.add_child(CardScript.label("Ya sobrevivió %d golpe(s) de gracia en esta expedición." % int(h["borde_checks"]), 12, CardScript.BAD, true, CW))
 	add_child(dlg)

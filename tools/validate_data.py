@@ -118,6 +118,9 @@ def main() -> int:
     for k in ("base_pct", "low_light_pct", "exhausted_pct", "exhausted_stress"):
         if not isinstance(amb.get(k), int) or amb.get(k) < 0:
             errors.append(f"camp_skills.json: ambush.{k} must be a whole number >= 0")
+    per_camp = camp_raw.get("class_skills_per_camp")
+    if not isinstance(per_camp, int) or not 1 <= per_camp <= 6:
+        errors.append("camp_skills.json: class_skills_per_camp must be a whole number 1..6")
     if len(camp_skills) != len(camp_raw.get("skills", [])):
         errors.append("camp_skills.json: duplicate skill ids")
     for cid, c in camp_skills.items():
@@ -576,16 +579,22 @@ def main() -> int:
         # Owner rule (2026-11-07): every class has a skill that helps an ally or the party.
         if not any(skills.get(s, {}).get("target") in ("ally", "party") for s in hero.get("skill_ids", [])):
             errors.append(f"heroes.json: hero '{hid}' has no ally or party skill")
-        # Camping (P3-07): 4 camp skills, each usable by the class (or shared "*").
+        # Camping (P3-07, owner 2026-11-19): 2 shared camp skills always; the class has 6
+        # camp skills of its own, class_skills_per_camp of them drawn at every fogata.
         cids = hero.get("camp_skill_ids", [])
-        if len(cids) != 4:
-            errors.append(f"heroes.json: hero '{hid}' needs 4 camp_skill_ids (has {len(cids)})")
+        if len(cids) != 2:
+            errors.append(f"heroes.json: hero '{hid}' needs 2 shared camp_skill_ids (has {len(cids)})")
         for cid in cids:
             csk = camp_skills.get(cid)
             if csk is None:
                 errors.append(f"heroes.json: hero '{hid}' references unknown camp skill '{cid}'")
-            elif "*" not in csk.get("classes", []) and hero.get("class_id") not in csk.get("classes", []):
-                errors.append(f"heroes.json: hero '{hid}' can't use camp skill '{cid}' (class list)")
+            elif "*" not in csk.get("classes", []):
+                errors.append(f"heroes.json: hero '{hid}' camp_skill_ids must be shared skills (classes \"*\"); '{cid}' is a class skill")
+        own = [c for c in camp_skills.values() if hero.get("class_id") in c.get("classes", [])]
+        if len(own) != 6:
+            errors.append(f"camp_skills.json: class '{hero.get('class_id')}' needs 6 class camp skills (has {len(own)})")
+        if not any(c.get("target") in ("ally", "others", "party") for c in own):
+            errors.append(f"camp_skills.json: class '{hero.get('class_id')}' needs a camp skill that helps others")
 
     for region_path in sorted((DATA / "regions").glob("*.json")):
         rel = region_path.relative_to(ROOT)
