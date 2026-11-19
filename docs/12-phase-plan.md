@@ -653,7 +653,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] bot runs (6 seeds, 144 expeditions; 2 seeds proved too noisy) back in the doc 04 bands: 58% cleared, 0.19 deaths/expedition, ₡ in 2946 / out 3118 a week (docs/playtests/2026-11-19-p5-07.md) (55–70% success, deaths 1 per 5–8 missions, weekly money in ≈ out); likely levers: Aprendiz `enemy_stress` (1.5), the support skills' `stress_relief`, Iglesia/Cantina prices or relief, `hub.idle_stress_relief`
 
 ### P5-08 · S · Retune Veterano and Campeón for the game without the group misa
-- Status: `todo` · Depends: P5-07
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-19)`: scope widened to all three tiers — P5-07 aimed Aprendiz at 55–70%, but the owner's bands are per tier (Aprendiz 85–90, Veterano 70–80, Campeón 55–70; line "Clear rate for the careful bot" above) · Depends: P5-07
 - Why: P5-07 retuned Aprendiz only; 8-week bot campaigns played 139 of 144 expeditions there. The Veterano/Campeón rows of `data/progression.json` are still the P5-02c/f values from the misa era.
 - Done when: [ ] `tools/playtest_campaign.gd -- --weeks 24` on 6 seeds shows Veterano and Campeón in their doc 04 bands
 
