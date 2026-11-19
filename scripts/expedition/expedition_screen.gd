@@ -25,6 +25,7 @@ const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const CardScript := preload("res://scripts/ui/tooltip_card.gd")
+const CombatControllerScript := preload("res://scripts/combat/combat_controller.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -46,7 +47,7 @@ var _battle_start: Dictionary = {}
 @onready var _light_label: Label = $Stage/TopBar/LightLabel
 @onready var _light_bar: ProgressBar = $Stage/TopBar/LightBar
 @onready var _hero_row: HBoxContainer = $Stage/HeroRow
-@onready var _enemy_row: HBoxContainer = $Stage/EnemyRow
+@onready var _enemy_row: HFlowContainer = $Stage/EnemyRow
 @onready var _narration: Label = $Stage/Narration
 @onready var _event_panel: PanelContainer = $Stage/EventPanel
 @onready var _event_title: Label = $Stage/EventPanel/Margin/VBox/EventTitle
@@ -123,6 +124,21 @@ func _ready() -> void:
 	_enter_room()
 
 
+## The hero/enemy details panel closes on a click anywhere but a fighter or the panel itself
+## (owner 2026-11-19). Seen before the GUI, so the click still does whatever it was for.
+func _input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb == null or not mb.pressed or mb.button_index != MOUSE_BUTTON_LEFT or not _enemy_info.visible:
+		return
+	if _enemy_info.get_global_rect().has_point(mb.position):
+		return
+	# The painted part of each fighter (a hero's unit box spans the whole stage height).
+	for u in _hero_units + _enemy_units:
+		if is_instance_valid(u) and u.is_visible_in_tree() and u._holder.get_global_rect().grow(12.0).has_point(mb.position):
+			return
+	_hide_enemy_info()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	for action in DIRS:
 		if event.is_action_pressed(action):
@@ -163,8 +179,9 @@ func _spawn_enemies(squad: Array) -> void:
 		u.setup(enemy, false, "res://assets/enemies/%s.png" % str(enemy.get("id", "")))
 		u.clicked.connect(_on_unit_clicked)
 		_enemy_units.append(u)
-	for k in range(_enemy_units.size() - 1, -1, -1):
-		_enemy_row.add_child(_enemy_units[k])
+	for u in _enemy_units:
+		_enemy_row.add_child(u)
+	CombatControllerScript.layout_enemy_row(_enemy_units)
 
 
 ## Combat's enemy_spawner (P2-04): the stage unit for an enemy that joins mid-fight. The

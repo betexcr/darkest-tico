@@ -17,6 +17,31 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (10) — Battle stage: info panel closes on click-away, 5+ enemies stack, long-range skills reach all
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** fixes on P4-21 / P1-03a (no new task).
+- **Changed:**
+  - **Info panel:** the hero/enemy details panel closes on any left-click that isn't on the panel or on a fighter's painted part (`_input`; the holder rect + 12 px, because a hero's unit box spans the stage height).
+  - **Enemy row:** `EnemyRow` is an `HFlowContainer` (end-aligned, `reverse_fill`).
+    - `CombatController.layout_enemy_row` puts positions 1–4 on the bottom line (1 nearest the middle) and a 5th+ on the line above.
+    - With more than 4 enemies, portraits shrink to `ENEMY_COMPACT` 118 px (`BattleUnit.set_compact`), sized so a 5th never fits on the first line. `ENEMY_SIZE` 146 → 140 so four fit on one line.
+    - Enemies (and corpses) never spill over the party any more.
+  - **Long-range skills:** a hero skill used from position 3 or 4 that reaches 3 or 4 reaches every enemy position (owner: Dron Casero couldn't hit position 1).
+    - Dron Casero 2–4, Mecatazo, Silbatazo and Liturgia de Hierro 1–3 → 1–4.
+    - Retén (used from 1–2, reaching 2–3) stays melee.
+    - `validate_data.py` enforces the rule; `AGENTS.md` formation rule updated.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures (new checks in `test_ui`).
+  - Screenshot of a boss fight with 5 units.
+- **Not verified / risks:**
+  - The ranged reach is a small buff for the Tecnólogo, Montador, Guachimán and Exorcista; not re-measured with the bot.
+  - Corpses still lie tipped over beside the living.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (9) — P5-10 — Enemy drops, battle victory card; alforja fixes
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-10 `review`.

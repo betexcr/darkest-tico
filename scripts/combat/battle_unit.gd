@@ -18,7 +18,9 @@ const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 ## may overlap a little (the row uses negative separation); enemies keep their square
 ## portraits, drawn as framed squares standing on the same line.
 const HERO_SIZE := Vector2(160, 262)
-const ENEMY_SIZE := Vector2(146, 146)
+const ENEMY_SIZE := Vector2(140, 140)
+## With more than 4 enemies on the stage they stack in two lines, smaller (owner 2026-11-19).
+const ENEMY_COMPACT := Vector2(118, 118)  # 4 per line fit the half-stage, a 5th never does
 ## Highlight colours (P4-21: a glow around the fighter instead of a line under it).
 const GLOW_ACTIVE := Color(1.0, 0.82, 0.38)
 const GLOW_ALLY := Color(0.45, 0.95, 0.55)
@@ -371,6 +373,25 @@ func _stop_idle() -> void:
 		_idle_tween.kill()
 	_idle_tween = null
 	_sprite.scale = Vector2.ONE
+
+
+## Enemy portraits shrink while more than 4 share the stage (they stack in two lines).
+func set_compact(on: bool) -> void:
+	if is_hero:
+		return
+	var want: Vector2 = ENEMY_COMPACT if on else ENEMY_SIZE
+	if want == _size:
+		return
+	_size = want
+	custom_minimum_size = Vector2(_size.x, 0)
+	_holder.custom_minimum_size = _size
+	_sprite.size = _size
+	_sprite.pivot_offset = Vector2(_size.x / 2.0, _size.y)
+	if _frame != null:
+		_frame.size = _size + Vector2(6, 6)
+	for bar in [_hp_bar, _stress_bar]:
+		if bar != null:
+			bar.custom_minimum_size.x = _size.x - 20
 
 
 func set_active(on: bool) -> void:

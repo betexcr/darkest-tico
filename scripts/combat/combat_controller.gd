@@ -1225,11 +1225,22 @@ func _sync_rows() -> void:
 		var u = hero_units[k]
 		if u != null and u.get_parent() != null:
 			u.get_parent().move_child(u, k)
-	var n: int = enemy_units.size()
+	layout_enemy_row(enemy_units)
+
+
+## Enemy row order (EnemyRow is a flow filled bottom-up): positions 1–4 make the bottom
+## line with position 1 nearest the middle (last on the line); a 5th and later stack on a
+## line above, smaller (owner 2026-11-19: more than 4 must not spill over the party).
+static func layout_enemy_row(units: Array) -> void:
+	var n: int = units.size()
+	var front: int = mini(n, 4)  # structural: one line holds four
 	for k in n:
-		var u = enemy_units[k]
-		if u != null and u.get_parent() != null:
-			u.get_parent().move_child(u, n - 1 - k)
+		var u = units[k]
+		if u == null or u.get_parent() == null:
+			continue
+		u.get_parent().move_child(u, (front - 1 - k) if k < front else (front + n - 1 - k))
+		if u.has_method("set_compact"):
+			u.set_compact(n > front)
 
 
 # --- Stage helpers ----------------------------------------------------------------

@@ -229,6 +229,13 @@ def main() -> int:
                 errors.append(f"{where}: chance must be between 0 and 1 ({d.get('item')})")
         if sum(float(d.get("chance", 0)) for d in dr) > 0.8:
             errors.append(f"{where}: the three chances add up to more than 0.8")
+    # Long-range hero skills (owner 2026-11-19): a skill used from position 3 or 4 that reaches
+    # position 3 or 4 is ranged, and ranged skills reach every enemy position (1-4).
+    sk_all = (load(DATA / "skills.json") or {}).get("skills", {})
+    for sid, sk in (sk_all.items() if isinstance(sk_all, dict) else [(x.get("id"), x) for x in sk_all]):
+        use, tgt = sk.get("use_ranks") or [], sk.get("target_ranks") or []
+        if any(r in (3, 4) for r in use) and any(r in (3, 4) for r in tgt) and sorted(tgt) != [1, 2, 3, 4]:
+            errors.append(f"skills.json: '{sid}' is long-range (used from and reaching position 3/4) but target_ranks is {tgt}, not 1-4")
     # Town view (P4-17): one building per hub service, with its cut-out picture.
     town = load(DATA / "town.json") or {}
     town_ids = set()

@@ -114,7 +114,7 @@ grow_horizontal = 0
 grow_vertical = 2
 theme_override_constants/separation = -12
 
-[node name="EnemyRow" type="HBoxContainer" parent="Stage"]
+[node name="EnemyRow" type="HFlowContainer" parent="Stage"]
 layout_mode = 1
 anchor_right = 0.5
 anchor_bottom = 1.0
@@ -123,8 +123,12 @@ offset_top = 44.0
 offset_right = -24.0
 offset_bottom = -30.0
 grow_vertical = 2
-theme_override_constants/separation = 10
+mouse_filter = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 2
 alignment = 2
+last_wrap_alignment = 3
+reverse_fill = true
 
 [node name="Narration" type="Label" parent="Stage"]
 layout_mode = 1

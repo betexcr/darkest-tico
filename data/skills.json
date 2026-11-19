@@ -86,7 +86,8 @@
       "target_ranks": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "description": "Latigazo con el mecate de enlazar. Puede dejarlo enredado: salado, con menos esquiva.",
       "applies": {
@@ -153,6 +154,7 @@
         4
       ],
       "target_ranks": [
+        1,
         2,
         3,
         4
@@ -361,7 +363,8 @@
       "target_ranks": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "damage_min": 2,
       "damage_max": 4,
@@ -640,7 +643,8 @@
       "target_ranks": [
         1,
         2,
-        3
+        3,
+        4
       ],
       "damage_min": 4,
       "damage_max": 7,

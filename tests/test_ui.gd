@@ -288,6 +288,41 @@ func _event_result(gs) -> void:
 	var tone = screen.get_script()
 	_check(tone._result_tone("Lalo: estrés -6.") == 1 and tone._result_tone("Estrés +5 a la cuadrilla.") == -1 and tone._result_tone("Luz -25.") == -1
 		and tone._result_tone("+40 colones.") == 1 and tone._result_tone("Lalo pierde 4 PV.") == -1, "good and bad results are told apart (stress and Luz read the right way)")
+	# Six enemies (a boss with summons and the fallen, owner 2026-11-19) stack in two lines,
+	# smaller, positions 1-4 below; they never spill over the party.
+	var six: Array = []
+	for i in 6:
+		six.append(gs.make_enemy("sirviente_ahogado", 6))
+	root.size = Vector2i(1280, 720)
+	screen._spawn_enemies(six)
+	for i in 3:
+		await process_frame
+	var units: Array = screen._enemy_units
+	var bl = load("res://scripts/combat/battle_unit.gd")
+	_check(units.all(func(u): return u._size == bl.ENEMY_COMPACT), "with 6 enemies every portrait is compact")
+	var front_y: float = units[0].global_position.y
+	_check(units.slice(0, 4).all(func(u): return is_equal_approx(u.global_position.y, front_y)) and units[4].global_position.y < front_y - 40.0,
+		"positions 1-4 on the lower line, the rest stacked above")
+	var right_edge: float = units.map(func(u): return u.get_global_rect().end.x).max()
+	_check(right_edge <= screen._hero_row.get_global_rect().position.x + 1.0, "no enemy reaches into the party's half (%.0f)" % right_edge)
+	_check(units[0].get_global_rect().position.x > units[3].get_global_rect().position.x, "position 1 is nearest the middle")
+	# The details panel closes on a click anywhere but a fighter or the panel itself.
+	screen._show_enemy_info(units[0].data)
+	var click := func(at: Vector2):
+		var ev := InputEventMouseButton.new()
+		ev.button_index = MOUSE_BUTTON_LEFT
+		ev.pressed = true
+		ev.position = at
+		screen._input(ev)
+	click.call(units[1].get_global_rect().get_center())
+	_check(screen._enemy_info.visible, "a click on another fighter leaves it open (the fighter's own click updates it)")
+	click.call(Vector2(640, 700))
+	_check(not screen._enemy_info.visible, "a click on the bottom panel closes it")
+	screen._show_enemy_info(units[0].data)
+	click.call(Vector2(screen._hero_units[1]._holder.get_global_rect().get_center().x, 60))
+	_check(not screen._enemy_info.visible, "a click on the empty stage (even above a hero) closes it")
+	screen._clear_enemies()
+	_check(load("res://scripts/domain/formation.gd").target_ranks(gs.get_skill("dron_casero")).has(1), "Dron Casero (long-range) reaches enemy position 1")
 	# The battle card after a won fight (P5-10): loot and how each hero came out.
 	var h0: Dictionary = gs.party[0]
 	screen._battle_start = {}
