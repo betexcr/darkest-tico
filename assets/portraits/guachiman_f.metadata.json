@@ -11,5 +11,10 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-19T22:07:16+00:00"
+  "timestamp": "2026-11-19T22:07:16+00:00",
+  "retouch": {
+    "date": "2026-11-19",
+    "why": "owner: remove the object in her mouth, keep the rest",
+    "how": "mask over the object, OpenCV Telea fill, then dreamshaper-8 img2img (strength 0.45, seed 11) on a 256 px crop around the mouth, composited back through a feathered mask only"
+  }
 }
