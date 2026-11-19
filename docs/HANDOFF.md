@@ -29,7 +29,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Hub: page `guardabosques` (`hacienda_hub.tscn` + `_refresh_guardabosques` / `_ranger_row`): 6 class rows (Aprender / Fijar / Soltar) and 2 shared rows (Cambiar por …); in `HERO_PAGES`. Hero sheet marks unknown and fixed skills.
   - Bot: learns one class camp skill per hero a week while it keeps RESERVE, watch skills first (`row["camp_learned"]`).
   - Tests: `test_progression` (start with 3, draw from known, learn/fix/let go/swap, no money, v12 migration), `test_ui` (8 buildings, page rows, Aprender works). Docs 01 §4.4, 02 §9 and hub table.
-- **Verified:** validator 0 errors; test_progression, test_ui, test_hub, test_save 0 failures; screenshots of the town hover and the page (1280×720). FULL_SUITE_PENDING
+- **Verified:** validator 0 errors; test_progression, test_ui, test_hub, test_save 0 failures; screenshots of the town hover and the page (1280×720). Full run with Godot 4.7.2 (Linux, scratchpad): smoke + all 18 tests 0 failures, no SCRIPT ERROR; `playtest_campaign -- --campaigns 1 --weeks 4` runs clean (no SCRIPT ERROR).
 - **Not verified / risks:** the next `tools/town_paint.py` repaint uses the stand-in `guardabosques.png` (a dark 89×97 cut) and the Cantina cut-out still contains the shed, so run `sd_local.py` + `sd_cutout.py` for `town_guardabosques` first. Prices are guesses; the bot spends some money on lessons now, so P5-09 baselines shift a little.
 - **Decisions needed:** owner: prices (500 / 300 / 100 ₡)? Should town events close or discount the Guardabosques like the other buildings?
 - **Next step:** owner playtest the Guardabosques page; then P3-21 once P3-16 brings building upgrades.
