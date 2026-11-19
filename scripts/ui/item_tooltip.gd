@@ -30,6 +30,9 @@ static func clear_frame(control: Control) -> void:
 
 ## `note` is an extra hint at the bottom ("Clic para comprar"); `warning` is shown in red
 ## (why it can't be bought); `qty` > 1 adds "×N" next to the name.
+const ICON := 84.0
+
+
 static func build(item_id: String, note: String = "", warning: String = "", qty: int = 0) -> Control:
 	var p: Dictionary = GameState.item_tooltip_parts(item_id)
 	var made: Array = TooltipCardScript.new_card()
@@ -52,7 +55,10 @@ static func build(item_id: String, note: String = "", warning: String = "", qty:
 		tex.texture = load(icon_path) as Texture2D
 		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex.custom_minimum_size = Vector2(52, 52)
+		# Item icons are 128 px: at 84 (×1.5 = 126 px at 1080p) they draw about 1:1, sharp
+		# (owner 2026-11-19: the tooltip image looked blurry at 52).
+		tex.custom_minimum_size = Vector2(ICON, ICON)
+		tex.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		frame.add_child(tex)
 		head.add_child(frame)
 	var titles := VBoxContainer.new()
@@ -61,7 +67,7 @@ static func build(item_id: String, note: String = "", warning: String = "", qty:
 	titles.add_theme_constant_override("separation", 4)
 	head.add_child(titles)
 	var name_text: String = str(p["name"]) + (" ×%d" % qty if qty > 1 else "")
-	titles.add_child(TooltipCardScript.title_label(name_text, 17, INNER - 68.0 if ResourceLoader.exists(icon_path) else INNER))
+	titles.add_child(TooltipCardScript.title_label(name_text, 17, INNER - ICON - 16.0 if ResourceLoader.exists(icon_path) else INNER))
 	var chip := PanelContainer.new()
 	chip.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	var chip_color: Color = KIND_COLORS.get(str(p["slot"]), KIND_COLORS[""])

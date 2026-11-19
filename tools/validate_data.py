@@ -201,6 +201,15 @@ def main() -> int:
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
     services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "casa_comunal", "clinica"}
+    # Item effects (owner 2026-11-19: every item says what it does): only keys the item card
+    # describes (GameState.item_tooltip_parts); a new key needs a line there first.
+    ITEM_EFFECT_KEYS = {"heal", "stress", "damage", "element", "light", "hp_risk", "cure", "cure_all", "applies"}
+    for it in (load(DATA / "items.json") or {}).get("items", []):
+        for k in (it.get("effects") or {}):
+            if k not in ITEM_EFFECT_KEYS:
+                errors.append(f"items.json: '{it.get('id')}' effect '{k}' has no description in the item card (GameState.item_tooltip_parts)")
+        if it.get("usable") not in ("equip", "curio") and not it.get("effects") and not it.get("scout"):
+            errors.append(f"items.json: '{it.get('id')}' is usable but has no effects to describe")
     # Town view (P4-17): one building per hub service, with its cut-out picture.
     town = load(DATA / "town.json") or {}
     town_ids = set()

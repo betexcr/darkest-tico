@@ -810,6 +810,24 @@ func item_tooltip_parts(item_id: String) -> Dictionary:
 	if ss is Dictionary:
 		parts.append("Empieza cada pelea: %s" % SE.display_name(str(ss.get("status", ""))).to_lower())
 	var fx: Dictionary = it.get("effects", {})
+	# What a consumable does, in the order the rules apply it (item_effects.gd; owner
+	# 2026-11-19: every item says what it does). The validator rejects effect keys not
+	# described here (ITEM_EFFECT_KEYS in tools/validate_data.py).
+	var who: String = {"ally": "un aliado", "party": "toda la cuadrilla", "enemy": "un enemigo"}.get(str(it.get("target", "")), "")
+	if fx.has("heal"):
+		parts.append("Cura %d PV%s" % [int(fx["heal"]), " a " + who if who != "" and str(it.get("target", "")) != "ally" else ""])
+	if fx.has("stress"):
+		var st: int = int(fx["stress"])
+		parts.append(("Quita %d de estrés" % -st) if st < 0 else ("Suma %d de estrés" % st))
+	if fx.has("damage"):
+		var dmg: Array = fx["damage"]
+		var el: String = str(fx.get("element", ""))
+		parts.append("Daño %d–%d%s a %s" % [int(dmg[0]), int(dmg[1]), (" de " + str(ELEMENT_NAMES.get(el, el)).to_lower()) if el != "" else "", who if who != "" else "un enemigo"])
+	if fx.has("light"):
+		parts.append("Luz %+d" % int(fx["light"]))
+	var risk = fx.get("hp_risk", null)
+	if risk is Dictionary:
+		parts.append("%d%% de que le dé la goma: −%d PV" % [int(round(float(risk.get("chance", 0)) * 100)), int(risk.get("amount", 0))])
 	if bool(fx.get("cure_all", false)):
 		parts.append("Quita TODOS los males")
 	elif not fx.get("cure", []).is_empty():
@@ -818,8 +836,24 @@ func item_tooltip_parts(item_id: String) -> Dictionary:
 			cn.append(SE.display_name(str(c)).to_lower())
 		parts.append("Quita: " + ", ".join(cn))
 	var ap = it.get("effects", {}).get("applies", null)
-	if ap is Dictionary and str(it.get("target", "")) != "enemy":
-		parts.append("Deja %s" % SE.display_name(str(ap.get("status", ""))).to_lower())
+	if ap is Dictionary:
+		var line: String = SE.display_name(str(ap.get("status", "")))
+		if float(ap.get("chance", 1.0)) < 1.0:
+			line = "%d%% de %s" % [int(round(float(ap["chance"]) * 100)), line.to_lower()]
+		if int(ap.get("turns", 0)) > 0:
+			line += " (%d turno%s)" % [int(ap["turns"]), "" if int(ap["turns"]) == 1 else "s"]
+		var mods: PackedStringArray = PackedStringArray()
+		if ap.get("mods") is Dictionary:
+			for m in ap["mods"]:
+				mods.append("%+d %s" % [int(ap["mods"][m]), SkillRanksScript.MOD_NAMES.get(str(m), str(m))])
+		parts.append(("Al enemigo: " if str(it.get("target", "")) == "enemy" else "Deja ") + line + (": " + ", ".join(mods) if not mods.is_empty() else ""))
+	var keys: Array = it.get("curio_keys", [])
+	if not keys.is_empty():
+		parts.append("Sirve en: " + ", ".join(keys.map(func(c): return str(get_curio(str(c)).get("name", c)))))
+	if bool(it.get("scout", false)):
+		parts.append("Muestra la vida exacta, los ataques y las debilidades de los enemigos")
+	if who != "" and not fx.is_empty():
+		parts.append("Se usa en %s" % who)
 	var where: String = {
 		"explore": "Fuera de combate", "combat": "Solo en combate (gasta el turno)", "both": "Dentro y fuera de combate (en combate gasta el turno)",
 		"curio": "Se usa en lugares extraños", "equip": "Arrástralo a un héroe para equiparlo",

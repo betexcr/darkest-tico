@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (7) — Item cards say what every item does; sharper item icons
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** fix on the P4-12/P4-14 item card (no new task).
+- **Changed:**
+  - `GameState.item_tooltip_parts` now describes every consumable effect: "Cura N PV", "Quita N de estrés", "Daño A–B de <elemento> a un enemigo", stun/status chance on enemies, buffs with their numbers, "Luz +N", the guaro's risk, "Sirve en: <curio>", what the Lentes show, and "Se usa en un aliado / toda la cuadrilla / un enemigo". Before, heal, stress, damage, light and risk were never shown.
+  - `validate_data.py` rejects effect keys the card doesn't describe (`ITEM_EFFECT_KEYS`) and usable items with nothing to describe.
+  - `test_hub` checks that no card is silent.
+  - Item card icon 52 → 84 (the icons are 128 px: about 1:1 at 1080p), with a mipmap filter.
+  - `project.godot` `[importer_defaults]` texture mipmaps on (new imports only; `.import` files aren't in git).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - `test_hub`, `test_equipment`, `test_combat_items`, `test_ui`, `test_expedition_systems`, `test_town_events`: 0 failures.
+  - Screenshot of 9 cards at 1920×1080.
+- **Not verified / risks:** existing imports on the owner's machine keep no mipmaps until reimported. The 1:1 size is what makes the card sharp.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (6) — P4-21 — 1080p pass: whole-game scaling, bigger fighters, glow targeting
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-21 `review` (owner to play at 1080p).

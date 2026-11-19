@@ -125,6 +125,15 @@ func _run() -> void:
 	gs.colones = 0
 	hub._refresh()
 	_check(tile.disabled, "store tiles disable when the colones don't reach")
+	# Every item says what it does (owner 2026-11-19): anything with effects, curio keys or
+	# scouting has at least one line on its card.
+	var silent: Array = gs.all_item_ids().filter(func(i):
+		var it: Dictionary = gs.get_item(str(i))
+		var does: bool = not it.get("effects", {}).is_empty() or not it.get("curio_keys", []).is_empty() or bool(it.get("scout", false))
+		return does and gs.item_tooltip_parts(str(i))["stats"].is_empty())
+	_check(silent.is_empty(), "every item card describes its effects (silent: %s)" % ", ".join(silent))
+	var pipa: Array = gs.item_tooltip_parts("agua_pipa")["stats"]
+	_check(pipa.has("Cura 8 PV"), "agua de pipa: 'Cura 8 PV'")
 	# Dev menu (owner 2026-11-19): infinite money, next week now, +1 resolución.
 	gs.reset_party_from_catalog()
 	gs.dev_set_infinite_money(true)
