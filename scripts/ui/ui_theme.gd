@@ -108,10 +108,20 @@ static func _popup_menu(t: Theme) -> void:
 	t.set_color("font_separator_color", "PopupMenu", C.MUTED)
 
 
+## Scroll bars are SCROLL_WIDTH px thick: a stylebox with no content margin draws a bar
+## with no width, so lists scrolled with the wheel but showed no bar (owner 2026-11-19).
+const SCROLL_WIDTH := 10.0
+
+
 static func _scroll(t: Theme, type: String) -> void:
-	var track := C.flat(Color(0.06, 0.05, 0.04, 0.6), Color(0, 0, 0, 0), 0, 4, 0)
-	t.set_stylebox("scroll", type, track)
-	t.set_stylebox("scroll_focus", type, track)
-	t.set_stylebox("grabber", type, C.flat(Color(EDGE, 0.8), Color(0, 0, 0, 0), 0, 4, 0))
-	t.set_stylebox("grabber_highlight", type, C.flat(C.BORDER, Color(0, 0, 0, 0), 0, 4, 0))
-	t.set_stylebox("grabber_pressed", type, C.flat(C.GOLD, Color(0, 0, 0, 0), 0, 4, 0))
+	var track := C.flat(Color(0.06, 0.05, 0.04, 0.85), Color(0, 0, 0, 0), 0, 4, 0)
+	t.set_stylebox("scroll", type, _thick(track))
+	t.set_stylebox("scroll_focus", type, _thick(track))
+	t.set_stylebox("grabber", type, _thick(C.flat(Color(EDGE, 0.9), Color(0, 0, 0, 0), 0, 4, 0)))
+	t.set_stylebox("grabber_highlight", type, _thick(C.flat(C.BORDER, Color(0, 0, 0, 0), 0, 4, 0)))
+	t.set_stylebox("grabber_pressed", type, _thick(C.flat(C.GOLD, Color(0, 0, 0, 0), 0, 4, 0)))
+
+
+static func _thick(sb: StyleBoxFlat) -> StyleBoxFlat:
+	sb.set_content_margin_all(SCROLL_WIDTH / 2.0)
+	return sb

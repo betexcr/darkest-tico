@@ -30,6 +30,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Screenshots of both shops in sell mode: right panel inside the window.
 - **Not verified / risks:** a 0.15 s delay may make tooltips pop while the mouse just passes over the town and the battle bar.
 - **Decisions needed:** none.
+- **Also (same day):** scroll bars were invisible game-wide: the theme's styleboxes had no content margin, so the bar had no width. `ui_theme.gd` now draws them 10 px wide (`SCROLL_WIDTH`); the shops (and every other list) show a bar when they overflow.
 - **Next step:** owner playtest.
 
 ---
