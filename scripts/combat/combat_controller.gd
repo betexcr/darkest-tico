@@ -1269,10 +1269,9 @@ func _set_active(actor: Dictionary) -> void:
 func _refresh_markers() -> void:
 	var tgt: Dictionary = current_target()
 	for u in enemy_units:
-		if is_same(u.data, _active_actor):
-			u.set_active(true)
-		else:
-			u.set_targeted(not u.is_dead() and is_same(u.data, tgt))
+		var acting: bool = is_same(u.data, _active_actor)
+		u.set_active(acting)
+		u.set_targeted(not acting and not u.is_dead() and is_same(u.data, tgt))
 
 
 func _party_snapshot() -> Array:

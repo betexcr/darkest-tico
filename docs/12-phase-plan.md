@@ -498,6 +498,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "a dev menu where we can add infinite money, force instant next week (with all that happens in a week change), add resolución to each separate character"
 - Done when: [x] debug builds only (`OS.is_debug_build()`): DEV button in the banner and F12; [x] infinite money (the bank stays at 999999, not saved); [x] next week now: the same week change as coming back from an expedition, with everyone at home; [x] +1 resolución per hero; [x] tests
 
+### P4-21 · M · 1080p pass: scaling, bigger fighters, glow targeting (owner 2026-11-19)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): owner to play at 1080p · Depends: —
+- Files: `project.godot` (`window/stretch/mode="canvas_items"`, `aspect="expand"`), `scripts/combat/battle_unit.gd` (HERO_SIZE / ENEMY_SIZE, glow), `scripts/combat/combat_controller.gd` (`_refresh_markers` clears the acting enemy), `scenes/expedition/expedition_screen.tscn` (stage/bottom panel), `scripts/ui/skill_button.gd`, `scripts/expedition/expedition_screen.gd`
+- Spec: owner "this is 1080p, make the enemies and the characters appropriately larger; adapt everything for 1080p; improve the lower UI; instead of the red and green lines for targeting use a highlight around them; keep the portraits for enemies, just resize"
+- Done when: [x] the whole game scales from its 1280×720 design to any window (canvas_items stretch, crisp text; wider screens get more room); [x] heroes 160×262 (slight overlap), enemy portraits 146×146 framed squares on the same line (about 1.6–1.85× larger at 1080p); [x] targeting as a glow (hero silhouette / enemy frame): gold active, red enemy target, green ally; [x] lower panel lower and tidier (skill icons 52, map column 390, log 13 pt); [x] screenshots at 1920×1080
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

@@ -14,7 +14,32 @@ signal equipment_dropped(message: String)
 ## Draw order of a fallen fighter; living ones stay at 0.
 const DEAD_Z := -1
 const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
-const SPRITE_SIZE := Vector2(140, 210)
+## Box each fighter's art is drawn in (P4-21, 1080p pass): heroes are cut-out sprites and
+## may overlap a little (the row uses negative separation); enemies keep their square
+## portraits, drawn as framed squares standing on the same line.
+const HERO_SIZE := Vector2(160, 262)
+const ENEMY_SIZE := Vector2(146, 146)
+## Highlight colours (P4-21: a glow around the fighter instead of a line under it).
+const GLOW_ACTIVE := Color(1.0, 0.82, 0.38)
+const GLOW_ALLY := Color(0.45, 0.95, 0.55)
+const GLOW_ENEMY := Color(1.0, 0.32, 0.26)
+const OUTLINE_SHADER := """
+shader_type canvas_item;
+uniform vec4 glow : source_color = vec4(1.0, 0.8, 0.4, 1.0);
+uniform float width = 5.0;
+uniform float on = 0.0;
+void fragment() {
+	vec4 c = COLOR; // in Godot 4 COLOR already holds the texture × modulate
+	float a = 0.0;
+	for (int i = 0; i < 16; i++) {
+		float ang = 6.2831853 * float(i) / 16.0;
+		a = max(a, texture(TEXTURE, UV + vec2(cos(ang), sin(ang)) * TEXTURE_PIXEL_SIZE * width).a);
+	}
+	float edge = clamp(a - c.a, 0.0, 1.0) * on;
+	COLOR = vec4(mix(c.rgb, glow.rgb, edge * (1.0 - c.a)), max(c.a, edge * glow.a));
+}
+"""
+static var _outline: Shader = null
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
@@ -35,7 +60,14 @@ var is_hero: bool = true
 var _tex: Dictionary = {}
 var _holder: Control
 var _sprite: TextureRect
-var _marker: ColorRect
+## Enemy portrait frame (glows when highlighted); heroes glow along their silhouette.
+var _frame: Panel
+var _size: Vector2 = HERO_SIZE
+var _active: bool = false
+var _selectable: bool = false
+var _targeted: bool = false
+## Heroes' outline material; set on the sprite only while it glows.
+var _glow_mat: ShaderMaterial
 var _hp_bar: ProgressBar
 var _stress_bar: ProgressBar
 var _name_label: Label
@@ -52,8 +84,9 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	is_hero = hero
 	# Party on the right facing left, enemies on the left facing right: lunges go toward the middle.
 	_dir = -1.0 if hero else 1.0
+	_size = HERO_SIZE if hero else ENEMY_SIZE
 	alignment = BoxContainer.ALIGNMENT_END
-	custom_minimum_size = Vector2(SPRITE_SIZE.x, 0)
+	custom_minimum_size = Vector2(_size.x, 0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	add_theme_constant_override("separation", 3)
 
@@ -75,28 +108,34 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 			_status_tex[id] = load(path)
 
 	_holder = Control.new()
-	_holder.custom_minimum_size = SPRITE_SIZE
+	_holder.custom_minimum_size = _size
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
 
-	_marker = ColorRect.new()
-	_marker.color = Color(0.95, 0.8, 0.35, 0.9)
-	_marker.position = Vector2(15, SPRITE_SIZE.y - 3)
-	_marker.size = Vector2(SPRITE_SIZE.x - 30, 4)
-	_marker.visible = false
-	_marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_holder.add_child(_marker)
+	if not hero:
+		_frame = Panel.new()
+		_frame.position = Vector2(-3, -3)
+		_frame.size = _size + Vector2(6, 6)
+		_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_holder.add_child(_frame)
 
 	_sprite = TextureRect.new()
-	_sprite.size = SPRITE_SIZE
+	_sprite.size = _size
 	_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_sprite.pivot_offset = Vector2(SPRITE_SIZE.x / 2.0, SPRITE_SIZE.y)
+	_sprite.pivot_offset = Vector2(_size.x / 2.0, _size.y)
 	# Sprites are generated facing LEFT (hero attack poses: weapon in the right arm toward the
 	# enemy); enemies are mirrored so they face the party on the right.
 	_sprite.flip_h = not hero
 	_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if hero:
+		if _outline == null:
+			_outline = Shader.new()
+			_outline.code = OUTLINE_SHADER
+		_glow_mat = ShaderMaterial.new()
+		_glow_mat.shader = _outline
 	_holder.add_child(_sprite)
+	_update_glow()
 
 	_hp_bar = _make_bar(Color(0.72, 0.13, 0.13))
 	add_child(_hp_bar)
@@ -135,7 +174,7 @@ func _ready() -> void:
 func _make_bar(fill: Color) -> ProgressBar:
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
-	bar.custom_minimum_size = Vector2(SPRITE_SIZE.x - 20, 7)
+	bar.custom_minimum_size = Vector2(_size.x - 20, 7)
 	bar.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var bg := StyleBoxFlat.new()
@@ -262,14 +301,14 @@ func float_text(text: String, color: Color, big: bool = false) -> void:
 	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	l.add_theme_constant_override("outline_size", 6)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	l.size = Vector2(SPRITE_SIZE.x, 36)
+	l.size = Vector2(_size.x, 36)
 	# Stack popups that arrive together so they don't overlap.
 	var stacked: int = 0
 	for c in _holder.get_children():
 		if c.has_meta("popup"):
 			stacked += 1
 	l.set_meta("popup", true)
-	l.position = Vector2(0, SPRITE_SIZE.y * 0.25 - stacked * 26)
+	l.position = Vector2(0, _size.y * 0.25 - stacked * 26)
 	l.pivot_offset = l.size / 2.0
 	l.scale = Vector2(1.4, 1.4) if big else Vector2.ONE
 	_holder.add_child(l)
@@ -335,26 +374,53 @@ func _stop_idle() -> void:
 
 
 func set_active(on: bool) -> void:
-	_marker.visible = on
-	_marker.color = Color(0.95, 0.8, 0.35, 0.9)
+	_active = on
+	_update_glow()
 	_name_label.add_theme_color_override("font_color", Color(1, 0.9, 0.55) if on else Color(0.9, 0.9, 0.9))
 
 
 ## Highlight as a valid pick while the player chooses a target (green for allies,
 ## red for enemies).
 func set_selectable(on: bool) -> void:
-	_marker.visible = on
-	_marker.color = Color(0.35, 0.85, 0.45, 0.95) if is_hero else Color(0.95, 0.25, 0.2, 0.95)
+	_selectable = on
+	_update_glow()
 	_name_label.add_theme_color_override("font_color", Color(0.75, 1, 0.75) if (on and is_hero) else (Color(1, 0.7, 0.65) if on else Color(0.9, 0.9, 0.9)))
 
 
 func set_targeted(on: bool) -> void:
 	_name_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9))
+	_targeted = on
+	_update_glow()
+
+
+## One glow at a time: a valid pick (green ally / red enemy) over the current target (red)
+## over the fighter whose turn it is (gold). Heroes glow along their silhouette, enemy
+## portraits in their frame.
+func _update_glow() -> void:
+	var on: bool = _selectable or _targeted or _active
+	var col: Color = GLOW_ACTIVE
+	if _selectable:
+		col = GLOW_ALLY if is_hero else GLOW_ENEMY
+	elif _targeted:
+		col = GLOW_ENEMY
+	if is_hero:
+		if _sprite != null and _glow_mat != null:
+			_glow_mat.set_shader_parameter("glow", col)
+			_glow_mat.set_shader_parameter("on", 1.0)
+			_glow_mat.set_shader_parameter("width", 7.0 if _selectable else 5.0)
+			_sprite.material = _glow_mat if on else null
+		return
+	if _frame == null:
+		return
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0, 0, 0, 0)
+	box.set_corner_radius_all(3)
+	box.set_border_width_all(3 if on else 2)
+	box.border_color = col if on else Color(0.32, 0.24, 0.15, 0.95)
 	if on:
-		_marker.visible = true
-		_marker.color = Color(0.85, 0.2, 0.2, 0.9)
-	else:
-		_marker.visible = false
+		box.shadow_color = Color(col, 0.55)
+		box.shadow_size = 14 if _selectable else 9
+	_frame.add_theme_stylebox_override("panel", box)
 
 
 ## Attack (lunge toward the other side) or cast (glow). Returns after the motion.

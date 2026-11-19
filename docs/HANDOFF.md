@@ -17,6 +17,30 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (6) — P4-21 — 1080p pass: whole-game scaling, bigger fighters, glow targeting
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-21 `review` (owner to play at 1080p).
+- **Changed:**
+  - `project.godot`: stretch mode `canvas_items`, aspect `expand`. The game is still designed at 1280×720 and scales ×1.5 at 1080p with crisp text; wider windows get extra room.
+  - `battle_unit.gd`:
+    - heroes in a 160×262 box (was 140×210; the hero row has separation −12 so they overlap a little);
+    - enemies keep their portraits as 146×146 framed squares, bottom-aligned with the heroes (owner: don't cut them out);
+    - the coloured line under a unit is gone. Instead heroes get an outline shader along their silhouette (the material is set only while glowing) and enemies a glowing frame. Gold = acting, red = enemy target / pickable enemy, green = pickable ally.
+  - `combat_controller._refresh_markers` now clears `set_active` on enemies that stopped acting (the old line hid this).
+  - Expedition screen: stage taller (bottom panel 250 → 212), portrait 124×180, map column 470 → 390, log 13 pt, skill icons 46 → 52 (9 fit at full size).
+  - Tried and dropped: cutting enemies out of their portraits (owner asked to keep the portraits).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+  - Screenshots at 1920×1080 of the battle (turn, targeting) and the hub.
+- **Not verified / risks:**
+  - Other screens (victory, camp, events) were not looked at in 1080p, but they scale the same way.
+  - A shader detail: in Godot 4 a canvas shader's `COLOR` already includes the texture. Multiplying the texture in again made sprites faint.
+- **Decisions needed:** none.
+- **Next step:** owner playtest at 1080p.
+
+---
+
 ## 2026-11-19 (5) — P4-20 — Dev menu; bigger alforja
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-20 `done`.

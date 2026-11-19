@@ -8,7 +8,7 @@ const TooltipCardScript := preload("res://scripts/ui/tooltip_card.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
-const SIZE := Vector2(46, 46)
+const SIZE := Vector2(52, 52)
 ## How an effects line starts (see `body_for`).
 const EFFECT_PREFIXES := ["Ataque:", "Cura ", "Alivia ", "Objetivo:", "Desde posición"]
 

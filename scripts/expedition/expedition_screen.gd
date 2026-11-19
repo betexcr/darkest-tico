@@ -8,8 +8,8 @@ extends Control
 signal expedition_finished(reason: String)
 
 ## The action row holds this many full-size icons; with more they shrink to ACTION_ICON_SMALL.
-const ACTION_ROW_FULL := 8
-const ACTION_ICON_SMALL := Vector2(40, 40)
+const ACTION_ROW_FULL := 9
+const ACTION_ICON_SMALL := Vector2(44, 44)
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
