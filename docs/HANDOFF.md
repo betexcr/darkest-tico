@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (3) — P5-09 — Long campaigns: Veterano and Campeón sized for the party that arrives
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-09 `done`.
+- **Changed:**
+  - `data/progression.json`: Veterano 1.5/1.4/1.7 → 1.15/1.1/1.3; Campeón 2.0/1.7/2.0 → 1.6/1.4/1.65 (enemy PV / damage / stress).
+  - Doc 01 §6.1 table + why; doc 09 §8; `docs/playtests/2026-11-19-p5-09.md`.
+  - A bot change (bench heroes at 100 stress) was tried and reverted; see the playtest notes.
+- **Verified:**
+  - 24-week bot runs, 6 seeds, 18 campaigns: 69% cleared overall, Veterano 70%, Campeón 63%, 0.14 deaths per expedition, money in 4544 / out 4448 a week.
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+- **Not verified / risks:**
+  - Aprendiz reads 69% across long campaigns because it includes rebuilt parties after a failed promotion (91% for fresh campaigns).
+  - Parties started at a tier (P5-08 method) will now find Veterano/Campeón easier than the bands.
+  - One campaign banked 56k ₡ by week 24 while farming Campeón: watch Campeón pay (×2.5).
+- **Decisions needed:** none.
+- **Next step:** owner playtest of all three tiers (this branch). Then pick from P3-05 (Taller upgrades + Feria Nocturna), P4-02 (tooltips) or P4-04 (audio).
+
+---
+
 ## 2026-11-19 (2) — P5-08 — All three difficulty tiers in the owner's bands
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-08 `done`. New `todo` P5-09: 24-week runs.
