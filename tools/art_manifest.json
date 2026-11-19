@@ -103,7 +103,7 @@
     {"id": "portrait_curandero_m", "out": "assets/portraits/curandero_m.png", "size": [512, 512], "seed": 1207,
      "subject": "portrait of a dignified elderly man folk healer, wide-brimmed straw hat, white stubble, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"},
     {"id": "portrait_exorcista_m", "out": "assets/portraits/exorcista_m.png", "size": [512, 512], "seed": 1208,
-     "subject": "portrait of a neighborhood priest exorcist, black cassock with white collar, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"},
+     "subject": "portrait of a middle-aged neighborhood priest exorcist, kind tired brown eyes, black cassock with white collar, wooden rosary and holy water bottle, nervous but brave, candle light"},
     {
       "id": "enemy_espanto",
       "out": "assets/enemies/espanto.png",
@@ -3274,7 +3274,7 @@
       },
       {
         "id": "campesino_f",
-        "look": "Costa Rican farm woman, long dark braid, frayed straw hat, dark olive button-up work shirt, dark trousers",
+        "look": "Costa Rican farm woman, long black braids, wide frayed straw hat, dark loose short-sleeved blouse, dark trousers",
         "seed": 5101,
         "body": "humanoid",
         "weapon": "a long steel machete",
@@ -3295,7 +3295,7 @@
       },
       {
         "id": "montador_f",
-        "look": "young woman, Costa Rican bull rider, curly dark hair in a ponytail, wide battered leather hat, buttoned denim shirt, ripped jeans, boots",
+        "look": "young woman, Costa Rican bull rider, long straight dark hair, hoop earrings, worn pale straw cowboy hat, buttoned denim shirt, jeans, boots",
         "seed": 5113,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
@@ -3320,7 +3320,7 @@
       },
       {
         "id": "abuela_m",
-        "look": "elderly grandfather, white beard, wrinkled face, dark knitted wool poncho, long dark robe, prayer beads",
+        "look": "elderly grandfather, long white beard, long white hair, wrinkled face, long dark hooded robe, prayer beads",
         "seed": 5120,
         "body": "humanoid",
         "weapon": "a wooden ladle and clay bowl",
@@ -3380,7 +3380,7 @@
       },
       {
         "id": "medica_josefina_m",
-        "look": "stern man doctor, short dark hair, neat mustache, white doctor's coat, black trousers, dark shoes",
+        "look": "stern man doctor, short dark hair, thick mustache, white doctor's coat over black vest, stethoscope, black trousers, dark shoes",
         "seed": 5151,
         "body": "humanoid",
         "weapon": "a syringe",
@@ -3400,7 +3400,7 @@
       },
       {
         "id": "curandero_m",
-        "look": "elderly man folk healer, white stubble, wide dark hat with leaves, dark brown robes, beaded necklace",
+        "look": "elderly man folk healer, white hair, white mustache, wide black hat, dark brown robes over a vest, beaded necklace",
         "seed": 5160,
         "body": "humanoid",
         "weapon": "a bundle of smoking herbs",
