@@ -288,6 +288,30 @@ func _event_result(gs) -> void:
 	var tone = screen.get_script()
 	_check(tone._result_tone("Lalo: estrés -6.") == 1 and tone._result_tone("Estrés +5 a la cuadrilla.") == -1 and tone._result_tone("Luz -25.") == -1
 		and tone._result_tone("+40 colones.") == 1 and tone._result_tone("Lalo pierde 4 PV.") == -1, "good and bad results are told apart (stress and Luz read the right way)")
+	# The battle card after a won fight (P5-10): loot and how each hero came out.
+	var h0: Dictionary = gs.party[0]
+	screen._battle_start = {}
+	for h in gs.party:
+		screen._battle_start[int(h["uid"])] = {"hp": int(h["hp"]), "stress": int(h["stress"]), "dead": false, "aff": "", "vir": ""}
+	h0["hp"] = int(h0["hp"]) - 7
+	h0["stress"] = int(h0["stress"]) + 9
+	screen._show_battle_result("¡Victoria!", 120, {"got": ["agua_pipa"], "lost": ["bombeta"]})
+	await process_frame
+	var bd = screen._result_dialog
+	var texts: Array = []
+	if bd != null:
+		for c in bd.get_child(0).get_children():
+			if c is Label:
+				texts.append(str(c.text))
+			for cc in c.get_children():
+				if cc is Label:
+					texts.append(str(cc.text))
+	var all: String = " | ".join(texts)
+	_check(bd != null and bd.title == "¡Victoria!", "a won fight opens the battle card")
+	_check(all.contains("+120 colones") and all.contains("Agua de pipa") and all.contains("no cabe"), "it lists the colones, the drop and what didn't fit")
+	_check(all.contains("%s: PV" % h0["name"]) and all.contains("estrés +9"), "and what each hero lost (%s)" % all.substr(0, 120))
+	bd.hide()
+	await process_frame
 	screen.queue_free()
 	gs.end_mission_abandon()
 	await process_frame

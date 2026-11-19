@@ -22,13 +22,31 @@ func setup(id: String, amount: int) -> void:
 	add_theme_font_size_override("font_size", 11)
 	if id == "":
 		disabled = true
+		# Godot builds the custom tooltip even with no tooltip_text: an empty cell would show
+		# an empty card (owner 2026-11-19). It takes no mouse at all.
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
 		return
 	var item: Dictionary = GameState.get_item(id)
 	var icon_path: String = "res://assets/items/%s.png" % id
 	if ResourceLoader.exists(icon_path):
 		icon = load(icon_path) as Texture2D
 		expand_icon = true
-		text = str(amount) if amount > 1 else ""
+		text = ""
+		# How many are held, in the icon's bottom-right corner (owner 2026-11-19).
+		var count := Label.new()
+		count.name = "Count"
+		count.text = str(amount)
+		count.add_theme_font_size_override("font_size", 13)
+		count.add_theme_color_override("font_color", Color(1.0, 0.92, 0.7))
+		count.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.95))
+		count.add_theme_constant_override("outline_size", 5)
+		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		count.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		count.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		count.offset_right = -4
+		count.offset_bottom = -1
+		add_child(count)
 	else:
 		var short: String = str(item.get("name", id)).split(" ")[0].substr(0, 7)
 		text = "%s\n×%d" % [short, amount] if amount > 1 else short
@@ -39,6 +57,8 @@ func setup(id: String, amount: int) -> void:
 
 
 func _make_custom_tooltip(_for_text: String) -> Object:
+	if item_id == "":
+		return null
 	return ItemTooltipScript.build(item_id, tooltip_note, "", qty)
 
 

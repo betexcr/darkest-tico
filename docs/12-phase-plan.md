@@ -674,6 +674,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Why: P5-08 measured Veterano and Campeón with parties started at the tier. Parties that reach Veterano inside an 8-week campaign have fewer ranks and less gear and cleared only 7 of 22 there.
 - Done when: [x] 24-week runs on 6 seeds (18 campaigns): Veterano 70%, Campeón 63% (7 of 18 campaigns reached it), 0.14 deaths/expedition, money in ≈ out (docs/playtests/2026-11-19-p5-09.md). Moving up is forced by the level ranges, so "wait longer" was not an option; Veterano/Campeón are now sized for the party that arrives
 
+### P5-10 · M · Enemy drops + battle victory card (owner 2026-11-19)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): owner to play · Depends: —
+- Files: `data/enemies.json` (`drops`), `data/balance.json` (`drops.*`), `scripts/domain/loot_drops.gd` (new), `scripts/autoload/game_state.gd` (`roll_drops`), `scripts/expedition/expedition_screen.gd` (`_show_battle_result`, `_card_dialog`), `tools/validate_data.py`, `tests/test_enemies.gd`, `tests/test_ui.gd`, `AGENTS.md`
+- Spec: owner "add a victory screen; make some enemies drop loot some times, balanced for each enemy and the run; the more powerful the enemy the better the loot; each enemy can drop 3 different items with different percentages; only 1 at a time and most of the times they won't drop; in the victory screen show the things gained/lost after the battle"
+- Done when: [x] 3 themed drops per enemy, one roll, at most one item; [x] chance by strength (vermin ~15% … bosses ~70%) × difficulty × Luz/event loot, capped; [x] a card after every won fight: colones, drops (and what didn't fit), each hero's PV and stress change, fallen, new Quebranto/Virtud; boss drops go to the expedition's victory screen; [x] validator + tests; [ ] owner feel check (bot: Aprendiz 96% on 4 seeds, slightly above the 85–90 band: drop chances are the knob)
+
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5
 - Done when: [ ] Roadmap Phase 2 exit criteria checked by owner → Current phase = Alpha (break down roadmap Phase 3 into P6+ tasks then)

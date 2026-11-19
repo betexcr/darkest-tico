@@ -36,6 +36,9 @@ enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
 ## log. Off for headless -s runs (tests, bots), which press the event buttons themselves.
 var results_modal: bool = not SaveService.is_script_run()
 var _result_dialog: AcceptDialog = null
+## Each hero (by uid: a Dictionary key would hash by content and miss once PV changes) as the
+## fight began: hp, stress, dead, affliction, virtud.
+var _battle_start: Dictionary = {}
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _room_label: Label = $Stage/TopBar/RoomLabel
@@ -864,26 +867,39 @@ static func _result_tone(line: String) -> int:
 ## The result of an event as a card dialog: what happened, then each effect (bad ones in
 ## red). Exploring waits until it is closed; `then` runs after (an ambush starts its fight).
 func _show_result(title: String, text: String, lines: PackedStringArray, then: Callable = Callable()) -> void:
+	_card_dialog(title if title != "" else "Resultado", func(col: VBoxContainer):
+		col.add_child(CardScript.label(text, 15, CardScript.TEXT, true, 460.0))
+		if not lines.is_empty():
+			col.add_child(CardScript.rule())
+			col.add_child(CardScript.section("Resultado"))
+			for l in lines:
+				col.add_child(_tone_label(l))
+	, then)
+
+
+## One result line, green ▲ / red ▼ / neutral by what it means (_result_tone).
+func _tone_label(l: String) -> Label:
+	var tone: int = _result_tone(l)
+	return CardScript.label(("▲ " if tone > 0 else ("▼ " if tone < 0 else "• ")) + l.strip_edges(), 14,
+		CardScript.GOOD if tone > 0 else (CardScript.BAD if tone < 0 else CardScript.TEXT), true, 460.0)
+
+
+## A card dialog in the game's style (title, `fill` builds the column). Exploring waits until
+## it is closed; `then` runs after. Off in headless -s runs (results_modal).
+func _card_dialog(title: String, fill: Callable, then: Callable = Callable()) -> void:
 	if not results_modal:
 		if then.is_valid():
 			then.call()
 		return
 	var dlg := AcceptDialog.new()
-	dlg.title = title if title != "" else "Resultado"
+	dlg.title = title
 	dlg.ok_button_text = "Continuar"
 	dlg.exclusive = true
 	var col := VBoxContainer.new()
 	col.custom_minimum_size = Vector2(460, 0)
 	col.add_theme_constant_override("separation", 8)
 	dlg.add_child(col)
-	col.add_child(CardScript.label(text, 15, CardScript.TEXT, true, 460.0))
-	if not lines.is_empty():
-		col.add_child(CardScript.rule())
-		col.add_child(CardScript.section("Resultado"))
-		for l in lines:
-			var tone: int = _result_tone(l)
-			col.add_child(CardScript.label(("▲ " if tone > 0 else ("▼ " if tone < 0 else "• ")) + l.strip_edges(), 14,
-				CardScript.GOOD if tone > 0 else (CardScript.BAD if tone < 0 else CardScript.TEXT), true, 460.0))
+	fill.call(col)
 	var was: int = _mode
 	_mode = Mode.EVENT
 	_result_dialog = dlg
@@ -903,6 +919,58 @@ func _show_result(title: String, text: String, lines: PackedStringArray, then: C
 	if is_instance_valid(dlg):
 		dlg.reset_size()
 		dlg.popup_centered()
+
+
+## After a won fight (P5-10, owner 2026-11-19): the loot (colones, drops, what did not fit)
+## and how each hero came out of it (PV, stress, fallen, new Quebranto / Virtud).
+func _show_battle_result(title: String, pay: int, drops: Dictionary, then: Callable = Callable()) -> void:
+	_card_dialog(title, func(col: VBoxContainer):
+		col.add_child(CardScript.section("Botín"))
+		var any: bool = false
+		if pay > 0:
+			col.add_child(_tone_label("+%d colones" % pay))
+			any = true
+		for id in drops.get("got", []):
+			var row := HBoxContainer.new()
+			row.add_theme_constant_override("separation", 10)
+			row.add_child(CardScript.picture("res://assets/items/%s.png" % id, 40.0))
+			var nm := CardScript.label(str(GameState.get_item(str(id)).get("name", id)), 15, CardScript.GOOD, false)
+			nm.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			row.add_child(nm)
+			col.add_child(row)
+			any = true
+		for id in drops.get("lost", []):
+			col.add_child(_tone_label("%s: no cabe en la alforja" % GameState.get_item(str(id)).get("name", id)))
+			any = true
+		if not any:
+			col.add_child(CardScript.label("Nada esta vez.", 13, CardScript.MUTED, false))
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("La cuadrilla"))
+		for h in GameState.party:
+			var b: Dictionary = _battle_start.get(int(h.get("uid", 0)), {})
+			if b.is_empty() or bool(b.get("dead", false)):
+				continue
+			var who: String = str(h.get("name", "?"))
+			if bool(h.get("dead", false)):
+				col.add_child(_tone_label("%s cae en la pelea" % who))
+				continue
+			var parts: PackedStringArray = PackedStringArray()
+			var dhp: int = int(h.get("hp", 0)) - int(b["hp"])
+			var dst: int = int(h.get("stress", 0)) - int(b["stress"])
+			if dhp != 0:
+				parts.append("PV %d → %d" % [int(b["hp"]), int(h.get("hp", 0))])
+			if dst != 0:
+				parts.append("estrés %+d" % dst)
+			var line: String = "%s: %s" % [who, ", ".join(parts) if not parts.is_empty() else "sin un rasguño"]
+			var lbl := CardScript.label(line, 14, CardScript.BAD if (dhp < 0 or dst > 0) else (CardScript.GOOD if parts.is_empty() or dhp > 0 or dst < 0 else CardScript.TEXT), true, 460.0)
+			col.add_child(lbl)
+			var aff: String = str(h.get("affliction_id", ""))
+			if aff != "" and aff != str(b["aff"]):
+				col.add_child(_tone_label("%s: Quebranto — %s" % [who, StressSystemScript.affliction_name(aff)]))
+			var vir: String = str(h.get("virtud_id", ""))
+			if vir != "" and vir != str(b["vir"]):
+				col.add_child(_tone_label("%s: +Virtud — %s" % [who, StressSystemScript.virtud_name(vir)]))
+	, then)
 
 
 ## A trap or curio can kill (P1-16): with nobody left standing the expedition is lost.
@@ -1151,6 +1219,11 @@ func _start_combat_from_context(node_id: String) -> void:
 		return
 	_mode = Mode.COMBAT
 	_combat_node_id = node_id
+	# For the battle result card (P5-10): how each hero walked in.
+	_battle_start = {}
+	for h in GameState.party:
+		_battle_start[int(h.get("uid", 0))] = {"hp": int(h.get("hp", 0)), "stress": int(h.get("stress", 0)), "dead": bool(h.get("dead", false)),
+			"aff": str(h.get("affliction_id", "")), "vir": str(h.get("virtud_id", ""))}
 	_set_background(BG_COMBAT)
 	_clear_skills()
 	_turn_label.text = ""
@@ -1441,6 +1514,7 @@ func _on_combat_over(victory: bool) -> void:
 		GameState.mark_node_cleared(_combat_node_id)
 	GameState.ledger_add("fights")
 	GameState.note_fight_won()
+	var won_pay: int = 0
 	if roaming:
 		# Roaming mini-boss (P2-05): a bounty if it died, nothing if it ran off.
 		var fled: bool = GameState.combat_context.get("enemies", []).any(func(e): return bool(e.get("fled", false)))
@@ -1451,6 +1525,7 @@ func _on_combat_over(victory: bool) -> void:
 		_log_line("Repelieron la emboscada.%s" % (" Amanece." if at_camp else ""), "66aa66")
 	else:
 		var pay: int = GameState.combat_reward(_combat_node_id)
+		won_pay = pay
 		GameState.colones += pay
 		GameState.ledger_add("loot_colones", pay)
 		if bool(nd.get("is_boss", false)):
@@ -1458,6 +1533,12 @@ func _on_combat_over(victory: bool) -> void:
 		elif bool(nd.get("is_elite", false)):
 			GameState.ledger_add("elites")
 		_log_line("Botín: +%d colones." % pay, "66aa66")
+	# Enemy drops (P5-10): logged; the boss's go to the expedition's victory screen.
+	var drops: Dictionary = GameState.roll_drops(_combat.enemies)
+	for id in drops["got"]:
+		_log_line("Botín: %s." % GameState.get_item(str(id)).get("name", id), "66aa66")
+	for id in drops["lost"]:
+		_log_line("%s no cabe en la alforja." % GameState.get_item(str(id)).get("name", id), "cc9944")
 	if not _combat_is_ambush and (bool(nd.get("is_boss", false)) or _combat_node_id == GameState.objective_node_id):
 		GameState.complete_mission()
 		_end_expedition("objective", "%s ha caído. La corrupción del sótano retrocede… por ahora." % GameState.combat_context.get("enemies", [{}])[0].get("name", "El jefe"))
@@ -1473,9 +1554,12 @@ func _on_combat_over(victory: bool) -> void:
 	_narrate("La sala queda en silencio.")
 	_view_hero(_viewed_hero if not _viewed_hero.get("dead", false) else _first_living_hero())
 	_refresh_all()
-	# After a roaming mini-boss in a curio or trap room, the room's own event is still there.
-	if roaming and not GameState.is_node_cleared(_combat_node_id):
-		_resolve_room()
+	# The battle card (P5-10); after a roaming mini-boss in a curio or trap room, the room's
+	# own event is still there once it is closed.
+	var after := func():
+		if roaming and not GameState.is_node_cleared(_combat_node_id):
+			_resolve_room()
+	_show_battle_result("¡Victoria!", won_pay, drops, after)
 
 
 func _end_expedition(reason: String, text: String) -> void:

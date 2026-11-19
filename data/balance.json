@@ -131,5 +131,10 @@
       { "id": "oscuro", "name": "Oscuro", "min": 1, "hero_accuracy": -6, "enemy_dmg_pct": 10, "enemy_crit": 6, "stress_pct": 20, "loot_pct": 35, "party_surprised_pct": 15, "enemies_surprised_pct": 0, "trap_pct": -10, "move_stress": 3, "move_stress_all": false, "low": true },
       { "id": "negro", "name": "Negro", "min": 0, "hero_accuracy": -10, "enemy_dmg_pct": 20, "enemy_crit": 10, "stress_pct": 30, "loot_pct": 50, "party_surprised_pct": 25, "enemies_surprised_pct": 0, "trap_pct": -20, "move_stress": 3, "move_stress_all": true, "low": true }
     ]
+  },
+  "drops": {
+    "_doc": "Enemy drops (P5-10, data/enemies.json drops): chance multiplier per difficulty (times the Luz/event loot multiplier), and the most one enemy's three chances may add up to after every multiplier.",
+    "chance_mult": { "aprendiz": 1.0, "veterano": 1.15, "campeon": 1.3 },
+    "max_total_chance": 0.9
   }
 }

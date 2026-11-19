@@ -210,6 +210,25 @@ def main() -> int:
                 errors.append(f"items.json: '{it.get('id')}' effect '{k}' has no description in the item card (GameState.item_tooltip_parts)")
         if it.get("usable") not in ("equip", "curio") and not it.get("effects") and not it.get("scout"):
             errors.append(f"items.json: '{it.get('id')}' is usable but has no effects to describe")
+    # Enemy drops (P5-10): exactly 3 different items that exist, each 0 < chance < 1, and the
+    # three together leave most kills empty-handed (at most 0.8 before multipliers).
+    for eid, en in (load(DATA / "enemies.json") or {}).get("enemies", {}).items():
+        dr = en.get("drops")
+        where = f"enemies.json: '{eid}' drops"
+        if not isinstance(dr, list) or len(dr) != 3:
+            errors.append(f"{where}: needs exactly 3 {{item, chance}}")
+            continue
+        ids = [d.get("item") for d in dr]
+        if len(set(ids)) != 3:
+            errors.append(f"{where}: the 3 items must be different")
+        for d in dr:
+            if d.get("item") not in item_map:
+                errors.append(f"{where}: unknown item '{d.get('item')}'")
+            c = d.get("chance")
+            if not isinstance(c, (int, float)) or not 0 < c < 1:
+                errors.append(f"{where}: chance must be between 0 and 1 ({d.get('item')})")
+        if sum(float(d.get("chance", 0)) for d in dr) > 0.8:
+            errors.append(f"{where}: the three chances add up to more than 0.8")
     # Town view (P4-17): one building per hub service, with its cut-out picture.
     town = load(DATA / "town.json") or {}
     town_ids = set()
@@ -892,6 +911,8 @@ BALANCE_KEYS = {
     "quirks.positive_chance": "chance", "quirks.negative_chance": "chance", "quirks.disease_chance": "chance",
     "quirks.max_positive": "pos", "quirks.max_negative": "pos",
     "quirks.recruit_positive_chance": "chance", "quirks.recruit_negative_chance": "chance",
+    "drops.chance_mult.aprendiz": "mult", "drops.chance_mult.veterano": "mult", "drops.chance_mult.campeon": "mult",
+    "drops.max_total_chance": "chance",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).

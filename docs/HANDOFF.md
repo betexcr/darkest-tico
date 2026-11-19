@@ -17,6 +17,35 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (9) — P5-10 — Enemy drops, battle victory card; alforja fixes
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-10 `review`.
+- **Changed:**
+  - **Drops:**
+    - `data/enemies.json`: every enemy has 3 themed `drops` {item, chance}. Totals: vermin ~0.15, ordinary ~0.18, Cadejo 0.45, bosses 0.70.
+    - `scripts/domain/loot_drops.gd`: one roll gives at most one item; × `drops.chance_mult[difficulty]` × `loot_mult()` (Luz, town event), capped at `drops.max_total_chance` 0.9.
+    - `GameState.roll_drops(enemies)`: only the dead, not the fled; into the alforja and the ledger; what doesn't fit is reported.
+    - The validator checks 3 different known items, 0 < chance < 1, total ≤ 0.8, and the new balance keys.
+  - **Battle card:** `expedition_screen._show_battle_result` after every won fight that isn't the boss:
+    - colones and drops with icons, plus what didn't fit;
+    - for each hero: PV a → b, stress ±, fallen, new Quebranto/Virtud;
+    - the party snapshot is keyed by hero `uid` (a Dictionary key hashes by content and stopped matching once PV changed).
+    - Boss drops go to the expedition victory screen via the ledger.
+    - `_card_dialog` is shared with the event result card.
+  - **Alforja:**
+    - Empty cells take no mouse: Godot built the custom tooltip even with empty text, which showed an empty card.
+    - Every icon shows its count in the bottom-right corner.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures (new "Drops" checks in `test_enemies`, battle card in `test_ui`).
+  - Screenshots.
+  - Bot, 4 seeds: Aprendiz 96%, Veterano 73%, deaths 0.04, money in 4267 / out 4107.
+- **Not verified / risks:** Aprendiz may now sit a bit above its 85–90% band (more consumables); lower the vermin/ordinary drop chances if so.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (8) — Event results in a card dialog
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** UX fix on P2-01/P2-02 events (no new task).

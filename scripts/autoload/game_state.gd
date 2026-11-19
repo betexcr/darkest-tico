@@ -14,6 +14,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const LootDropsScript := preload("res://scripts/domain/loot_drops.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HeroDamageScript := preload("res://scripts/domain/hero_damage.gd")
@@ -1626,6 +1627,28 @@ func ledger_item(item_id: String, qty: int) -> void:
 		var items: Dictionary = mission_ledger.get("items", {})
 		items[item_id] = int(items.get(item_id, 0)) + qty
 		mission_ledger["items"] = items
+
+
+## Enemy drops after a won fight (P5-10): one roll per enemy that died (one that fled drops
+## nothing). Drops go into the alforja and the mission ledger. Returns
+## {"got": [item ids], "lost": [item ids that did not fit]}.
+func roll_drops(enemies: Array) -> Dictionary:
+	var got: Array = []
+	var lost: Array = []
+	var mult: float = LootDropsScript.difficulty_mult(selected_difficulty_id) * loot_mult()
+	for e in enemies:
+		if not (e is Dictionary) or not bool(e.get("dead", false)) or bool(e.get("fled", false)):
+			continue
+		var drops: Array = _enemies_by_id.get(str(e.get("id", "")), {}).get("drops", [])
+		var id: String = LootDropsScript.roll(drops, mult, randf())
+		if id == "":
+			continue
+		if add_item(id, 1) > 0:
+			ledger_item(id, 1)
+			got.append(id)
+		else:
+			lost.append(id)
+	return {"got": got, "lost": lost}
 
 
 ## Colones a won fight in this room pays (room reward × difficulty).

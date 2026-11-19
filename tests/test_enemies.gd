@@ -79,6 +79,7 @@ func _run() -> void:
 	await _test_stage_spawn()
 	_test_mayordomo()
 	await _test_cadejo()
+	_test_drops()
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -417,3 +418,36 @@ func _test_cadejo() -> void:
 	if cc != null:
 		cc.queue_free()
 		cc = null
+
+
+## P5-10: enemy drops — 3 per enemy, one roll, at most one item, mostly nothing.
+func _test_drops() -> void:
+	print("Drops")
+	var ld = load("res://scripts/domain/loot_drops.gd")
+	var drops: Array = [{"item": "a", "chance": 0.1}, {"item": "b", "chance": 0.05}, {"item": "c", "chance": 0.05}]
+	_check(ld.roll(drops, 1.0, 0.05) == "a" and ld.roll(drops, 1.0, 0.12) == "b" and ld.roll(drops, 1.0, 0.17) == "c", "one roll picks one of the three by its chance")
+	_check(ld.roll(drops, 1.0, 0.2) == "" and ld.roll(drops, 1.0, 0.99) == "", "past the three chances: nothing drops")
+	_check(ld.roll(drops, 2.0, 0.39) == "c" and ld.roll(drops, 2.0, 0.41) == "", "the multiplier scales every chance")
+	_check(ld.roll(drops, 100.0, 0.95) == "", "however high the multiplier, the total stays under drops.max_total_chance")
+	_check(ld.difficulty_mult("aprendiz") < ld.difficulty_mult("veterano") and ld.difficulty_mult("veterano") < ld.difficulty_mult("campeon"), "harder difficulties drop more")
+	# Stronger enemies drop more: a boss's three chances add up to more than a rat's.
+	var total := func(id: String) -> float:
+		var t: float = 0.0
+		for d in gs._enemies_by_id[id]["drops"]:
+			t += float(d["chance"])
+		return t
+	_check(total.call("mayordomo_hundido") > total.call("cadejo_negro") and total.call("cadejo_negro") > total.call("rata_de_troje"), "boss > roaming mini-boss > vermin")
+	# GameState.roll_drops: only the dead drop; what doesn't fit is reported.
+	gs.inventory.clear()
+	var dead: Dictionary = {"id": "mayordomo_hundido", "dead": true}
+	var fled: Dictionary = {"id": "cadejo_negro", "dead": true, "fled": true}
+	var alive: Dictionary = {"id": "rata_de_troje", "dead": false}
+	var got: int = 0
+	var others: int = 0
+	for i in 200:
+		var r: Dictionary = gs.roll_drops([dead, fled, alive])
+		got += r["got"].size() + r["lost"].size()
+		others += r["got"].filter(func(x): return x in ["colmillo_de_cadejo", "ojo_de_venado", "gallo_pinto", "ramo_ruda", "chile_panameno"]).size()
+		gs.inventory.clear()
+	_check(got > 80 and got < 200 and others == 0, "200 boss kills: %d drops (about 70%%), none from the fled or the living" % got)
+
