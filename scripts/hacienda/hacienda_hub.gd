@@ -767,8 +767,10 @@ func _recruit_row(i: int, h: Dictionary, closed: bool) -> Control:
 func _refresh_roster() -> void:
 	for c in _roster_list.get_children():
 		c.queue_free()
-	_roster_title.text = "Héroes %d/%d · cuadrilla %d/%d (en orden de posición)" % [
+	_roster_title.text = "Héroes %d/%d · cuadrilla %d/%d" % [
 		GameState.roster.size(), GameState.roster_cap(), GameState.party.size(), GameState.PARTY_SIZE]
+	_roster_title.tooltip_text = "Cuadrilla en orden de posición: 1 = adelante. Use ↑ ↓ para cambiar el orden."
+	_roster_title.mouse_filter = Control.MOUSE_FILTER_PASS
 	# Party first (rank order), then the rest.
 	var ordered: Array = GameState.party.duplicate()
 	for h in GameState.roster:
@@ -785,10 +787,16 @@ func _roster_row(h: Dictionary) -> Control:
 	outer.add_theme_constant_override("separation", 2)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
-	outer.add_child(row)
+	# Portrait | name and numbers over a small button line | ↑↓ stacked on the right (owner
+	# 2026-11-19: the four party heroes fit the panel without scrolling).
+	var mid := VBoxContainer.new()
+	mid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mid.add_theme_constant_override("separation", 0)
 	var btns := HBoxContainer.new()
 	btns.add_theme_constant_override("separation", 4)
-	btns.alignment = BoxContainer.ALIGNMENT_END
+	var arrows := VBoxContainer.new()
+	arrows.add_theme_constant_override("separation", 2)
+	arrows.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var pic := TextureRect.new()
 	pic.custom_minimum_size = Vector2(44, 44)
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -859,7 +867,8 @@ func _roster_row(h: Dictionary) -> Control:
 	if GameState.busy_place(h) != "":
 		card_lines.append("Esta semana en %s." % GameState.busy_place(h))
 	info.card = HeroCardScript.build.bind(h, "Clic para ver su equipo y sus habilidades.", warn.strip_edges().trim_prefix("⚠ "), card_lines)
-	row.add_child(info)
+	mid.add_child(info)
+	row.add_child(mid)
 	var cost: int = GameState.heal_cost(h)
 	if int(h.get("hp", 0)) < int(h.get("hp_max", 0)) and not h.get("dead", false):
 		var heal := Button.new()
@@ -877,7 +886,7 @@ func _roster_row(h: Dictionary) -> Control:
 			GameState.move_in_party(h, -1)
 			_say("")
 		)
-		btns.add_child(up)
+		arrows.add_child(up)
 		var down := Button.new()
 		down.text = "↓"
 		down.tooltip_text = "Bajar de rango (más atrás)"
@@ -885,7 +894,7 @@ func _roster_row(h: Dictionary) -> Control:
 			GameState.move_in_party(h, 1)
 			_say("")
 		)
-		btns.add_child(down)
+		arrows.add_child(down)
 	var fire := Button.new()
 	fire.text = "Despedir"
 	fire.tooltip_text = "Despedir a este héroe para siempre. Su equipo vuelve a la alforja."
@@ -899,10 +908,15 @@ func _roster_row(h: Dictionary) -> Control:
 	cb.disabled = GameState.hero_busy(h) and not in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))
 	btns.add_child(cb)
-	for c in btns.get_children():
+	for c in btns.get_children() + arrows.get_children():
 		if c is Button:
 			c.add_theme_font_size_override("font_size", 12)
-	outer.add_child(btns)
+			c.custom_minimum_size.y = 24
+	for c in arrows.get_children():
+		c.custom_minimum_size = Vector2(28, 26)
+	mid.add_child(btns)
+	row.add_child(arrows)
+	outer.add_child(row)
 	outer.add_child(HSeparator.new())
 	return outer
 

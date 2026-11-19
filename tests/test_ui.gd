@@ -61,7 +61,7 @@ func _run() -> void:
 	print("Hover cards")
 	var ok: bool = true
 	for row in hub._roster_list.get_children():
-		var info = row.get_child(0).get_child(1)
+		var info = row.get_child(0).get_child(1).get_child(0)
 		ok = ok and _builds(info.card)
 	_check(ok, "every roster hero has a hero card")
 	ok = true
@@ -230,7 +230,7 @@ func _town(gs) -> void:
 	await process_frame
 	_check(not hub._equip_open and not hub._equip_row.visible and not hub._who.visible, "the Taller opens with the equipment folded away")
 	# The roster rebuilds after every click: fetch the hero's button each time.
-	var info := func(i: int): return hub._roster_list.get_children().filter(func(r): return not r.is_queued_for_deletion())[i].get_child(0).get_child(1)
+	var info := func(i: int): return hub._roster_list.get_children().filter(func(r): return not r.is_queued_for_deletion())[i].get_child(0).get_child(1).get_child(0)
 	info.call(1).pressed.emit()
 	await process_frame
 	_check(hub._equip_open and hub._equip_row.visible and is_same(hub._selected, gs.party[1]), "clicking a hero opens it for that hero")

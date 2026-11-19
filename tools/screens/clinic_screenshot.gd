@@ -34,7 +34,7 @@ func _run() -> void:
 	# The town view (P4-17): each list lives in its building's window.
 	for pair in [["hover_activity.png", "iglesia", func(): return hub._relief_boxes["iglesia"].get_child(1)],
 			["hover_recruit.png", "terminal", func(): return hub._recruit_box.get_child(0)],
-			["hover_roster.png", "", func(): return hub._roster_list.get_child(0).get_child(0).get_child(1)]]:
+			["hover_roster.png", "", func(): return hub._roster_list.get_child(0).get_child(0).get_child(1).get_child(0)]]:
 		if str(pair[1]) != "":
 			hub.open_building(str(pair[1]))
 		await create_timer(0.2).timeout

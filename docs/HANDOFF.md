@@ -37,6 +37,10 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Other screens (victory, camp, events) were not looked at in 1080p, but they scale the same way.
   - A shader detail: in Godot 4 a canvas shader's `COLOR` already includes the texture. Multiplying the texture in again made sprites faint.
 - **Decisions needed:** none.
+- **Also (same day):** town roster rows are more compact so the 4 party heroes fit without scrolling.
+  - Each row: portrait | name and numbers over a small line (EBAIS, Despedir, Cuadrilla) | ↑↓ stacked on the right.
+  - Title "Héroes N/8 · cuadrilla N/4"; the position-order hint is in its tooltip.
+  - Tests that dig into rows now use `row.get_child(0).get_child(1).get_child(0)` for the name button.
 - **Next step:** owner playtest at 1080p.
 
 ---
