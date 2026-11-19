@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (15) — Quirks after an expedition: much rarer, one at most
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P3-06 tuning (no new task).
+- **Changed:** `data/balance.json` `quirks.positive_chance` 0.25 → 0.08, `negative_chance` 0.25 → 0.08, `disease_chance` 0.08 → 0.04; `QuirksScript.roll_after_expedition` rolls the three in random order and stops at the first hit (one new quirk per hero per expedition at most). Chance a hero gains something: ~48% → ~19%. `test_quirks` checks exactly one at 100%.
+- **Verified:** validator 0 errors; test_quirks, test_hub, test_hub_activities, test_save, smoke 0 failures.
+- **Not verified / risks:** the playtest bot's Clínica spending will drop; P5-09 baselines were made with the old rates.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (14) — P4-23: the hero sheet ("Ficha de X") from the town roster
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-23 review.

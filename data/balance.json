@@ -94,10 +94,10 @@
     "idle_stress_relief": 20
   },
   "quirks": {
-    "_doc": "Quirks (P3-06, data/quirks.json). After each expedition every hero who went may gain a positive (positive_chance), a negative (negative_chance) and a disease (disease_chance); at max_positive / max_negative a new one replaces a random unlocked one (none if all are locked). Recruits arrive with one of each with recruit_positive_chance / recruit_negative_chance. Clínica prices (doc 04 §3.5) by resolve tier: levels below tier_levels[0], below tier_levels[1], the rest. Each hero: one negative removal and one positive lock/removal per week; diseases any time.",
-    "positive_chance": 0.25,
-    "negative_chance": 0.25,
-    "disease_chance": 0.08,
+    "_doc": "Quirks (P3-06, data/quirks.json). After each expedition every hero who went may gain at most one new quirk (owner 2026-11-19: it was too common): positive_chance, negative_chance and disease_chance are rolled in random order and the first hit wins; at max_positive / max_negative a new one replaces a random unlocked one (none if all are locked). Recruits arrive with one of each with recruit_positive_chance / recruit_negative_chance. Clínica prices (doc 04 §3.5) by resolve tier: levels below tier_levels[0], below tier_levels[1], the rest. Each hero: one negative removal and one positive lock/removal per week; diseases any time.",
+    "positive_chance": 0.08,
+    "negative_chance": 0.08,
+    "disease_chance": 0.04,
     "max_positive": 5,
     "max_negative": 5,
     "recruit_positive_chance": 0.5,

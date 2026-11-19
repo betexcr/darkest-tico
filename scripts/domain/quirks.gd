@@ -125,15 +125,17 @@ static func gain(hero: Dictionary, kind: String) -> String:
 	return id
 
 
-## After an expedition: rolls a positive, a negative and a disease. Returns the new ids.
+## After an expedition: at most one new quirk (owner 2026-11-19). The positive, negative and
+## disease chances are rolled in random order and the first hit wins. Returns the new ids.
 static func roll_after_expedition(hero: Dictionary) -> Array:
-	var got: Array = []
-	for pair in [["positive", "quirks.positive_chance"], ["negative", "quirks.negative_chance"], ["disease", "quirks.disease_chance"]]:
+	var rolls: Array = [["positive", "quirks.positive_chance"], ["negative", "quirks.negative_chance"], ["disease", "quirks.disease_chance"]]
+	rolls.shuffle()
+	for pair in rolls:
 		if randf() < BalanceScript.num(str(pair[1])):
 			var id: String = gain(hero, str(pair[0]))
 			if id != "":
-				got.append(id)
-	return got
+				return [id]
+	return []
 
 
 ## A recruit at the terminal may arrive with a positive and a negative quirk.
