@@ -504,6 +504,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "this is 1080p, make the enemies and the characters appropriately larger; adapt everything for 1080p; improve the lower UI; instead of the red and green lines for targeting use a highlight around them; keep the portraits for enemies, just resize"
 - Done when: [x] the whole game scales from its 1280×720 design to any window (canvas_items stretch, crisp text; wider screens get more room); [x] heroes 160×262 (slight overlap), enemy portraits 146×146 framed squares on the same line (about 1.6–1.85× larger at 1080p); [x] targeting as a glow (hero silhouette / enemy frame): gold active, red enemy target, green ally; [x] lower panel lower and tidier (skill icons 52, map column 390, log 13 pt); [x] screenshots at 1920×1080
 
+### P4-22 · S · Clínica rows, quirk tooltips, more quirks, 30 beds (owner 2026-11-19)
+- Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): owner to read the new quirk names (doc 08) · Depends: P3-06, P4-17
+- Files: `scripts/hacienda/hacienda_hub.gd` (`_add_clinic_button`), `scripts/ui/hero_card.gd` (`quirk_chips`, `quirk_tooltip`), `data/quirks.json`, `data/balance.json` (`limits.roster_cap`), `tests/test_quirks.gd`
+- Spec: owner "in the Clínica de Espantos the traits should be listed as in the Terminal de Buses; trait badges need a tooltip with flavour text and explanation; add more Tico negative/positive traits; remove the traits from the button tooltip; make the hero limit 30 instead of 8"
+- Done when: [x] one card row per hero (portrait, PV/estrés, quirk badges, "Tratar (n)" button; no quirk list in the button tooltip); [x] every quirk badge (Clínica, Terminal, hero cards) has a tooltip: name, kind, flavour, effect; [x] 8 positive, 8 negative and 2 disease quirks added (16/16/5); [x] `limits.roster_cap` 30; [x] tests
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

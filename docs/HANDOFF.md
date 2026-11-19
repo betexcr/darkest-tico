@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (12) — P4-22: Clínica card rows, quirk tooltips, 18 new quirks, 30 beds
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
+- **Status after session:** P4-22 review.
+- **Changed:**
+  - `hacienda_hub.gd` `_add_clinic_button`: a card row per hero like the Terminal's (header, PV/estrés, quirk badges, "Tratar (n)" button kept as meta `treat`); the button tooltip no longer lists the quirks.
+  - `hero_card.gd`: quirk badges take the mouse and show `quirk_tooltip(id)` (name — kind, flavour, "Efecto: …", fijado / curable line).
+  - `data/quirks.json`: +8 positive (Ojo de boyero, Mano de tortillera, Aguantador, Lengua de serenata, Patas de cabro, Sangre de toreador, Más tico que el gallo pinto, Chispa), +8 negative (Torta andante, Chismoso, Manos de mantequilla, Goma eterna, Alma de feriado, Corazón de pollo, Pleitero, Le tiene pereza a la misa), +2 diseases (Sereno, Empacho).
+  - `data/balance.json` `limits.roster_cap` 8 → 30 (owner). Roster and Clínica lists scroll.
+  - `test_quirks`: rows by `treat` meta, badge tooltips.
+- **Verified:** validator 0 errors; smoke + all 19 tests 0 failures (test_expedition_systems failed once more at random in the suite, passed on rerun — the known flake).
+- **Not verified / risks:** with 30 beds the playtest bot may hire more heroes; the P5-09 baselines were made with 8. New quirk names need the owner's doc 08 read.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of the Clínica page.
+
+---
+
 ## 2026-11-19 (11) — No event option has a single fixed result
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
 - **Status after session:** content pass on P2-02 (no new task).

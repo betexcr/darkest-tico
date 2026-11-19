@@ -56,8 +56,24 @@ static func quirk_chips(h: Dictionary) -> Control:
 	for e in QuirksScript.of(h):
 		var q: Dictionary = QuirksScript.get_quirk(str(e["id"]))
 		var name: String = str(q.get("name", "")) + (" · fijado" if bool(e.get("locked", false)) else "")
-		flow.add_child(C.chip(name, QUIRK_COLORS.get(str(q.get("kind", "")), C.MUTED), 10))
+		var chip: Control = C.chip(name, QUIRK_COLORS.get(str(q.get("kind", "")), C.MUTED), 10)
+		chip.tooltip_text = quirk_tooltip(str(e["id"]), bool(e.get("locked", false)))
+		chip.mouse_filter = Control.MOUSE_FILTER_STOP
+		flow.add_child(chip)
 	return flow
+
+
+## Tooltip for a quirk badge (owner 2026-11-19): name, kind, flavour, then what it does.
+static func quirk_tooltip(id: String, locked: bool = false) -> String:
+	var q: Dictionary = QuirksScript.get_quirk(id)
+	var kind: String = {"positive": "Rasgo bueno", "negative": "Rasgo malo", "disease": "Enfermedad"}.get(str(q.get("kind", "")), "")
+	var lines: PackedStringArray = PackedStringArray(["%s — %s" % [q.get("name", id), kind], str(q.get("desc", "")),
+		"Efecto: " + QuirksScript.mods_text(id)])
+	if locked:
+		lines.append("Fijado: no se pierde con rasgos nuevos.")
+	elif str(q.get("kind", "")) == "disease":
+		lines.append("Se cura en la Clínica de Espantos.")
+	return "\n".join(lines)
 
 
 static func build(h: Dictionary, note: String = "", warning: String = "", extra_lines: Array = []) -> Control:

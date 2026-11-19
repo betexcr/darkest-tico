@@ -400,27 +400,39 @@ func _refresh_clinic_page() -> void:
 		_add_clinic_button(h, closed)
 
 
+## One card row per hero, like the Terminal's (owner 2026-11-19): portrait, name, class
+## and resolve; PV and stress; the quirk badges (hover: what each does); "Tratar" opens
+## the hero's Clínica card.
 func _add_clinic_button(h: Dictionary, closed: bool = false) -> void:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", CardScript.flat(Color(0.1, 0.075, 0.06), Color(0.5, 0.38, 0.22, 0.7), 1, 4, 10))
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	row.add_child(HeroCardScript.header(h, 40.0))
-	row.get_child(0).size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var b = CardButtonScript.new()
+	row.add_theme_constant_override("separation", 14)
+	panel.add_child(row)
+	var head: Control = HeroCardScript.header(h, 56.0)
+	head.custom_minimum_size = Vector2(230, 0)
+	row.add_child(head)
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation", 6)
 	var qs: Array = QuirksScript.of(h)
-	var n: int = qs.size()
-	b.text = "Clínica de Espantos — rasgos de %s (%d)" % [h.get("name", "?"), n]
-	b.custom_minimum_size = Vector2(250, 0)
+	var stay: String = " · en la Clínica esta semana" if GameState.in_clinic(h) else ""
+	info.add_child(CardScript.label("PV %d/%d · Estrés %d%s" % [int(h.get("hp", 0)), int(h.get("hp_max", 0)), int(h.get("stress", 0)), stay], 13, CardScript.TEXT, false))
+	if qs.is_empty():
+		info.add_child(CardScript.label("Sin rasgos ni enfermedades.", 12, CardScript.MUTED, false))
+	else:
+		info.add_child(HeroCardScript.quirk_chips(h))
+	row.add_child(info)
+	var b := Button.new()
+	b.text = "Tratar\n(%d)" % qs.size()
+	b.custom_minimum_size = Vector2(110, 0)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	b.clip_text = true
-	b.tooltip_text = "Clínica de Espantos\nQuitar rasgos malos, fijar o quitar los buenos y curar enfermedades."
-	var names: Array = qs.map(func(e): return str(QuirksScript.get_quirk(str(e["id"])).get("name", "")))
-	b.card = func(): return CardScript.text_card("Rasgos de %s" % h.get("name", "?"),
-		["Quitar rasgos malos, fijar o quitar los buenos y curar enfermedades."], names,
-		"Clic para abrir su ficha." if n > 0 else "%s no tiene rasgos ni enfermedades." % h.get("name", "?"))
-	b.disabled = n == 0 or closed
+	b.disabled = qs.is_empty() or closed
+	b.tooltip_text = "Clínica de Espantos — cerrada esta semana" if closed else ("Clínica de Espantos\nQuitar rasgos malos, fijar o quitar los buenos y curar enfermedades de %s." % h.get("name", "?"))
 	b.pressed.connect(_show_clinic.bind(h))
 	row.add_child(b)
-	_clinic_box.add_child(row)
+	panel.set_meta("treat", b)
+	_clinic_box.add_child(panel)
 
 
 ## The Clínica card for one hero (P3-06, restyled P4-15): hero header, then one row per

@@ -140,8 +140,20 @@ func _run() -> void:
 	var hub = load("res://scenes/hacienda/hacienda_hub.tscn").instantiate()
 	root.add_child(hub)
 	await process_frame
-	var clinic: Array = hub._clinic_box.get_children().filter(func(c): return c is HBoxContainer and str(c.get_child(1).text).begins_with("Clínica de Espantos"))
-	_check(clinic.size() == gs.roster.size(), "the Clínica window has a button for every hero (P4-17)")
+	var clinic: Array = hub._clinic_box.get_children().filter(func(c): return c.has_meta("treat") and str(c.get_meta("treat").text).begins_with("Tratar"))
+	_check(clinic.size() == gs.roster.size(), "the Clínica window has a card row with a Tratar button for every hero")
+	var tip: String = load("res://scripts/ui/hero_card.gd").quirk_tooltip("pura_vida")
+	_check(tip.begins_with("Pura vida — Rasgo bueno") and tip.contains("estrés"), "a quirk badge's tooltip has its name, kind, flavour and effect")
+	var pc: Array = []
+	for row in clinic:
+		var stack: Array = [row]
+		while not stack.is_empty():
+			var n: Node = stack.pop_back()
+			stack.append_array(n.get_children())
+			if n is Control and str(n.tooltip_text).contains("Rasgo") or (n is Control and str(n.tooltip_text).contains("Enfermedad")):
+				pc.append(n)
+	var with_q: int = gs.roster.filter(func(h): return not QuirksScript.of(h).is_empty()).size()
+	_check(with_q == 0 or not pc.is_empty(), "the Clínica rows list each hero's quirk badges, with tooltips")
 	hub._show_clinic(gs.roster[0])
 	await process_frame
 	var dlg: Array = hub.get_children().filter(func(c): return c is AcceptDialog)

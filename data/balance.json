@@ -109,7 +109,7 @@
   },
   "limits": {
     "_doc": "Owner 2026-11-12: tunable limits. The party size (4) stays in code: the stage, positions 1-4 and the hub are built around it.",
-    "roster_cap": 8,
+    "roster_cap": 30,
     "inventory_slots": 24,
     "recruit_pool": 3,
     "graveyard_cap": 12
