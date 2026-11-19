@@ -319,5 +319,7 @@ Owner 2026-11-15: failing should be cheaper than dying. The game now has "Retira
 
 ## 8) Rebalance after the merge (P5-07) — 2026-11-19
 
-The merged game (no group misa) cleared 26% of 144 bot expeditions, all failures retreats, with money draining. Aprendiz now uses the plain enemy numbers (`enemy_hp` 1.0, `enemy_dmg` 1.0) and `enemy_stress` 1.15; the EBAIS costs 12 ₡ per PV and a week at home takes 20 stress off. Result over 6 seeds: 58% cleared, 0.19 deaths per expedition, money in 2946 / out 3118 a week, broke weeks 31 → 7 of 144. Numbers and method: [playtests/2026-11-19-p5-07.md](playtests/2026-11-19-p5-07.md). Veterano/Campeón are still the P5-02c/f values.
+The merged game (no group misa) cleared 26% of 144 bot expeditions, all failures retreats, with money draining. Aprendiz now uses the plain enemy numbers (`enemy_hp` 1.0, `enemy_dmg` 1.0) and `enemy_stress` 1.15; the EBAIS costs 12 ₡ per PV and a week at home takes 20 stress off. Result over 6 seeds: 58% cleared, 0.19 deaths per expedition, money in 2946 / out 3118 a week, broke weeks 31 → 7 of 144. Numbers and method: [playtests/2026-11-19-p5-07.md](playtests/2026-11-19-p5-07.md).
+
+**P5-08, same day: all three tiers to the owner's bands.** P5-07 had aimed Aprendiz at 55–70%; the owner's bands are per tier (85–90 / 70–80 / 55–70). Enemy PV / damage / stress now: Aprendiz ×0.8 / ×0.8 / ×0.95, Veterano ×1.5 / ×1.4 / ×1.7, Campeón ×2.0 / ×1.7 / ×2.0. Cleared: Aprendiz 91% (fresh campaigns), Veterano 80% and Campeón 63% (tier-start runs); deaths 0.05–0.18 per expedition. Parties that reach Veterano inside an 8-week campaign still struggle there (7 of 22). Details: [playtests/2026-11-19-p5-08.md](playtests/2026-11-19-p5-08.md).
 

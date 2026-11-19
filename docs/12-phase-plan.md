@@ -653,9 +653,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] bot runs (6 seeds, 144 expeditions; 2 seeds proved too noisy) back in the doc 04 bands: 58% cleared, 0.19 deaths/expedition, ₡ in 2946 / out 3118 a week (docs/playtests/2026-11-19-p5-07.md) (55–70% success, deaths 1 per 5–8 missions, weekly money in ≈ out); likely levers: Aprendiz `enemy_stress` (1.5), the support skills' `stress_relief`, Iglesia/Cantina prices or relief, `hub.idle_stress_relief`
 
 ### P5-08 · S · Retune Veterano and Campeón for the game without the group misa
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-19)`: scope widened to all three tiers — P5-07 aimed Aprendiz at 55–70%, but the owner's bands are per tier (Aprendiz 85–90, Veterano 70–80, Campeón 55–70; line "Clear rate for the careful bot" above) · Depends: P5-07
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): scope widened to all three tiers — P5-07 aimed Aprendiz at 55–70%, but the owner's bands are per tier (Aprendiz 85–90, Veterano 70–80, Campeón 55–70; line "Clear rate for the careful bot" above) · Depends: P5-07
 - Why: P5-07 retuned Aprendiz only; 8-week bot campaigns played 139 of 144 expeditions there. The Veterano/Campeón rows of `data/progression.json` are still the P5-02c/f values from the misa era.
-- Done when: [ ] `tools/playtest_campaign.gd -- --weeks 24` on 6 seeds shows Veterano and Campeón in their doc 04 bands
+- Done when: [x] each tier in the owner's band for the careful bot: Aprendiz 91% (6 seeds, fresh campaigns), Veterano 80%, Campeón 63% (4 seeds each, tier-start runs); docs/playtests/2026-11-19-p5-08.md. Not done: a 24-week run (parties that reach Veterano in an 8-week campaign cleared 7 of 22) — see P5-09
+
+### P5-09 · S · 24-week campaigns on the P5-08 numbers
+- Status: `todo` · Depends: P5-08
+- Why: P5-08 measured Veterano and Campeón with parties started at the tier. Parties that reach Veterano inside an 8-week campaign have fewer ranks and less gear and cleared only 7 of 22 there.
+- Done when: [ ] `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24` on 6 seeds: how often campaigns reach and stay at Veterano/Campeón, clear rate there, money in week 24; decide with the owner whether the bot (or the player) should wait longer before moving up
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

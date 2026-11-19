@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (2) — P5-08 — All three difficulty tiers in the owner's bands
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-08 `done`. New `todo` P5-09: 24-week runs.
+- **Changed:**
+  - `data/progression.json` enemy PV / damage / stress: Aprendiz 0.8 / 0.8 / 0.95, Veterano 1.5 / 1.4 / 1.7, Campeón 2.0 / 1.7 / 2.0.
+  - Doc 01 §6.1 table, doc 09 §8, `docs/playtests/2026-11-19-p5-08.md`.
+  - Tests `test_progression` and `test_town_events` compare tiers instead of the old fixed values.
+- **Correction to P5-07:** it aimed Aprendiz at 55–70%, copying the task text. The owner's bands are per tier (85–90 / 70–80 / 55–70; doc 09 §6, plan "Clear rate for the careful bot").
+- **Verified:**
+  - Bot runs: Aprendiz 91% (6 seeds, fresh campaigns), Veterano 80% and Campeón 63% (4 seeds each, tier-start runs as in P5-02f); deaths 0.05–0.18 per expedition.
+  - Fresh campaigns: money in 3765 / out 3971 a week, never under 500 ₡.
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+- **Not verified / risks:** parties that reach Veterano inside an 8-week campaign cleared 7 of 22 there (fewer ranks and less gear than the tier-start parties); see P5-09.
+- **Decisions needed:** should the careful bot (and the hint to players) wait for more ranks or gear before moving up to Veterano?
+- **Next step:** owner playtest. Then P5-09: run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24 --seed 1..6 --telemetry <path>` and look at time spent per tier and clear rate after promotion.
+
+---
+
 ## 2026-11-19 — P5-07 — Rebalance after the merge: 26% → 58% cleared
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-07 `done`. New `todo` P5-08: Veterano/Campeón.

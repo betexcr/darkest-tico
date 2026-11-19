@@ -188,10 +188,15 @@ func _run() -> void:
 	var pr: Dictionary = rs.progress(hero)
 	_check(int(pr["current"]) == 0 and int(pr["needed"]) == 14, "progress 0/14 toward level 3")
 	var base_v: Dictionary = rs.expedition("veterano", 0)
-	_check(int(base_v["level"]) == 3 and is_equal_approx(float(base_v["enemy_hp"]), 1.75) and is_equal_approx(float(base_v["enemy_stress"]), 2.0) and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, x1.75 PV, x2 stress, +10 resist (P5-02f)")
+	var base_a: Dictionary = rs.expedition("aprendiz", 0)
+	var base_c: Dictionary = rs.expedition("campeon", 0)
+	_check(int(base_v["level"]) == 3 and int(base_v["enemy_resist"]) == 10, "Veterano in Sótanos: level 3, +10 resist")
+	_check(float(base_a["enemy_hp"]) < float(base_v["enemy_hp"]) and float(base_v["enemy_hp"]) < float(base_c["enemy_hp"])
+		and float(base_a["enemy_stress"]) < float(base_v["enemy_stress"]) and float(base_v["enemy_stress"]) < float(base_c["enemy_stress"]),
+		"enemy PV and stress grow Aprendiz < Veterano < Campeón (values: P5-08)")
 	var bosque: Dictionary = rs.expedition("aprendiz", 1)
 	_check(int(bosque["level"]) == 2 and int(bosque["min_level"]) == 1 and int(bosque["max_level"]) == 3, "Aprendiz in a level-1 region: level 2, heroes 1-3")
-	_check(float(bosque["enemy_hp"]) > 1.0 and int(bosque["xp"]) == 5, "level-1 region: tougher enemies, +1 XP")
+	_check(float(bosque["enemy_hp"]) > float(rs.expedition("aprendiz", 0)["enemy_hp"]) and int(bosque["xp"]) == 5, "level-1 region: tougher enemies, +1 XP")
 	_check(int(rs.expedition("campeon", 1)["max_level"]) == 6, "levels cap at 6")
 	_check(gs.region_level(gs.DEFAULT_REGION_PATH) == 0 and gs.region_level(gs.BOSQUE_REGION_PATH) == 1, "Sótanos is region level 0, Bosque 1")
 	gs.selected_difficulty_id = "aprendiz"
