@@ -65,9 +65,9 @@ func _run() -> void:
 		ok = ok and _builds(info.card)
 	_check(ok, "every roster hero has a hero card")
 	ok = true
-	for b in hub._recruit_box.get_children():
-		ok = ok and b.get("card") != null and _builds(b.card)
-	_check(ok and hub._recruit_box.get_child_count() > 0, "every candidate at the terminal has a hero card")
+	for r in hub._recruit_box.get_children():
+		ok = ok and r.has_meta("hire") and r.get_meta("hire") is Button and r.get_meta("hire").text.begins_with("Contratar")
+	_check(ok and hub._recruit_box.get_child_count() > 0, "every candidate at the terminal is a card row with its own hire button (owner 2026-11-19)")
 	var acts: Array = []
 	for bx in hub._relief_boxes.values():
 		for c in bx.get_children():

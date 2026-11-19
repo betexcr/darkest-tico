@@ -687,6 +687,9 @@ func _drop_sell(_at: Vector2, data: Variant, shop: String = "pulperia") -> void:
 
 # --- Terminal de Buses ------------------------------------------------------------
 
+## One card row per candidate (owner 2026-11-19: the info in the row, not in a tooltip):
+## portrait, name, class and resolve; stats and ideal positions; skill icons (hover for each
+## skill); quirks; and the hire button on the right.
 func _refresh_recruits() -> void:
 	for c in _recruit_box.get_children():
 		c.queue_free()
@@ -695,22 +698,57 @@ func _refresh_recruits() -> void:
 		l.text = "No hay más candidatos esta semana."
 		_recruit_box.add_child(l)
 		return
+	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), "terminal")
 	for i in GameState.recruit_pool.size():
-		var h: Dictionary = GameState.recruit_pool[i]
-		var b = CardButtonScript.new()
-		var price: int = GameState.hire_cost(h)
-		b.text = "Contratar a %s — %s (PV %d, vel. %d) — %s" % [
-			h.get("name", "?"), h.get("class_name", ""), int(h.get("hp_max", 0)), int(h.get("speed", 0)),
-			("%d ₡" % price) if price > 0 else "gratis"]
-		b.tooltip_text = "Habilidades: " + ", ".join(h.get("skill_ids", []).map(
-			func(sid): return str(GameState.get_skill(str(sid)).get("name", sid))))
-		b.disabled = GameState.colones < GameState.hire_cost(h) or GameState.roster.size() >= GameState.roster_cap() \
-			or TownEventsScript.is_closed(GameState.active_event(), "terminal")
-		var hire_why: String = "" if not b.disabled else ("La terminal está cerrada esta semana." if TownEventsScript.is_closed(GameState.active_event(), "terminal")
-			else ("No hay más camas en la hacienda." if GameState.roster.size() >= GameState.roster_cap() else "No alcanza la plata."))
-		b.card = HeroCardScript.build.bind(h, ("Clic para contratar por %d ₡." % GameState.hire_cost(h)) if GameState.hire_cost(h) > 0 else "Clic para contratar (gratis).", hire_why)
-		b.pressed.connect(func(): _say(GameState.hire_recruit(i)))
-		_recruit_box.add_child(b)
+		_recruit_box.add_child(_recruit_row(i, GameState.recruit_pool[i], closed))
+
+
+func _recruit_row(i: int, h: Dictionary, closed: bool) -> Control:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", CardScript.flat(Color(0.1, 0.075, 0.06), Color(0.5, 0.38, 0.22, 0.7), 1, 4, 10))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	panel.add_child(row)
+	var head: Control = HeroCardScript.header(h, 56.0)
+	head.custom_minimum_size = Vector2(230, 0)
+	row.add_child(head)
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_theme_constant_override("separation", 4)
+	var ideal: Array = GameState.get_hero_template(str(h.get("hero_id", ""))).get("ranks", [])
+	info.add_child(CardScript.label("PV %d · Vel %d · Prot %d%% · Posiciones %s" % [int(h.get("hp_max", 0)), int(h.get("speed", 0)),
+		int(h.get("prot", 0)), FormationScript.ranks_text(ideal) if not ideal.is_empty() else "1–4"], 13, CardScript.TEXT, false))
+	var skills := HBoxContainer.new()
+	skills.add_theme_constant_override("separation", 4)
+	var names: PackedStringArray = PackedStringArray()
+	for sid in h.get("skill_ids", []):
+		var sk: Dictionary = GameState.hero_skill(h, str(sid))
+		if sk.is_empty():
+			continue
+		var icon = SkillButtonScript.new()
+		icon.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), int(sk.get("rank", 1))],
+			SkillButtonScript.body_for(sk), int(sk.get("rank", 1)), SkillRanksScript.max_rank())
+		icon.custom_minimum_size = Vector2(36, 36)
+		skills.add_child(icon)
+		names.append(str(sk.get("name", sid)))
+	info.add_child(skills)
+	info.add_child(CardScript.label(" · ".join(names), 12, CardScript.MUTED, true, 0.0))
+	if not QuirksScript.of(h).is_empty():
+		info.add_child(HeroCardScript.quirk_chips(h))
+	row.add_child(info)
+	var price: int = GameState.hire_cost(h)
+	var full: bool = GameState.roster.size() >= GameState.roster_cap()
+	var hire := Button.new()
+	hire.text = "Contratar\n%s" % ("gratis" if price == 0 else "%d ₡" % price)
+	hire.custom_minimum_size = Vector2(120, 0)
+	hire.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	hire.disabled = GameState.colones < price or full or closed
+	hire.tooltip_text = "" if not hire.disabled else ("La terminal está cerrada esta semana." if closed
+		else ("No hay más camas en la hacienda." if full else "No alcanza la plata."))
+	hire.pressed.connect(func(): _say(GameState.hire_recruit(i)))
+	row.add_child(hire)
+	panel.set_meta("hire", hire)
+	return panel
 
 
 # --- Roster, party and EBAIS --------------------------------------------------------

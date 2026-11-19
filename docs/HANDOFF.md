@@ -35,6 +35,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - It starts closed, as a "▸ Equipo de X" bar.
   - Clicking a hero on the right opens it for that hero; clicking the same hero again closes it; the bar or its ✕ toggles it.
   - `_equip_open`, `_refresh_equip_fold` in `hacienda_hub.gd`; 5 checks in `test_ui`.
+- **Also:** Terminal candidates are card rows with everything in the row (owner: "the info in the row, not in a tooltip"): portrait, name, class, resolve, PV / speed / protection / ideal positions, skill icons (hover: the skill card) with their names, quirk chips, and a "Contratar" button on the right (`_recruit_row`).
 - **Next step:** owner playtest.
 
 ---
