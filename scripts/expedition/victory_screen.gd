@@ -7,6 +7,7 @@ extends Control
 
 signal continue_pressed
 
+const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 
@@ -133,10 +134,10 @@ func _money_row(text: String, amount: int) -> Control:
 
 
 func _item_tile(id: String, qty: int) -> Control:
-	var tile := PanelContainer.new()
+	var tile = ItemHoverScript.new()
+	tile.setup(id, qty)
 	tile.custom_minimum_size = Vector2(56, 56)
 	tile.add_theme_stylebox_override("panel", _box(Color(0.12, 0.09, 0.08), Color(0.4, 0.32, 0.2), 1))
-	tile.tooltip_text = "%s ×%d" % [GameState.get_item(id).get("name", id), qty]
 	var stack := Control.new()
 	tile.add_child(stack)
 	var p: String = "res://assets/items/%s.png" % id

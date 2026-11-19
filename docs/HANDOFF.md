@@ -33,6 +33,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Smoke test and all 19 tests: 0 failures.
 - **Not verified / risks:** the new Spanish lines need the owner's read (doc 08).
 - **Decisions needed:** none.
+- **Also:** looted items on both victory screens (the card after a fight, the expedition's screen) show the item card on hover (`scripts/ui/item_hover.gd`, a PanelContainer that hands its hover to the item card; its children ignore the mouse). One `test_expedition_systems` run failed once at random during the suite and passed 3/3 on its own (a random event roll; worth pinning down).
 - **Next step:** owner playtest.
 
 ---

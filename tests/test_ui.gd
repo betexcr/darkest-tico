@@ -375,17 +375,35 @@ func _event_result(gs) -> void:
 	await process_frame
 	var bd = screen._result_dialog
 	var texts: Array = []
-	if bd != null:
-		for c in bd.get_child(0).get_children():
-			if c is Label:
-				texts.append(str(c.text))
-			for cc in c.get_children():
-				if cc is Label:
-					texts.append(str(cc.text))
+	var walk: Array = [bd] if bd != null else []
+	while not walk.is_empty():
+		var n = walk.pop_front()
+		if n is Label:
+			texts.append(str(n.text))
+		walk.append_array(n.get_children())
 	var all: String = " | ".join(texts)
 	_check(bd != null and bd.title == "¡Victoria!", "a won fight opens the battle card")
 	_check(all.contains("+120 colones") and all.contains("Agua de pipa") and all.contains("no cabe"), "it lists the colones, the drop and what didn't fit")
 	_check(all.contains("%s: PV" % h0["name"]) and all.contains("estrés +9"), "and what each hero lost (%s)" % all.substr(0, 120))
+	# Loot rows show the item's card on hover (owner 2026-11-19).
+	var hovers: Array = []
+	var stack: Array = [bd]
+	while not stack.is_empty():
+		var n = stack.pop_back()
+		if n.get_script() == load("res://scripts/ui/item_hover.gd"):
+			hovers.append(n)
+		stack.append_array(n.get_children())
+	var card = hovers[0]._make_custom_tooltip("") if not hovers.is_empty() else null
+	_check(hovers.size() == 1 and hovers[0].item_id == "agua_pipa" and card is Control, "the looted item shows its item card on hover")
+	if card is Node:
+		card.free()
+	var vs = load("res://scripts/expedition/victory_screen.gd").new()
+	var tile = vs._item_tile("agua_pipa", 2)
+	var tcard = tile._make_custom_tooltip("")
+	_check(tile.item_id == "agua_pipa" and tcard is Control, "and so do the item tiles on the expedition's victory screen")
+	tcard.free()
+	tile.free()
+	vs.free()
 	bd.hide()
 	await process_frame
 	screen.queue_free()

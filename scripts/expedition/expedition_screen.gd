@@ -26,6 +26,7 @@ const BalanceScript := preload("res://scripts/domain/balance.gd")
 const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const CardScript := preload("res://scripts/ui/tooltip_card.gd")
 const CombatControllerScript := preload("res://scripts/combat/combat_controller.gd")
+const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
@@ -948,13 +949,20 @@ func _show_battle_result(title: String, pay: int, drops: Dictionary, then: Calla
 			col.add_child(_tone_label("+%d colones" % pay))
 			any = true
 		for id in drops.get("got", []):
+			# Hover the row for the item's card, as in the alforja (owner 2026-11-19).
+			var hover = ItemHoverScript.new()
+			hover.setup(str(id))
+			hover.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+			hover.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 			var row := HBoxContainer.new()
 			row.add_theme_constant_override("separation", 10)
+			row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			row.add_child(CardScript.picture("res://assets/items/%s.png" % id, 40.0))
 			var nm := CardScript.label(str(GameState.get_item(str(id)).get("name", id)), 15, CardScript.GOOD, false)
 			nm.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 			row.add_child(nm)
-			col.add_child(row)
+			hover.add_child(row)
+			col.add_child(hover)
 			any = true
 		for id in drops.get("lost", []):
 			col.add_child(_tone_label("%s: no cabe en la alforja" % GameState.get_item(str(id)).get("name", id)))
