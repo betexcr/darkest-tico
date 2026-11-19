@@ -1,0 +1,21 @@
+{
+  "id": "sprite_montador_f_ailment",
+  "prompt": "character sheet, young woman, Costa Rican bull rider, long straight dark hair, hoop earrings, worn pale straw cowboy hat, buttoned denim shirt, jeans, boots, six poses, same clothes and a coiled lasso rope in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5113,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "960x960 sheet, cell 5 of 6",
+  "mode": "sheet",
+  "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "reference": {
+    "image": "assets/portraits/montador_f.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-19T23:28:04+00:00"
+}
