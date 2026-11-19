@@ -85,6 +85,15 @@
       "closed_by": [
         "cantina"
       ]
+    },
+    {
+      "id": "guardabosques",
+      "name": "Guardabosques del Arenal",
+      "art": "res://assets/town/guardabosques.png",
+      "text": "La caseta del guardabosques: enseña habilidades de fogata, fija la que uno quiera llevar siempre y cambia las compartidas.",
+      "x": 859,
+      "bottom": 640,
+      "height": 97
     }
   ],
   "ground_top": 330,

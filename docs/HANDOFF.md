@@ -17,6 +17,25 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (17) — P3-13: Guardabosques del Arenal (learn, fix, swap camp skills)
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-13 review; P3-21 (upgrade tracks) added as todo (owner: later).
+- **Changed:**
+  - Owner 2026-11-19: a new hero knows **3 of their 6** class camp skills (random, `CampingSystem.starting_known`); the fogata draws only known ones. Heroes from saves before v13 know all 6.
+  - `data/balance.json` `camp`: `known_at_hire` 3, `learn_price` 500, `fix_price` 300, `shared_swap_price` 100 (+ `BALANCE_KEYS`).
+  - `camping_system.gd`: `known_ids`, `knows`, `fixed_id`; `deal_hand` = shared + fixed (if any) + random known class skills up to `class_skills_per_camp`.
+  - `GameState`: hero fields `camp_known`, `camp_fixed`; `learn_camp_skill`, `fix_camp_skill` ("" lets go, free), `swap_shared_camp_skill`, `camp_*_block_reason`, `camp_shared_options`; **SAVE_VERSION 13** (shared-only `camp_skill_ids`, known = all 6, fixed checked).
+  - Town: the shed right of the Cantina is now the Guardabosques. Its pixels were split off `assets/town/painted/cantina.png` (alpha x ≥ 815 moved) into `painted/guardabosques.png`, rect in `painted/layout.json`; `assets/town/guardabosques.png` is the same cut as a stand-in; `data/town.json` entry; `tools/art_manifest.json` `town_guardabosques` for real art. Validator now wants 8 buildings.
+  - Hub: page `guardabosques` (`hacienda_hub.tscn` + `_refresh_guardabosques` / `_ranger_row`): 6 class rows (Aprender / Fijar / Soltar) and 2 shared rows (Cambiar por …); in `HERO_PAGES`. Hero sheet marks unknown and fixed skills.
+  - Bot: learns one class camp skill per hero a week while it keeps RESERVE, watch skills first (`row["camp_learned"]`).
+  - Tests: `test_progression` (start with 3, draw from known, learn/fix/let go/swap, no money, v12 migration), `test_ui` (8 buildings, page rows, Aprender works). Docs 01 §4.4, 02 §9 and hub table.
+- **Verified:** validator 0 errors; test_progression, test_ui, test_hub, test_save 0 failures; screenshots of the town hover and the page (1280×720). FULL_SUITE_PENDING
+- **Not verified / risks:** the next `tools/town_paint.py` repaint uses the stand-in `guardabosques.png` (a dark 89×97 cut) and the Cantina cut-out still contains the shed, so run `sd_local.py` + `sd_cutout.py` for `town_guardabosques` first. Prices are guesses; the bot spends some money on lessons now, so P5-09 baselines shift a little.
+- **Decisions needed:** owner: prices (500 / 300 / 100 ₡)? Should town events close or discount the Guardabosques like the other buildings?
+- **Next step:** owner playtest the Guardabosques page; then P3-21 once P3-16 brings building upgrades.
+
+---
+
 ## 2026-11-19 (16) — P3-20: 4 more class camp skills per class, drawn at random at every fogata
 - **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
 - **Status after session:** P3-20 review.

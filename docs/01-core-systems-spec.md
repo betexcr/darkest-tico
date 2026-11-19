@@ -217,11 +217,11 @@ Implemented (P3-07). Data: `data/camp_skills.json`; rules: `scripts/domain/campi
 - Each expedition carries **1 leña** (`firewood_per_expedition`, or region `firewood`). Camping in a Fogata room spends it; the party may also walk on and come back later.
 - Camp phase:
   1. **Meal** in gallo pinto (cost listed for 4 heroes, scaled down with fewer living): Festín 4 (+25% PV, −10 stress), Comida completa 2 (+10% PV), Media ración 1 (no effect), Ayuno 0 (−20% PV, never below 1; +15 stress). Any meal resets the travel hunger count (§4.6).
-  2. **Respite: 12 points.** Each hero carries 4 camp skills (`camp_skill_ids`: 2 of the class + 2 shared). Each hero may use each of their skills once per camp. Targets: self, one companion, every companion, or the whole party. Effects: stress, % PV, cures, and buffs that last **4 fights** (same stat keys as statuses).
-  3. **Night ambush:** 12% base, +6% if Luz is Penumbra or darker (§4.5), +4% if the living party's average stress is 50 or more (doc 07 §6 "exhausted"), 0% if a watch skill was used (Dron vigía, Guardia de corral, Ronda con foco, Vigilia de oración). The ambush is a fight against 2–3 region monsters in which the enemies act first in round 1. It pays nothing.
+  2. **Respite: 12 points.** Each hero has 4 camp skills per camp (owner 2026-11-19, P3-20/P3-13): their 2 shared skills (`camp_skill_ids`) plus `class_skills_per_camp` (2) class skills drawn at random from the class skills they know (each class has 6; a new hero knows 3, see the Guardabosques below). A fixed class skill always comes up and takes one of the two slots. Each hero may use each of their skills once per camp. Targets: self, one companion, every companion, or the whole party. Effects: stress, % PV, cures, and buffs that last **4 fights** (same stat keys as statuses).
+  3. **Night ambush:** 12% base, +6% if Luz is Penumbra or darker (§4.5), +4% if the living party's average stress is 50 or more (doc 07 §6 "exhausted"), 0% if a watch skill was used (Dron vigía, Cámara trampa, Guardia de corral, Ronda con foco, Chapear el contorno, Vigilia de oración). The ambush is a fight against 2–3 region monsters in which the enemies act first in round 1. It pays nothing.
 - After sleeping, Luz resets to its maximum (`light.max`).
 - With no firewood left, the party can only warm their hands (`no_firewood_relief` stress).
-- Guardabosques del Arenal (swapping and learning camp skills, doc 02 §9) is not built yet.
+- Guardabosques del Arenal (P3-13, doc 02 §9): teaches a hero one more class skill (`camp.learn_price`), fixes one known class skill so it comes up at every fogata (`camp.fix_price`; letting it go is free), or swaps one shared skill for the third (`camp.shared_swap_price`). Heroes from saves before v13 know all 6.
 
 ### 4.5 Luz (light) tiers
 

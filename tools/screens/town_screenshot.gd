@@ -43,6 +43,11 @@ func _run() -> void:
 	_move(ig.get_global_rect().get_center())
 	await create_timer(0.3).timeout
 	await _snap(out_dir, "town_hover.png")
+	var gb: Control = hub._buildings.get("guardabosques")
+	if gb != null:
+		_move(gb.get_global_rect().get_center())
+		await create_timer(0.3).timeout
+		await _snap(out_dir, "town_hover_guardabosques.png")
 	_move(Vector2(300, 690))
 	for bid in hub._buildings:
 		hub.open_building(bid)

@@ -31,8 +31,9 @@ The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one paintin
 | Clínica de Espantos | every hero, with a button to their quirk card |
 | Casa Comunal | the selected hero's skill ranks |
 | Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) and the equipment shop: weapons, armor, accessories, with a filter; buys used equipment back, the only place that does (P4-18) |
+| Guardabosques del Arenal | the selected hero's camp skills: learn, fix one, swap a shared one (§9) |
 
-The EBAIS stays a button on each roster row. The Feria Nocturna, Guardabosques and Mejoras de Hacienda have no picture until they are built.
+The EBAIS stays a button on each roster row. The Feria Nocturna and Mejoras de Hacienda have no picture until they are built. The Guardabosques is the shed by the Cantina, cut from the painted town; `tools/art_manifest.json` `town_guardabosques` is its own art for the next repaint.
 
 ## 2) Building Mapping
 
@@ -211,17 +212,22 @@ Each branch has 3 activities with independent slots and upgrade levels.
 
 ## 9) Guardabosques del Arenal (Camp Skills)
 
-### Upgrade Tracks
-
-1. `Guia de Supervivencia`
-   - Unlocks stronger camp skills.
-2. `Entrenamiento de Patrulla`
-   - Reduces cost of camp skill upgrades.
+Built (P3-13, owner 2026-11-19). The ranger's shed next to the Cantina. Prices in `data/balance.json` `camp`; rules in `scripts/domain/camping_system.gd` and `GameState` (`learn_camp_skill`, `fix_camp_skill`, `swap_shared_camp_skill`).
 
 ### Rules
 
-- Camp skills categorized: recovery, anti-ambush, scouting, offense prep.
-- Skills are class-specific with 1-2 shared universal options.
+- Each class has 6 camp skills of its own; there are 3 shared ones. A hero carries 2 shared skills.
+- A new hero knows 3 of their 6 class skills, at random. At every fogata they get their 2 shared skills plus 2 of the class skills they know, at random (`camp_skills.json` `class_skills_per_camp`).
+- **Aprender** (500 ₡): teaches one more class skill.
+- **Fijar** (300 ₡): one known class skill comes up at every fogata and takes one of the two slots. Letting it go is free; fixing another replaces it.
+- **Cambiar** (100 ₡): swaps one of the 2 shared skills for the third.
+
+### Upgrade Tracks (later: they wait for the building-upgrade system, P3-16)
+
+1. `Guia de Supervivencia`
+   - More class skills per fogata (3 instead of 2); later, stronger camp skills.
+2. `Entrenamiento de Patrulla`
+   - Cheaper lessons and fixing.
 
 ## 10) Mejoras de Hacienda (District-Style Meta)
 

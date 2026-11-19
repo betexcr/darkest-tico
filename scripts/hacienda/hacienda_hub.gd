@@ -28,9 +28,10 @@ const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
 const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
+const BalanceScript := preload("res://scripts/domain/balance.gd")
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
-const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller"]
+const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "guardabosques"]
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _town: Control = $Town
@@ -64,6 +65,7 @@ var _shop_filter: String = "todo"
 @onready var _skills_title: Label = $Building/VBox/Pages/casa_comunal/SkillsTitle
 @onready var _skills_row: HBoxContainer = $Building/VBox/Pages/casa_comunal/SkillsRow
 @onready var _clinic_box: VBoxContainer = $Building/VBox/Pages/clinica/Box
+@onready var _ranger_box: VBoxContainer = $Building/VBox/Pages/guardabosques/Box
 
 ## Alforja cells in the town's right panel (owner 2026-11-19: a bit bigger), 6 per row.
 const PACK_SLOT := Vector2(56, 58)
@@ -249,6 +251,7 @@ func _refresh() -> void:
 				b.refresh()
 	_refresh_relief()
 	_refresh_clinic_page()
+	_refresh_guardabosques()
 	_refresh_town()
 	_refresh_who()
 	_refresh_event_button()
@@ -392,6 +395,78 @@ func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
 # --- Clínica de Espantos (P3-06) -----------------------------------------------------
 
 ## The Clínica page (P4-17): every hero with their quirks; a click opens that hero's card.
+## Guardabosques del Arenal (P3-13): the selected hero's 6 class camp skills (known or not,
+## the fixed one) and their 2 shared ones. Learn, fix or let go, swap a shared one.
+func _refresh_guardabosques() -> void:
+	for c in _ranger_box.get_children():
+		c.queue_free()
+	var h: Dictionary = _selected
+	if h.is_empty():
+		return
+	var per: int = CampingSystemScript.class_skills_per_camp()
+	_ranger_box.add_child(CardScript.label("En cada fogata, %s lleva sus 2 habilidades compartidas y %d de las de su oficio que conozca, al azar. Una fija sale siempre." % [h.get("name", "?"), per],
+		13, CardScript.MUTED, true, 0.0))
+	_ranger_box.add_child(CardScript.section("De su oficio — conoce %d de %d" % [CampingSystemScript.known_ids(h).size(), CampingSystemScript.class_pool(h).size()]))
+	var fixed: String = CampingSystemScript.fixed_id(h)
+	for sk in CampingSystemScript.class_pool(h):
+		var sid: String = str(sk["id"])
+		var known: bool = CampingSystemScript.knows(h, sid)
+		var b := Button.new()
+		b.custom_minimum_size = Vector2(150, 0)
+		if not known:
+			b.text = "Aprender — %d ₡" % BalanceScript.int_of("camp.learn_price")
+			var why: String = GameState.camp_learn_block_reason(h, sid)
+			b.disabled = why != ""
+			b.tooltip_text = "Aprender %s\n%s" % [sk.get("name", sid), why if why != "" else "Desde ahora puede salirle en las fogatas."]
+			b.pressed.connect(func(): _say(GameState.learn_camp_skill(h, sid)))
+		elif sid == fixed:
+			b.text = "Soltar (gratis)"
+			b.tooltip_text = "Soltar %s\nVuelve a salir al azar, como las demás." % sk.get("name", sid)
+			b.pressed.connect(func(): _say(GameState.fix_camp_skill(h, "")))
+		else:
+			b.text = "Fijar — %d ₡" % BalanceScript.int_of("camp.fix_price")
+			var why2: String = GameState.camp_fix_block_reason(h, sid)
+			b.disabled = why2 != ""
+			b.tooltip_text = "Fijar %s\n%s" % [sk.get("name", sid), why2 if why2 != "" else "Le sale en cada fogata%s." % (" (en vez de %s)" % CampingSystemScript.skill(fixed).get("name", "") if fixed != "" else "")]
+			b.pressed.connect(func(): _say(GameState.fix_camp_skill(h, sid)))
+		var tag: String = "Fija" if sid == fixed else ("La conoce" if known else "No la conoce")
+		var tag_col: Color = CardScript.GOOD if sid == fixed else (CardScript.TEXT if known else CardScript.MUTED)
+		_ranger_box.add_child(_ranger_row(sk, tag, tag_col, [b], known))
+	_ranger_box.add_child(CardScript.section("Compartidas — lleva 2 de 3"))
+	var others: Array = GameState.camp_shared_options(h)
+	for sk in CampingSystemScript.shared_skills(h):
+		var btns: Array = []
+		for nid in others:
+			var b := Button.new()
+			b.text = "Cambiar por %s — %d ₡" % [CampingSystemScript.skill(nid).get("name", nid), BalanceScript.int_of("camp.shared_swap_price")]
+			var why3: String = GameState.camp_swap_block_reason(h, str(sk["id"]), nid)
+			b.disabled = why3 != ""
+			b.tooltip_text = "%s\n%s" % [CampingSystemScript.skill(nid).get("name", nid), why3 if why3 != "" else str(CampingSystemScript.skill(nid).get("desc", ""))]
+			b.pressed.connect(func(): _say(GameState.swap_shared_camp_skill(h, str(sk["id"]), nid)))
+			btns.append(b)
+		_ranger_box.add_child(_ranger_row(sk, "La lleva", CardScript.TEXT, btns, true))
+
+
+func _ranger_row(sk: Dictionary, tag: String, tag_col: Color, buttons: Array, lit: bool) -> Control:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", CardScript.flat(Color(0.1, 0.075, 0.06), Color(0.5, 0.38, 0.22, 0.7 if lit else 0.3), 1, 4, 8))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	panel.add_child(row)
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_child(CardScript.label("%s (%d pts.)" % [sk.get("name", "?"), int(sk.get("cost", 0))], 13, CardScript.TEXT if lit else CardScript.MUTED, false))
+	info.add_child(CardScript.label(str(sk.get("desc", "")), 12, CardScript.MUTED, true, 0.0))
+	row.add_child(info)
+	var chip: Control = CardScript.chip(tag, tag_col, 11)
+	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(chip)
+	for b in buttons:
+		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		row.add_child(b)
+	return panel
+
+
 func _refresh_clinic_page() -> void:
 	for c in _clinic_box.get_children():
 		c.queue_free()
@@ -964,9 +1039,12 @@ func _show_hero_sheet(h: Dictionary) -> void:
 		col.add_child(CardScript.section("Habilidades de fogata"))
 		for cs in CampingSystemScript.shared_skills(h):
 			col.add_child(CardScript.label("◆ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
-		col.add_child(CardScript.label("De su oficio (en cada fogata le salen %d al azar):" % CampingSystemScript.class_skills_per_camp(), 12, CardScript.MUTED, true, CW))
+		col.add_child(CardScript.label("De su oficio (en cada fogata le salen %d de las que conoce, al azar):" % CampingSystemScript.class_skills_per_camp(), 12, CardScript.MUTED, true, CW))
+		var fx: String = CampingSystemScript.fixed_id(h)
 		for cs in CampingSystemScript.class_pool(h):
-			col.add_child(CardScript.label("◇ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
+			var k: bool = CampingSystemScript.knows(h, str(cs["id"]))
+			var mark: String = " · fija" if str(cs["id"]) == fx else ("" if k else " · no la conoce (Guardabosques)")
+			col.add_child(CardScript.label("%s %s (%d pts.)%s — %s" % ["◇" if k else "·", cs.get("name", "?"), int(cs.get("cost", 0)), mark, cs.get("desc", "")], 12, CardScript.TEXT if k else CardScript.MUTED, true, CW))
 	if int(h.get("borde_checks", 0)) > 0:
 		col.add_child(CardScript.label("Ya sobrevivió %d golpe(s) de gracia en esta expedición." % int(h["borde_checks"]), 12, CardScript.BAD, true, CW))
 	add_child(dlg)

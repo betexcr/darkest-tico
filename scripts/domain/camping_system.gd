@@ -143,13 +143,48 @@ static func hero_skills(hero: Dictionary) -> Array:
 	return shared_skills(hero) + class_pool(hero)
 
 
-## The skills this hero has tonight: their shared skills plus class_skills_per_camp class
-## skills drawn at random (owner 2026-11-19: a new draw at every fogata). Returns ids.
+# --- Guardabosques (P3-13): which class skills a hero knows, and the fixed one ------------
+
+## Class skills a new hero knows (owner 2026-11-19: 3 of the 6, at random); the
+## Guardabosques teaches the rest.
+static func starting_known(class_id: String) -> Array:
+	var pool: Array = class_pool({"class_id": class_id}).map(func(sk): return str(sk["id"]))
+	pool.shuffle()
+	return pool.slice(0, BalanceScript.int_of("camp.known_at_hire"))
+
+
+## Ids of the class skills this hero knows. A hero without the field (an old save) knows
+## the whole class pool.
+static func known_ids(hero: Dictionary) -> Array:
+	var pool: Array = class_pool(hero).map(func(sk): return str(sk["id"]))
+	if not hero.get("camp_known") is Array:
+		return pool
+	return pool.filter(func(sid): return (hero["camp_known"] as Array).has(sid))
+
+
+static func knows(hero: Dictionary, sid: String) -> bool:
+	return known_ids(hero).has(sid)
+
+
+## The fixed class skill (comes up at every fogata), "" for none.
+static func fixed_id(hero: Dictionary) -> String:
+	var f: String = str(hero.get("camp_fixed", ""))
+	return f if knows(hero, f) else ""
+
+
+## The skills this hero has tonight: their shared skills, the fixed class skill if any, and
+## known class skills drawn at random up to class_skills_per_camp (owner 2026-11-19: a new
+## draw at every fogata). Returns ids.
 static func deal_hand(hero: Dictionary) -> Array:
 	var ids: Array = shared_skills(hero).map(func(sk): return str(sk["id"]))
-	var pool: Array = class_pool(hero).map(func(sk): return str(sk["id"]))
+	var want: int = class_skills_per_camp()
+	var fixed: String = fixed_id(hero)
+	if fixed != "":
+		ids.append(fixed)
+		want -= 1
+	var pool: Array = known_ids(hero).filter(func(sid): return sid != fixed)
 	pool.shuffle()
-	ids.append_array(pool.slice(0, class_skills_per_camp()))
+	ids.append_array(pool.slice(0, maxi(want, 0)))
 	return ids
 
 

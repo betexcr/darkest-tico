@@ -47,7 +47,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 12
+const SAVE_VERSION := 13
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -702,6 +702,85 @@ func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
 	return "En la Casa Comunal, %s practica %s: ahora es rango %d (-%d ₡)." % [hero.get("name", "?"), sk_name, r, cost]
 
 
+# --- Guardabosques del Arenal (camp skills, P3-13, doc 02 §9) ------------------------------
+
+## "" when `sid` can be taught to the hero now; otherwise the reason (Spanish).
+func camp_learn_block_reason(hero: Dictionary, sid: String) -> String:
+	if not CampingSystemScript.class_pool(hero).any(func(sk): return str(sk["id"]) == sid):
+		return "No es de su oficio."
+	if CampingSystemScript.knows(hero, sid):
+		return "Ya la conoce."
+	if colones < BalanceScript.int_of("camp.learn_price"):
+		return "No alcanza la plata."
+	return ""
+
+
+func learn_camp_skill(hero: Dictionary, sid: String) -> String:
+	var nm: String = str(CampingSystemScript.skill(sid).get("name", sid))
+	var why: String = camp_learn_block_reason(hero, sid)
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
+	var cost: int = BalanceScript.int_of("camp.learn_price")
+	colones -= cost
+	hero["camp_known"] = CampingSystemScript.known_ids(hero) + [sid]
+	return "El guardabosques le enseña a %s: %s (-%d ₡)." % [hero.get("name", "?"), nm, cost]
+
+
+## "" when `sid` can be made the hero's fixed camp skill now; otherwise the reason.
+func camp_fix_block_reason(hero: Dictionary, sid: String) -> String:
+	if not CampingSystemScript.knows(hero, sid):
+		return "Primero tiene que aprenderla."
+	if CampingSystemScript.fixed_id(hero) == sid:
+		return "Ya es la fija."
+	if colones < BalanceScript.int_of("camp.fix_price"):
+		return "No alcanza la plata."
+	return ""
+
+
+## Makes `sid` come up at every fogata (replaces the old fixed one). "" sid lets it go, free.
+func fix_camp_skill(hero: Dictionary, sid: String) -> String:
+	if sid == "":
+		var old: String = CampingSystemScript.fixed_id(hero)
+		hero["camp_fixed"] = ""
+		return "%s ya no lleva %s fija." % [hero.get("name", "?"), CampingSystemScript.skill(old).get("name", old)] if old != "" else ""
+	var nm: String = str(CampingSystemScript.skill(sid).get("name", sid))
+	var why: String = camp_fix_block_reason(hero, sid)
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
+	var cost: int = BalanceScript.int_of("camp.fix_price")
+	colones -= cost
+	hero["camp_fixed"] = sid
+	return "%s va a usar %s en cada fogata (-%d ₡)." % [hero.get("name", "?"), nm, cost]
+
+
+## The shared camp skills the hero could switch to (the one of the 3 they don't carry).
+func camp_shared_options(hero: Dictionary) -> Array:
+	var carried: Array = CampingSystemScript.shared_skills(hero).map(func(sk): return str(sk["id"]))
+	return CampingSystemScript.data().get("skills", []).filter(func(sk): return sk is Dictionary \
+		and "*" in sk.get("classes", []) and not carried.has(str(sk["id"]))).map(func(sk): return str(sk["id"]))
+
+
+func camp_swap_block_reason(hero: Dictionary, old_id: String, new_id: String) -> String:
+	if not hero.get("camp_skill_ids", []).has(old_id) or not camp_shared_options(hero).has(new_id):
+		return "No se puede cambiar."
+	if colones < BalanceScript.int_of("camp.shared_swap_price"):
+		return "No alcanza la plata."
+	return ""
+
+
+func swap_shared_camp_skill(hero: Dictionary, old_id: String, new_id: String) -> String:
+	var why: String = camp_swap_block_reason(hero, old_id, new_id)
+	var nm: String = str(CampingSystemScript.skill(new_id).get("name", new_id))
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), nm, why]
+	var cost: int = BalanceScript.int_of("camp.shared_swap_price")
+	colones -= cost
+	var ids: Array = hero["camp_skill_ids"].duplicate()
+	ids[ids.find(old_id)] = new_id
+	hero["camp_skill_ids"] = ids
+	return "%s cambia %s por %s (-%d ₡)." % [hero.get("name", "?"), CampingSystemScript.skill(old_id).get("name", old_id), nm, cost]
+
+
 func get_hero_template(hero_id: String) -> Dictionary:
 	return _heroes_by_id.get(hero_id, {})
 
@@ -749,6 +828,9 @@ func _instantiate_hero(template: Dictionary) -> Dictionary:
 		"skill_ids": template.get("skill_ids", []).duplicate(),
 		"skill_ranks": {},
 		"camp_skill_ids": template.get("camp_skill_ids", []).duplicate(),
+		# P3-13: 3 of the 6 class camp skills; the Guardabosques teaches the rest.
+		"camp_known": CampingSystemScript.starting_known(str(template.get("class_id", ""))),
+		"camp_fixed": "",
 		"camp_buffs": [],
 		"al_borde": false,
 		"borde_checks": 0,
@@ -2288,6 +2370,13 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["resolve_xp"] = maxi(int(out.get("resolve_xp", 0)), ResolveSystemScript.xp_for_level(int(out["resolve_level"])))
 	if not out.get("camp_skill_ids") is Array or (out["camp_skill_ids"] as Array).is_empty():
 		out["camp_skill_ids"] = t.get("camp_skill_ids", []).duplicate()
+	# v13 (P3-13): shared camp skills only (older saves also listed class skills; the
+	# template's pair if fewer than 2 are left); known class skills (an older hero knows
+	# all 6, so nobody loses one) and the fixed one.
+	var shared: Array = CampingSystemScript.shared_skills(out).map(func(sk): return str(sk["id"]))
+	out["camp_skill_ids"] = shared if shared.size() >= 2 else t.get("camp_skill_ids", []).duplicate()
+	out["camp_known"] = CampingSystemScript.known_ids(out)
+	out["camp_fixed"] = CampingSystemScript.fixed_id(out)
 	# v8: Casa Comunal skill ranks (older saves: every skill at rank 1). JSON numbers load as
 	# floats, so ranks are stored back as ints; ranks for skills the hero lacks are dropped.
 	var raw_ranks = out.get("skill_ranks", null)

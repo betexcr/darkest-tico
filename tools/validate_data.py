@@ -258,8 +258,8 @@ def main() -> int:
         for c in list(b.get("closed_by", [])) + list(b.get("note_by", {}).keys()):
             if c not in services:
                 errors.append(f"{where} unknown service '{c}'")
-    if town_ids != {"iglesia", "casa_comunal", "clinica", "terminal", "taller", "pulperia", "cantina"}:
-        errors.append("town.json: needs exactly the 7 hub buildings (iglesia, casa_comunal, clinica, terminal, taller, pulperia, cantina)")
+    if town_ids != {"iglesia", "casa_comunal", "clinica", "terminal", "taller", "pulperia", "cantina", "guardabosques"}:
+        errors.append("town.json: needs exactly the 8 hub buildings (iglesia, casa_comunal, clinica, terminal, taller, pulperia, cantina, guardabosques)")
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"
@@ -931,6 +931,8 @@ BALANCE_KEYS = {
     "enemies.boss_hp_mult": "mult", "enemies.elite_hp_mult": "mult",
     "hub.start_colones": "int>=0", "hub.sell_rate": "chance", "hub.heal_cost_per_hp": "int>=0",
     "hub.heal_min_cost": "int>=0", "hub.idle_stress_relief": "int>=0",
+    "camp.known_at_hire": "pos", "camp.learn_price": "int>=0", "camp.fix_price": "int>=0",
+    "camp.shared_swap_price": "int>=0",
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
     "limits.graveyard_cap": "pos", "light.max": "pos", "light.snuff": "int>=0",
     "hunger.every_moves": "pos", "hunger.hp_pct": "pct", "hunger.stress": "int>=0",

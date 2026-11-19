@@ -21,5 +21,6 @@
     284,
     155
   ],
-  "alpha_from": "its cut-out in data/town.json"
+  "alpha_from": "its cut-out in data/town.json",
+  "alpha_note": "x >= 815 (the shed) moved to guardabosques.png on 2026-11-19T22:38:59+00:00"
 }
