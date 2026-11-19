@@ -1,5 +1,5 @@
 {
-  "_doc": "Curio rooms (doc 07 §3) and choice events (doc 07 §5, P2-02). A curio has either a blind 'Examinar' outcome table (weighted) or `choices` [{label, item? (spent), cost? (colones), outcomes [weighted]}] (a choice event: no 'Dejarlo', so one choice must be free). A curio may have `requires` {after_fight (the room right after a won fight), max_light, min_light} checked on entering; if they fail it becomes its `fallback` curio for good and `missing_text` is narrated (P2-10). Plus an optional key item with a better outcome (offered only when carried). Which region uses which curio: the region generator's `curios` pool. Outcome effects: heal_party, stress_party, stress_random (one hero), light (Luz delta), colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
+  "_doc": "Curio rooms (doc 07 §3) and choice events (doc 07 §5, P2-02). A curio has either a blind 'Examinar' outcome table (weighted) or `choices` [{label, item? (spent), cost? (colones), outcomes [weighted]}] (a choice event: no 'Dejarlo', so one choice must be free). A curio may have `requires` {after_fight (the room right after a won fight), max_light, min_light} checked on entering; if they fail it becomes its `fallback` curio for good and `missing_text` is narrated (P2-10). Plus an optional key item with better outcomes (offered only when carried): `key_outcomes` [weighted], usually the good result and a smaller twist. Every option (choice, key, Examinar) has at least 2 outcomes (owner 2026-11-19). Which region uses which curio: the region generator's `curios` pool. Outcome effects: heal_party, stress_party, stress_random (one hero), light (Luz delta), colones, damage_random, add_item {id, qty}, reveal_neighbors, reveal_map, random_equipment (one random equipable item), damage_party, applies {status, turns, value, mods, party}, buff/debuff {name, mods, fights, party} (kept with the camp buffs, counted down per fight), ambush (true or [min, max] region monsters that act first and pay nothing). Rules: GameState.apply_event_outcome; damage follows the combat rule (Al Borde, then Golpe de gracia). colones may be a number or a [min, max] range.",
   "curios": [
     {
       "id": "altar_roto",
@@ -7,10 +7,20 @@
       "text": "Un altar partido con velas negras. Huele a cera vieja y a algo peor.",
       "key_item": "agua_bendita",
       "key_text": "Rocían agua bendita sobre la piedra. El altar suspira y se aquieta.",
-      "key_outcome": {
-        "stress_party": -15,
-        "reveal_neighbors": true
-      },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Rocían agua bendita sobre la piedra. El altar suspira y se aquieta.",
+          "stress_party": -15,
+          "reveal_neighbors": true
+        },
+        {
+          "weight": 25,
+          "text": "El agua bendita chisporrotea sobre la piedra: el altar no quería que lo calmaran.",
+          "stress_party": 6,
+          "light": -5
+        }
+      ],
       "blind": [
         {
           "weight": 50,
@@ -31,13 +41,19 @@
       "text": "Un baúl de cedro con las iniciales del abuelo, cerrado con candado.",
       "key_item": "llave_abuelo",
       "key_text": "La llave entra justo. Adentro: los ahorros del abuelo y algo de su equipo.",
-      "key_outcome": {
-        "colones": [
-          250,
-          700
-        ],
-        "random_equipment": true
-      },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "La llave entra justo. Adentro: los ahorros del abuelo y algo de su equipo.",
+          "colones": [250, 700],
+          "random_equipment": true
+        },
+        {
+          "weight": 25,
+          "text": "La llave entra, pero alguien ya había abierto la caja. Quedan unas monedas en el fondo.",
+          "colones": [80, 200]
+        }
+      ],
       "blind": [
         {
           "weight": 50,
@@ -57,9 +73,19 @@
       "text": "Un pozo sin agua. Algo brilla allá abajo.",
       "key_item": "mecate",
       "key_text": "Bajan con el mecate y suben un frasco de agua de manantial.",
-      "key_outcome": {
-        "heal_party": 8
-      },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Bajan con el mecate y suben un frasco de agua de manantial.",
+          "heal_party": 8
+        },
+        {
+          "weight": 25,
+          "text": "Suben un frasco de agua… y algo jala el mecate desde abajo hasta que lo sueltan.",
+          "heal_party": 4,
+          "stress_random": 8
+        }
+      ],
       "blind": [
         {
           "weight": 40,
@@ -81,11 +107,20 @@
       "text": "Una corteza amarilla florece aquí abajo, sin una gota de sol. No debería.",
       "key_item": "ramo_ruda",
       "key_text": "Una limpia con ruda bajo el árbol. El aire se vuelve dulce.",
-      "key_outcome": {
-        "stress_party": -10,
-        "heal_party": 3,
-        "buff": { "name": "Limpia de ruda", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
-      },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Una limpia con ruda bajo el árbol. El aire se vuelve dulce.",
+          "stress_party": -10,
+          "heal_party": 3,
+          "buff": { "name": "Limpia de ruda", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
+        },
+        {
+          "weight": 25,
+          "text": "La ruda se marchita en las manos: el árbol no quiere limpias hoy. Algo de paz queda.",
+          "stress_party": -4
+        }
+      ],
       "blind": [
         {
           "weight": 60,
@@ -106,9 +141,18 @@
       "text": "Una radio de tubos sintoniza sola una novela de los años 50.",
       "key_item": "bateria_radio",
       "key_text": "Con la batería, la radio dicta el plano completo del sótano.",
-      "key_outcome": {
-        "reveal_map": true
-      },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Con la batería, la radio dicta el plano completo del sótano.",
+          "reveal_map": true
+        },
+        {
+          "weight": 25,
+          "text": "La radio agarra media señal: dicta los cuartos de al lado y se queda en estática.",
+          "reveal_neighbors": true
+        }
+      ],
       "blind": [
         {
           "weight": 50,
@@ -134,7 +178,20 @@
       "text": "Un trapiche de madera con la rueda trabada. Todavía huele a caña.",
       "key_item": "mecate",
       "key_text": "Amarran la rueda con el mecate y la hacen girar. Sale guarapo, todavía dulce.",
-      "key_outcome": { "heal_party": 4, "stress_party": -6 },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Amarran la rueda con el mecate y la hacen girar. Sale guarapo, todavía dulce.",
+          "heal_party": 4,
+          "stress_party": -6
+        },
+        {
+          "weight": 25,
+          "text": "La rueda gira, el mecate revienta con un latigazo. Sale un chorrito de guarapo y un susto.",
+          "heal_party": 2,
+          "stress_party": 4
+        }
+      ],
       "blind": [
         { "weight": 50, "text": "La rueda cruje y suelta una tapa de dulce olvidada.", "add_item": { "id": "tapa_de_dulce", "qty": 1 } },
         { "weight": 50, "text": "La rueda se suelta de golpe y le machuca la mano a alguien.", "damage_random": 5, "stress_party": 3 }
@@ -151,7 +208,20 @@
       "text": "Un nicho en la pared con santos de madera despintados y un mantel tieso de cera.",
       "key_item": "candela_sebo",
       "key_text": "Prenden una candela a los santos. Parece que lo agradecen.",
-      "key_outcome": { "stress_party": -12, "buff": { "name": "Bendición del nicho", "mods": { "stress_pct": -10 }, "fights": 3, "party": true } },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Prenden una candela a los santos. Parece que lo agradecen.",
+          "stress_party": -12,
+          "buff": { "name": "Bendición del nicho", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
+        },
+        {
+          "weight": 25,
+          "text": "La candela se apaga sola apenas la ponen. Los santos no están de humor esta noche.",
+          "stress_party": -4,
+          "light": -5
+        }
+      ],
       "blind": [
         { "weight": 50, "text": "Uno de los santos tiene la cara volteada hacia la pared. Nadie lo dejó así.", "stress_party": 6 },
         { "weight": 50, "text": "Debajo del mantel hay una limosna olvidada.", "colones": [60, 150] }
@@ -160,7 +230,19 @@
       "text": "Un ropero de cedro con espejo, cerrado con llave. Huele a naftalina y a domingo.",
       "key_item": "llave_abuelo",
       "key_text": "La llave del abuelo abre el ropero. Adentro, lo que la abuela guardaba para una emergencia.",
-      "key_outcome": { "colones": [150, 350], "random_equipment": true },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "La llave del abuelo abre el ropero. Adentro, lo que la abuela guardaba para una emergencia.",
+          "colones": [150, 350],
+          "random_equipment": true
+        },
+        {
+          "weight": 25,
+          "text": "La llave abre el ropero, pero adentro solo hay naftalina y unas monedas envueltas en un pañuelo.",
+          "colones": [40, 120]
+        }
+      ],
       "blind": [
         { "weight": 40, "text": "En la gaveta de abajo hay un frasco de ungüento.", "add_item": { "id": "unguento_de_la_abuela", "qty": 1 } },
         { "weight": 35, "text": "Un vestido de novia cuelga solo. Y se mueve.", "stress_party": 5, "applies": { "status": "susto", "turns": 3, "value": 4 } },
@@ -170,7 +252,20 @@
       "text": "El libro de cuentas del mandador. Cada página es una deuda, y algunas están firmadas con sangre.",
       "key_item": "agua_bendita",
       "key_text": "El agua bendita borra las firmas. Las deudas ya no pesan.",
-      "key_outcome": { "stress_party": -10, "buff": { "name": "Deudas saldadas", "mods": { "stress_pct": -10 }, "fights": 3, "party": true } },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "El agua bendita borra las firmas. Las deudas ya no pesan.",
+          "stress_party": -10,
+          "buff": { "name": "Deudas saldadas", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
+        },
+        {
+          "weight": 25,
+          "text": "El agua corre la tinta, pero una firma no se borra: la del que más debía. Alguien la lee en voz alta.",
+          "stress_party": -4,
+          "stress_random": 6
+        }
+      ],
       "blind": [
         { "weight": 50, "text": "Leen los nombres. Uno es de un pariente.", "stress_party": 8 },
         { "weight": 50, "text": "Entre las páginas hay billetes viejos que nadie cobró.", "colones": [100, 250] }
@@ -186,7 +281,20 @@
       "text": "Una pila de cemento todavía con agua. En el fondo se ve un reflejo que no es de nadie.",
       "key_item": "ramo_ruda",
       "key_text": "Hacen una limpia con ruda en el agua de la pila. El reflejo se va.",
-      "key_outcome": { "heal_party": 5, "stress_party": -8 },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Hacen una limpia con ruda en el agua de la pila. El reflejo se va.",
+          "heal_party": 5,
+          "stress_party": -8
+        },
+        {
+          "weight": 25,
+          "text": "La limpia funciona a medias: el reflejo se va, pero vuelve a asomarse cuando se alejan.",
+          "heal_party": 2,
+          "stress_party": -3
+        }
+      ],
       "blind": [
         { "weight": 50, "text": "El agua está fresca. Se lavan la cara y respiran.", "heal_party": 3 },
         { "weight": 50, "text": "El reflejo saca la mano y jala a alguien de la camisa.", "damage_random": 4, "applies": { "status": "susto", "turns": 3, "value": 4 } }
@@ -209,7 +317,19 @@
       "text": "Una campana de bronce colgada de una viga. Si suena, todo el sótano se entera.",
       "key_item": "mecate",
       "key_text": "Amarran el badajo y la descuelgan sin un ruido. Adentro había una ofrenda.",
-      "key_outcome": { "colones": [200, 400] },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Amarran el badajo y la descuelgan sin un ruido. Adentro había una ofrenda.",
+          "colones": [200, 400]
+        },
+        {
+          "weight": 25,
+          "text": "Al descolgarla, la campana suena una vez, larga. La ofrenda está, pero algo en el sótano la escuchó.",
+          "colones": [100, 200],
+          "stress_party": 5
+        }
+      ],
       "blind": [
         { "weight": 40, "text": "La campana suena sola. Muy lejos, algo contesta y viene.", "stress_party": 4, "ambush": [1, 2] },
         { "weight": 60, "text": "Una campanada limpia. La cuadrilla se siente acompañada.", "stress_party": -6,
@@ -226,7 +346,19 @@
       "text": "Una grieta en la pared de piedra. Por ahí sale una voz que sabe sus nombres.",
       "key_item": "rosario_de_semillas",
       "key_text": "Rezan el rosario frente a la grieta hasta que la voz se calla.",
-      "key_outcome": { "stress_party": -15, "buff": { "name": "Oídos sordos", "mods": { "stress_pct": -15 }, "fights": 3, "party": true } },
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "Rezan el rosario frente a la grieta hasta que la voz se calla.",
+          "stress_party": -15,
+          "buff": { "name": "Oídos sordos", "mods": { "stress_pct": -15 }, "fights": 3, "party": true }
+        },
+        {
+          "weight": 25,
+          "text": "Rezan, y la grieta se ríe entre cuenta y cuenta. Al rato largo, se calla.",
+          "stress_party": -6
+        }
+      ],
       "blind": [
         { "weight": 50, "text": "La voz cuenta un secreto de cada uno. Todos son verdad.", "stress_party": 10 },
         { "weight": 30, "text": "La voz les dice por dónde seguir. Por esta vez, no miente.", "reveal_neighbors": true },
@@ -258,7 +390,8 @@
           { "weight": 50, "text": "Llevaba unos colones en el sombrero. Nadie se siente bien con eso.", "colones": [80, 160], "stress_party": 6 },
           { "weight": 50, "text": "El peón se estira y deja de ser peón. Era una trampa.", "ambush": [1, 2] } ] },
         { "label": "Seguir de largo", "outcomes": [
-          { "weight": 100, "text": "Siguen. El peón se queda llamándolos un buen rato.", "stress_party": 4 } ] }
+          { "weight": 70, "text": "Siguen. El peón se queda llamándolos un buen rato.", "stress_party": 4 },
+          { "weight": 30, "text": "Siguen. Más adelante, el sombrero del peón tirado en el suelo, con unas monedas en la copa.", "colones": [40, 100] } ] }
       ] },
     { "id": "mercado_clandestino", "name": "Mercado clandestino",
     "requires": { "after_fight": true }, "fallback": "carreta_pintada",
@@ -272,7 +405,8 @@
           { "weight": 40, "text": "Se llevan un bulto antes de que se dé cuenta.", "random_equipment": true, "stress_party": 4 },
           { "weight": 60, "text": "El vendedor silba. Sus socios no son personas.", "ambush": [2, 3] } ] },
         { "label": "No comprar nada", "outcomes": [
-          { "weight": 100, "text": "Sin factura no se compra nada. El vendedor se encoge de hombros." } ] }
+          { "weight": 70, "text": "Sin factura no se compra nada. El vendedor se encoge de hombros." },
+          { "weight": 30, "text": "El vendedor, ofendido, les tira una cajita de fósforos «de regalo, para que vuelvan».", "add_item": { "id": "caja_de_fosforos", "qty": 1 } } ] }
       ] },
     { "id": "vision_del_abuelo", "name": "Visión del abuelo",
     "requires": { "max_light": 50 }, "fallback": "retrato_del_abuelo",
@@ -296,30 +430,36 @@
           { "weight": 35, "text": "Pierden. Los muertos cobran en sustos.", "stress_party": 10 },
           { "weight": 20, "text": "Alguien hace trampa y los muertos se levantan de la mesa.", "ambush": [1, 2] } ] },
         { "label": "Dejar la partida", "outcomes": [
-          { "weight": 100, "text": "Se levantan despacio. Las fichas siguen sonando a sus espaldas.", "stress_party": 3 } ] }
+          { "weight": 60, "text": "Se levantan despacio. Las fichas siguen sonando a sus espaldas.", "stress_party": 3 },
+          { "weight": 25, "text": "Al levantarse, una ficha cae al piso con el doble seis boca arriba. Nadie dice nada.", "stress_party": 6 },
+          { "weight": 15, "text": "Nadie los detiene. En una esquina de la mesa quedó una apuesta sin cobrar.", "colones": [50, 150] } ] }
       ] },
     { "id": "llanto_en_el_pasillo", "name": "Llanto en el pasillo",
       "text": "Del fondo del pasillo viene un llanto de mujer: «¡Ay, mis hijos!». La Llorona anda buscando.",
       "choices": [
         { "label": "Rezar por ella", "item": "rosario_de_semillas", "outcomes": [
-          { "weight": 100, "text": "Rezan por la Llorona. Por esta noche, descansa, y el pasillo queda en paz.", "stress_party": -12, "reveal_neighbors": true } ] },
+          { "weight": 75, "text": "Rezan por la Llorona. Por esta noche, descansa, y el pasillo queda en paz.", "stress_party": -12, "reveal_neighbors": true },
+          { "weight": 25, "text": "La Llorona escucha el rezo y llora más fuerte. Al final se va, pero cuesta oírla.", "stress_party": 4, "reveal_neighbors": true } ] },
         { "label": "Seguir el llanto", "outcomes": [
           { "weight": 50, "text": "Encuentran un rebozo con algo envuelto adentro.", "random_equipment": true, "stress_party": 6 },
           { "weight": 50, "text": "El llanto se vuelve grito, y el grito tiene manos.", "damage_random": 5, "stress_party": 8,
             "applies": { "status": "susto", "turns": 3, "value": 4 } } ] },
         { "label": "Taparse los oídos y seguir", "outcomes": [
-          { "weight": 100, "text": "Caminan rápido, sin voltear. El llanto los sigue un rato.", "stress_party": 5, "light": -5 } ] }
+          { "weight": 70, "text": "Caminan rápido, sin voltear. El llanto los sigue un rato.", "stress_party": 5, "light": -5 },
+          { "weight": 30, "text": "Logran no escucharla. El pasillo se queda callado detrás de ellos.", "light": -5 } ] }
       ] },
     { "id": "duendes_juguetones", "name": "Duendes juguetones",
       "text": "Caen piedritas del techo. Alguien se ríe bajito: son duendes, y quieren jugar.",
       "choices": [
         { "label": "Dejarles comida", "item": "gallo_pinto", "outcomes": [
-          { "weight": 100, "text": "Los duendes aceptan el gallo pinto y devuelven el favor con candelas.", "add_item": { "id": "candela_sebo", "qty": 2 } } ] },
+          { "weight": 70, "text": "Los duendes aceptan el gallo pinto y devuelven el favor con candelas.", "add_item": { "id": "candela_sebo", "qty": 2 } },
+          { "weight": 30, "text": "Los duendes se comen el gallo pinto, se ríen y dejan de tirar piedritas. Candelas, ninguna.", "stress_party": -3 } ] },
         { "label": "Espantarlos", "outcomes": [
           { "weight": 50, "text": "Se van entre risitas.", "stress_party": -3 },
           { "weight": 50, "text": "Se ofenden y les soplan las candelas.", "stress_party": 6, "light": -10 } ] },
         { "label": "Ignorarlos", "outcomes": [
-          { "weight": 100, "text": "Siguen. Las piedritas también.", "stress_party": 4 } ] }
+          { "weight": 70, "text": "Siguen. Las piedritas también.", "stress_party": 4 },
+          { "weight": 30, "text": "Una piedrita le pega a la candela y la deja temblando.", "light": -10 } ] }
       ] },
     { "id": "procesion_de_animas", "name": "Procesión de ánimas",
       "text": "Una fila de candelas pasa por el pasillo, cargadas por nadie. Es una procesión de ánimas.",
@@ -328,7 +468,8 @@
           { "weight": 50, "text": "Caminan con las ánimas, que les regalan una candela y les muestran el camino.", "light": 20, "reveal_neighbors": true },
           { "weight": 50, "text": "Las ánimas no los dejan irse tan fácil.", "stress_party": 10, "light": -10 } ] },
         { "label": "Esconderse hasta que pase", "outcomes": [
-          { "weight": 100, "text": "Esperan en lo oscuro, sin respirar, hasta que se apaga la última candela.", "stress_party": 5 } ] }
+          { "weight": 70, "text": "Esperan en lo oscuro, sin respirar, hasta que se apaga la última candela.", "stress_party": 5 },
+          { "weight": 30, "text": "Mientras esperan, una ánima se detiene frente a ellos y les deja una candela antes de seguir.", "stress_party": 5, "add_item": { "id": "candela_sebo", "qty": 1 } } ] }
       ] }
   ]
 }

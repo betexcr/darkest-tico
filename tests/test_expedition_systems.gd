@@ -29,6 +29,7 @@ func _run() -> void:
 	await _test_curios(gs)
 	await _test_room_events(gs)
 	_test_items(gs)
+	_test_option_variety(gs)
 	load("res://scripts/domain/balance.gd").reset()
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
@@ -358,8 +359,7 @@ func _test_room_events(gs) -> void:
 	var outcomes: Array = []
 	for cid in gen["curios"]:
 		var c: Dictionary = gs.get_curio(str(cid))
-		if c.has("key_outcome"):
-			outcomes.append(c["key_outcome"])
+		outcomes.append_array(c.get("key_outcomes", []))
 		outcomes.append_array(c.get("blind", []))
 		for ch in c.get("choices", []):
 			outcomes.append_array(ch["outcomes"])
@@ -497,3 +497,31 @@ func _test_items(gs) -> void:
 	gs.mission_light = 100
 	cc._ended = true
 	cc.queue_free()
+
+
+## Owner 2026-11-19: no event option has a single fixed result; key items mostly give their
+## good result, sometimes a twist.
+func _test_option_variety(gs) -> void:
+	print("Option variety")
+	var single: Array = []
+	for c in gs._curios_by_id.values():
+		gs.inventory.clear()
+		if str(c.get("key_item", "")) != "":
+			gs.add_item(str(c["key_item"]), 1)
+		for o in gs.curio_options(c):
+			if (o["outcomes"] as Array).size() < 2:
+				single.append("%s / %s" % [c["id"], o["label"]])
+	_check(single.is_empty(), "every curio option has at least 2 possible results (%s)" % ", ".join(single))
+	var c: Dictionary = gs.get_curio("pozo_seco")
+	var seen: Dictionary = {}
+	for i in 200:
+		gs.inventory.clear()
+		gs.add_item("mecate", 1)
+		var key_opt: Dictionary = gs.curio_options(c)[0]
+		var got: Dictionary = gs.pick_curio_option(key_opt)
+		seen[str(got.get("text", ""))] = int(seen.get(str(got.get("text", "")), 0)) + 1
+	var counts: Array = seen.values()
+	counts.sort()
+	_check(seen.size() == 2 and counts[1] > counts[0], "the key item gives both results over 200 tries, mostly the good one (%s)" % str(counts))
+	gs.inventory.clear()
+

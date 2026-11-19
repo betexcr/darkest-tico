@@ -293,10 +293,16 @@ func curio_options(curio: Dictionary) -> Array:
 	var out: Array = []
 	var key: String = str(curio.get("key_item", ""))
 	if key != "" and item_count(key) > 0:
-		var ko: Dictionary = (curio.get("key_outcome", {}) as Dictionary).duplicate(true)
-		ko["text"] = str(curio.get("key_text", ""))
+		# Weighted key outcomes (owner 2026-11-19: no option has a single fixed result); an old
+		# single key_outcome still works. An entry without text tells key_text.
+		var kos: Array = (curio.get("key_outcomes", []) as Array).duplicate(true)
+		if kos.is_empty() and curio.get("key_outcome") is Dictionary:
+			kos = [(curio["key_outcome"] as Dictionary).duplicate(true)]
+		for ko in kos:
+			if str(ko.get("text", "")) == "":
+				ko["text"] = str(curio.get("key_text", ""))
 		out.append({"label": "Usar %s" % get_item(key).get("name", key), "enabled": true, "reason": "",
-			"item": key, "cost": 0, "outcomes": [ko]})
+			"item": key, "cost": 0, "outcomes": kos})
 	var choices = curio.get("choices", null)
 	if choices is Array and not (choices as Array).is_empty():
 		for c in choices:

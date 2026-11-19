@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (11) — No event option has a single fixed result
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
+- **Status after session:** content pass on P2-02 (no new task).
+- **Changed:**
+  - `data/curios.json`, edited as text to keep its hand formatting:
+    - the 8 choice options that had one outcome now have 2–3 (e.g. "Esconderse hasta que pase": 70% the old wait, 30% an ánima leaves a candela);
+    - the 12 key-item options moved from `key_outcome` to weighted `key_outcomes`: 75% the old good result, 25% a smaller twist (new Spanish lines, doc 08 tone).
+  - `GameState.curio_options` reads `key_outcomes` (falls back to `key_outcome`).
+  - `validate_data.py` requires ≥ 2 outcomes on every choice, key option and Examinar table.
+  - `test_expedition_systems` "Option variety": every option has 2+ results, and the key gives both over 200 tries, mostly the good one.
+  - `test_equipment` / `test_expedition_systems` read `key_outcomes`.
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+- **Not verified / risks:** the new Spanish lines need the owner's read (doc 08).
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (10) — Battle stage: info panel closes on click-away, 5+ enemies stack, long-range skills reach all
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** fixes on P4-21 / P1-03a (no new task).

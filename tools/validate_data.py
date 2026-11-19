@@ -733,9 +733,19 @@ def main() -> int:
         if c.get("key_item") and c["key_item"] not in items:
             errors.append(f"{where}: key_item '{c['key_item']}' is not an item")
         if c.get("key_item"):
-            check_outcome(where + " key_outcome", c.get("key_outcome", {}))
+            kos = c.get("key_outcomes") or ([c["key_outcome"]] if c.get("key_outcome") else [])
+            for o in kos:
+                check_outcome(where + " key_outcomes", o)
+            if len(kos) < 2:
+                errors.append(f"{where}: the key item option needs at least 2 key_outcomes (owner 2026-11-19: no fixed results)")
             if not c.get("key_text"):
                 errors.append(f"{where}: key_item needs key_text")
+        # Owner 2026-11-19: every option has at least 2 possible results.
+        for ch in c.get("choices") or []:
+            if len(ch.get("outcomes", [])) < 2:
+                errors.append(f"{where}: choice '{ch.get('label')}' needs at least 2 outcomes")
+        if c.get("blind") and len(c["blind"]) < 2:
+            errors.append(f"{where}: the Examinar table needs at least 2 outcomes")
         # P2-02: a curio is either examined blind or a choice event (doc 07 §5), not both.
         choices = c.get("choices")
         if bool(choices) == bool(c.get("blind")):
