@@ -58,6 +58,37 @@ func _on_pressed() -> void:
 	changed.emit(GameState.unequip(hero, slot))
 
 
+## While a piece of equipment is dragged, the slots it can go into light up (owner
+## 2026-11-19); Godot tells every control when a drag begins and ends.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DRAG_BEGIN:
+		_set_drop_hint(_can_drop_data(Vector2.ZERO, get_viewport().gui_get_drag_data()))
+	elif what == NOTIFICATION_DRAG_END:
+		_set_drop_hint(false)
+
+
+var drop_hint: bool = false
+
+
+func _set_drop_hint(on: bool) -> void:
+	drop_hint = on
+	if not on:
+		for st in ["normal", "hover", "disabled"]:
+			remove_theme_stylebox_override(st)
+		show_hero(hero)
+		return
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(0.3, 0.24, 0.1, 0.95)
+	box.border_color = Color(1.0, 0.82, 0.38)
+	box.set_border_width_all(3)
+	box.set_corner_radius_all(4)
+	box.shadow_color = Color(1.0, 0.82, 0.38, 0.55)
+	box.shadow_size = 8
+	for st in ["normal", "hover", "disabled"]:
+		add_theme_stylebox_override(st, box)
+	modulate = Color.WHITE
+
+
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	return data is Dictionary and str(data.get("kind", "")) == "item" and not hero.is_empty() \
 		and GameState.can_change_equipment(hero) and GameState.slots_for(str(data.get("id", ""))).has(slot)

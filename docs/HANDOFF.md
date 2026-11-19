@@ -38,6 +38,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - The ranged reach is a small buff for the Tecnólogo, Montador, Guachimán and Exorcista; not re-measured with the bot.
   - Corpses still lie tipped over beside the living.
 - **Decisions needed:** none.
+- **Also:** dragging a piece of equipment lights up where it can go (owner request). `EquipSlot` and hero `BattleUnit`s listen for `NOTIFICATION_DRAG_BEGIN` / `DRAG_END` and reuse their own `_can_drop_data`: matching slots get a gold glowing border, heroes a green silhouette glow. `test_ui` drives a real drag with `force_drag` / `gui_cancel_drag`.
 - **Next step:** owner playtest.
 
 ---

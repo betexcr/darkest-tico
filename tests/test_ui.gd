@@ -245,6 +245,24 @@ func _town(gs) -> void:
 	_check(hub._equip_open and is_same(hub._selected, gs.party[0]), "clicking another hero while open switches to them")
 	hub._equip_bar.pressed.emit()
 	_check(not hub._equip_open and not hub._equip_row.visible, "the bar closes it too")
+	# Dragging a piece of equipment lights up the slots it can go into (owner 2026-11-19).
+	hub._equip_open = true
+	hub._refresh()
+	await process_frame
+	var weapon: String = gs.all_item_ids().filter(func(i): return str(gs.get_item(str(i)).get("slot", "")) == "weapon")[0]
+	var acc: String = gs.all_item_ids().filter(func(i): return str(gs.get_item(str(i)).get("slot", "")) == "accessory")[0]
+	var lit := func(): return hub._equip_slots.filter(func(es): return es.drop_hint).map(func(es): return str(es.slot))
+	hub._equip_slots[0].force_drag({"kind": "item", "id": weapon}, Label.new())
+	await process_frame
+	_check(lit.call() == ["weapon"], "dragging a weapon lights only the weapon slot (%s)" % ", ".join(lit.call()))
+	root.gui_cancel_drag()
+	await process_frame
+	_check(lit.call().is_empty(), "the light goes out when the drag ends")
+	hub._equip_slots[0].force_drag({"kind": "item", "id": acc}, Label.new())
+	await process_frame
+	_check(lit.call() == ["accessory1", "accessory2"], "an accessory lights both accessory slots")
+	root.gui_cancel_drag()
+	await process_frame
 	hub.close_building()
 	hub.open_building("casa_comunal")
 	await process_frame

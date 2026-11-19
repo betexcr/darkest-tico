@@ -68,6 +68,8 @@ var _size: Vector2 = HERO_SIZE
 var _active: bool = false
 var _selectable: bool = false
 var _targeted: bool = false
+## A dragged piece of equipment could be dropped on this hero.
+var _drop_hint: bool = false
 ## Heroes' outline material; set on the sprite only while it glows.
 var _glow_mat: ShaderMaterial
 var _hp_bar: ProgressBar
@@ -156,6 +158,18 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	if not hero:
 		# Details live in the enemy info panel (click); full data needs the Lentes del abuelo.
 		tooltip_text = "%s — clic para ver" % data.get("name", "?")
+
+
+## A hero who could take the piece of equipment being dragged glows green until the drag ends.
+func _notification(what: int) -> void:
+	if not is_hero:
+		return
+	if what == NOTIFICATION_DRAG_BEGIN:
+		_drop_hint = _can_drop_data(Vector2.ZERO, get_viewport().gui_get_drag_data())
+		_update_glow()
+	elif what == NOTIFICATION_DRAG_END and _drop_hint:
+		_drop_hint = false
+		_update_glow()
 
 
 func _can_drop_data(_at_position: Vector2, d: Variant) -> bool:
@@ -418,9 +432,11 @@ func set_targeted(on: bool) -> void:
 ## over the fighter whose turn it is (gold). Heroes glow along their silhouette, enemy
 ## portraits in their frame.
 func _update_glow() -> void:
-	var on: bool = _selectable or _targeted or _active
+	var on: bool = _selectable or _targeted or _active or _drop_hint
 	var col: Color = GLOW_ACTIVE
-	if _selectable:
+	if _drop_hint:
+		col = GLOW_ALLY
+	elif _selectable:
 		col = GLOW_ALLY if is_hero else GLOW_ENEMY
 	elif _targeted:
 		col = GLOW_ENEMY
@@ -428,7 +444,7 @@ func _update_glow() -> void:
 		if _sprite != null and _glow_mat != null:
 			_glow_mat.set_shader_parameter("glow", col)
 			_glow_mat.set_shader_parameter("on", 1.0)
-			_glow_mat.set_shader_parameter("width", 7.0 if _selectable else 5.0)
+			_glow_mat.set_shader_parameter("width", 7.0 if (_selectable or _drop_hint) else 5.0)
 			_sprite.material = _glow_mat if on else null
 		return
 	if _frame == null:
