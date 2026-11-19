@@ -558,14 +558,18 @@ func _expedition(row: Dictionary) -> void:
 	var fights: Array = []
 	var on_over := func(v: bool):
 		var ctx: Dictionary = _gs.combat_context
-		var kind: String = "ambush" if bool(ctx.get("is_ambush", false)) else ("boss" if bool(ctx.get("is_boss", false)) else ("elite" if bool(ctx.get("is_elite", false)) else "combat"))
-		fights.append({"kind": kind, "rounds": int(screen._combat._round), "won": v, "surprise": str(ctx.get("surprise", ""))})
+		var kind: String = _fight_kind(ctx)
+		var f: Dictionary = {"kind": kind, "rounds": int(screen._combat._round), "won": v, "surprise": str(ctx.get("surprise", ""))}
+		if kind == "roaming" and v:
+			# The roaming mini-boss (P2-05): hunted, or it ran off after flee_after rounds.
+			f["escaped"] = ctx.get("enemies", []).any(func(e): return bool(e.get("fled", false)))
+		fights.append(f)
 	screen._combat.combat_over.connect(on_over)
 	var left_fight: Array = [false]
 	screen._combat.combat_fled.connect(func():
 		left_fight[0] = true
 		var ctx: Dictionary = _gs.combat_context
-		fights.append({"kind": "boss" if bool(ctx.get("is_boss", false)) else ("elite" if bool(ctx.get("is_elite", false)) else "combat"),
+		fights.append({"kind": _fight_kind(ctx),
 			"rounds": int(screen._combat._round), "won": false, "fled": true, "surprise": str(ctx.get("surprise", ""))}))
 	var moves: int = 0
 	var steps: int = 0
@@ -891,6 +895,7 @@ func _print_summary() -> void:
 	_print_difficulty_table()
 	_print_stress_and_food()
 	_print_economy()
+	_print_roaming()
 	var kinds: Dictionary = {}
 	for f in _all_fights:
 		var k: String = str(f["kind"])
@@ -1006,3 +1011,33 @@ func _print_economy() -> void:
 			marks.append("wk %d: %d" % [weeks[-1], bank[c][weeks[-1]]])
 		lines.append("campaign %d — %s" % [c, ", ".join(marks)])
 	print("\n- Colones in the bank: %s." % "; ".join(lines))
+
+
+## Fight kind for the report: roaming (the mini-boss, P2-05) | ambush | boss | elite | combat.
+static func _fight_kind(ctx: Dictionary) -> String:
+	if bool(ctx.get("is_roaming", false)):
+		return "roaming"
+	if bool(ctx.get("is_ambush", false)):
+		return "ambush"
+	if bool(ctx.get("is_boss", false)):
+		return "boss"
+	return "elite" if bool(ctx.get("is_elite", false)) else "combat"
+
+
+## The roaming mini-boss: how its fights ended (killed, escaped after flee_after rounds, the
+## party retreated, the party fell).
+func _print_roaming() -> void:
+	var r: Array = _all_fights.filter(func(f): return str(f["kind"]) == "roaming")
+	if r.is_empty():
+		print("- Roaming mini-boss: never met.")
+		return
+	var killed: int = r.filter(func(f): return f["won"] and not bool(f.get("escaped", false))).size()
+	var escaped: int = r.filter(func(f): return f["won"] and bool(f.get("escaped", false))).size()
+	var retreated: int = r.filter(func(f): return bool(f.get("fled", false))).size()
+	var lost: int = r.size() - killed - escaped - retreated
+	var rounds: int = 0
+	for f in r:
+		rounds += int(f["rounds"])
+	print("- Roaming mini-boss: met %d time(s) — killed %d, it escaped %d, the party retreated %d, the party fell %d; %.1f rounds on average." % [
+		r.size(), killed, escaped, retreated, lost, float(rounds) / r.size()])
+

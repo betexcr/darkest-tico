@@ -33,6 +33,9 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Failures are all bot retreats: about half are long Mayordomo fights (two escorts + two summons, 10–17 rounds), half a death in an early fight.
   - Veterano/Campeón are untouched (P5-08).
 - **Decisions needed:** none. The rest-at-home question from entry 11 is settled by this pass: it stays, at 20.
+- **Also:** `tools/playtest_campaign.gd` now reports the roaming mini-boss as its own fight kind (`roaming`, `R` in the fight list): killed, escaped, party retreated, party fell.
+  - Veterano run (4 seeds, `--start-level 3 --start-ranks 2 --start-gear 2`): the Cadejo was met 8 times in 35 Veterano expeditions — killed 4, escaped 2 (it flees when round 5 starts), the party retreated 2.
+  - The same run shows Veterano too hard (0–22% cleared): P5-08.
 - **Next step:** owner playtest of Aprendiz on the new numbers. Then P5-08: run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24 --seed 1..6 --telemetry <path>`, pool with a script like the one in the P5-07 notes, and tune the Veterano/Campeón rows of `data/progression.json`.
 
 ---
