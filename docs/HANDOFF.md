@@ -17,6 +17,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (13) — P4-20 follow-up: dev menu sets colones, resets the game, scrolls
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
+- **Status after session:** P4-20 done (follow-up).
+- **Changed:**
+  - `hacienda_hub.gd` `_show_dev_menu`: "Colones en la bolsa" SpinBox + "Poner"; the Resolución hero list in a ScrollContainer (`DevHeroes`, max 300 px); "Reiniciar el juego desde cero…" → `_confirm_dev_reset` card → `dev_reset_game()` (wipe save, reset state, save, reload the scene).
+  - `GameState.dev_set_colones(n)` (turns infinite money off, not counted as week income/spending); `GameState.dev_reset_campaign()` copies every script variable's default from a fresh unattached GameState, then reloads catalogs, starter alforja and the four starter heroes.
+  - `SaveService.wipe_save()` deletes `save.json`, `.bak` and `.tmp` (broken-save copies stay).
+  - `test_hub`: set colones, full reset.
+- **Verified:** validator 0 errors; smoke + all 19 tests 0 failures; screenshot of the dev menu with 30 heroes at 1920×1080.
+- **Not verified / risks:** telemetry.jsonl is not wiped by the reset (it is a log, not game state).
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (12) — P4-22: Clínica card rows, quirk tooltips, 18 new quirks, 30 beds
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar` (→ `main`)
 - **Status after session:** P4-22 review.

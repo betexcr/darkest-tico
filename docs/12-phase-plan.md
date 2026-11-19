@@ -496,7 +496,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19) · Depends: P4-17
 - Files: `scripts/autoload/game_state.gd` (`dev_set_infinite_money`, `dev_skip_week`, `dev_add_resolve`; `end_of_expedition_week(went_out)`), `scripts/hacienda/hacienda_hub.gd` (`_show_dev_menu`, DEV button, F12), `tests/test_hub.gd`
 - Spec: owner "a dev menu where we can add infinite money, force instant next week (with all that happens in a week change), add resolución to each separate character"
-- Done when: [x] debug builds only (`OS.is_debug_build()`): DEV button in the banner and F12; [x] infinite money (the bank stays at 999999, not saved); [x] next week now: the same week change as coming back from an expedition, with everyone at home; [x] +1 resolución per hero; [x] tests
+- Done when: [x] debug builds only (`OS.is_debug_build()`): DEV button in the banner and F12; [x] infinite money (the bank stays at 999999, not saved); [x] next week now: the same week change as coming back from an expedition, with everyone at home; [x] +1 resolución per hero; [x] tests; [x] (2026-11-19 later) set an exact amount of colones ("Poner"; turns infinite money off); [x] "Reiniciar el juego desde cero…" with a confirm card: deletes save.json + .bak, every GameState variable back to its default, starter heroes/alforja/colones, the town reloads; [x] the Resolución hero list scrolls (30 beds)
 
 ### P4-21 · M · 1080p pass: scaling, bigger fighters, glow targeting (owner 2026-11-19)
 - Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): owner to play at 1080p · Depends: —

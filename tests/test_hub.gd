@@ -154,5 +154,21 @@ func _run() -> void:
 	var lv: int = int(gs.party[1]["resolve_level"])
 	gs.dev_add_resolve(gs.party[1])
 	_check(int(gs.party[1]["resolve_level"]) == lv + 1 and int(gs.party[1]["resolve_xp"]) == gs.ResolveSystemScript.xp_for_level(lv + 1), "+1 resolución: one level, with its XP")
+	gs.dev_set_colones(4321)
+	_check(gs.colones == 4321 and not gs.dev_infinite_money, "dev: set an exact amount of colones")
+	gs.dev_set_infinite_money(true)
+	gs.dev_set_colones(50)
+	_check(gs.colones == 50 and not gs.dev_infinite_money, "…which also turns infinite money off")
+	gs.dev_skip_week()
+	gs.party[0]["stress"] = 90
+	gs.add_item("gallo_pinto", 3)
+	gs.dev_reset_campaign()
+	var start_inv: int = 0
+	for it in gs.inventory:
+		start_inv += 1
+	_check(gs.week == 1 and gs.colones == gs.BalanceScript.int_of("hub.start_colones"), "dev reset: week 1 and the starting colones")
+	_check(gs.roster.size() == 4 and gs.party.size() == 4 and int(gs.party[0]["stress"]) == 0, "…the four starter heroes, fresh")
+	_check(not gs.get_item("gallo_pinto").is_empty() and gs.get_hero_template("campesino").size() > 0, "…catalogs still loaded")
+	_check(start_inv > 0 and not gs.recruit_pool.is_empty(), "…starter alforja and new candidates")
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

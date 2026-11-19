@@ -43,6 +43,14 @@ func save_game() -> void:
 	save_to(save_path, GameState.to_save_dict())
 
 
+## Dev reset (debug builds): deletes the save and its backup so the next start is a first run.
+## Copies of broken saves are left alone.
+func wipe_save() -> void:
+	for p in [save_path, backup_path(save_path), save_path + ".tmp"]:
+		if FileAccess.file_exists(p):
+			DirAccess.remove_absolute(_abs(p))
+
+
 func load_game() -> bool:
 	if not enabled:
 		return false

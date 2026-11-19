@@ -1228,6 +1228,31 @@ func dev_skip_week() -> void:
 	draw_town_event()
 
 
+## Puts exactly `n` colones in the bag (turns infinite money off; not counted as the
+## week's income or spending).
+func dev_set_colones(n: int) -> void:
+	dev_infinite_money = false
+	var w_in: int = week_colones_in
+	var w_out: int = week_colones_out
+	colones = maxi(0, n)
+	week_colones_in = w_in
+	week_colones_out = w_out
+
+
+## A brand-new campaign, as on the very first run: every saved variable goes back to its
+## default (read from a fresh, unattached GameState), then the same setup as at startup
+## (catalogs, starter alforja, the four starter heroes, recruits). The caller wipes the save.
+func dev_reset_campaign() -> void:
+	var fresh: Object = get_script().new()
+	for p in get_script().get_script_property_list():
+		if int(p.get("usage", 0)) & PROPERTY_USAGE_SCRIPT_VARIABLE:
+			set(str(p["name"]), fresh.get(str(p["name"])))
+	fresh.free()
+	_load_registries()
+	reset_inventory_to_starter()
+	reset_party_from_catalog()
+
+
 ## One more resolve level (its XP, as on the victory screen). Returns a message.
 func dev_add_resolve(h: Dictionary) -> String:
 	var lvl: int = int(h.get("resolve_level", 0))

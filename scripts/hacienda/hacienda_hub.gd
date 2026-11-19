@@ -1240,6 +1240,33 @@ func _show_dev_menu() -> void:
 		_say("Plata infinita %s." % ("activada" if on else "desactivada"))
 	)
 	col.add_child(money)
+	var cash_row := HBoxContainer.new()
+	cash_row.add_theme_constant_override("separation", 10)
+	var cash_lbl := Label.new()
+	cash_lbl.text = "Colones en la bolsa:"
+	cash_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cash_row.add_child(cash_lbl)
+	var cash := SpinBox.new()
+	cash.name = "DevColones"
+	cash.max_value = GameState.DEV_MONEY
+	cash.step = 1
+	cash.value = GameState.colones
+	cash.suffix = "₡"
+	cash.custom_minimum_size = Vector2(150, 0)
+	cash_row.add_child(cash)
+	var set_cash := Button.new()
+	set_cash.text = "Poner"
+	set_cash.tooltip_text = "Deja exactamente esa cantidad de colones (apaga la plata infinita)."
+	set_cash.pressed.connect(func():
+		cash.apply()
+		GameState.dev_set_colones(int(cash.value))
+		SaveService.save_game()
+		_say("Ahora hay %d ₡ en la bolsa." % GameState.colones)
+		_refresh()
+		reopen.call()
+	)
+	cash_row.add_child(set_cash)
+	col.add_child(cash_row)
 	var week := Button.new()
 	week.text = "Pasar a la semana %d ya (sin expedición)" % (GameState.week + 1)
 	week.tooltip_text = "Todo lo de un cambio de semana: descanso en la hacienda, fin de la Iglesia/Cantina y la Clínica, candidatos nuevos y el evento del pueblo."
@@ -1256,6 +1283,16 @@ func _show_dev_menu() -> void:
 	col.add_child(week)
 	col.add_child(CardScript.rule())
 	col.add_child(CardScript.section("Resolución"))
+	# The hero list scrolls (up to 30 beds), so the dialog never runs off the screen.
+	var hero_scroll := ScrollContainer.new()
+	hero_scroll.name = "DevHeroes"
+	hero_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	hero_scroll.custom_minimum_size = Vector2(0, minf(300.0, 52.0 * GameState.roster.size()))
+	var hero_col := VBoxContainer.new()
+	hero_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hero_col.add_theme_constant_override("separation", 6)
+	hero_scroll.add_child(hero_col)
+	col.add_child(hero_scroll)
 	for h in GameState.roster:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 10)
@@ -1271,9 +1308,41 @@ func _show_dev_menu() -> void:
 			reopen.call()
 		)
 		row.add_child(up)
-		col.add_child(row)
+		hero_col.add_child(row)
+	col.add_child(CardScript.rule())
+	var wipe := Button.new()
+	wipe.text = "Reiniciar el juego desde cero…"
+	wipe.tooltip_text = "Borra la partida guardada y empieza como la primera vez: semana 1, los cuatro héroes iniciales, la alforja y la plata de inicio."
+	wipe.add_theme_color_override("font_color", Color(1.0, 0.55, 0.45))
+	wipe.pressed.connect(func():
+		dlg.hide()
+		_confirm_dev_reset.call_deferred()
+	)
+	col.add_child(wipe)
 	add_child(dlg)
 	_popup_card(dlg)
+
+
+## Asks before wiping the campaign; then the save is deleted and the town reloads fresh.
+func _confirm_dev_reset() -> void:
+	var made: Array = _card_dialog("¿Reiniciar todo?", 420.0)
+	var dlg: AcceptDialog = made[0]
+	var col: VBoxContainer = made[1]
+	col.add_child(CardScript.label("Se borra la partida guardada (y su respaldo) y el juego empieza como la primera vez. No se puede deshacer.", 14, CardScript.TEXT, true))
+	dlg.ok_button_text = "Reiniciar"
+	dlg.add_cancel_button("Cancelar")
+	dlg.confirmed.connect(dev_reset_game)
+	add_child(dlg)
+	_popup_card(dlg)
+
+
+## The dev reset itself (tests call it directly).
+func dev_reset_game() -> void:
+	SaveService.wipe_save()
+	GameState.dev_reset_campaign()
+	SaveService.save_game()
+	if is_inside_tree() and get_tree().current_scene == self:
+		get_tree().reload_current_scene.call_deferred()
 
 
 # --- Town event of the week (docs/02 §12) -----------------------------------------------
