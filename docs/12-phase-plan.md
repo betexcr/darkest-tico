@@ -658,7 +658,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] each tier in the owner's band for the careful bot: Aprendiz 91% (6 seeds, fresh campaigns), Veterano 80%, Campeón 63% (4 seeds each, tier-start runs); docs/playtests/2026-11-19-p5-08.md. Not done: a 24-week run (parties that reach Veterano in an 8-week campaign cleared 7 of 22) — see P5-09
 
 ### P5-09 · S · 24-week campaigns on the P5-08 numbers
-- Status: `todo` · Depends: P5-08
+- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-19)` · Depends: P5-08
 - Why: P5-08 measured Veterano and Campeón with parties started at the tier. Parties that reach Veterano inside an 8-week campaign have fewer ranks and less gear and cleared only 7 of 22 there.
 - Done when: [ ] `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24` on 6 seeds: how often campaigns reach and stay at Veterano/Campeón, clear rate there, money in week 24; decide with the owner whether the bot (or the player) should wait longer before moving up
 
