@@ -5,7 +5,7 @@ extends Button
 ## the hover card (`item_tooltip.gd`).
 
 const ItemTooltipScript := preload("res://scripts/ui/item_tooltip.gd")
-const SIZE := Vector2(60, 72)
+const SIZE := Vector2(84, 100)
 
 var item_id: String = ""
 
@@ -16,7 +16,7 @@ func setup(id: String) -> void:
 	custom_minimum_size = SIZE
 	clip_text = true
 	focus_mode = Control.FOCUS_NONE
-	add_theme_font_size_override("font_size", 11)
+	add_theme_font_size_override("font_size", 13)
 	var icon_path: String = "res://assets/items/%s.png" % id
 	if ResourceLoader.exists(icon_path):
 		icon = load(icon_path) as Texture2D

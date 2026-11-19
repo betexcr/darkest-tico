@@ -22,6 +22,10 @@ GameState="*res://scripts/autoload/game_state.gd"
 SaveService="*res://scripts/autoload/save_service.gd"
 Telemetry="*res://scripts/autoload/telemetry.gd"
 
+[gui]
+
+timers/tooltip_delay_sec=0.15
+
 [display]
 
 window/size/viewport_width=1280

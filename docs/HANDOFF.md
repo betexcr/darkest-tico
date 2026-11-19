@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (4) — P4-18 fix — sell mode no longer pushes the roster off-screen; bigger shop tiles; faster tooltips
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-18 `review`.
+- **Changed:**
+  - The owner's sell mode at the Pulpería/Taller widened the right panel off-screen: the alforja title was one long line. It now wraps (`PackTitle` autowrap), with shorter text.
+  - Shop tiles 60×72 → 84×100, price 13 pt (`scripts/ui/shop_slot.gd`).
+  - Tooltips appear after 0.15 s instead of Godot's 0.5 s (`project.godot` `gui/timers/tooltip_delay_sec`; game-wide).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - `test_hub`, `test_ui`, `test_equipment`, `test_town_events`: 0 failures.
+  - Screenshots of both shops in sell mode: right panel inside the window.
+- **Not verified / risks:** a 0.15 s delay may make tooltips pop while the mouse just passes over the town and the battle bar.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (3) — P5-09 — Long campaigns: Veterano and Campeón sized for the party that arrives
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P5-09 `done`.

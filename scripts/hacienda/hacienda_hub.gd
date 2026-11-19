@@ -584,7 +584,7 @@ func _refresh_equipment() -> void:
 	_equip_title.text = "Arrastre armas, armaduras y accesorios desde la alforja (a la derecha) hasta un espacio, o haga clic en la pieza en la alforja. Clic en un espacio para quitarla. En expedición no se cambia el equipo en plena pelea."
 	var pack_title: Label = $Right/VBox/PackTitle
 	if _selling():
-		pack_title.text = "MODO VENDER: clic en un artículo para venderlo (mitad de precio)"
+		pack_title.text = "Vendiendo: clic en un artículo (mitad de precio)"
 		pack_title.add_theme_color_override("font_color", Color(1, 0.7, 0.45))
 	else:
 		pack_title.text = "Alforja (%d/%d espacios)" % [GameState.inventory.size(), GameState.inventory_slots()]
