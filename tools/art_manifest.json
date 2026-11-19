@@ -88,6 +88,22 @@
       "seed": 1108,
       "subject": "portrait of a neighborhood exorcist, worn long black coat, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"
     },
+    {"id": "portrait_campesino_f", "out": "assets/portraits/campesino_f.png", "size": [512, 512], "seed": 1201,
+     "subject": "portrait of a weathered Costa Rican farm woman raising a long steel machete blade, straw hat, long dark braid, sweat-stained work shirt, determined face, dark background"},
+    {"id": "portrait_montador_f", "out": "assets/portraits/montador_f.png", "size": [512, 512], "seed": 1202,
+     "subject": "portrait of a fearless young Costa Rican woman bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"},
+    {"id": "portrait_abuela_m", "out": "assets/portraits/abuela_m.png", "size": [512, 512], "seed": 1203,
+     "subject": "portrait of a wise elderly grandfather healer, white beard, knitted wool poncho, holding a clay bowl of steaming soup with herbs, kind but stern eyes, candle light, dark background"},
+    {"id": "portrait_tecnologo_f", "out": "assets/portraits/tecnologo_f.png", "size": [512, 512], "seed": 1204,
+     "subject": "portrait of a young woman wandering tinkerer, short curly hair, brass goggles on forehead, homemade drone parts and cables on her shoulders, patched jacket, curious face, lantern light, dark background"},
+    {"id": "portrait_guachiman_f", "out": "assets/portraits/guachiman_f.png", "size": [512, 512], "seed": 1205,
+     "subject": "portrait of an old retired woman night watchman, grey hair in a bun, faded security guard uniform and cap, flashlight and whistle, tired vigilant eyes, lantern light, dark background"},
+    {"id": "portrait_medica_josefina_m", "out": "assets/portraits/medica_josefina_m.png", "size": [512, 512], "seed": 1206,
+     "subject": "portrait of a stern middle-aged rural doctor man wearing a clean white doctor's coat, stethoscope around his neck, leather medical bag, neat mustache, composed expression, lantern light, dark background"},
+    {"id": "portrait_curandero_m", "out": "assets/portraits/curandero_m.png", "size": [512, 512], "seed": 1207,
+     "subject": "portrait of a dignified elderly man folk healer, wide-brimmed straw hat, white stubble, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"},
+    {"id": "portrait_exorcista_m", "out": "assets/portraits/exorcista_m.png", "size": [512, 512], "seed": 1208,
+     "subject": "portrait of a neighborhood priest exorcist, black cassock with white collar, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"},
     {
       "id": "enemy_espanto",
       "out": "assets/enemies/espanto.png",
@@ -3252,6 +3268,172 @@
           "attack": 5571
         },
         "negative_extra": "dancing, walking, calm, bare legs",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "campesino_f",
+        "look": "Costa Rican farm woman, long dark braid, frayed straw hat, dark olive button-up work shirt, dark trousers",
+        "seed": 5101,
+        "body": "humanoid",
+        "weapon": "a long steel machete",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 135,
+          "length": 0.2,
+          "width": 0.03,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5501
+        },
+        "negative_extra": "dancing, walking, calm, second machete, man, beard, mustache",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "montador_f",
+        "look": "young woman, Costa Rican bull rider, curly dark hair in a ponytail, wide battered leather hat, buttoned denim shirt, ripped jeans, boots",
+        "seed": 5113,
+        "body": "humanoid",
+        "weapon": "a coiled lasso rope",
+        "negative_extra": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache",
+        "weapon_shape": {
+          "kind": "rope",
+          "angle": 135,
+          "length": 0.15,
+          "loop": 0.07,
+          "width": 0.012,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5513
+        },
+        "redo_ref_scale": {
+          "attack": 0.35
+        },
+        "redo_poses": {
+          "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling"
+        }
+      },
+      {
+        "id": "abuela_m",
+        "look": "elderly grandfather, white beard, wrinkled face, dark knitted wool poncho, long dark robe, prayer beads",
+        "seed": 5120,
+        "body": "humanoid",
+        "weapon": "a wooden ladle and clay bowl",
+        "weapon_shape": {
+          "kind": "bowl",
+          "angle": 135,
+          "length": 0.2,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5520
+        },
+        "negative_extra": "dancing, walking, calm, woman, nun, braids",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "tecnologo_f",
+        "look": "young woman, short curly dark hair, brass goggles, dark leather jacket with straps and buckles",
+        "seed": 5130,
+        "body": "humanoid",
+        "weapon": "a small homemade drone",
+        "weapon_shape": {
+          "kind": "box",
+          "angle": 135,
+          "length": 0.15,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5530
+        },
+        "negative_extra": "dancing, walking, calm, man, beard, mustache",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "guachiman_f",
+        "look": "old woman night watchman, grey hair in a bun, black peaked guard cap with badge, black uniform coat",
+        "seed": 5140,
+        "body": "humanoid",
+        "weapon": "a wooden baton",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 135,
+          "length": 0.2,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5540
+        },
+        "negative_extra": "dancing, walking, calm, long hair, ponytail, man, beard, mustache",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "medica_josefina_m",
+        "look": "stern man doctor, short dark hair, neat mustache, white doctor's coat, black trousers, dark shoes",
+        "seed": 5151,
+        "body": "humanoid",
+        "weapon": "a syringe",
+        "negative_extra": "dancing, walking, calm, woman, skirt, nurse cap",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 135,
+          "length": 0.12,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5551
+        },
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "curandero_m",
+        "look": "elderly man folk healer, white stubble, wide dark hat with leaves, dark brown robes, beaded necklace",
+        "seed": 5160,
+        "body": "humanoid",
+        "weapon": "a bundle of smoking herbs",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 135,
+          "length": 0.14,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5560
+        },
+        "negative_extra": "dancing, walking, calm, woman, nun, braids",
+        "redo_ref_scale": {
+          "attack": 0.35
+        }
+      },
+      {
+        "id": "exorcista_m",
+        "look": "pale priest exorcist, short dark hair, black cassock with white collar to the floor, silver cross necklace",
+        "seed": 5170,
+        "body": "humanoid",
+        "weapon": "a crucifix",
+        "weapon_shape": {
+          "kind": "cross",
+          "angle": 135,
+          "length": 0.2,
+          "hand": "right"
+        },
+        "redo_seeds": {
+          "attack": 5570
+        },
+        "negative_extra": "dancing, walking, calm, bare legs, woman, nun, braids",
         "redo_ref_scale": {
           "attack": 0.35
         }

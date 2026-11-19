@@ -154,6 +154,31 @@ func _run() -> void:
 	var lv: int = int(gs.party[1]["resolve_level"])
 	gs.dev_add_resolve(gs.party[1])
 	_check(int(gs.party[1]["resolve_level"]) == lv + 1 and int(gs.party[1]["resolve_xp"]) == gs.ResolveSystemScript.xp_for_level(lv + 1), "+1 resolución: one level, with its XP")
+	# Men and women (owner 2026-11-19): sex, names, class name and art follow it.
+	var camp_t: Dictionary = gs.get_hero_template("campesino")
+	var hf: Dictionary = gs._instantiate_hero(camp_t, "f")
+	var hm: Dictionary = gs._instantiate_hero(camp_t, "m")
+	_check(hf["sex"] == "f" and camp_t["names_f"].has(hf["name"]) and hf["class_name"] == "Campesina Machetera", "a woman gets a woman's name and the class name for her")
+	_check(hm["sex"] == "m" and camp_t["names_m"].has(hm["name"]) and hm["class_name"] == "Campesino Machetero", "a man too")
+	_check(gs.art_id(hm) == "campesino" and gs.art_id(hf) == "campesino_f", "art: the class's own set for its base sex, <id>_<sex> for the other")
+	_check(gs.portrait_path(hf).begins_with("res://assets/portraits/campesino"), "the portrait path is the woman's (or the base one until it exists)")
+	var both: Dictionary = {}
+	for i in 400:
+		both[gs._instantiate_hero(camp_t)["sex"]] = true
+	_check(both.has("m") and both.has("f"), "recruits come as men and women")
+	gs.reset_party_from_catalog()
+	while gs.roster.size() < 12:
+		gs.roster.append(gs._instantiate_hero(camp_t, "m"))
+	var nm: Array = gs.roster.filter(func(x): return x["hero_id"] == "campesino").map(func(x): return x["name"])
+	var uniq: Dictionary = {}
+	for n in nm:
+		uniq[n] = true
+	_check(uniq.size() == nm.size(), "names don't repeat while the class list has free ones (%d campesinos)" % nm.size())
+	var old: Dictionary = gs._sanitize_runtime_hero({"hero_id": "abuela", "name": "Doña Cuca", "hp": 10, "hp_max": 20})
+	var old2: Dictionary = gs._sanitize_runtime_hero({"hero_id": "abuela", "name": "Don Ramón", "hp": 10, "hp_max": 20})
+	var old3: Dictionary = gs._sanitize_runtime_hero({"hero_id": "curandero", "name": "Nadie", "hp": 10, "hp_max": 20})
+	_check(old["sex"] == "f" and old2["sex"] == "m" and old2["class_name"] == "Abuelo Sabio" and old3["sex"] == "f", "old saves: sex from the name lists, else the class's base sex")
+	gs.reset_party_from_catalog()
 	gs.dev_set_colones(4321)
 	_check(gs.colones == 4321 and not gs.dev_infinite_money, "dev: set an exact amount of colones")
 	gs.dev_set_infinite_money(true)

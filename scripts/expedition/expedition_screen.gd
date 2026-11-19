@@ -164,7 +164,7 @@ func _build_party() -> void:
 	# attack sprites face left so the weapon is in the right arm); rank 1 nearest the middle = first child.
 	for h in GameState.party:
 		var u = BattleUnitScript.new()
-		u.setup(h, true, "res://assets/portraits/%s.png" % str(h.get("hero_id", "")))
+		u.setup(h, true, GameState.portrait_path(h))
 		u.clicked.connect(_on_unit_clicked)
 		u.equipment_dropped.connect(_on_equipment_changed)
 		_hero_units.append(u)
@@ -323,7 +323,7 @@ func _show_hero_info(h: Dictionary) -> void:
 	var hp: int = int(h.get("hp", 0))
 	var hp_max: int = maxi(int(h.get("hp_max", 1)), 1)
 	_enemy_info_name.text = "%s — %s" % [h.get("name", "?"), h.get("class_name", "")]
-	_set_info_portrait("res://assets/portraits/%s.png" % str(h.get("hero_id", "")))
+	_set_info_portrait(GameState.portrait_path(h))
 	_enemy_info_health.max_value = 100
 	_enemy_info_health.value = int(round(100.0 * hp / hp_max))
 	var lines: PackedStringArray = PackedStringArray()
@@ -604,7 +604,7 @@ func _view_hero(hero: Dictionary) -> void:
 			_formation_row.get_child(1).disabled = pos >= n
 	if hero.is_empty():
 		return
-	var p: String = "res://assets/portraits/%s.png" % str(hero.get("hero_id", ""))
+	var p: String = GameState.portrait_path(hero)
 	_hero_portrait.texture = load(p) as Texture2D if ResourceLoader.exists(p) else null
 	_hero_name.text = "%s\n%s" % [hero.get("name", "?"), hero.get("class_name", "")]
 	var lines: PackedStringArray = PackedStringArray()

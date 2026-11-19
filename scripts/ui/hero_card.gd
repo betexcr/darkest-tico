@@ -19,7 +19,7 @@ const QUIRK_TAGS := {"positive": "Bueno", "negative": "Malo", "disease": "Enferm
 
 
 static func portrait_path(h: Dictionary) -> String:
-	return "res://assets/portraits/%s.png" % str(h.get("hero_id", ""))
+	return GameState.portrait_path(h)
 
 
 ## Header row: framed portrait, gold name, class, then chips (resolve, Quebranto/Virtud, busy).

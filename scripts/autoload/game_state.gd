@@ -47,7 +47,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 12
+const SAVE_VERSION := 13
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -722,19 +722,80 @@ func reset_party_from_catalog() -> void:
 	reset_week_counters()
 
 
+## The class's name for a man or a woman ("Campesino Machetero" / "Campesina Machetera").
+static func class_name_for(template: Dictionary, sex: String) -> String:
+	var cn = template.get("class_names", {})
+	if cn is Dictionary and cn.has(sex):
+		return str(cn[sex])
+	return str(template.get("name", ""))
+
+
+## Names of every hero the player has, has had (graveyard) or is offered right now.
+func _names_in_use() -> Dictionary:
+	var used: Dictionary = {}
+	for list in [roster, recruit_pool, graveyard]:
+		for h in list:
+			if h is Dictionary:
+				used[str(h.get("name", ""))] = true
+	return used
+
+
+## A name from the class list for that sex that nobody uses yet (any of them if all are taken).
+func _fresh_name(template: Dictionary, sex: String) -> String:
+	var names: Array = template.get("names_" + sex, template.get("names", []))
+	if names.is_empty():
+		return str(template.get("name", "???"))
+	var used: Dictionary = _names_in_use()
+	var free: Array = names.filter(func(n): return not used.has(str(n)))
+	var pool: Array = free if not free.is_empty() else names
+	return str(pool[randi() % pool.size()])
+
+
+## Which art set a hero uses: the class's own (`hero_id`) for its base_sex, `<hero_id>_<sex>`
+## for the other one (owner 2026-11-19). Falls back to the base art if that set is missing.
+func art_id(h: Dictionary) -> String:
+	var hid: String = str(h.get("hero_id", ""))
+	var sex: String = str(h.get("sex", ""))
+	var base: String = str(get_hero_template(hid).get("base_sex", sex))
+	if sex == "" or sex == base:
+		return hid
+	return "%s_%s" % [hid, sex]
+
+
+func portrait_path(h: Dictionary) -> String:
+	var p: String = "res://assets/portraits/%s.png" % art_id(h)
+	if ResourceLoader.exists(p) or FileAccess.file_exists(p):
+		return p
+	return "res://assets/portraits/%s.png" % str(h.get("hero_id", ""))
+
+
+## Folder under res://assets/sprites/ with the hero's battle sprites.
+func sprite_id(h: Dictionary) -> String:
+	var a: String = art_id(h)
+	var p: String = "res://assets/sprites/%s/idle.png" % a
+	if ResourceLoader.exists(p) or FileAccess.file_exists(p):
+		return a
+	return str(h.get("hero_id", ""))
+
+
 func _take_uid() -> int:
 	_next_uid += 1
 	return _next_uid - 1
 
 
-func _instantiate_hero(template: Dictionary) -> Dictionary:
+## Heroes are men or women (owner 2026-11-19): `sex` "m" | "f", 50/50. The name comes from
+## the class's names_m / names_f and skips names already in use; the class name, portrait and
+## battle sprites follow the sex (see art_id).
+func _instantiate_hero(template: Dictionary, sex: String = "") -> Dictionary:
 	var hp_max: int = int(template.get("hp_max", 20))
-	var names: Array = template.get("names", [])
+	if sex != "m" and sex != "f":
+		sex = "m" if randf() < 0.5 else "f"
 	return {
 		"uid": 0,
 		"hero_id": template.get("id", ""),
-		"name": str(names[randi() % names.size()]) if not names.is_empty() else str(template.get("name", "???")),
-		"class_name": template.get("name", ""),
+		"sex": sex,
+		"name": _fresh_name(template, sex),
+		"class_name": class_name_for(template, sex),
 		"class_id": template.get("class_id", ""),
 		"hp_max": hp_max,
 		"hp": hp_max,
@@ -2109,7 +2170,7 @@ func complete_mission() -> Dictionary:
 			continue
 		var snap: Dictionary = mission_start_snapshot.get(int(h.get("uid", 0)), {})
 		var e: Dictionary = {
-			"uid": int(h.get("uid", 0)), "hero_id": str(h.get("hero_id", "")), "name": str(h.get("name", "?")),
+			"uid": int(h.get("uid", 0)), "hero_id": str(h.get("hero_id", "")), "sex": str(h.get("sex", "")), "name": str(h.get("name", "?")),
 			"class_name": str(h.get("class_name", "")), "dead": bool(h.get("dead", false)),
 			"xp_gained": 0, "level_before": int(h.get("resolve_level", 0)), "level_after": int(h.get("resolve_level", 0)),
 			"affliction_id": str(h.get("affliction_id", "")), "virtud_id": str(h.get("virtud_id", "")),
@@ -2249,7 +2310,14 @@ func apply_save_data(data: Dictionary) -> void:
 func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	var out := e.duplicate(true)
 	var t: Dictionary = get_hero_template(str(out.get("hero_id", "")))
-	if not out.has("class_name"):
+	# v13 (owner 2026-11-19): heroes have a sex. Older saves: from the name lists, else the
+	# class's base_sex (what its art shows); the class name follows it.
+	if str(out.get("sex", "")) != "m" and str(out.get("sex", "")) != "f":
+		var nm: String = str(out.get("name", ""))
+		out["sex"] = "f" if t.get("names_f", []).has(nm) else ("m" if t.get("names_m", []).has(nm) else str(t.get("base_sex", "m")))
+	if not t.is_empty():
+		out["class_name"] = class_name_for(t, str(out["sex"]))
+	elif not out.has("class_name"):
 		out["class_name"] = t.get("name", "")
 	out["uid"] = int(out.get("uid", 0))
 	out["hp"] = clampi(int(out.get("hp", 1)), 0, int(out.get("hp_max", 1)))

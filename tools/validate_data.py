@@ -404,6 +404,26 @@ def main() -> int:
     heroes = as_id_map(load(heroes_path), "heroes", heroes_path)
     enemies = as_id_map(load(enemies_path), "enemies", enemies_path)
 
+    # Heroes are men and women (owner 2026-11-19): >= 15 Tico names per sex, no name in two
+    # places, a class name per sex and the sex the class's own art shows (base_sex).
+    seen_names = {}
+    for hid, h in heroes.items():
+        if h.get("base_sex") not in ("m", "f"):
+            errors.append(f"heroes.json: '{hid}' base_sex must be m | f (the sex its portrait shows)")
+        cn = h.get("class_names") or {}
+        if not cn.get("m") or not cn.get("f"):
+            errors.append(f"heroes.json: '{hid}' needs class_names m and f")
+        for sx in ("m", "f"):
+            names = h.get(f"names_{sx}") or []
+            if len(names) < 15:
+                errors.append(f"heroes.json: '{hid}' needs at least 15 names_{sx} (has {len(names)})")
+            for n in names:
+                if n in seen_names:
+                    errors.append(f"heroes.json: name '{n}' is in both {seen_names[n]} and {hid}")
+                seen_names[n] = hid
+        if "names" in h:
+            errors.append(f"heroes.json: '{hid}' still has the old 'names' list (use names_m / names_f)")
+
     # Owner rule (2026-11-07): one basic attack + 1-3 specials; one special magical or ailment.
     for eid, en in enemies.items():
         eskills = en.get("skills", [])

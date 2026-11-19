@@ -203,7 +203,8 @@ func _make_bar(fill: Color) -> ProgressBar:
 
 
 func _load_textures(fallback_path: String) -> void:
-	var id: String = str(data.get("hero_id", "")) if is_hero else str(data.get("id", ""))
+	# Heroes: the art set for their sex (GameState.sprite_id, owner 2026-11-19).
+	var id: String = GameState.sprite_id(data) if is_hero else str(data.get("id", ""))
 	for st in STATES:
 		var p: String = "res://assets/sprites/%s/%s.png" % [id, st]
 		if ResourceLoader.exists(p):

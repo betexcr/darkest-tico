@@ -181,7 +181,7 @@ func _hero_card(e: Dictionary) -> Control:
 	pic.custom_minimum_size = Vector2(64, 64)
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	var p: String = "res://assets/portraits/%s.png" % str(e.get("hero_id", ""))
+	var p: String = GameState.portrait_path(e)
 	if ResourceLoader.exists(p):
 		pic.texture = load(p) as Texture2D
 	if dead:

@@ -989,7 +989,7 @@ func _roster_row(h: Dictionary) -> Control:
 	pic.custom_minimum_size = Vector2(44, 44)
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	var p: String = "res://assets/portraits/%s.png" % str(h.get("hero_id", ""))
+	var p: String = GameState.portrait_path(h)
 	if ResourceLoader.exists(p):
 		pic.texture = load(p) as Texture2D
 	row.add_child(pic)
