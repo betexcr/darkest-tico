@@ -24,12 +24,18 @@ const FormationScript := preload("res://scripts/domain/formation.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
+const CardScript := preload("res://scripts/ui/tooltip_card.gd")
 
 const BG_EXPLORE := "res://assets/ui_bg/expedition_bg.png"
 const BG_COMBAT := "res://assets/ui_bg/combat_bg.png"
 const DIRS := {"ui_up": Vector2i.UP, "ui_down": Vector2i.DOWN, "ui_left": Vector2i.LEFT, "ui_right": Vector2i.RIGHT}
 
 enum Mode { EXPLORE, EVENT, COMBAT, ENDED }
+
+## Event results (curios, traps) show in a card dialog (owner 2026-11-19), not only in the
+## log. Off for headless -s runs (tests, bots), which press the event buttons themselves.
+var results_modal: bool = not SaveService.is_script_run()
+var _result_dialog: AcceptDialog = null
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _room_label: Label = $Stage/TopBar/RoomLabel
@@ -823,13 +829,80 @@ func _close_event() -> void:
 		c.queue_free()
 
 
-func _resolve_event(text: String) -> void:
+func _resolve_event(text: String, lines: PackedStringArray = PackedStringArray()) -> void:
+	var title: String = _event_title.text
 	GameState.mark_node_cleared(GameState.current_node_id)
 	_close_event()
 	_mode = Mode.EXPLORE
 	_narrate(text)
 	_refresh_all()
-	_check_wipe()
+	if not _check_wipe():
+		_show_result(title, text, lines)
+
+
+## Good (1), bad (-1) or neutral (0) for one result line. Stress and light read the other way
+## round from PV: "estrés -6" is good news, "Luz -25" bad.
+static func _result_tone(line: String) -> int:
+	var t: String = line.to_lower()
+	var re := RegEx.create_from_string("estrés\\s*([+-]\\d+)")
+	var m := re.search(t)
+	if m != null:
+		return -1 if m.get_string(1).begins_with("+") else 1
+	re = RegEx.create_from_string("luz\\s*([+-]\\d+)")
+	m = re.search(t)
+	if m != null:
+		return 1 if m.get_string(1).begins_with("+") else -1
+	for bad in ["pierde", "no cabe", "emboscada", "quebranto", "muere", "cae", "al borde", "sangr", "envenen", "atarant", "susto", "salado", "fichado"]:
+		if t.contains(bad):
+			return -1
+	for good in ["+", "encuentran", "recupera", "desarma", "virtud", "ya no está", "limpio"]:
+		if t.contains(good):
+			return 1
+	return 0
+
+
+## The result of an event as a card dialog: what happened, then each effect (bad ones in
+## red). Exploring waits until it is closed; `then` runs after (an ambush starts its fight).
+func _show_result(title: String, text: String, lines: PackedStringArray, then: Callable = Callable()) -> void:
+	if not results_modal:
+		if then.is_valid():
+			then.call()
+		return
+	var dlg := AcceptDialog.new()
+	dlg.title = title if title != "" else "Resultado"
+	dlg.ok_button_text = "Continuar"
+	dlg.exclusive = true
+	var col := VBoxContainer.new()
+	col.custom_minimum_size = Vector2(460, 0)
+	col.add_theme_constant_override("separation", 8)
+	dlg.add_child(col)
+	col.add_child(CardScript.label(text, 15, CardScript.TEXT, true, 460.0))
+	if not lines.is_empty():
+		col.add_child(CardScript.rule())
+		col.add_child(CardScript.section("Resultado"))
+		for l in lines:
+			var tone: int = _result_tone(l)
+			col.add_child(CardScript.label(("▲ " if tone > 0 else ("▼ " if tone < 0 else "• ")) + l.strip_edges(), 14,
+				CardScript.GOOD if tone > 0 else (CardScript.BAD if tone < 0 else CardScript.TEXT), true, 460.0))
+	var was: int = _mode
+	_mode = Mode.EVENT
+	_result_dialog = dlg
+	dlg.visibility_changed.connect(func():
+		if dlg.visible:
+			return
+		_result_dialog = null
+		dlg.queue_free()
+		if _mode == Mode.EVENT:
+			_mode = was
+		if then.is_valid():
+			then.call()
+	)
+	add_child(dlg)
+	dlg.popup_centered()
+	await get_tree().process_frame
+	if is_instance_valid(dlg):
+		dlg.reset_size()
+		dlg.popup_centered()
 
 
 ## A trap or curio can kill (P1-16): with nobody left standing the expedition is lost.
@@ -856,9 +929,11 @@ func _open_trap() -> void:
 	_event_button("Desarmar (%d%%)" % chance, func():
 		if randi() % 100 < chance:
 			var relief: int = TrapRulesScript.num("disarm_relief")
+			var got: PackedStringArray = PackedStringArray(["%s: -%d estrés" % [spotter.get("name", "Alguien"), relief]])
 			for l in StressSystemScript.add_stress(spotter, -relief):
 				_log_line(l, "88bb88")
-			_resolve_event("%s desarma la trampa. ¡Qué nivel! (-%d estrés)" % [spotter.get("name", "Alguien"), relief])
+				got.append(l)
+			_resolve_event("%s desarma la trampa. ¡Qué nivel!" % spotter.get("name", "Alguien"), got)
 		else:
 			_spring_trap(trap)
 	)
@@ -867,7 +942,7 @@ func _open_trap() -> void:
 		if randi() % 100 < careful_pct:
 			_spring_trap(trap)
 		else:
-			_resolve_event("Pasan despacio, tanteando cada paso. La trampa no salta (-%d Luz)." % careful_light)
+			_resolve_event("Pasan despacio, tanteando cada paso. La trampa no salta.", PackedStringArray(["Luz -%d" % careful_light]))
 	)
 
 
@@ -909,19 +984,22 @@ func _curio_result(text: String, outcome: Dictionary) -> void:
 
 ## An event outcome (curio or trap): effects, then either an ambush fight or the room clears.
 func _apply_outcome(text: String, outcome: Dictionary) -> void:
-	for l in GameState.apply_event_outcome(outcome):
+	var lines: PackedStringArray = GameState.apply_event_outcome(outcome)
+	for l in lines:
 		_log_line(l, "cc9944")
 	if _check_wipe():
 		return
 	var amb = outcome.get("ambush", null)
 	if amb is Array or (amb is bool and amb):
+		var title: String = _event_title.text
 		_close_event()
 		_narrate(text)
 		GameState.ledger_add("ambushes")
 		GameState.build_ambush_context(GameState.current_node_id, amb if amb is Array else [])
-		_start_combat_from_context(GameState.current_node_id)
+		lines.append("¡Emboscada!")
+		_show_result(title, text, lines, func(): _start_combat_from_context(GameState.current_node_id))
 		return
-	_resolve_event(text)
+	_resolve_event(text, lines)
 
 
 func _open_camp() -> void:

@@ -105,6 +105,7 @@ func _run() -> void:
 	hub.queue_free()
 	await process_frame
 	await _town(gs)
+	await _event_result(gs)
 	await _combat_bar(gs)
 
 	print("%d failure(s)" % _fail)
@@ -264,3 +265,30 @@ func _town(gs) -> void:
 		hub.queue_free()
 		gs.active_event_id = ""
 		await process_frame
+
+
+## Event results in a card dialog (owner 2026-11-19), not only in the log.
+func _event_result(gs) -> void:
+	print("Event result card")
+	gs.reset_party_from_catalog()
+	gs.start_mission()
+	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
+	root.add_child(screen)
+	await process_frame
+	screen.results_modal = true
+	screen._open_event("Cajón de la carreta", "Hay algo envuelto en hoja.")
+	screen._apply_outcome("En el cajón hay provisiones envueltas en hoja.", {"colones": 40})
+	await process_frame
+	var dlg = screen._result_dialog
+	_check(dlg != null and dlg.visible and dlg.title == "Cajón de la carreta", "the result opens as a card dialog with the event's name")
+	_check(int(screen._mode) == 1, "exploring waits while it is open")
+	dlg.hide()
+	await process_frame
+	_check(screen._result_dialog == null and int(screen._mode) == 0, "Continuar closes it and exploring goes on")
+	var tone = screen.get_script()
+	_check(tone._result_tone("Lalo: estrés -6.") == 1 and tone._result_tone("Estrés +5 a la cuadrilla.") == -1 and tone._result_tone("Luz -25.") == -1
+		and tone._result_tone("+40 colones.") == 1 and tone._result_tone("Lalo pierde 4 PV.") == -1, "good and bad results are told apart (stress and Luz read the right way)")
+	screen.queue_free()
+	gs.end_mission_abandon()
+	await process_frame
+

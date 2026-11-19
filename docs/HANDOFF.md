@@ -17,6 +17,24 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (8) — Event results in a card dialog
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** UX fix on P2-01/P2-02 events (no new task).
+- **Changed:** `expedition_screen.gd`:
+  - Curio and trap results (outcome lines, trap disarm or careful pass) show in a dialog styled like the hub's card dialogs: event name as title, the outcome text, then each effect, green ▲ good / red ▼ bad / neutral. `_result_tone` reads stress and Luz the right way round.
+  - Exploring waits until "Continuar"; an ambush starts its fight after it.
+  - The log still records everything.
+  - `results_modal` is off in headless `-s` runs (tests and bots press event buttons themselves); `test_ui` turns it on and checks it ("Event result card").
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+  - Screenshot at 1080p.
+- **Not verified / risks:** camp events and hunger stops still report in the log only (they have their own panels).
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (7) — Item cards say what every item does; sharper item icons
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** fix on the P4-12/P4-14 item card (no new task).
