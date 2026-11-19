@@ -62,6 +62,9 @@ var _shop_filter: String = "todo"
 @onready var _skills_row: HBoxContainer = $Building/VBox/Pages/casa_comunal/SkillsRow
 @onready var _clinic_box: VBoxContainer = $Building/VBox/Pages/clinica/Box
 
+## Alforja cells in the town's right panel (owner 2026-11-19: a bit bigger), 6 per row.
+const PACK_SLOT := Vector2(56, 58)
+
 ## Hero whose equipment is shown (click a name in the roster).
 var _selected: Dictionary = {}
 var _equip_slots: Array = []
@@ -121,6 +124,13 @@ func _ready() -> void:
 		_selected = GameState.roster[0]
 	_hub_status.text = GameState.last_week_report
 	_build_event_button()
+	if OS.is_debug_build():
+		var dev := Button.new()
+		dev.text = "DEV"
+		dev.tooltip_text = "Menú de desarrollo (F12)\nPlata infinita, pasar la semana, subir resolución."
+		dev.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		dev.pressed.connect(_show_dev_menu)
+		$Banner/Row.add_child(dev)
 	_refresh()
 	if not GameState.event_seen and GameState.active_event_id != "":
 		_show_event_card.call_deferred()
@@ -611,6 +621,7 @@ func _refresh_equipment() -> void:
 				b.modulate = Color(1, 0.85, 0.6)
 		else:
 			b.setup("", 0)
+		b.custom_minimum_size = PACK_SLOT
 		_pack_grid.add_child(b)
 
 
@@ -1134,6 +1145,10 @@ func close_building() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if OS.is_debug_build() and event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F12:
+		_show_dev_menu()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("ui_cancel") and _window.visible:
 		close_building()
 		get_viewport().set_input_as_handled()
@@ -1175,6 +1190,64 @@ func _refresh_equip_fold() -> void:
 	_equip_bar.text = ("▾ Equipo de %s  ✕" % who) if _equip_open else ("▸ Equipo de %s (clic en un héroe para ponerle o quitarle equipo)" % who)
 	_equip_title.visible = _equip_open
 	_equip_row.visible = _equip_open
+
+
+# --- Dev menu (debug builds only, owner 2026-11-19) -------------------------------------
+
+## Plata infinita, the next week right away (the same week change as coming back from an
+## expedition, without one) and +1 resolución per hero. Debug builds only (DEV button, F12).
+func _show_dev_menu() -> void:
+	if not OS.is_debug_build():
+		return
+	var made: Array = _card_dialog("Menú de desarrollo", 480.0)
+	var dlg: AcceptDialog = made[0]
+	var col: VBoxContainer = made[1]
+	dlg.ok_button_text = "Cerrar"
+	var reopen := func():
+		dlg.hide()
+		_show_dev_menu.call_deferred()
+	var money := CheckBox.new()
+	money.text = "Plata infinita (%d ₡ siempre)" % GameState.DEV_MONEY
+	money.button_pressed = GameState.dev_infinite_money
+	money.toggled.connect(func(on: bool):
+		GameState.dev_set_infinite_money(on)
+		_say("Plata infinita %s." % ("activada" if on else "desactivada"))
+	)
+	col.add_child(money)
+	var week := Button.new()
+	week.text = "Pasar a la semana %d ya (sin expedición)" % (GameState.week + 1)
+	week.tooltip_text = "Todo lo de un cambio de semana: descanso en la hacienda, fin de la Iglesia/Cantina y la Clínica, candidatos nuevos y el evento del pueblo."
+	week.pressed.connect(func():
+		GameState.dev_skip_week()
+		SaveService.save_game()
+		_hub_status.text = GameState.last_week_report
+		_build_shop()
+		_refresh()
+		reopen.call()
+		if GameState.active_event_id != "" and not GameState.event_seen:
+			_show_event_card.call_deferred()
+	)
+	col.add_child(week)
+	col.add_child(CardScript.rule())
+	col.add_child(CardScript.section("Resolución"))
+	for h in GameState.roster:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		var head: Control = HeroCardScript.header(h, 40.0)
+		head.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(head)
+		var up := Button.new()
+		up.text = "+1 Resolución"
+		up.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		up.disabled = int(h.get("resolve_level", 0)) >= ResolveSystemScript.MAX_LEVEL
+		up.pressed.connect(func():
+			_say(GameState.dev_add_resolve(h))
+			reopen.call()
+		)
+		row.add_child(up)
+		col.add_child(row)
+	add_child(dlg)
+	_popup_card(dlg)
 
 
 # --- Town event of the week (docs/02 §12) -----------------------------------------------

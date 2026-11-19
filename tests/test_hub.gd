@@ -125,5 +125,25 @@ func _run() -> void:
 	gs.colones = 0
 	hub._refresh()
 	_check(tile.disabled, "store tiles disable when the colones don't reach")
+	# Dev menu (owner 2026-11-19): infinite money, next week now, +1 resolución.
+	gs.reset_party_from_catalog()
+	gs.dev_set_infinite_money(true)
+	var rich: int = gs.colones
+	gs.buy_item("gallo_pinto")
+	_check(rich == gs.DEV_MONEY and gs.colones == gs.DEV_MONEY, "infinite money: buying doesn't lower the bank")
+	gs.dev_set_infinite_money(false)
+	gs.colones = 1000
+	_check(gs.colones == 1000, "turned off, colones behave again")
+	var wk: int = gs.week
+	var stressed: Dictionary = gs.party[0]
+	stressed["stress"] = 50
+	var old_pool: Array = gs.recruit_pool.duplicate()
+	gs.dev_skip_week()
+	_check(gs.week == wk + 1, "next week: the week number goes up")
+	_check(int(stressed["stress"]) == 50 - gs.BalanceScript.int_of("hub.idle_stress_relief"), "…a party hero rests at home too (no expedition)")
+	_check(gs.recruit_pool != old_pool or old_pool.is_empty(), "…new candidates at the terminal")
+	var lv: int = int(gs.party[1]["resolve_level"])
+	gs.dev_add_resolve(gs.party[1])
+	_check(int(gs.party[1]["resolve_level"]) == lv + 1 and int(gs.party[1]["resolve_xp"]) == gs.ResolveSystemScript.xp_for_level(lv + 1), "+1 resolución: one level, with its XP")
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

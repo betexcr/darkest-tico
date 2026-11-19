@@ -150,7 +150,7 @@ text = "Alforja"
 layout_mode = 2
 theme_override_constants/h_separation = 3
 theme_override_constants/v_separation = 3
-columns = 8
+columns = 6
 
 [node name="BottomBar" type="PanelContainer" parent="."]
 layout_mode = 1

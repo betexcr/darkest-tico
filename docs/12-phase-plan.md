@@ -492,6 +492,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "make the buildings make sense in their design; right now they look like a collage of splattered images and not like a town"
 - Done when: [x] the town is one painting with shared light, ground and fog (layout → SD img2img + ControlNet canny); [x] each building is its crop of that painting, so hover and clicks stay exact; [x] the buildings keep their identity (bus, white church, blue-and-yellow pulpería, forge, cantina lights); [x] screenshot
 
+### P4-20 · S · Dev menu (owner 2026-11-19)
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19) · Depends: P4-17
+- Files: `scripts/autoload/game_state.gd` (`dev_set_infinite_money`, `dev_skip_week`, `dev_add_resolve`; `end_of_expedition_week(went_out)`), `scripts/hacienda/hacienda_hub.gd` (`_show_dev_menu`, DEV button, F12), `tests/test_hub.gd`
+- Spec: owner "a dev menu where we can add infinite money, force instant next week (with all that happens in a week change), add resolución to each separate character"
+- Done when: [x] debug builds only (`OS.is_debug_build()`): DEV button in the banner and F12; [x] infinite money (the bank stays at 999999, not saved); [x] next week now: the same week change as coming back from an expedition, with everyone at home; [x] +1 resolución per hero; [x] tests
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

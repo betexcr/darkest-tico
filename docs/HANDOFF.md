@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 (5) — P4-20 — Dev menu; bigger alforja
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-20 `done`.
+- **Changed:**
+  - Dev menu, debug builds only: a DEV button in the town banner, or F12.
+    - "Plata infinita": `GameState.dev_infinite_money`; the `colones` setter holds `DEV_MONEY` = 999999; not saved.
+    - "Pasar a la semana N ya": `dev_skip_week()` = `end_of_expedition_week(false)` + `draw_town_event()`, the same week change as coming back. With no expedition, everyone rests at home and nobody gets expedition quirks.
+    - "+1 Resolución" per hero (`dev_add_resolve`, through `ResolveSystemScript.grant_xp` + `recompute_stats`).
+  - Town alforja: 6 columns of 56×58 cells (was 8 × 44×48).
+  - The `AGENTS.md` repo facts don't mention the dev menu; the plan does (P4-20).
+- **Verified:**
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures (`test_hub` has 6 new dev checks).
+  - Screenshots.
+- **Not verified / risks:** the dev menu is visible whenever the game runs from the editor or a debug export. Release exports hide it.
+- **Decisions needed:** none.
+- **Next step:** owner playtest.
+
+---
+
 ## 2026-11-19 (4) — P4-18 fix — sell mode no longer pushes the roster off-screen; bigger shop tiles; faster tooltips
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-18 `review`.

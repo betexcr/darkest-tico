@@ -59,6 +59,9 @@ var week_colones_out: int = 0
 ## touching the many places that pay or charge.
 var colones: int = BalanceScript.int_of("hub.start_colones"):
 	set(v):
+		if dev_infinite_money:
+			colones = DEV_MONEY
+			return
 		if v > colones:
 			week_colones_in += v - colones
 		elif v < colones:
@@ -1115,9 +1118,11 @@ func heal_hero(hero: Dictionary) -> String:
 
 ## One week passes after every expedition (doc 02 §1): the fallen leave the roster,
 ## survivors leave Al Borde, recruits rotate.
-func end_of_expedition_week() -> void:
+## `went_out` false: the dev menu's "next week" with no expedition (everyone stayed home, no
+## expedition quirks); everything else is the same week change.
+func end_of_expedition_week(went_out: bool = true) -> void:
 	# P5-02: who stayed home this week without a booking (decided before the week turns).
-	var rested: Array = roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and not is_in_party(h) and not hero_busy(h))
+	var rested: Array = roster.filter(func(h): return h is Dictionary and not h.get("dead", false) and (not went_out or not is_in_party(h)) and not hero_busy(h))
 	week += 1
 	var fallen: PackedStringArray = PackedStringArray()
 	for k in range(roster.size() - 1, -1, -1):
@@ -1138,7 +1143,7 @@ func end_of_expedition_week() -> void:
 	for k in range(party.size() - 1, -1, -1):
 		if bool(party[k].get("dead", false)):
 			party.remove_at(k)
-	var quirk_lines: PackedStringArray = _roll_expedition_quirks()
+	var quirk_lines: PackedStringArray = _roll_expedition_quirks() if went_out else PackedStringArray()
 	# P5-02: a week at home without a booking takes the edge off (no money needed, so a
 	# broke hacienda can still recover). The Iglesia/Cantina do much more.
 	var rest: int = BalanceScript.int_of("hub.idle_stress_relief")
@@ -1160,6 +1165,36 @@ func end_of_expedition_week() -> void:
 		last_week_report += "\n" + "\n".join(quirk_lines)
 	if not activity_lines.is_empty():
 		last_week_report += "\n" + "\n".join(activity_lines)
+
+
+# --- Dev menu (debug builds only, owner 2026-11-19) -------------------------------------
+
+## Infinite money: every price is paid and the bank stays at DEV_MONEY. Not saved.
+const DEV_MONEY := 999999
+var dev_infinite_money: bool = false
+
+
+func dev_set_infinite_money(on: bool) -> void:
+	dev_infinite_money = on
+	if on:
+		colones = DEV_MONEY
+
+
+## Next week without an expedition: the full week change (rest at home, Iglesia/Cantina and
+## Clínica stays end, recruits, the town event) as when a party comes back.
+func dev_skip_week() -> void:
+	end_of_expedition_week(false)
+	draw_town_event()
+
+
+## One more resolve level (its XP, as on the victory screen). Returns a message.
+func dev_add_resolve(h: Dictionary) -> String:
+	var lvl: int = int(h.get("resolve_level", 0))
+	if lvl >= ResolveSystemScript.MAX_LEVEL:
+		return "%s ya está en la resolución máxima." % h.get("name", "?")
+	ResolveSystemScript.grant_xp(h, ResolveSystemScript.xp_for_level(lvl + 1) - int(h.get("resolve_xp", 0)))
+	recompute_stats(h)
+	return "%s sube a resolución %d." % [h.get("name", "?"), int(h["resolve_level"])]
 
 
 # --- Quirks and the Clínica de Espantos (P3-06, doc 02 §6; data/quirks.json) ------------
