@@ -88,7 +88,7 @@
       "seed": 1108,
       "subject": "portrait of a neighborhood exorcist, worn long black coat, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"
     },
-    {"id": "portrait_campesino_f", "out": "assets/portraits/campesino_f.png", "size": [512, 512], "seed": 1201,
+    {"id": "portrait_campesino_f", "out": "assets/portraits/campesino_f.png", "size": [512, 512], "seed": 1203,
      "subject": "portrait of a weathered Costa Rican farm woman gripping a long steel machete, big blade in her hand, straw hat, dark braid, work shirt, determined face, dark background"},
     {"id": "portrait_montador_f", "out": "assets/portraits/montador_f.png", "size": [512, 512], "seed": 1202,
      "subject": "portrait of a fearless young Costa Rican woman bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"},

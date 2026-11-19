@@ -2,7 +2,7 @@
   "id": "portrait_campesino_f",
   "prompt": "dark fantasy painting, portrait of a weathered Costa Rican farm woman raising a long steel machete blade, straw hat, long dark braid, sweat-stained work shirt, determined face, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
   "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 1201,
+  "seed": 1203,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,7 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-19T21:58:18+00:00"
+  "timestamp": "2026-11-19T21:58:18+00:00",
+  "subject": "portrait of a weathered Costa Rican farm woman gripping a long steel machete, big blade in her hand, straw hat, dark braid, work shirt, determined face, dark background",
+  "note": "owner 2026-11-19: holds the machete (seed 1203 picked from 1201-1204)"
 }
