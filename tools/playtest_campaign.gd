@@ -28,7 +28,8 @@ extends SceneTree
 ##   Hub: hires up to SPARE_ROSTER living heroes (recruits are free), preferring
 ##        a recruit who isn't a second healer; picks the difficulty for which it can send the
 ##        fullest party with the fewest under-leveled heroes (_plan_party): heroes of that
-##        range, the most seasoned first (those at REST_AT stress or more go last), at most
+##        range, the most seasoned first (those at REST_AT stress or more go last; at BENCH_AT
+##        or with a Quebranto they stay home when no booking was possible), at most
 ##        one dedicated healer (a class with a heal skill
 ##        that never stands in position 1), a hire to fill a place on the easiest difficulty,
 ##        under-leveled heroes last; orders them by preferred position, heals them at the EBAIS, books stressed heroes
@@ -56,6 +57,10 @@ const RESERVE := 1000
 const SPARE_ROSTER := 6
 ## A hero at or above this stress stays home when a calmer one can go.
 const REST_AT := 60
+## A hero this stressed (or with a Quebranto) who got no Iglesia/Cantina booking stays home
+## for the week (rest at home, hub.idle_stress_relief) and a free recruit goes instead (P5-09):
+## sending them again only fails the first fight.
+const BENCH_AT := 100
 const IGLESIA_AT := 30
 const HEAL_ITEMS := {"agua_pipa": 2, "venda_manta": 1}
 const STRESS_ITEM := "cafe_chorreado"
@@ -270,8 +275,9 @@ func _hub(row: Dictionary) -> void:
 	# expedition. So a lone veteran doesn't drag fresh recruits into an expedition above them,
 	# and the bot never leaves with three heroes when it can send four.
 	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
-	# Heroes away at the Iglesia/Cantina/Clínica this week can't go out (P3-03, P3-19).
-	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h))
+	# Heroes away at the Iglesia/Cantina/Clínica this week can't go out (P3-03, P3-19), and
+	# the badly frayed stay home to rest (BENCH_AT).
+	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h) and not _benched(h))
 	# A core team: the most seasoned heroes go, unless they are badly stressed (REST_AT); then
 	# the calmer ones first. Spares are free, but ranks bought for six heroes are thinner.
 	pool.sort_custom(func(a, b):
@@ -464,6 +470,11 @@ func _plan_party(pool: Array, expedition: Dictionary) -> Dictionary:
 			party.append(h)
 			short += maxi(int(expedition.get("min_level", 0)) - int(h.get("resolve_level", 0)), 0)
 	return {"expedition": expedition, "party": party, "size": party.size() + hires, "hires": hires, "cost": short + 2 * hires}
+
+
+## Stays home this week: BENCH_AT stress or a Quebranto (no booking was possible).
+func _benched(h: Dictionary) -> bool:
+	return _opts["party"].is_empty() and (int(h.get("stress", 0)) >= BENCH_AT or str(h.get("affliction_id", "")) != "")
 
 
 ## The hero's level is inside the expedition's range (neither refuses nor is under-leveled).
