@@ -647,10 +647,15 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   The re-measurement after the merge is in the handoff.
 
 ### P5-07 · M · Rebalance after the 2026-11-17 merge
-- Status: `in-progress (Claude Code, claude/p3-03-followup-48gkar, 2026-11-19)` · Depends: —
+- Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-19): Aprendiz `enemy_hp` 1.0, `enemy_dmg` 1.0, `enemy_stress` 1.15; EBAIS 12 ₡/PV; rest at home 20 · Depends: —
 - Spec: doc 04 §4–§5, doc 09 §6–§7; the merge handoff (2026-11-17 (11))
 - Why: P5-02a–f tuned the difficulty table and the support skills' stress relief on a game with a cheap weekly group misa. The misa is gone (owner 2026-11-16); stress relief is now the Iglesia/Cantina (a week off per hero), resting at home (15) and the Clínica. The merged game measured 19%, then 29% success after the bot rotated frayed heroes; mostly retreats. Money is about 2.0k in and 2.4k out a week.
-- Done when: [ ] 48-expedition bot runs (`--seed 1` and `--seed 2`, `--telemetry`) back in the doc 04 bands (55–70% success, deaths 1 per 5–8 missions, weekly money in ≈ out); likely levers: Aprendiz `enemy_stress` (1.5), the support skills' `stress_relief`, Iglesia/Cantina prices or relief, `hub.idle_stress_relief`
+- Done when: [x] bot runs (6 seeds, 144 expeditions; 2 seeds proved too noisy) back in the doc 04 bands: 58% cleared, 0.19 deaths/expedition, ₡ in 2946 / out 3118 a week (docs/playtests/2026-11-19-p5-07.md) (55–70% success, deaths 1 per 5–8 missions, weekly money in ≈ out); likely levers: Aprendiz `enemy_stress` (1.5), the support skills' `stress_relief`, Iglesia/Cantina prices or relief, `hub.idle_stress_relief`
+
+### P5-08 · S · Retune Veterano and Campeón for the game without the group misa
+- Status: `todo` · Depends: P5-07
+- Why: P5-07 retuned Aprendiz only; 8-week bot campaigns played 139 of 144 expeditions there. The Veterano/Campeón rows of `data/progression.json` are still the P5-02c/f values from the misa era.
+- Done when: [ ] `tools/playtest_campaign.gd -- --weeks 24` on 6 seeds shows Veterano and Campeón in their doc 04 bands
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

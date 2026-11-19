@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-19 — P5-07 — Rebalance after the merge: 26% → 58% cleared
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P5-07 `done`. New `todo` P5-08: Veterano/Campeón.
+- **Changed:**
+  - `data/progression.json` Aprendiz: `enemy_hp` 1.1 → 1.0, `enemy_dmg` 1.2 → 1.0, `enemy_stress` 1.5 → 1.15.
+  - `data/balance.json`: `hub.heal_cost_per_hp` 15 → 12, `hub.idle_stress_relief` 15 → 20.
+  - `docs/playtests/2026-11-19-p5-07.md` (method, table, raw seed-1 output); doc 09 §8.
+- **Verified:**
+  - Bot campaigns, 6 seeds × 3 campaigns × 8 weeks = 144 expeditions per setting. Baseline 26% → final 58% cleared; deaths 0.33 → 0.19 per expedition; money in 2946 / out 3118 a week; weeks under 500 ₡ 31 → 7.
+  - `validate_data.py`: 0 errors.
+  - Smoke test and all 19 tests: 0 failures.
+- **Not verified / risks:**
+  - Two-seed runs swing by ±15 points (broke campaigns snowball), so judge balance changes on 6 seeds.
+  - Failures are all bot retreats: about half are long Mayordomo fights (two escorts + two summons, 10–17 rounds), half a death in an early fight.
+  - Veterano/Campeón are untouched (P5-08).
+- **Decisions needed:** none. The rest-at-home question from entry 11 is settled by this pass: it stays, at 20.
+- **Next step:** owner playtest of Aprendiz on the new numbers. Then P5-08: run `tools/playtest_campaign.gd -- --campaigns 3 --weeks 24 --seed 1..6 --telemetry <path>`, pool with a script like the one in the P5-07 notes, and tune the Veterano/Campeón rows of `data/progression.json`.
+
+---
+
 ## 2026-11-17 (17) — P4-19 — The town painted as one picture
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-19 `review`.

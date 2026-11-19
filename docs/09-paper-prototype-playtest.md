@@ -316,3 +316,8 @@ Owner 2026-11-15: failing should be cheaper than dying. The game now has "Retira
 - **Deaths stay above target.** Most come from full wipes, because a fight can't be fled (new task **P2-11**).
 - **The jump from Aprendiz (91%) to Veterano (31%) is steep.** The bot reaches Veterano because seasoned heroes refuse easy runs, so parties of mixed level go out.
 - **The system has strong feedback loops.** A 5–10% change in enemy damage or rewards swings success by 15–30 points, so retune in small steps and measure 48+ expeditions.
+
+## 8) Rebalance after the merge (P5-07) — 2026-11-19
+
+The merged game (no group misa) cleared 26% of 144 bot expeditions, all failures retreats, with money draining. Aprendiz now uses the plain enemy numbers (`enemy_hp` 1.0, `enemy_dmg` 1.0) and `enemy_stress` 1.15; the EBAIS costs 12 ₡ per PV and a week at home takes 20 stress off. Result over 6 seeds: 58% cleared, 0.19 deaths per expedition, money in 2946 / out 3118 a week, broke weeks 31 → 7 of 144. Numbers and method: [playtests/2026-11-19-p5-07.md](playtests/2026-11-19-p5-07.md). Veterano/Campeón are still the P5-02c/f values.
+
