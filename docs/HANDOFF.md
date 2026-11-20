@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (21) — P5-06: Veterano/Campeón re-measured after drops; bot fixes; bank band open
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P5-06 review (was blocked). Its clear-rate and death targets were already met by P5-08/P5-09; this session re-measured after P5-10 (drops) and looked at the week-24 bank.
+- **Changed:**
+  - `tools/playtest_campaign.gd`: (1) Iglesia/Cantina weeks booked before the party is picked are now reported under Iglesia (they showed up as "Hires", ~700 ₡/week; recruits are free). (2) `_calm_heroes()`: heroes at `sim_policy.RETREAT_STRESS` (150) who got no relief week stay home and rest; free recruits fill the party. Before, broke campaigns sent them out to retreat from the first fight every week with no loot.
+  - `docs/playtests/2026-11-20-p5-06.md` (table + seed 1 raw), doc 09 §8, plan.
+  - No game data changed.
+- **Verified:** 6 seeds × 3 campaigns × 24 weeks (full route), Godot 4.7.2 Linux, twice (old bot, new bot): 72% overall, Veterano 72%, Campeón 74% (19 expeditions), 0.11 deaths/exp, weeks < 500 ₡ 19 → 9, week-24 bank 4–8k in 7 of 18 (median 2.7k). Validator 0 errors. Unit tests not rerun (only a tools script changed).
+- **Not verified / risks:** direct route not re-run; Campeón samples are ~20 expeditions per setting (5–6 of 18 campaigns reach it), so its number is noisy (P5-08 tier-start: 63%).
+- **Decisions needed:** the "bank 4–8k at week 24" target. Money in ≈ out every week and the bot spends down to its 1000 ₡ reserve, so the bank shows where a campaign is in its spending cycle (169 to 13.5k), not difficulty. With rewards frozen, options: (a) drop/soften the target to "solvent (≥ 500 ₡) in week 24" (17 of 18 now); (b) cheaper Iglesia/Cantina (relief is ~27% of spending); (c) a higher bot reserve (a policy choice, not the game).
+- **Next step:** owner answers the bank decision; if (a), set P5-06 done. Otherwise P1-20 (smoke expedition runs out of frames) or P3-14 (level-tiered hub prices).
+
+---
+
 ## 2026-11-20 (20) — P4-25: random starting party, always 2 warriors + 2 supports
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P4-25 done.
