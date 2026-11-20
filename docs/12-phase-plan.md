@@ -317,9 +317,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] a new hero knows 3 of 6 class camp skills; the fogata draws only known ones; [x] learn / fix / let go / swap shared, with prices in balance.json; [x] town building + page; old saves know all 6; [x] tests; [x] prices approved (owner 2026-11-19); [x] town events close or discount it (service `guardabosques`, 2 new events); [ ] owner playtest; [ ] upgrade tracks (P3-21)
 
 ### P3-21 · S · Guardabosques upgrade tracks
-- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-13, P3-16 (building-upgrade system)
+- Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to play; built together with P3-14/16/18/21) · Depends: P3-13, P3-16 (building-upgrade system)
 - Spec: `02` §9 (Guía de Supervivencia: 3 class skills per fogata, later stronger camp skills; Entrenamiento de Patrulla: cheaper lessons and fixing)
-- Done when: [ ] both tracks buyable with materials; [ ] `class_skills_per_camp` and `camp.*` prices read through the track level
+- Done when: [x] both tracks buyable with Reliquias + colones; [x] `class_skills_per_camp` and `camp.*` prices read through the track level (`GameState.camp_class_skills_per_camp`, `camp_price`)
 
 ### P3-20 · S · Random class camp skills at every fogata (owner request 2026-11-19)
 - Status: `review` (Claude Code, `betomm/trusting-hamilton-bga408`, 2026-11-19) · Depends: P3-07
@@ -329,14 +329,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Note: P3-13 builds on this (owner 2026-11-19: heroes start knowing 3 of the 6).
 
 ### P3-16 · M · Casa Comunal building upgrades
-- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
+- Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to play; built together with P3-14/16/18/21) · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §4 (upgrade tracks), `04` §3.3 (discount up to 50% at cap)
-- Done when: [ ] Maestría de Oficio raises the max skill rank (start lower than 5); [ ] Plan de Formación lowers rank prices up to 50%
+- Done when: [x] Maestría de Oficio raises the max skill rank (start lower than 5): starts at 3, two levels to 5; [x] Plan de Formación lowers rank prices up to 50%; [x] the building-upgrade system: `data/upgrades.json`, `scripts/domain/building_upgrades.gd`, Reliquias del Abuelo (doc 02 §11), Mejoras rows in the hub, save v15
 
 ### P3-18 · S · Iglesia Vieja + Cantina upgrade tracks
-- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-03, a building-upgrade system (materials, doc 02 §11)
+- Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to play; built together with P3-14/16/18/21) · Depends: P3-03, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §7 (upgrade pattern)
-- Done when: [ ] Per-activity upgrades: more relief, lower cost, more slots, repeated for higher tiers (data in `data/hub_activities.json`)
+- Done when: [x] Upgrades: more relief, lower cost, more slots (per building, all three activities; data in `data/upgrades.json`, not `hub_activities.json`)
 
 ### P3-17 · S · Unlockable skills
 - Status: `todo` · Depends: classes having more than 4 skills (doc 03)
@@ -344,9 +344,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Classes have extra skills to unlock at the Casa Comunal and pick 4 to take on an expedition
 
 ### P3-14 · S · Level-tiered hub prices
-- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-04
+- Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to play; built together with P3-14/16/18/21) · Depends: P3-04
 - Spec: `04` §3.5 (treatment tiers by resolve 0–2 / 3–4 / 5–6)
-- Done when: [ ] EBAIS / Iglesia / future Clínica prices scale with the hero's resolve tier
+- Done when: [x] EBAIS / Iglesia / future Clínica prices scale with the hero's resolve tier (EBAIS + Iglesia/Cantina × `hub.tier_price_mult` 1.0/1.4/1.8; the Clínica already had tier tables)
 
 ### P3-11 · M · Equipment and elements (owner request 2026-11-07)
 - Status: `review`
@@ -717,6 +717,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `data/enemies.json` (`drops`), `data/balance.json` (`drops.*`), `scripts/domain/loot_drops.gd` (new), `scripts/autoload/game_state.gd` (`roll_drops`), `scripts/expedition/expedition_screen.gd` (`_show_battle_result`, `_card_dialog`), `tools/validate_data.py`, `tests/test_enemies.gd`, `tests/test_ui.gd`, `AGENTS.md`
 - Spec: owner "add a victory screen; make some enemies drop loot some times, balanced for each enemy and the run; the more powerful the enemy the better the loot; each enemy can drop 3 different items with different percentages; only 1 at a time and most of the times they won't drop; in the victory screen show the things gained/lost after the battle"
 - Done when: [x] 3 themed drops per enemy, one roll, at most one item; [x] chance by strength (vermin ~15% … bosses ~70%) × difficulty × Luz/event loot, capped; [x] a card after every won fight: colones, drops (and what didn't fit), each hero's PV and stress change, fallen, new Quebranto/Virtud; boss drops go to the expedition's victory screen; [x] validator + tests; [ ] owner feel check (bot: Aprendiz 96% on 4 seeds, slightly above the 85–90 band: drop chances are the knob)
+
+### P5-11 · M · Retune Veterano and Campeón for the upgraded game
+- Status: `todo` · Depends: P3-14, P3-16, P3-18, P3-21
+- Why (2026-11-20, docs/playtests/2026-11-20-p3-upgrades.md): with building upgrades, Reliquias and tiered prices, 24-week bot campaigns clear Veterano 86% (band 70–80) and Campeón 49% on 39 expeditions (band 55–70; 0.33 deaths there). Cheaper, stronger relief and rank 4 make Veterano easier; the rank cap (Maestría needed for 4–5) and ×1.8 relief make Campeón harder, and more campaigns now reach it.
+- Lever: Veterano / Campeón `enemy_hp` / `enemy_dmg` / `enemy_stress` in `data/progression.json`, or the Maestría / tier-price numbers; owner: no reward changes. Same setup as P5-06 (6 seeds × 3 × 24 weeks, full route; scratchpad `run.sh` + `agg.py` were used — rewrite them if the scratchpad is gone).
+- Done when: [ ] Veterano 70–80% and Campeón 55–70% cleared with ≥ 30 Campeón expeditions, deaths ≤ 0.3, ≥ 17 of 18 campaigns solvent in week 24
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

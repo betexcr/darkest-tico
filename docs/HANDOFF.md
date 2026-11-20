@@ -17,6 +17,26 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (25) — P3-14 + P3-16 + P3-18 + P3-21: building upgrades, Reliquias del Abuelo, tiered hub prices
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P3-14, P3-16, P3-18, P3-21 review (owner to play). New P5-11 todo (tier retune).
+- **Changed:**
+  - Owner 2026-11-20: build P3-14 with the building upgrades so they balance each other; upgrades cost Reliquias + colones; include P3-21; max rank starts at 3, heroes above keep their ranks.
+  - `data/upgrades.json` (new; 10 tracks over Casa Comunal, Iglesia, Cantina, Guardabosques), `scripts/domain/building_upgrades.gd` (new, pure).
+  - `GameState`: `reliquias`, `building_levels`, `buy_upgrade`, `upgrade_*`, `skill_rank_cap`, `tier_price_mult`, `grant_reliquias`, `roll_elite_reliquia`, `camp_class_skills_per_camp`, `activity_slots`; `activity_cost(b, a, hero)` is per hero now; EBAIS/Iglesia/Cantina × tier; **SAVE_VERSION 15** (old saves: no Reliquias, Maestría from the best rank already bought).
+  - Reliquia sources: `progression.json difficulties[].reliquias` (1/2/3), `balance.json upgrades.elite_reliquia_chance` 0.25 (elite / roaming kill), curios Caja del abuelo, Nicho de santos, Retrato del abuelo (`reliquias` outcome). `hub.tier_price_mult` [1.0, 1.4, 1.8].
+  - `skill_ranks.gd` `block_reason(..., cap)`; `camping_system.gd` `deal_hand(hero, extra)`.
+  - Hub: Mejoras rows on the four pages, Reliquias next to the colones, tier-price notes; loot card + victory screen show Reliquias. `tools/screens/upgrades_screenshot.gd`.
+  - Validator: upgrades.json schema, difficulty `reliquias`, curio key, `hub.tier_price_mult`, `upgrades.elite_reliquia_chance`. `tests/test_upgrades.gd` (new, in AGENTS.md list); `test_progression`, `test_hub_activities` updated.
+  - `tools/playtest_campaign.gd`: buys Maestría (when capped) + Plan de Formación before ranks, other upgrades after ranks/gear; per-hero relief prices; reports levels and Reliquias.
+  - Docs 01, 02, 04, 09, AGENTS.md §4; `docs/playtests/2026-11-20-p3-upgrades.md`.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR; screenshots of the four pages at 1080p. Balance (18 × 24 weeks, 4 settings): kept v4 = 74% overall, Veterano 86%, Campeón 49% (39 exp.), 0.12 deaths, 18 of 18 solvent, 15 of 24 upgrade levels by week 24.
+- **Not verified / risks:** Veterano above and Campeón below their bands (P5-11). Not played in a window. Iglesia/Cantina tracks are per building, not per activity as doc 02 §7 sketched (noted there).
+- **Decisions needed:** P5-11 lever: enemy numbers for Veterano/Campeón, or soften the Campeón side (Maestría cheaper, tier ×1.8 lower)?
+- **Next step:** P5-11: start from `docs/playtests/2026-11-20-p3-upgrades.md`; try Veterano enemy_hp/dmg up ~10% and Campeón down ~10% in `data/progression.json`, run 6 seeds × 3 × 24 weeks.
+
+---
+
 ## 2026-11-20 (24) — P4-06: readable map rooms (bigger, color per type, legend)
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P4-06 review. P3-14 (level-tiered hub prices): discussed with the owner, not started; my advice was to defer it to the building upgrades (P3-16/P3-18) or cut it, since it would squeeze the economy P5-06 just settled. Left `todo`.
