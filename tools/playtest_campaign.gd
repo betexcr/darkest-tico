@@ -385,6 +385,18 @@ func _hub(row: Dictionary) -> void:
 	mark = _gs.colones
 	_stock(STRESS_ITEM, chosen.filter(func(h): return int(h.get("stress", 0)) >= STRESS_ITEM_AT).size())
 	row["stress_items"] = mark - _gs.colones
+	# Power upgrades before ranks (P3-16): Maestría de Oficio when a hero going out is held
+	# back by the rank cap, then Plan de Formación (it pays for itself on the ranks).
+	var up_mark: int = _gs.colones
+	row["upgrades_n"] = 0
+	for u in [["casa_comunal", "maestria_oficio"], ["casa_comunal", "plan_formacion"]]:
+		if u[1] == "maestria_oficio" and not chosen.any(func(h): return _capped(h)):
+			continue
+		var pc: Dictionary = _gs.BuildingUpgradesScript.next_cost(_gs.building_levels, u[0], u[1])
+		if not pc.is_empty() and _gs.upgrade_block_reason(u[0], u[1]) == "" and _gs.colones - int(pc["colones"]) >= RESERVE:
+			_gs.buy_upgrade(u[0], u[1])
+			row["upgrades_n"] += 1
+	var power_up: int = up_mark - _gs.colones
 	# Upgrades, cheapest first: the next Casa Comunal rank of any skill, or one piece of
 	# equipment per hero a week (the dearest the bot can afford for the first empty slot).
 	row["gear"] = 0
@@ -437,7 +449,6 @@ func _hub(row: Dictionary) -> void:
 	# Building upgrades (P3-16), with what ranks and gear left: with Reliquias in hand, in
 	# UPGRADE_ORDER, keeping RESERVE (power first, as a careful player would).
 	mark = _gs.colones
-	row["upgrades_n"] = 0
 	var bought_up: bool = true
 	while bought_up:
 		bought_up = false
@@ -451,7 +462,7 @@ func _hub(row: Dictionary) -> void:
 			row["upgrades_n"] += 1
 			bought_up = true
 			break
-	row["upgrades"] = mark - _gs.colones
+	row["upgrades"] = mark - _gs.colones + power_up
 	# Guardabosques (P3-13): one new class camp skill per hero a week while it keeps RESERVE,
 	# a watch skill (prevent_ambush) first.
 	row["camp_learned"] = 0
