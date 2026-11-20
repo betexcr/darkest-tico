@@ -738,7 +738,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Result (doc 09 §6): heroes lost per expedition fell from 0.76 to 0.18 (full) and 0.25 to 0.06 (direct). The direct route is near the bands (94% / 96% / 55%). The full route is a stress spiral: 28 of 72 cleared, parties leaving the hub at 84 stress.
 
 ### P5-06 · M · Retune Veterano and Campeón
-- Status: `blocked — needs P3-03 (stress relief at the hacienda) and bigger playtest samples` · Depends: P5-05, P3-03
+- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)`: the clear-rate and death targets were met by P5-08/P5-09; left: re-measure after P5-10 drops, and the week-24 bank band · Depends: P5-05, P3-03
 - Why blocked (2026-11-15): with retreating bots the full route is a stress spiral (the Iglesia removes 10 per misa), so harder enemies would only deepen it. And three campaigns per route swing by 15–30 points between identical or near-identical settings (doc 09 §6), which is more than the change this task is after. Run about ten campaigns per setting (`--campaigns 10`, about 1.5 hours per pair of routes) once P3-03 is in. A try at `hub.iglesia_relief` 20 and 30 was inconclusive and was not kept.
 - Lever: `enemy_hp` / `enemy_dmg` / `enemy_stress` for Veterano and Campeón in `data/progression.json`; Aprendiz only if the P5-05 reference moves it out of 85–90%. Tier-start runs first (`--start-level 3 --start-ranks 3 --start-gear 2 --start-colones 6000` and `--start-level 5 --start-ranks 4 --start-gear 4 --start-colones 9000`, 4 × 8 weeks per route), then one 3 × 24-week pair.
 - Owner 2026-11-15: keep the economy tight (no reward changes), the event veteran stays at 6,000 ₡, bosses keep dragging from round 12.
