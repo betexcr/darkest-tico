@@ -28,7 +28,9 @@ extends SceneTree
 ##   Hub: hires up to SPARE_ROSTER living heroes (recruits are free), preferring
 ##        a recruit who isn't a second healer; picks the difficulty for which it can send the
 ##        fullest party with the fewest under-leveled heroes (_plan_party): heroes of that
-##        range, the most seasoned first (those at REST_AT stress or more go last), at most
+##        range, the most seasoned first (those at REST_AT stress or more go last; those at
+##        sim_policy RETREAT_STRESS stay home to rest when 4 calmer heroes, free recruits
+##        included, can go: P5-06), at most
 ##        one dedicated healer (a class with a heal skill
 ##        that never stands in position 1), a hire to fill a place on the easiest difficulty,
 ##        under-leveled heroes last; orders them by preferred position, heals them at the EBAIS, books stressed heroes
@@ -249,18 +251,32 @@ func _hub(row: Dictionary) -> void:
 	# is gone): heroes at REST_AT or with a Quebranto spend the week at the Iglesia/Cantina,
 	# most stressed first, as long as 4 others can still go out (recruits are free: hire one
 	# when needed). The rest of the week's bookings are made after the party is picked.
+	# Relief booked here counts as Iglesia spending, not hires (it was reported as hires).
+	var early_relief: int = 0
 	if _opts["party"].is_empty():
+		var c_rel: int = _gs.colones
 		var frayed: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h) \
 			and (int(h.get("stress", 0)) >= REST_AT or str(h.get("affliction_id", "")) != ""))
 		frayed.sort_custom(func(a, b): return int(a.get("stress", 0)) > int(b.get("stress", 0)))
 		for h in frayed:
 			if _living_roster().filter(func(x): return not _gs.hero_busy(x)).size() <= 4:
 				var idx: int = _pick_recruit()
+				var c_hire: int = _gs.colones
 				if idx < 0 or not _gs.hire_recruit(idx).contains("se une"):
 					break
+				c_rel -= c_hire - _gs.colones  # a priced hire (event veteran) is not relief
 				hired += 1
 			if _book_relief(h) == "":
 				break
+		early_relief = c_rel - _gs.colones
+		# Broke (P5-06): heroes at the bot's retreat stress who got no Iglesia/Cantina week would
+		# only make the party retreat from the first fight, week after week, with no loot. They
+		# stay home and rest (free idle relief); free recruits fill the party.
+		while _calm_heroes().size() < 4:
+			var idx: int = _pick_recruit()
+			if idx < 0 or _gs.hire_cost(_gs.recruit_pool[idx]) > 0 or not _gs.hire_recruit(idx).contains("se une"):
+				break
+			hired += 1
 		row["hired"] = hired
 	# Difficulty and party together: for each difficulty, the best party of 4 the roster can
 	# send (heroes of that range first, the most seasoned, at most one dedicated healer; then
@@ -272,6 +288,8 @@ func _hub(row: Dictionary) -> void:
 	var diffs: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/progression.json"))["difficulties"]
 	# Heroes away at the Iglesia/Cantina/Clínica this week can't go out (P3-03, P3-19).
 	var pool: Array = _living_roster().filter(func(h): return not _gs.hero_busy(h))
+	if _opts["party"].is_empty() and _calm_heroes().size() >= 4:
+		pool = _calm_heroes()
 	# A core team: the most seasoned heroes go, unless they are badly stressed (REST_AT); then
 	# the calmer ones first. Spares are free, but ranks bought for six heroes are thinner.
 	pool.sort_custom(func(a, b):
@@ -298,7 +316,7 @@ func _hub(row: Dictionary) -> void:
 			hired += 1
 			chosen.append(_gs.roster[-1])
 		row["hired"] = hired
-		row["hires"] = c0 - _gs.colones
+		row["hires"] = c0 - _gs.colones - early_relief
 		chosen.sort_custom(func(a, b): return _pref_rank(a) < _pref_rank(b))
 		_gs.party = chosen
 	else:
@@ -329,7 +347,7 @@ func _hub(row: Dictionary) -> void:
 		if chosen.has(h) or _gs.hero_busy(h) or (int(h.get("stress", 0)) < IGLESIA_AT and str(h.get("affliction_id", "")) == ""):
 			continue
 		_book_relief(h)
-	row["iglesia"] = mark - _gs.colones
+	row["iglesia"] = mark - _gs.colones + early_relief
 	mark = _gs.colones
 	# The kit that fits the plan (P5-02e): every room, or straight to the boss.
 	var kit: String = "full" if str(_opts["route"]) == "full" else "short"
@@ -495,6 +513,12 @@ func _is_healer(h: Dictionary) -> bool:
 ## The cheapest recruit the bot can pay for; one who isn't a second healer when there is a choice.
 ## Books the cheapest Iglesia/Cantina activity with a free slot for `h`, keeping RESERVE.
 ## Returns the activity id, or "" if none could be booked.
+## Heroes free this week whose stress is under the bot's retreat line (sim_policy RETREAT_STRESS).
+func _calm_heroes() -> Array:
+	return _living_roster().filter(func(h): return not _gs.hero_busy(h) \
+		and int(h.get("stress", 0)) < SimPolicyScript.RETREAT_STRESS)
+
+
 func _book_relief(h: Dictionary) -> String:
 	var best_act: Array = []
 	for b in ["iglesia", "cantina"]:
