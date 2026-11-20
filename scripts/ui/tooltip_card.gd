@@ -174,6 +174,22 @@ static func picture(path: String, side: float = 52.0) -> Control:
 	return frame
 
 
+## Wide framed picture (town-event art): `size` is the picture area; `hue` tints the frame.
+## Empty dark frame if the file doesn't exist.
+static func banner(path: String, size: Vector2, hue: Color = BORDER) -> Control:
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", flat(Color(0.05, 0.04, 0.035), hue.lerp(BORDER, 0.5), 2, 4, 3))
+	var tex := TextureRect.new()
+	tex.name = "Picture"
+	if ResourceLoader.exists(path):
+		tex.texture = load(path) as Texture2D
+	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tex.custom_minimum_size = size - Vector2(6, 6)
+	frame.add_child(tex)
+	return frame
+
+
 ## Section heading inside a card: small gold capitals.
 static func section(text: String) -> Label:
 	var l := label(text.to_upper(), 11, Color(GOLD, 0.85), false)

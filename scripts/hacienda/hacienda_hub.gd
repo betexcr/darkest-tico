@@ -1632,27 +1632,47 @@ func _refresh_event_button() -> void:
 	_event_btn.tooltip_text = "" if ev.is_empty() else "\n".join(TownEventsScript.effect_lines(ev))
 
 
-## Event card: name, text, what it changes, what already happened, and any choices.
+## Event card (Darkest Dungeon town-event scroll): title, picture, flavour text, then what
+## already happened and what lasts the week in a darker box; choices below.
 func _show_event_card() -> void:
 	var ev: Dictionary = GameState.active_event()
 	if ev.is_empty():
 		return
 	GameState.event_seen = true
 	SaveService.save_game()
-	var made: Array = _card_dialog(str(ev.get("name", "")), 540.0)
+	const W := 560.0
+	var made: Array = _card_dialog(TownEventsScript.kind_label(ev), W)
 	var dlg: AcceptDialog = made[0]
 	var col: VBoxContainer = made[1]
+	dlg.set_meta("event_id", str(ev.get("id", "")))
 	dlg.ok_button_text = "Entendido"
+	col.add_theme_constant_override("separation", 10)
 	var hue: Color = {"positive": Color(0.45, 0.72, 0.4), "negative": Color(0.82, 0.38, 0.32)}.get(str(ev.get("kind", "")), Color(0.78, 0.64, 0.3))
-	col.add_child(CardScript.chip(TownEventsScript.kind_label(ev), hue, 11))
-	col.add_child(CardScript.label(str(ev.get("text", "")), 14, CardScript.TEXT, true, 540.0))
+	var title := CardScript.title_label(str(ev.get("name", "")), 24, W)
+	title.name = "EventTitle"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(title)
+	col.add_child(CardScript.banner(TownEventsScript.image_path(ev), Vector2(W, W * 9.0 / 16.0), hue))
+	var flavour := CardScript.label(str(ev.get("text", "")), 16, CardScript.TEXT, true, W)
+	flavour.name = "EventText"
+	flavour.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(flavour)
 	# What happened right away (if we still have the report) + what lasts the week.
 	var lines: PackedStringArray = GameState.event_report.duplicate()
 	lines.append_array(TownEventsScript.effect_lines(ev, GameState.event_report.is_empty()))
 	if not lines.is_empty():
-		col.add_child(CardScript.rule())
-		col.add_child(CardScript.section("Esta semana"))
-		col.add_child(CardScript.bullet_list(Array(lines), true))
+		var box := PanelContainer.new()
+		box.name = "EventEffects"
+		var sb := CardScript.flat(Color(0.035, 0.028, 0.024), Color(hue, 0.6), 1, 4, 10)
+		box.add_theme_stylebox_override("panel", sb)
+		var fx := VBoxContainer.new()
+		fx.add_theme_constant_override("separation", 4)
+		box.add_child(fx)
+		for line in lines:
+			var l := CardScript.label(str(line), 14, CardScript.BAD if CardScript.is_bad_line(str(line)) else CardScript.GOLD.lerp(CardScript.TEXT, 0.5), true, W - 24.0)
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			fx.add_child(l)
+		col.add_child(box)
 	var back: Array = GameState.resurrect_candidates()
 	if not back.is_empty():
 		col.add_child(CardScript.rule())

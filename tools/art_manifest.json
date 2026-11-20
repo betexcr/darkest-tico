@@ -2618,6 +2618,934 @@
       ],
       "seed": 5200,
       "subject": "wide night landscape, empty dirt plaza in front, coffee hills and a volcano far behind, tiny distant lights, misty moonlit purple clouds, no buildings, no people"
+    },
+    {
+      "id": "event_cosecha_de_frijoles",
+      "out": "assets/events/cosecha_de_frijoles.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7001,
+      "subject": "village farmers piling sacks of black beans outside a rustic country store, harvest baskets, oil lamps, night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_camion_de_la_feria",
+      "out": "assets/events/camion_de_la_feria.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7002,
+      "subject": "old farm truck loaded with fruit and vegetable crates parked by a rustic village store, lanterns, night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_ventilaron_los_sotanos",
+      "out": "assets/events/ventilaron_los_sotanos.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7003,
+      "subject": "open iron grates in a stone cellar, fresh air and pale light pouring down old stairs into dark tunnels",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_sol_en_la_neblina",
+      "out": "assets/events/sol_en_la_neblina.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7004,
+      "subject": "sunbeams breaking through a misty cloud forest, mossy trees, a clear trail revealed",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_mano_vuelta",
+      "out": "assets/events/mano_vuelta.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7005,
+      "subject": "two farm workers shaking hands in front of an old hacienda gate, lanterns, comradeship",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_fiesta_patronal",
+      "out": "assets/events/fiesta_patronal.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7006,
+      "subject": "Costa Rican village saint procession at night, brass band, fireworks bursting over a white colonial church, crowd with candles",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_veranillo_de_san_juan",
+      "out": "assets/events/veranillo_de_san_juan.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7007,
+      "subject": "sudden sunshine over wet green coffee hills, puddles shining, candles burning bright on a windowsill",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_pego_la_chances",
+      "out": "assets/events/pego_la_chances.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7008,
+      "subject": "smiling old man holding a winning lottery ticket, gold coins spilling on a wooden table, lamplight",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_mercado_de_pulgas",
+      "out": "assets/events/mercado_de_pulgas.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7009,
+      "subject": "crowded night flea market stalls full of old trinkets, tools and pots, hanging lanterns",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_huelga_de_transportistas",
+      "out": "assets/events/huelga_de_transportistas.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7010,
+      "subject": "big trucks blocking a muddy country road, angry drivers with signs, headlights in the rain",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_se_viene_el_temporal",
+      "out": "assets/events/se_viene_el_temporal.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7011,
+      "subject": "black storm clouds rolling over a lonely tropical village with tin roofs, bent palm trees, gloomy sky",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_trabajo_bien_hecho",
+      "out": "assets/events/trabajo_bien_hecho.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7012,
+      "subject": "saddlemaker in a leather workshop proudly holding up a finely tooled leather piece, candlelight",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_objetos_perdidos",
+      "out": "assets/events/objetos_perdidos.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7013,
+      "subject": "an abandoned machete left on a seat of an empty old bus at night, dim interior light",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_bono_municipal",
+      "out": "assets/events/bono_municipal.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7014,
+      "subject": "a clerk handing a bundle of banknotes across a wooden desk in a dim old town hall office",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_feria_de_la_salud",
+      "out": "assets/events/feria_de_la_salud.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7015,
+      "subject": "rural health clinic with nurses treating a line of villagers under a canvas tent, lanterns",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_donacion_de_la_caja",
+      "out": "assets/events/donacion_de_la_caja.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7016,
+      "subject": "wooden crates of medicine bottles and bandages being unloaded at a village store",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_feria_de_artesania",
+      "out": "assets/events/feria_de_artesania.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7017,
+      "subject": "colorful painted oxcart wheels and handmade amulets on a craft fair stall at dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_romeria",
+      "out": "assets/events/romeria.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7018,
+      "subject": "pilgrims walking on a road at dawn toward a distant basilica, candles and rosaries",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_fiestas_de_zapote",
+      "out": "assets/events/fiestas_de_zapote.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7019,
+      "subject": "night fair with bullring, ferris wheel lights and food stalls, crowd celebrating",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_mananita_de_sol",
+      "out": "assets/events/mananita_de_sol.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7020,
+      "subject": "clear golden morning over an old adobe chapel, light streaming through its open doors",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_fiestas_civicas",
+      "out": "assets/events/fiestas_civicas.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7021,
+      "subject": "village civic fair at night with a merry-go-round, bingo table and paper flags",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_semana_pura_vida",
+      "out": "assets/events/semana_pura_vida.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7022,
+      "subject": "peaceful hacienda porch, workers resting in hammocks, coffee cups, warm sunset",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_club_de_excursionistas",
+      "out": "assets/events/club_de_excursionistas.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7023,
+      "subject": "hikers with backpacks stacking dry firewood in a rustic wooden shed",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_compraventa",
+      "out": "assets/events/compraventa.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7024,
+      "subject": "pawn shop counter full of jewelry and trinkets, a shopkeeper counting coins, lamplight",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_taller_de_bienestar",
+      "out": "assets/events/taller_de_bienestar.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7025,
+      "subject": "a kind psychologist talking with a circle of weary farm workers on wooden chairs, candlelight",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_guino_de_la_pulpera",
+      "out": "assets/events/guino_de_la_pulpera.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7026,
+      "subject": "cheerful blacksmith at a forge winking, holding a small amulet, sparks flying",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_el_padre_de_gira",
+      "out": "assets/events/el_padre_de_gira.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7027,
+      "subject": "an empty old chapel with a padlocked door and a note pinned to it, dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_huelga_en_la_caja",
+      "out": "assets/events/huelga_en_la_caja.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7028,
+      "subject": "closed rural clinic with protest banners and striking nurses outside, night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_arreglan_la_terminal",
+      "out": "assets/events/arreglan_la_terminal.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7029,
+      "subject": "old bus terminal under construction, scaffolding and barriers, empty benches",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_asalto_a_la_pulperia",
+      "out": "assets/events/asalto_a_la_pulperia.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7030,
+      "subject": "broken window of a looted village store at night, police flashlights, scattered goods",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_ley_seca",
+      "out": "assets/events/ley_seca.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7031,
+      "subject": "a bar with liquor bottles locked behind chains and a closed sign, election posters on the wall",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_corte_de_luz",
+      "out": "assets/events/corte_de_luz.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7032,
+      "subject": "pitch black blackout in a tropical Latin American village, every window dark, one lone candle in a store window, dead street lamps",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_temporal_de_octubre",
+      "out": "assets/events/temporal_de_octubre.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7033,
+      "subject": "endless heavy rain on a muddy tropical village street with tin roofs, flooded gutters, grey sky",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_llego_el_bus_de_la_frontera",
+      "out": "assets/events/llego_el_bus_de_la_frontera.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7034,
+      "subject": "an old crowded bus arriving at a rural terminal, tired workers with bags stepping down, night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_epoca_de_zafra",
+      "out": "assets/events/epoca_de_zafra.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7035,
+      "subject": "sugar cane cutters with machetes resting beside a burned cane field, smoke, sunset",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_rosario_del_barrio",
+      "out": "assets/events/rosario_del_barrio.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7036,
+      "subject": "old grandmothers praying the rosary in a candlelit living room, holy images on the wall",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_hackaton",
+      "out": "assets/events/hackaton.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7037,
+      "subject": "young technologists around old computers and tangled cables in a dim room, screens glowing",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_corridas_a_la_tica",
+      "out": "assets/events/corridas_a_la_tica.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7038,
+      "subject": "a rider holding on to a bucking bull in a wooden rustic bullring, crowd, night lights",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_convencion_de_guachimanes",
+      "out": "assets/events/convencion_de_guachimanes.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7039,
+      "subject": "group of night watchmen in uniforms with flashlights and caps under a streetlamp",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_internado_rotatorio",
+      "out": "assets/events/internado_rotatorio.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7040,
+      "subject": "tired young female doctors in white coats in a dim old hospital corridor at night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_luna_llena_en_nicoya",
+      "out": "assets/events/luna_llena_en_nicoya.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7041,
+      "subject": "shaman healers around a fire under a huge full moon, dry tropical forest, smoke spirits",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_procesion_del_santo_entierro",
+      "out": "assets/events/procesion_del_santo_entierro.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7042,
+      "subject": "solemn Good Friday procession with purple robes, a coffin of Christ carried, candles, night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_veterano_de_las_bananeras",
+      "out": "assets/events/veterano_de_las_bananeras.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7043,
+      "subject": "scarred old veteran with a machete standing in a banana plantation, hard stare, dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_forastero",
+      "out": "assets/events/forastero.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7044,
+      "subject": "lone stranger with a hat and a bag walking down a gravel road into a village at dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_dia_de_difuntos",
+      "out": "assets/events/dia_de_difuntos.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7045,
+      "subject": "a village cemetery covered in flowers and candles at night, a hand rising from a fresh grave",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_ladron_de_gallinas",
+      "out": "assets/events/ladron_de_gallinas.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7046,
+      "subject": "a thief running at night with stolen sacks from a barn toward a cellar entrance, moonlight",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_rumor_de_botija",
+      "out": "assets/events/rumor_de_botija.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7047,
+      "subject": "an old man pointing at a buried clay pot full of gold coins in a dark cellar, lantern",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_bandoleros_en_el_camino",
+      "out": "assets/events/bandoleros_en_el_camino.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7048,
+      "subject": "masked bandits on horseback on a misty mountain road at night, rifles and machetes",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_plaga_de_chicharras",
+      "out": "assets/events/plaga_de_chicharras.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7049,
+      "subject": "swarm of cicadas covering tree trunks and a chapel wall, insects everywhere, dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_enjambre_de_zancudos",
+      "out": "assets/events/enjambre_de_zancudos.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7050,
+      "subject": "a dense cloud of mosquitoes over a swampy village street, people swatting, humid night",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_bendicion_del_obispo",
+      "out": "assets/events/bendicion_del_obispo.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7051,
+      "subject": "a bishop in robes blessing kneeling farm workers with holy water, hacienda courtyard, candles",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_inquisidor_de_barrio",
+      "out": "assets/events/inquisidor_de_barrio.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7052,
+      "subject": "nosy neighbors whispering behind a fence, pointing at a tired worker, gossip, dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_primera_piedra",
+      "out": "assets/events/primera_piedra.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7053,
+      "subject": "workers digging a trench find an old cornerstone and a rusty coin box, lantern light",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_limpia_general",
+      "out": "assets/events/limpia_general.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7054,
+      "subject": "a folk healer woman sweeping smoke with herbs through a hacienda hall, incense, candles",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_gordo_navideno",
+      "out": "assets/events/gordo_navideno.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7055,
+      "subject": "hacienda family cheering around a lottery ticket and a small pile of banknotes, Christmas lights",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_agua_de_coco",
+      "out": "assets/events/agua_de_coco.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7056,
+      "subject": "smiling street vendor with green coconuts and a machete on a cart, Caribbean beach town, dusk",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_dia_de_los_parques",
+      "out": "assets/events/dia_de_los_parques.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7057,
+      "subject": "a park ranger teaching a group by a campfire in a rainforest, flags, festive",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "event_quema_en_el_arenal",
+      "out": "assets/events/quema_en_el_arenal.png",
+      "size": [
+        768,
+        432
+      ],
+      "out_size": [
+        640,
+        360
+      ],
+      "seed": 7058,
+      "subject": "wildfire burning a grassland with a volcano behind, a ranger fighting flames, smoke",
+      "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+      "negative_extra": "monochrome, sepia, grayscale"
     }
   ],
   "sprites": {

@@ -541,6 +541,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "the first 4 heroes on reset or on clean start should be randomized, but they should be 2 warrior and 2 support heroes always"
 - Done when: [x] every class has `role` warrior | support (validator); [x] a new campaign (no save) and the dev reset draw 2 random warriors (front) + 2 random supports (back), no class twice; [x] `-s` scripts keep the fixed `starter_party.fixed` party so tests and balance baselines don't move; [x] test_hub checks it
 
+### P4-26 · M · Town-event modal with a picture per event (owner 2026-11-20)
+- Status: `in-progress (Claude Code, betomm/nice-franklin-xo0yr1, 2026-11-20)` · Depends: P3-15
+- Files: `scripts/hacienda/hacienda_hub.gd` (`_show_event_card`), `scripts/ui/tooltip_card.gd` (`banner`), `scripts/domain/town_events.gd` (`image_path`), `tools/art_manifest.json` (`event_<id>`, 58), `assets/events/`, `tools/validate_data.py`, `tests/test_ui.gd`, `tools/screens/town_event_screenshot.gd`
+- Spec: owner "a modal like Darkest Dungeon's town-event scroll: Title, Image, Flavour text, Effects; generate images for all current town events in our style, coloured"
+- Done when: [x] the event card shows title, a 16:9 picture, the flavour text and the effects in their own box (choices — resurrect, paid offer — stay below); [ ] every event has `assets/events/<id>.png` + metadata (validator error otherwise); [x] test_ui opens every event's card and checks title + picture; [ ] owner looks at the art
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

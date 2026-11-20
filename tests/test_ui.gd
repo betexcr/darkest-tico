@@ -98,9 +98,14 @@ func _run() -> void:
 		gs.event_report = PackedStringArray()
 		hub._show_event_card()
 		await process_frame
-		ok = ok and _dialogs(hub).size() == 1 and _dialogs(hub)[0].title == str(ev["name"])
+		var ed: Array = _dialogs(hub)
+		ok = ok and ed.size() == 1 and str(ed[0].get_meta("event_id", "")) == str(ev["id"])
+		var et: Label = null if ed.is_empty() else ed[0].find_child("EventTitle", true, false)
+		ok = ok and et != null and et.text == str(ev["name"])
+		var pic: TextureRect = null if ed.is_empty() else ed[0].find_child("Picture", true, false)
+		ok = ok and pic != null and pic.texture != null
 		await _close_all(hub)
-	_check(ok, "every town event's card opens (%d)" % gs.TownEventsScript.all().size())
+	_check(ok, "every town event's card opens with its title and picture (%d)" % gs.TownEventsScript.all().size())
 	gs.active_event_id = ""
 	hub.queue_free()
 	await process_frame
