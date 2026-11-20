@@ -2064,10 +2064,50 @@
         "brightness": 1.3,
         "contrast": 1.15
       },
-      "seed": 6561,
+      "seed": 6562,
       "subject": "thick coiled rough rope tied in a tight knot, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
       "negative_extra": "person, man, woman, girl, face, portrait, figure, body, hands, building, frame, candle, fire, text, letters"
+    },
+    {
+      "id": "status_movimiento",
+      "out": "assets/status/movimiento.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.3,
+        "contrast": 1.15
+      },
+      "seed": 6602,
+      "subject": "one old muddy leather boot kicking forward with a dust cloud, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, girl, face, portrait, figure, building, frame, candle, fire, text, letters"
+    },
+    {
+      "id": "status_embargado",
+      "out": "assets/status/embargado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.3,
+        "contrast": 1.15
+      },
+      "seed": 6591,
+      "subject": "one rusty iron padlock wrapped in a heavy chain, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, girl, face, portrait, figure, body, building, frame, candle, fire, text, letters, hands"
     },
     {
       "id": "status_al_borde",

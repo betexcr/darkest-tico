@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Renders the town-event card (P4-26: title, picture, flavour text, effects) for review.
+## Renders the town-event card (P4-28: title, picture, flavour text, effects) for review.
 ##   xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/town_event_screenshot.gd -- <out_dir> [event_id ...]
 ## Saves event_<id>.png for each id (default: a good, a bad and a special event).
 

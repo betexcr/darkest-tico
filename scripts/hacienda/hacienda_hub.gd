@@ -880,6 +880,40 @@ func _roster_click_hint() -> String:
 	return "Clic para ver su ficha completa." if _open_building == "" else "Clic para elegirlo en este edificio."
 
 
+## Resistances in the hero sheet: icon + name + % per category, with a tooltip saying what
+## each one protects against (desc in data/statuses.json resist_categories).
+func _resist_grid(h: Dictionary) -> Control:
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 18)
+	grid.add_theme_constant_override("v_separation", 4)
+	for cat in StatusEffectsScript.resist_categories():
+		var id: String = str(cat.get("id", ""))
+		var v: int = StatusEffectsScript.resist_value(h, id)
+		var cell := HBoxContainer.new()
+		cell.add_theme_constant_override("separation", 6)
+		cell.mouse_filter = Control.MOUSE_FILTER_STOP
+		cell.tooltip_text = "%s — %s\n%s" % [cat.get("name", id), "Inmune" if v >= 100 else "%d%%" % v, cat.get("desc", "")]
+		var tex: Texture2D = GameState.load_texture("res://assets/status/%s.png" % str(cat.get("icon", id)))
+		if tex != null:
+			var icon := TextureRect.new()
+			icon.texture = tex
+			icon.custom_minimum_size = Vector2(20, 20)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(icon)
+		else:
+			var d: Dictionary = StatusEffectsScript.def(id)
+			var badge := CardScript.chip(str(cat.get("letter", d.get("letter", "?"))), Color(str(cat.get("color", d.get("color", "#777777")))))
+			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(badge)
+		cell.add_child(CardScript.label(str(cat.get("name", id)), 12, CardScript.MUTED, false))
+		cell.add_child(CardScript.label("Inmune" if v >= 100 else "%d%%" % v, 12, Color(0.53, 0.67, 1.0) if v >= 100 else CardScript.TEXT, false))
+		grid.add_child(cell)
+	return grid
+
+
 ## The hero's full sheet (owner 2026-11-19), opened by clicking a roster row while no building
 ## is open: big portrait, state, every stat, resistances, equipment (item cards on hover),
 ## the four skills with their rank (skill cards on hover), quirks with what they do, and the
@@ -955,11 +989,8 @@ func _show_hero_sheet(h: Dictionary) -> void:
 		grid.add_child(CardScript.label(str(r[1]), 13, CardScript.TEXT, false))
 	col.add_child(grid)
 	# Resistances (status) and elements from equipment.
-	var res: PackedStringArray = PackedStringArray()
-	for cat in StatusEffectsScript.resist_categories():
-		res.append("%s %d%%" % [cat.get("name", ""), StatusEffectsScript.resist_value(h, str(cat.get("id", "")))])
 	col.add_child(CardScript.section("Resistencias"))
-	col.add_child(CardScript.label(" · ".join(res), 12, CardScript.TEXT, true, CW))
+	col.add_child(_resist_grid(h))
 	var el: PackedStringArray = PackedStringArray()
 	var rs = h.get("resist", {})
 	if rs is Dictionary:
@@ -1073,8 +1104,7 @@ func _roster_row(h: Dictionary) -> Control:
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var p: String = GameState.portrait_path(h)
-	if ResourceLoader.exists(p):
-		pic.texture = load(p) as Texture2D
+	pic.texture = GameState.load_texture(p)
 	row.add_child(pic)
 	var info = CardButtonScript.new()
 	info.flat = true
