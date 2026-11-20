@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (22) — P4-27: missing status icons (Empujones, Amarrado, Embargado)
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-newton-5a2hb7`
+- **Status after session:** P4-27 done.
+- **Changed:**
+  - Checked every status and resist category against `assets/status/`: missing were `movimiento` (Empujones resistance), `amarrado` (manifest entry existed, never generated: the old validator warning) and `embargado` (no entry). `cuidando` uses `guardia` on purpose (`ICON_ALIAS`).
+  - `tools/sd_local.py` on CPU (dreamshaper-8), 3–4 candidates each, picked by eye: amarrado = coiled rope (seed 6562), embargado = chained rusty padlock (6591), movimiento = muddy boot kicking dust (6602; a first try with a shoving hand came out as claws). Manifest seeds match the picks, so `--only <id> --force` reproduces them.
+- **Verified:** validator 0 errors, **0 warnings**; Godot 4.7.2: test_ui, test_status 0 failures; hero sheet screenshot shows the Empujones boot. Battle status row and expedition panels load these through the same paths as the other icons.
+- **Not verified / risks:** icons are dark like the rest of the set; the boot is the dimmest at 20 px. Re-roll with `--try-seeds` if the owner wants something else.
+- **Decisions needed:** none.
+- **Next step:** the smoke/expedition_systems flake from entry (21): loop `tests/smoke_expedition.gd` until it fails and find the fight that never ends.
+
 ## 2026-11-20 (21) — P4-26: missing other-sex portraits; resistance icons + tooltips in the hero sheet
 - **Agent / branch:** Claude Code (cloud) / `betomm/tender-newton-5a2hb7`
 - **Status after session:** P4-26 done.

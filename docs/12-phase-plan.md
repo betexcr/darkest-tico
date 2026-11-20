@@ -547,6 +547,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "after the dev reset these heroes don't have a portrait" (male Exorcista, Abuelo Sabio) and "in the hero details modal add a tooltip and the symbol for the resistances"
 - Done when: [x] portraits/sprites load even when the PNG isn't imported yet (`GameState.load_texture` falls back to reading the file); [x] the sheet's Resistencias is a grid of icon + name + % with a tooltip per category (desc from data); [x] test_ui checks both
 
+### P4-27 · S · Missing status icons: Empujones, Amarrado, Embargado (owner 2026-11-20)
+- Status: `done` · Depends: P4-26
+- Files: `tools/art_manifest.json` (`status_movimiento`, `status_embargado`; `status_amarrado` seed), `assets/status/movimiento.png`, `amarrado.png`, `embargado.png` (+ `.metadata.json`)
+- Spec: owner "generate an icon for Empujones" and "check if any of the status effects are missing icons and generate them"
+- Done when: [x] every status in `data/statuses.json` and every resist category has an icon (Cuidando reuses Guardia on purpose); [x] validator has no "not generated yet" warning
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)
