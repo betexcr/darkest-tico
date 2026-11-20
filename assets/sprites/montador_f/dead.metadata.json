@@ -1,7 +1,7 @@
 {
   "id": "sprite_montador_f_dead",
   "prompt": "character sheet, young woman, Costa Rican bull rider, long straight dark hair, hoop earrings, worn pale straw cowboy hat, buttoned denim shirt, jeans, boots, six poses, same clothes and a coiled lasso rope in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "negative_prompt": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, shorts, bare legs, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5113,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -17,5 +17,11 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-19T23:28:06+00:00"
+  "timestamp": "2026-11-20T01:21:12+00:00",
+  "redo": {
+    "prompt": "young woman, Costa Rican bull rider, long straight dark hair, hoop earrings, worn pale straw cowboy hat, buttoned denim shirt, jeans, boots, lying dead on the ground, collapsed body, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5718,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.75
+  }
 }

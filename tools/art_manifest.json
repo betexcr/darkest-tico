@@ -3380,7 +3380,7 @@
         "seed": 5113,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, shorts, bare legs",
+        "negative_extra": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, shorts, bare legs, two people, standing figure",
         "weapon_shape": {
           "kind": "rope",
           "angle": 135,
@@ -3391,13 +3391,14 @@
         },
         "redo_seeds": {
           "attack": 5813,
-          "dead": 5718
+          "dead": 5821
         },
         "redo_ref_scale": {
           "attack": 0.35
         },
         "redo_poses": {
-          "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling"
+          "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling",
+          "dead": "lying dead on her back on the ground, alone, collapsed body, hat fallen beside her"
         },
         "redo_states": [
           "dead"
