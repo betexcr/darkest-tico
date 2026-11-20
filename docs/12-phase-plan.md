@@ -317,7 +317,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] a new hero knows 3 of 6 class camp skills; the fogata draws only known ones; [x] learn / fix / let go / swap shared, with prices in balance.json; [x] town building + page; old saves know all 6; [x] tests; [x] prices approved (owner 2026-11-19); [x] town events close or discount it (service `guardabosques`, 2 new events); [ ] owner playtest; [ ] upgrade tracks (P3-21)
 
 ### P3-21 · S · Guardabosques upgrade tracks
-- Status: `todo` · Depends: P3-13, P3-16 (building-upgrade system)
+- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-13, P3-16 (building-upgrade system)
 - Spec: `02` §9 (Guía de Supervivencia: 3 class skills per fogata, later stronger camp skills; Entrenamiento de Patrulla: cheaper lessons and fixing)
 - Done when: [ ] both tracks buyable with materials; [ ] `class_skills_per_camp` and `camp.*` prices read through the track level
 
@@ -329,12 +329,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Note: P3-13 builds on this (owner 2026-11-19: heroes start knowing 3 of the 6).
 
 ### P3-16 · M · Casa Comunal building upgrades
-- Status: `todo` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
+- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §4 (upgrade tracks), `04` §3.3 (discount up to 50% at cap)
 - Done when: [ ] Maestría de Oficio raises the max skill rank (start lower than 5); [ ] Plan de Formación lowers rank prices up to 50%
 
 ### P3-18 · S · Iglesia Vieja + Cantina upgrade tracks
-- Status: `todo` · Depends: P3-03, a building-upgrade system (materials, doc 02 §11)
+- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-03, a building-upgrade system (materials, doc 02 §11)
 - Spec: `02` §7 (upgrade pattern)
 - Done when: [ ] Per-activity upgrades: more relief, lower cost, more slots, repeated for higher tiers (data in `data/hub_activities.json`)
 
@@ -344,7 +344,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] Classes have extra skills to unlock at the Casa Comunal and pick 4 to take on an expedition
 
 ### P3-14 · S · Level-tiered hub prices
-- Status: `todo` · Depends: P3-04
+- Status: `in-progress (Claude Code, betomm/relaxed-darwin-k1c6iz, 2026-11-20)` · Depends: P3-04
 - Spec: `04` §3.5 (treatment tiers by resolve 0–2 / 3–4 / 5–6)
 - Done when: [ ] EBAIS / Iglesia / future Clínica prices scale with the hero's resolve tier
 
