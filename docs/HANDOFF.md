@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (16) — P4-24: heroes are men and women (names, class names, portraits, sprites)
+- **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
+- **Status after session:** P4-24 review.
+- **Changed:**
+  - `data/heroes.json`: per class `base_sex`, `class_names` {m, f}, `names_m` + `names_f` (20 each, 320 names, none twice; includes Keilor, Tito, Don Vito, Greivin). The old `names` list is gone (validator rejects it).
+  - `game_state.gd`: heroes get `sex` (recruits 50/50), names skip ones in use (roster, recruits, graveyard), `class_name_for`, `art_id` / `portrait_path` / `sprite_id` (other-sex art, falling back to the class art). Save v13: old heroes get a sex from the name lists, else the class's `base_sex`.
+  - All portrait/sprite users go through `GameState.portrait_path` / `sprite_id` (battle_unit, expedition, victory, hub, hero_card).
+  - Art: 8 portraits `assets/portraits/<id>_<m|f>.png` and 8 sprite sets `assets/sprites/<id>_<m|f>/`. `tools/sd_sprites.py`: per-character `redo_states`, `redo_modes`, `redo_seeds`, `redo_reference` ("portrait"); a redrawn dead pose is drawn on a wide band (`redo_band`) so no second standing figure appears.
+  - `AGENTS.md`: "Men and women" rule; validator checks it.
+- **Verified:** validator 0 errors (1 old warning: status_amarrado icon); smoke + all 19 tests 0 failures; every sprite set reviewed on a contact sheet next to its portrait.
+- **Not verified / risks:** not looked at in a running game window; SD re-rolls are seed-specific (a fresh sheet regeneration would change them).
+- **Decisions needed:** owner look at the art (guachimana dead pose has a dark chair shape behind her; tecnóloga dead has a small brass gear).
+- **Next step:** owner playtest of P4-22/23/24; then P3-13 (see plan).
+
+---
+
 ## 2026-11-19 (15) — Quirks after an expedition: much rarer, one at most
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P3-06 tuning (no new task).
