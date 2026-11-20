@@ -51,6 +51,8 @@ Primary sources:
 - Curio outcomes
 - Boss and elite drops
 
+Built (P3-16, 2026-11-20): objective 1 / 2 / 3 by difficulty, elite or roaming mini-boss 25% for 1, three curios. Spent with colones on building upgrades (doc 02 §11, `data/upgrades.json`).
+
 ### 1.3 Fragmentos Infernales (hard progression)
 
 Primary use:
@@ -103,6 +105,7 @@ Per mission starting loadout target:
 - Tier 3 activity: 1,500 colones
 - Veteran tier multiplier: `x1.4`
 - Champion tier multiplier: `x1.8`
+- Built (P3-14, 2026-11-20): by the hero's resolve tier (0–2 / 3–4 / 5–6), Iglesia, Cantina and EBAIS prices × `balance.json hub.tier_price_mult` [1.0, 1.4, 1.8]. The Iglesia/Cantina upgrades (P3-18: up to -30% price, +30% relief, +2 slots) bring it back down. Actual activity prices are in `data/hub_activities.json` (900–1,500 ₡).
 
 ## 3.3 Skill Training
 
@@ -112,7 +115,7 @@ Per mission starting loadout target:
 - Rank 4: 1,500
 - Rank 5: 2,700
 
-Training discount building line should reduce this up to 50% at cap.
+Training discount building line should reduce this up to 50% at cap. Built (P3-16): *Plan de Formación*, -15 / -30 / -50%; *Maestría de Oficio* starts the rank cap at 3 and raises it to 5 (doc 01 §6.3).
 
 ## 3.4 Equipment Upgrades
 

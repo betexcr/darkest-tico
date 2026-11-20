@@ -84,9 +84,13 @@ The EBAIS stays a button on each roster row. The Feria Nocturna and Mejoras de H
 ### Built (P3-04, 2026-11-11)
 
 - Rank purchase is in the hub: a row for the selected hero, with ranks 1–5 gated by resolve level and doc 04 §3.3 prices. Rules are in doc 01 §6.3.
-- Deferred:
-  - The two upgrade tracks (P3-16). They need a building-upgrade system and its materials (§11).
-  - Skill unlocks (P3-17). Every class has exactly 4 skills, all always available.
+- Deferred: skill unlocks (P3-17). Every class has exactly 4 skills, all always available.
+
+### Upgrades built (P3-16, 2026-11-20)
+
+- *Maestría de Oficio*: the max rank starts at 3; two levels raise it to 4 and 5.
+- *Plan de Formación*: three levels, -15 / -30 / -50% on rank prices (doc 04 §3.3).
+- Bought with Reliquias del Abuelo + colones (§11); data in `data/upgrades.json`, rules in `scripts/domain/building_upgrades.gd`, the "Mejoras" rows at the bottom of the page.
 
 ## 5) Taller de Herreria y Carretas (Equipment)
 
@@ -193,7 +197,9 @@ Each branch has 3 activities with independent slots and upgrade levels.
   - The old group "misa rápida" (−10 stress to everyone, nobody busy) is **removed**. It beat every activity on price and cost no week, so nobody would book one. A group blessing, if wanted, comes back only as a one-off town-event offer (`offer.all_stress`).
   - Activities **cure the Quebranto** (Darkest Dungeon rule). This is the main way to clear one.
   - **No refusals by Quebranto.** Restrictions on which activity a hero will take come with quirks (P3-06), as in Darkest Dungeon.
-- Not yet: upgrade tracks (more relief, cheaper, more slots) are P3-16; mood traits as lasting quirks wait for P3-06.
+- Upgrades (P3-18, 2026-11-20): each building has three tracks that apply to all three of its activities (the per-activity tracks above would be 18 rows; one set per building keeps the page readable): more relief (+10 / +20 / +30%), cheaper (-10 / -20 / -30%), more slots (+1 / +2). Iglesia: *Bancas de Cedro*, *Cofradía de la Limosna*, *Capilla Lateral*; Cantina: *Marimba de Planta*, *Cuenta al Fiado*, *Corredor Techado*. Data in `data/upgrades.json`.
+- Prices by hero level (P3-14, 2026-11-20): activities cost ×1.0 / ×1.4 / ×1.8 for resolve 0–2 / 3–4 / 5–6 (doc 04 §3.2; `balance.json hub.tier_price_mult`), the EBAIS too. The upgrades above bring it back down.
+- Mood traits as lasting quirks wait for P3-06.
 
 ## 8) Feria Nocturna (Trinkets)
 
@@ -223,12 +229,12 @@ Built (P3-13, owner 2026-11-19). The ranger's shed next to the Cantina. Prices i
 - **Cambiar** (100 ₡): swaps one of the 2 shared skills for the third.
 - Town events reach it like the other buildings (service `guardabosques`): `closed` shuts it for the week, `service_pct` scales all three prices.
 
-### Upgrade Tracks (later: they wait for the building-upgrade system, P3-16)
+### Upgrade Tracks (built P3-21, 2026-11-20; `data/upgrades.json`)
 
 1. `Guia de Supervivencia`
-   - More class skills per fogata (3 instead of 2); later, stronger camp skills.
+   - More class skills per fogata (3 instead of 2). Later idea: stronger camp skills.
 2. `Entrenamiento de Patrulla`
-   - Cheaper lessons and fixing.
+   - Cheaper lessons and fixing: -25 / -50% (the shared swap stays at its price).
 
 ## 10) Mejoras de Hacienda (District-Style Meta)
 
@@ -248,6 +254,8 @@ Global structures built from rare relics:
 - `Fragmentos Infernales` (late game)
 
 Each building consumes a distinct primary material plus gold equivalent to control pacing.
+
+**Built (P3-16, owner 2026-11-20): one material for now, Reliquias del Abuelo.** A hacienda counter like the colones (not an alforja item), shown next to the colones. Sources: clearing the objective (Aprendiz 1, Veterano 2, Campeón 3: `progression.json difficulties[].reliquias`), an elite fight or a killed roaming mini-boss (`balance.json upgrades.elite_reliquia_chance`), and three curios (*Caja del abuelo*, *Nicho de santos*, *Retrato del abuelo*; outcome `reliquias`). Every building upgrade costs Reliquias plus colones (`data/upgrades.json`). The other materials (Madera Tallada, Hierro Viejo, Fragmentos Infernales) wait for later buildings and regions.
 
 ## 12) Weekly Event Framework
 

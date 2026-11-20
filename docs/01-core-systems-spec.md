@@ -383,7 +383,8 @@ Implemented (P3-04). Data: `data/progression.json` `skill_ranks` (and an optiona
 - Recruits start at rank 1. A seasoned hero from a town event (Veterano de las Bananeras) arrives with every skill at the highest rank their resolve allows. A resurrected hero keeps their ranks. Levels from the idle-class event don't grant ranks.
 - Town events can close the Casa Comunal or change its price with the `casa_comunal` service (`closed`, `service_pct`). No event uses it yet.
 - Save v8 stores `skill_ranks` per hero. Older saves load at rank 1.
-- Not built: unlocking new skills (every class has exactly 4) and the building upgrades from doc 02 §4 (P3-16, P3-17).
+- **Rank cap (P3-16, owner 2026-11-20):** the Casa Comunal teaches up to rank 3 at first. Its upgrade *Maestría de Oficio* raises the cap to 4 and then 5 (`data/upgrades.json`, `GameState.skill_rank_cap()`); *Plan de Formación* takes up to 50% off rank prices. A hero already above the cap (a town-event veteran, a save from before v15) keeps their ranks but can't buy more until the cap catches up. Saves before v15 get the Maestría levels their best trained skill already needs.
+- Not built: unlocking new skills (every class has exactly 4; P3-17).
 
 ## 7) Balancing Guardrails (Initial)
 
