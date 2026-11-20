@@ -2070,6 +2070,46 @@
       "negative_extra": "person, man, woman, girl, face, portrait, figure, body, hands, building, frame, candle, fire, text, letters"
     },
     {
+      "id": "status_movimiento",
+      "out": "assets/status/movimiento.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.3,
+        "contrast": 1.15
+      },
+      "seed": 6581,
+      "subject": "one heavy rough open palm shoving forward with motion streaks, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, girl, face, portrait, figure, building, frame, candle, fire, text, letters"
+    },
+    {
+      "id": "status_embargado",
+      "out": "assets/status/embargado.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        64,
+        64
+      ],
+      "post": {
+        "brightness": 1.3,
+        "contrast": 1.15
+      },
+      "seed": 6591,
+      "subject": "one rusty iron padlock wrapped in a heavy chain, plain black background",
+      "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
+      "negative_extra": "person, man, woman, girl, face, portrait, figure, body, building, frame, candle, fire, text, letters, hands"
+    },
+    {
       "id": "status_al_borde",
       "out": "assets/status/al_borde.png",
       "size": [
