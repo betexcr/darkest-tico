@@ -1,8 +1,8 @@
 {
   "id": "event_veranillo_de_san_juan",
-  "prompt": "dark fantasy painting, sudden sunshine over wet green coffee hills, puddles shining, candles burning bright on a windowsill, dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+  "prompt": "dark fantasy painting, bright midday sun breaking through rain clouds over wet green coffee hills, puddles shining, daylight, candles on a windowsill, dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
   "negative_prompt": "monochrome, sepia, grayscale, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 7007,
+  "seed": 7008,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,5 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-20T07:42:33+00:00"
+  "timestamp": "2026-11-20T10:00:45+00:00"
 }

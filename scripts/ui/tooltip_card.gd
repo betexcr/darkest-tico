@@ -106,6 +106,9 @@ static func is_bad_line(s: String) -> bool:
 	var negative: bool = t.begins_with("-") or t.contains(" -")
 	if t.contains("estrés recibido"):
 		return not negative
+	# Less stress is good ("-50 estrés a todos").
+	if negative and t.contains("estrés"):
+		return false
 	return negative
 
 

@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (21) — P4-26: town-event modal with a picture per event
+- **Agent / branch:** Claude Code (cloud) / `betomm/nice-franklin-xo0yr1`
+- **Status after session:** P4-26 review (owner looks at the art).
+- **Changed:**
+  - `hacienda_hub.gd` `_show_event_card`: Darkest Dungeon-style scroll — big centered title, 16:9 framed picture (frame tinted by good/bad/special), centered flavour text, effects in their own dark box; resurrect / paid-offer choices stay below. The window bar shows "Buena noticia / Mala noticia / Suceso".
+  - `tooltip_card.gd`: `banner(path, size, hue)`; `is_bad_line` no longer paints "-N estrés" lines red (less stress is good).
+  - `town_events.gd`: `image_path(ev)` → `res://assets/events/<id>.png`.
+  - Art: 58 pictures `assets/events/<id>.png` (640×360, generated 768×432) + metadata, manifest ids `event_<id>` (seeds 7001+, coloured style, "monochrome, sepia" negative). corte_de_luz and veranillo_de_san_juan were re-rolled with sharper prompts (veranillo seed 7008). Also generated the long-missing `status_amarrado` icon (validator warning gone).
+  - `tools/validate_data.py`: every town event needs its picture. `tests/test_ui.gd`: every event card has its title and a loaded picture. New `tools/screens/town_event_screenshot.gd`.
+- **Verified:** validator 0 errors, 0 warnings; Godot 4.7.2 Linux: smoke + all 19 tests 0 failures, no SCRIPT ERROR; screenshots of several event cards reviewed. `test_ui` failed once on "a hero's turn comes up in a fight (room , …)" — the random map had no combat room found; passed on every rerun (pre-existing flake).
+- **Not verified / risks:** not looked at in a running game window at other resolutions (the card is 560 px wide + picture 315 px high; fits 720p).
+- **Decisions needed:** owner look at the 58 pictures; any can be re-rolled with `tools/sd_local.py --only event_<id> --try-seeds 3 --preview-dir <dir>` and a new seed in the manifest.
+- **Next step:** owner playtest of P4-22–26; find the test_ui / test_expedition_systems random flakes.
+
+---
+
 ## 2026-11-20 (20) — P4-25: random starting party, always 2 warriors + 2 supports
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P4-25 done.
