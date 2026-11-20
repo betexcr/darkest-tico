@@ -110,6 +110,7 @@ var party: Array = []
 ## Candidates at the Terminal de Buses, refreshed every week.
 var recruit_pool: Array = []
 var _next_uid: int = 1
+var _tex_cache: Dictionary = {}
 ## True while a fight is on: only `equip_turn_hero` may change equipment, and it costs
 ## their turn (owner 2026-11-08; before that gear was fully locked in combat).
 var equip_locked: bool = false
@@ -902,6 +903,30 @@ func art_id(h: Dictionary) -> String:
 	if sex == "" or sex == base:
 		return hid
 	return "%s_%s" % [hid, sex]
+
+
+## Loads a texture, imported or not. Art added since the editor last ran (e.g. the P4-24
+## other-sex portraits) is a plain PNG with no import yet: ResourceLoader can't see it, so it
+## is read straight from the file. Returns null when the file is missing.
+func load_texture(path: String) -> Texture2D:
+	if path == "":
+		return null
+	if _tex_cache.has(path):
+		return _tex_cache[path]
+	var tex: Texture2D = null
+	if ResourceLoader.exists(path):
+		tex = load(path) as Texture2D
+	elif FileAccess.file_exists(path):
+		var img := Image.load_from_file(ProjectSettings.globalize_path(path))
+		if img != null and not img.is_empty():
+			tex = ImageTexture.create_from_image(img)
+	if tex != null:
+		_tex_cache[path] = tex
+	return tex
+
+
+func texture_exists(path: String) -> bool:
+	return ResourceLoader.exists(path) or FileAccess.file_exists(path)
 
 
 func portrait_path(h: Dictionary) -> String:

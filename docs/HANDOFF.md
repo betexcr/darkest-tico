@@ -17,7 +17,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (25) — P3-14 + P3-16 + P3-18 + P3-21: building upgrades, Reliquias del Abuelo, tiered hub prices
+## 2026-11-20 (28) — P3-14 + P3-16 + P3-18 + P3-21: building upgrades, Reliquias del Abuelo, tiered hub prices
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P3-14, P3-16, P3-18, P3-21 review (owner to play). New P5-11 todo (tier retune).
 - **Changed:**
@@ -37,7 +37,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (24) — P4-06: readable map rooms (bigger, color per type, legend)
+## 2026-11-20 (27) — P4-06: readable map rooms (bigger, color per type, legend)
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P4-06 review. P3-14 (level-tiered hub prices): discussed with the owner, not started; my advice was to defer it to the building upgrades (P3-16/P3-18) or cut it, since it would squeeze the economy P5-06 just settled. Left `todo`.
 - **Changed:** `scripts/expedition/map_view.gd` (CELL 72, ROOM 56, `TYPE_COLORS` / `TYPE_NAMES` frames, outer rings for current/reachable, `_draw_legend` wrapping legend; rooms centered above the legend); new `tools/screens/map_screenshot.gd` (+ .uid).
@@ -48,7 +48,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (23) — P1-20: smoke expedition fails on a hang, not on a long fight
+## 2026-11-20 (26) — P1-20: smoke expedition fails on a hang, not on a long fight
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P1-20 done.
 - **Changed:** `tests/smoke_expedition.gd`: the 3000-frame total cap is gone (96 expeditions measured today: median 1444, max 2938 frames — almost at the cap). Now a run fails when nothing happens for `STALL_STEPS` (600) frames in a row (no room move, hero turn, target pick, event button or screen-mode change); `MAX_STEPS` 30000 only stops an endless loop. The "expedition ended" line prints frames used and the longest still stretch. `-- --hang-test` makes the bot stop acting in fights to prove a hang still fails.
@@ -59,10 +59,10 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (22) — P5-06 closed: week-24 target is "solvent"
+## 2026-11-20 (25) — P5-06 closed: week-24 target is "solvent"
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P5-06 done.
-- **Changed:** owner 2026-11-20 chose option (a) from entry (21): the week-24 money target is "solvent (≥ 500 ₡)", not a 4–8k bank. Plan and doc 09 §8 updated. No code or data change.
+- **Changed:** owner 2026-11-20 chose option (a) from entry (24): the week-24 money target is "solvent (≥ 500 ₡)", not a 4–8k bank. Plan and doc 09 §8 updated. No code or data change.
 - **Verified:** docs only; validator 0 errors.
 - **Not verified / risks:** 1 of 18 bot campaigns still ends under 500 ₡ (169 ₡).
 - **Decisions needed:** none.
@@ -70,7 +70,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (21) — P5-06: Veterano/Campeón re-measured after drops; bot fixes; bank band open
+## 2026-11-20 (24) — P5-06: Veterano/Campeón re-measured after drops; bot fixes; bank band open
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P5-06 review (was blocked). Its clear-rate and death targets were already met by P5-08/P5-09; this session re-measured after P5-10 (drops) and looked at the week-24 bank.
 - **Changed:**
@@ -83,6 +83,44 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Next step:** owner answers the bank decision; if (a), set P5-06 done. Otherwise P1-20 (smoke expedition runs out of frames) or P3-14 (level-tiered hub prices).
 
 ---
+## 2026-11-20 (23) — P4-28: town-event modal with a picture per event
+- **Agent / branch:** Claude Code (cloud) / `betomm/nice-franklin-xo0yr1`
+- **Status after session:** P4-28 review (owner looks at the art). Started as P4-26 (commit messages say so); renamed P4-28 when merging main, which had used P4-26/P4-27 meanwhile. Main's Amarrado icon (P4-27) kept over the one generated here.
+- **Changed:**
+  - `hacienda_hub.gd` `_show_event_card`: Darkest Dungeon-style scroll — big centered title, 16:9 framed picture (frame tinted by good/bad/special), centered flavour text, effects in their own dark box; resurrect / paid-offer choices stay below. The window bar shows "Buena noticia / Mala noticia / Suceso".
+  - `tooltip_card.gd`: `banner(path, size, hue)`; `is_bad_line` no longer paints "-N estrés" lines red (less stress is good).
+  - `town_events.gd`: `image_path(ev)` → `res://assets/events/<id>.png`.
+  - Art: 58 pictures `assets/events/<id>.png` (640×360, generated 768×432) + metadata, manifest ids `event_<id>` (seeds 7001+, coloured style, "monochrome, sepia" negative). corte_de_luz and veranillo_de_san_juan were re-rolled with sharper prompts (veranillo seed 7008). 
+  - `tools/validate_data.py`: every town event needs its picture. `tests/test_ui.gd`: every event card has its title and a loaded picture. New `tools/screens/town_event_screenshot.gd`.
+- **Verified:** validator 0 errors, 0 warnings; Godot 4.7.2 Linux: smoke + all 19 tests 0 failures, no SCRIPT ERROR; screenshots of several event cards reviewed. `test_ui` failed once on "a hero's turn comes up in a fight (room , …)" — the random map had no combat room found; passed on every rerun (pre-existing flake). After merging main: all green except `test_expedition_systems` "the key item is spent for its outcome", which fails ~1 in 3 runs on untouched origin/main too (pre-existing flake).
+- **Not verified / risks:** not looked at in a running game window at other resolutions (the card is 560 px wide + picture 315 px high; fits 720p).
+- **Decisions needed:** owner look at the 58 pictures; any can be re-rolled with `tools/sd_local.py --only event_<id> --try-seeds 3 --preview-dir <dir>` and a new seed in the manifest.
+- **Next step:** owner playtest of P4-22–26; find the test_ui / test_expedition_systems random flakes.
+
+---
+## 2026-11-20 (22) — P4-27: missing status icons (Empujones, Amarrado, Embargado)
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-newton-5a2hb7`
+- **Status after session:** P4-27 done.
+- **Changed:**
+  - Checked every status and resist category against `assets/status/`: missing were `movimiento` (Empujones resistance), `amarrado` (manifest entry existed, never generated: the old validator warning) and `embargado` (no entry). `cuidando` uses `guardia` on purpose (`ICON_ALIAS`).
+  - `tools/sd_local.py` on CPU (dreamshaper-8), 3–4 candidates each, picked by eye: amarrado = coiled rope (seed 6562), embargado = chained rusty padlock (6591), movimiento = muddy boot kicking dust (6602; a first try with a shoving hand came out as claws). Manifest seeds match the picks, so `--only <id> --force` reproduces them.
+- **Verified:** validator 0 errors, **0 warnings**; Godot 4.7.2: test_ui, test_status 0 failures; hero sheet screenshot shows the Empujones boot. Battle status row and expedition panels load these through the same paths as the other icons.
+- **Not verified / risks:** icons are dark like the rest of the set; the boot is the dimmest at 20 px. Re-roll with `--try-seeds` if the owner wants something else.
+- **Decisions needed:** none.
+- **Next step:** the smoke/expedition_systems flake from entry (21): loop `tests/smoke_expedition.gd` until it fails and find the fight that never ends.
+
+## 2026-11-20 (21) — P4-26: missing other-sex portraits; resistance icons + tooltips in the hero sheet
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-newton-5a2hb7`
+- **Status after session:** P4-26 done.
+- **Changed:**
+  - Cause of the blank portraits: P4-24's other-sex PNGs (`exorcista_m`, `abuela_m`, …) not yet imported by the owner's Godot. `portrait_path` picked them (raw file exists) but every screen loaded through `ResourceLoader`, which only sees imported files → empty picture.
+  - `GameState.load_texture(path)` (cached): imported resource, else `Image.load_from_file` on the raw PNG, else null. Used by `tooltip_card.picture`, the hub roster row, the expedition hero/enemy info portraits, the victory card and battle sprites (`battle_unit._load_textures`).
+  - Hero sheet (`hacienda_hub._resist_grid`): Resistencias is now a 3-column grid, icon (`assets/status/<icon>.png`, or a letter badge) + name + % ("Inmune" in blue), tooltip "Name — %\nwhat it protects against". `data/statuses.json` `resist_categories[]` gained `desc`; Empujones (no icon art) has `color`/`letter` for its badge.
+  - `tests/test_ui.gd`: sheet has every resistance with icon + tooltip; `load_texture` works. New `tools/screens/hero_sheet_screenshot.gd`.
+- **Verified:** validator 0 errors (old amarrado icon warning); Godot 4.7.2 Linux: smoke + all 19 tests 0 failures, no SCRIPT ERROR. Screenshot of the sheet checked (icons, male Exorcista portrait). `smoke_expedition` failed once (2 failures: an expedition that never ended) and passed 3 reruns with and 3 without this change: a pre-existing random flake like the `test_expedition_systems` one in entry (20).
+- **Not verified / risks:** the hover tooltip itself couldn't be captured headless (the sheet is an embedded dialog); the quirk badges in the same dialog use the same `tooltip_text` path. Opening the project in the editor once imports the new art anyway.
+- **Decisions needed:** Empujones has no icon art (letter badge ↔); generate `assets/status/movimiento.png` if wanted.
+- **Next step:** look into the smoke/expedition_systems flake: run `tests/smoke_expedition.gd` in a loop until it fails and read the stuck fight (201 hero turns, 7 moves) — likely a fight that never ends; check the drag penalty in `scripts/combat/` for a case where nobody can hit.
 
 ## 2026-11-20 (20) — P4-25: random starting party, always 2 warriors + 2 supports
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`

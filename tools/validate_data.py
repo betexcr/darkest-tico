@@ -318,6 +318,9 @@ def main() -> int:
         for f in ("name", "text", "kind", "category", "dd"):
             if not ev.get(f):
                 errors.append(f"{where} missing '{f}'")
+        # Event card picture (P4-28): assets/events/<id>.png, made from art_manifest `event_<id>`.
+        if eid and not (ROOT / "assets" / "events" / f"{eid}.png").exists():
+            errors.append(f"{where} no picture assets/events/{eid}.png (tools/art_manifest.json 'event_{eid}')")
         if ev.get("kind") not in ("positive", "negative", "special"):
             errors.append(f"{where} invalid kind")
         fx = ev.get("effects", {})

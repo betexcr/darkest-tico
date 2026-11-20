@@ -86,6 +86,22 @@ func _run() -> void:
 	d = _dialogs(hub)
 	_check(d.size() == 1 and d[0] is ConfirmationDialog and d[0].ok_button_text == "Despedir", "the dismiss card opens")
 	await _close_all(hub)
+	hub._show_hero_sheet(gs.roster[0])
+	await process_frame
+	d = _dialogs(hub)
+	var cats: Array = load("res://scripts/domain/status_effects.gd").resist_categories()
+	var tips: Array = []
+	if d.size() == 1:
+		tips = d[0].find_children("*", "HBoxContainer", true, false).filter(func(c): return str(c.tooltip_text) != "")
+	ok = tips.size() >= cats.size()
+	for cat in cats:
+		var found: Array = tips.filter(func(c): return str(c.tooltip_text).begins_with(str(cat["name"]) + " — "))
+		ok = ok and found.size() == 1 and str(found[0].tooltip_text).contains(str(cat["desc"])) \
+			and (found[0].get_child(0) is TextureRect and found[0].get_child(0).texture != null or found[0].get_child(0) is PanelContainer)
+	_check(ok, "the hero sheet shows every resistance with an icon and a tooltip")
+	# Other-sex art (P4-24) that the editor hasn't imported yet still loads (raw PNG fallback).
+	_check(gs.load_texture("res://assets/portraits/exorcista_m.png") != null and gs.load_texture("res://assets/portraits/nope.png") == null, "portraits load, imported or not")
+	await _close_all(hub)
 	gs.inventory.clear()
 	hub._confirm_provisions()
 	await process_frame
@@ -98,9 +114,14 @@ func _run() -> void:
 		gs.event_report = PackedStringArray()
 		hub._show_event_card()
 		await process_frame
-		ok = ok and _dialogs(hub).size() == 1 and _dialogs(hub)[0].title == str(ev["name"])
+		var ed: Array = _dialogs(hub)
+		ok = ok and ed.size() == 1 and str(ed[0].get_meta("event_id", "")) == str(ev["id"])
+		var et: Label = null if ed.is_empty() else ed[0].find_child("EventTitle", true, false)
+		ok = ok and et != null and et.text == str(ev["name"])
+		var pic: TextureRect = null if ed.is_empty() else ed[0].find_child("Picture", true, false)
+		ok = ok and pic != null and pic.texture != null
 		await _close_all(hub)
-	_check(ok, "every town event's card opens (%d)" % gs.TownEventsScript.all().size())
+	_check(ok, "every town event's card opens with its title and picture (%d)" % gs.TownEventsScript.all().size())
 	gs.active_event_id = ""
 	hub.queue_free()
 	await process_frame

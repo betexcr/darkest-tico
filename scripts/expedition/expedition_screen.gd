@@ -348,7 +348,7 @@ func _show_hero_info(h: Dictionary) -> void:
 
 
 func _set_info_portrait(path: String) -> void:
-	_enemy_info_portrait.texture = load(path) as Texture2D if ResourceLoader.exists(path) else null
+	_enemy_info_portrait.texture = GameState.load_texture(path)
 	_enemy_info_portrait.visible = _enemy_info_portrait.texture != null
 
 
@@ -607,7 +607,7 @@ func _view_hero(hero: Dictionary) -> void:
 	if hero.is_empty():
 		return
 	var p: String = GameState.portrait_path(hero)
-	_hero_portrait.texture = load(p) as Texture2D if ResourceLoader.exists(p) else null
+	_hero_portrait.texture = GameState.load_texture(p)
 	_hero_name.text = "%s\n%s" % [hero.get("name", "?"), hero.get("class_name", "")]
 	var lines: PackedStringArray = PackedStringArray()
 	lines.append("PV %d/%d · Estrés %d · Resolución %d" % [int(hero.get("hp", 0)), int(hero.get("hp_max", 0)),

@@ -185,8 +185,7 @@ func _hero_card(e: Dictionary) -> Control:
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var p: String = GameState.portrait_path(e)
-	if ResourceLoader.exists(p):
-		pic.texture = load(p) as Texture2D
+	pic.texture = GameState.load_texture(p)
 	if dead:
 		pic.modulate = Color(0.4, 0.4, 0.4)
 	row.add_child(pic)

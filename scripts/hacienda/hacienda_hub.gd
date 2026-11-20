@@ -954,6 +954,40 @@ func _roster_click_hint() -> String:
 	return "Clic para ver su ficha completa." if _open_building == "" else "Clic para elegirlo en este edificio."
 
 
+## Resistances in the hero sheet: icon + name + % per category, with a tooltip saying what
+## each one protects against (desc in data/statuses.json resist_categories).
+func _resist_grid(h: Dictionary) -> Control:
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 18)
+	grid.add_theme_constant_override("v_separation", 4)
+	for cat in StatusEffectsScript.resist_categories():
+		var id: String = str(cat.get("id", ""))
+		var v: int = StatusEffectsScript.resist_value(h, id)
+		var cell := HBoxContainer.new()
+		cell.add_theme_constant_override("separation", 6)
+		cell.mouse_filter = Control.MOUSE_FILTER_STOP
+		cell.tooltip_text = "%s — %s\n%s" % [cat.get("name", id), "Inmune" if v >= 100 else "%d%%" % v, cat.get("desc", "")]
+		var tex: Texture2D = GameState.load_texture("res://assets/status/%s.png" % str(cat.get("icon", id)))
+		if tex != null:
+			var icon := TextureRect.new()
+			icon.texture = tex
+			icon.custom_minimum_size = Vector2(20, 20)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(icon)
+		else:
+			var d: Dictionary = StatusEffectsScript.def(id)
+			var badge := CardScript.chip(str(cat.get("letter", d.get("letter", "?"))), Color(str(cat.get("color", d.get("color", "#777777")))))
+			badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cell.add_child(badge)
+		cell.add_child(CardScript.label(str(cat.get("name", id)), 12, CardScript.MUTED, false))
+		cell.add_child(CardScript.label("Inmune" if v >= 100 else "%d%%" % v, 12, Color(0.53, 0.67, 1.0) if v >= 100 else CardScript.TEXT, false))
+		grid.add_child(cell)
+	return grid
+
+
 ## The hero's full sheet (owner 2026-11-19), opened by clicking a roster row while no building
 ## is open: big portrait, state, every stat, resistances, equipment (item cards on hover),
 ## the four skills with their rank (skill cards on hover), quirks with what they do, and the
@@ -1029,11 +1063,8 @@ func _show_hero_sheet(h: Dictionary) -> void:
 		grid.add_child(CardScript.label(str(r[1]), 13, CardScript.TEXT, false))
 	col.add_child(grid)
 	# Resistances (status) and elements from equipment.
-	var res: PackedStringArray = PackedStringArray()
-	for cat in StatusEffectsScript.resist_categories():
-		res.append("%s %d%%" % [cat.get("name", ""), StatusEffectsScript.resist_value(h, str(cat.get("id", "")))])
 	col.add_child(CardScript.section("Resistencias"))
-	col.add_child(CardScript.label(" · ".join(res), 12, CardScript.TEXT, true, CW))
+	col.add_child(_resist_grid(h))
 	var el: PackedStringArray = PackedStringArray()
 	var rs = h.get("resist", {})
 	if rs is Dictionary:
@@ -1147,8 +1178,7 @@ func _roster_row(h: Dictionary) -> Control:
 	pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	var p: String = GameState.portrait_path(h)
-	if ResourceLoader.exists(p):
-		pic.texture = load(p) as Texture2D
+	pic.texture = GameState.load_texture(p)
 	row.add_child(pic)
 	var info = CardButtonScript.new()
 	info.flat = true
@@ -1707,27 +1737,47 @@ func _refresh_event_button() -> void:
 	_event_btn.tooltip_text = "" if ev.is_empty() else "\n".join(TownEventsScript.effect_lines(ev))
 
 
-## Event card: name, text, what it changes, what already happened, and any choices.
+## Event card (Darkest Dungeon town-event scroll): title, picture, flavour text, then what
+## already happened and what lasts the week in a darker box; choices below.
 func _show_event_card() -> void:
 	var ev: Dictionary = GameState.active_event()
 	if ev.is_empty():
 		return
 	GameState.event_seen = true
 	SaveService.save_game()
-	var made: Array = _card_dialog(str(ev.get("name", "")), 540.0)
+	const W := 560.0
+	var made: Array = _card_dialog(TownEventsScript.kind_label(ev), W)
 	var dlg: AcceptDialog = made[0]
 	var col: VBoxContainer = made[1]
+	dlg.set_meta("event_id", str(ev.get("id", "")))
 	dlg.ok_button_text = "Entendido"
+	col.add_theme_constant_override("separation", 10)
 	var hue: Color = {"positive": Color(0.45, 0.72, 0.4), "negative": Color(0.82, 0.38, 0.32)}.get(str(ev.get("kind", "")), Color(0.78, 0.64, 0.3))
-	col.add_child(CardScript.chip(TownEventsScript.kind_label(ev), hue, 11))
-	col.add_child(CardScript.label(str(ev.get("text", "")), 14, CardScript.TEXT, true, 540.0))
+	var title := CardScript.title_label(str(ev.get("name", "")), 24, W)
+	title.name = "EventTitle"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(title)
+	col.add_child(CardScript.banner(TownEventsScript.image_path(ev), Vector2(W, W * 9.0 / 16.0), hue))
+	var flavour := CardScript.label(str(ev.get("text", "")), 16, CardScript.TEXT, true, W)
+	flavour.name = "EventText"
+	flavour.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	col.add_child(flavour)
 	# What happened right away (if we still have the report) + what lasts the week.
 	var lines: PackedStringArray = GameState.event_report.duplicate()
 	lines.append_array(TownEventsScript.effect_lines(ev, GameState.event_report.is_empty()))
 	if not lines.is_empty():
-		col.add_child(CardScript.rule())
-		col.add_child(CardScript.section("Esta semana"))
-		col.add_child(CardScript.bullet_list(Array(lines), true))
+		var box := PanelContainer.new()
+		box.name = "EventEffects"
+		var sb := CardScript.flat(Color(0.035, 0.028, 0.024), Color(hue, 0.6), 1, 4, 10)
+		box.add_theme_stylebox_override("panel", sb)
+		var fx := VBoxContainer.new()
+		fx.add_theme_constant_override("separation", 4)
+		box.add_child(fx)
+		for line in lines:
+			var l := CardScript.label(str(line), 14, CardScript.BAD if CardScript.is_bad_line(str(line)) else CardScript.GOLD.lerp(CardScript.TEXT, 0.5), true, W - 24.0)
+			l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			fx.add_child(l)
+		col.add_child(box)
 	var back: Array = GameState.resurrect_candidates()
 	if not back.is_empty():
 		col.add_child(CardScript.rule())

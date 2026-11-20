@@ -153,6 +153,11 @@ static func kind_label(ev: Dictionary) -> String:
 	return "Suceso"
 
 
+## Picture shown on the event card (generated from tools/art_manifest.json `event_<id>`).
+static func image_path(ev: Dictionary) -> String:
+	return "res://assets/events/%s.png" % str(ev.get("id", ""))
+
+
 const CATEGORY_NAMES := {"consumable": "consumibles", "healing": "remedios y vendas", "weapon": "armas", "armor": "armaduras", "accessory": "accesorios"}
 const SERVICE_NAMES := {"iglesia": "Iglesia Vieja", "cantina": "Cantina del Centro", "ebais": "EBAIS", "terminal": "Terminal de Buses",
 	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "taller_compra": "Taller (comprar)",

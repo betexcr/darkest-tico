@@ -106,6 +106,9 @@ static func is_bad_line(s: String) -> bool:
 	var negative: bool = t.begins_with("-") or t.contains(" -")
 	if t.contains("estrés recibido"):
 		return not negative
+	# Less stress is good ("-50 estrés a todos").
+	if negative and t.contains("estrés"):
+		return false
 	return negative
 
 
@@ -165,11 +168,26 @@ static func picture(path: String, side: float = 52.0) -> Control:
 	frame.add_theme_stylebox_override("panel", flat(Color(0.14, 0.11, 0.09), BORDER.darkened(0.3), 1, 4, 3))
 	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var tex := TextureRect.new()
+	tex.texture = GameState.load_texture(path)
+	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tex.custom_minimum_size = Vector2(side, side)
+	frame.add_child(tex)
+	return frame
+
+
+## Wide framed picture (town-event art): `size` is the picture area; `hue` tints the frame.
+## Empty dark frame if the file doesn't exist.
+static func banner(path: String, size: Vector2, hue: Color = BORDER) -> Control:
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", flat(Color(0.05, 0.04, 0.035), hue.lerp(BORDER, 0.5), 2, 4, 3))
+	var tex := TextureRect.new()
+	tex.name = "Picture"
 	if ResourceLoader.exists(path):
 		tex.texture = load(path) as Texture2D
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tex.custom_minimum_size = Vector2(side, side)
+	tex.custom_minimum_size = size - Vector2(6, 6)
 	frame.add_child(tex)
 	return frame
 

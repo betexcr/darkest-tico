@@ -1,0 +1,15 @@
+{
+  "id": "event_romeria",
+  "prompt": "dark fantasy painting, pilgrims walking on a road at dawn toward a distant basilica, candles and rosaries, dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+  "negative_prompt": "monochrome, sepia, grayscale, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 7018,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "768x432",
+  "output_resolution": "640x360",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-20T08:10:38+00:00"
+}
