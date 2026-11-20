@@ -1,8 +1,8 @@
 {
   "id": "portrait_exorcista_m",
-  "prompt": "dark fantasy painting, portrait of a neighborhood priest exorcist, black cassock with white collar, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "prompt": "dark fantasy painting, portrait of a middle-aged neighborhood priest exorcist, kind tired brown eyes, black cassock with white collar, wooden rosary and holy water bottle, nervous but brave, candle light, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
   "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 1208,
+  "seed": 1210,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,5 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-19T22:13:57+00:00"
+  "timestamp": "2026-11-19T22:55:18+00:00"
 }

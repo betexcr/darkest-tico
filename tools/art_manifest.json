@@ -88,22 +88,86 @@
       "seed": 1108,
       "subject": "portrait of a neighborhood exorcist, worn long black coat, wooden rosary and a glass bottle of holy water, nervous but brave expression, candle light, dark background"
     },
-    {"id": "portrait_campesino_f", "out": "assets/portraits/campesino_f.png", "size": [512, 512], "seed": 1203,
-     "subject": "portrait of a weathered Costa Rican farm woman gripping a long steel machete, big blade in her hand, straw hat, dark braid, work shirt, determined face, dark background"},
-    {"id": "portrait_montador_f", "out": "assets/portraits/montador_f.png", "size": [512, 512], "seed": 1202,
-     "subject": "portrait of a fearless young Costa Rican woman bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"},
-    {"id": "portrait_abuela_m", "out": "assets/portraits/abuela_m.png", "size": [512, 512], "seed": 1203,
-     "subject": "portrait of a wise elderly grandfather healer, white beard, knitted wool poncho, holding a clay bowl of steaming soup with herbs, kind but stern eyes, candle light, dark background"},
-    {"id": "portrait_tecnologo_f", "out": "assets/portraits/tecnologo_f.png", "size": [512, 512], "seed": 1204,
-     "subject": "portrait of a young woman wandering tinkerer, short curly hair, brass goggles on forehead, homemade drone parts and cables on her shoulders, patched jacket, curious face, lantern light, dark background"},
-    {"id": "portrait_guachiman_f", "out": "assets/portraits/guachiman_f.png", "size": [512, 512], "seed": 1205,
-     "subject": "portrait of an old retired woman night watchman, grey hair in a bun, faded security guard uniform and cap, flashlight and whistle, tired vigilant eyes, lantern light, dark background"},
-    {"id": "portrait_medica_josefina_m", "out": "assets/portraits/medica_josefina_m.png", "size": [512, 512], "seed": 1206,
-     "subject": "portrait of a stern middle-aged rural doctor man wearing a clean white doctor's coat, stethoscope around his neck, leather medical bag, neat mustache, composed expression, lantern light, dark background"},
-    {"id": "portrait_curandero_m", "out": "assets/portraits/curandero_m.png", "size": [512, 512], "seed": 1207,
-     "subject": "portrait of a dignified elderly man folk healer, wide-brimmed straw hat, white stubble, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"},
-    {"id": "portrait_exorcista_m", "out": "assets/portraits/exorcista_m.png", "size": [512, 512], "seed": 1208,
-     "subject": "portrait of a middle-aged neighborhood priest exorcist, kind tired brown eyes, black cassock with white collar, wooden rosary and holy water bottle, nervous but brave, candle light"},
+    {
+      "id": "portrait_campesino_f",
+      "out": "assets/portraits/campesino_f.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1203,
+      "subject": "portrait of a weathered Costa Rican farm woman gripping a long steel machete, big blade in her hand, straw hat, dark braid, work shirt, determined face, dark background"
+    },
+    {
+      "id": "portrait_montador_f",
+      "out": "assets/portraits/montador_f.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1202,
+      "subject": "portrait of a fearless young Costa Rican woman bull rider, cowboy hat, coiled rope in hand, bruised cheek, dusty denim shirt, lantern light, dark background"
+    },
+    {
+      "id": "portrait_abuela_m",
+      "out": "assets/portraits/abuela_m.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1203,
+      "subject": "portrait of a wise elderly grandfather healer, white beard, knitted wool poncho, holding a clay bowl of steaming soup with herbs, kind but stern eyes, candle light, dark background"
+    },
+    {
+      "id": "portrait_tecnologo_f",
+      "out": "assets/portraits/tecnologo_f.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1204,
+      "subject": "portrait of a young woman wandering tinkerer, short curly hair, brass goggles on forehead, homemade drone parts and cables on her shoulders, patched jacket, curious face, lantern light, dark background"
+    },
+    {
+      "id": "portrait_guachiman_f",
+      "out": "assets/portraits/guachiman_f.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1205,
+      "subject": "portrait of an old retired woman night watchman, grey hair in a bun, faded security guard uniform and cap, flashlight and whistle, tired vigilant eyes, lantern light, dark background"
+    },
+    {
+      "id": "portrait_medica_josefina_m",
+      "out": "assets/portraits/medica_josefina_m.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1206,
+      "subject": "portrait of a stern middle-aged rural doctor man wearing a clean white doctor's coat, stethoscope around his neck, leather medical bag, neat mustache, composed expression, lantern light, dark background"
+    },
+    {
+      "id": "portrait_curandero_m",
+      "out": "assets/portraits/curandero_m.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1207,
+      "subject": "portrait of a dignified elderly man folk healer, wide-brimmed straw hat, white stubble, bundle of dried herbs releasing smoke, calm wise face, candle light, dark background"
+    },
+    {
+      "id": "portrait_exorcista_m",
+      "out": "assets/portraits/exorcista_m.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 1210,
+      "subject": "portrait of a middle-aged neighborhood priest exorcist, kind tired brown eyes, black cassock with white collar, wooden rosary and holy water bottle, nervous but brave, candle light"
+    },
     {
       "id": "enemy_espanto",
       "out": "assets/enemies/espanto.png",
@@ -3286,12 +3350,29 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5501
+          "attack": 5501,
+          "idle": 5701,
+          "cast": 5703,
+          "hurt": 5704,
+          "ailment": 5705
         },
-        "negative_extra": "dancing, walking, calm, second machete, man, beard, mustache",
+        "negative_extra": "dancing, walking, calm, second machete, man, beard, mustache, extra hat, high heels",
         "redo_ref_scale": {
           "attack": 0.35
-        }
+        },
+        "redo_states": [
+          "idle",
+          "cast",
+          "hurt",
+          "ailment"
+        ],
+        "redo_modes": {
+          "idle": "txt",
+          "cast": "txt",
+          "hurt": "txt",
+          "ailment": "txt"
+        },
+        "redo_reference": "portrait"
       },
       {
         "id": "montador_f",
@@ -3299,7 +3380,7 @@
         "seed": 5113,
         "body": "humanoid",
         "weapon": "a coiled lasso rope",
-        "negative_extra": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache",
+        "negative_extra": "dancing, walking, calm, cape, hide, saddle, man, beard, mustache, shorts, bare legs",
         "weapon_shape": {
           "kind": "rope",
           "angle": 135,
@@ -3309,13 +3390,20 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5513
+          "attack": 5813,
+          "dead": 5718
         },
         "redo_ref_scale": {
           "attack": 0.35
         },
         "redo_poses": {
           "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling"
+        },
+        "redo_states": [
+          "dead"
+        ],
+        "redo_modes": {
+          "dead": "txt"
         }
       },
       {
@@ -3351,11 +3439,24 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5530
+          "attack": 5530,
+          "cast": 5732,
+          "hurt": 5733,
+          "ailment": 5734
         },
-        "negative_extra": "dancing, walking, calm, man, beard, mustache",
+        "negative_extra": "dancing, walking, calm, man, beard, mustache, wheel, gear, disc, shield",
         "redo_ref_scale": {
           "attack": 0.35
+        },
+        "redo_states": [
+          "cast",
+          "hurt",
+          "ailment"
+        ],
+        "redo_modes": {
+          "cast": "txt",
+          "hurt": "txt",
+          "ailment": "txt"
         }
       },
       {
@@ -3371,11 +3472,18 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5540
+          "attack": 5540,
+          "dead": 5745
         },
         "negative_extra": "dancing, walking, calm, long hair, ponytail, man, beard, mustache",
         "redo_ref_scale": {
           "attack": 0.35
+        },
+        "redo_states": [
+          "dead"
+        ],
+        "redo_modes": {
+          "dead": "txt"
         }
       },
       {
@@ -3384,7 +3492,7 @@
         "seed": 5151,
         "body": "humanoid",
         "weapon": "a syringe",
-        "negative_extra": "dancing, walking, calm, woman, skirt, nurse cap",
+        "negative_extra": "dancing, walking, calm, woman, skirt, nurse cap, black coat, dark coat",
         "weapon_shape": {
           "kind": "line",
           "angle": 135,
@@ -3392,10 +3500,20 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5551
+          "attack": 5851,
+          "cast": 5753,
+          "dead": 5756
         },
         "redo_ref_scale": {
           "attack": 0.35
+        },
+        "redo_states": [
+          "cast",
+          "dead"
+        ],
+        "redo_modes": {
+          "cast": "txt",
+          "dead": "txt"
         }
       },
       {
@@ -3411,16 +3529,26 @@
           "hand": "right"
         },
         "redo_seeds": {
-          "attack": 5560
+          "attack": 5560,
+          "hurt": 5763,
+          "ailment": 5764
         },
-        "negative_extra": "dancing, walking, calm, woman, nun, braids",
+        "negative_extra": "dancing, walking, calm, woman, nun, braids, white hat, bald",
         "redo_ref_scale": {
           "attack": 0.35
+        },
+        "redo_states": [
+          "hurt",
+          "ailment"
+        ],
+        "redo_modes": {
+          "hurt": "txt",
+          "ailment": "txt"
         }
       },
       {
         "id": "exorcista_m",
-        "look": "pale priest exorcist, short dark hair, black cassock with white collar to the floor, silver cross necklace",
+        "look": "middle-aged priest, short dark hair, stern tired face, black cassock with white clerical collar to the floor, silver cross necklace",
         "seed": 5170,
         "body": "humanoid",
         "weapon": "a crucifix",
@@ -3433,7 +3561,7 @@
         "redo_seeds": {
           "attack": 5570
         },
-        "negative_extra": "dancing, walking, calm, bare legs, woman, nun, braids",
+        "negative_extra": "dancing, walking, calm, bare legs, woman, nun, hood, glowing eyes, red eyes",
         "redo_ref_scale": {
           "attack": 0.35
         }

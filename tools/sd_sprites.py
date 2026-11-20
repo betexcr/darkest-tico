@@ -286,6 +286,18 @@ def redo_prompt(cfg: dict, manifest: dict, c: dict, sid: str) -> str:
     return cfg["prompt_template"].format(look=look, pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
 
 
+def redo_states(cfg: dict, c: dict) -> list:
+    """States redrawn as one full-size figure: sheet.redo_states plus the character's own
+    redo_states (a sheet cell that came out wrong, e.g. a lost coat or a failed dead pose)."""
+    out = list(cfg["sheet"].get("redo_states", []))
+    return out + [x for x in c.get("redo_states", []) if x not in out]
+
+
+def redo_mode(st: dict, c: dict, sid: str) -> str:
+    """"txt" draws from pose + portrait only; "img" starts from the sheet cell."""
+    return c.get("redo_modes", {}).get(sid, st.get("redo_mode", "img"))
+
+
 def redo_seed(cfg: dict, c: dict, sid: str) -> int:
     order = [s["id"] for s in cfg["states"]]
     return int(c.get("redo_seeds", {}).get(sid, int(c["seed"]) + order.index(sid)))
@@ -324,7 +336,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
     # guided by the same skeleton and the portrait, then put back into the sheet.
     w, h = cfg["size"]
     states = {s["id"]: s for s in cfg["states"]}
-    for sid in sheet.get("redo_states", []):
+    for sid in redo_states(cfg, c):
         st = states[sid]
         p = redo_prompt(cfg, manifest, c, sid)
         # redo_mode "txt": draw from scratch (pose + portrait only) so the old cell's weapon
@@ -348,7 +360,7 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
             src = dict(image=[skel, weapon], width=w, height=h)
             pipe = pipes["txt_pose_weapon"]
             scale = [scale, float(cfg["weapon_guide"].get("scale", 0.7))]
-        elif st.get("redo_mode", "img") == "txt":
+        elif redo_mode(st, c, sid) == "txt":
             src = dict(image=skel, width=w, height=h)
             pipe = pipes["txt_pose"]
         else:
@@ -489,7 +501,7 @@ def main() -> int:
             # Only redrawn states asked for (e.g. --states attack) and the raw sheet is cached:
             # reuse it instead of drawing the whole sheet again.
             raw_path = CACHE / f"{cid}_sheet_raw.png"
-            redo_only = bool(args.states) and set(args.states) <= set(cfg["sheet"].get("redo_states", []))
+            redo_only = bool(args.states) and set(args.states) <= set(redo_states(cfg, c))
             raw_sheet = Image.open(raw_path).convert("RGB") if redo_only and raw_path.exists() else None
             neg_c = f'{c["negative_extra"]}, {negative}' if c.get("negative_extra") else negative
             if args.redo_tries and raw_sheet is not None:
@@ -516,7 +528,7 @@ def main() -> int:
                                 cfg["size"][0], cfg["size"][1], cfg["sheet"]["cell"][0], cfg["sheet"]["cell"][1]),
                             "mode": ("img2img from " + ck["redo_init"][sid] + f" (strength {ck.get('redo_init_strength', 0.8)})")
                             if ck.get("redo_init", {}).get(sid)
-                            else ("txt2img" if st.get("redo_mode") == "txt" else "img2img from the sheet cell"),
+                            else ("txt2img" if redo_mode(st, ck, sid) == "txt" else "img2img from the sheet cell"),
                             "pose_control": cfg["control_model"],
                             "weapon_control": cfg.get("weapon_guide", {}).get("control_model")
                             if draw_weapon(cfg, ck, sid, (64, 96)) is not None else None,
@@ -567,10 +579,10 @@ def main() -> int:
                     "generator": "tools/sd_sprites.py (diffusers)",
                     "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 }
-                if sid in cfg["sheet"].get("redo_states", []):
+                if sid in redo_states(cfg, c):
                     meta["redo"] = {
                         "prompt": redo_prompt(cfg, manifest, c, sid), "seed": redo_seed(cfg, c, sid),
-                        "mode": ("txt2img" if next(x for x in cfg["states"] if x["id"] == sid).get("redo_mode") == "txt"
+                        "mode": ("txt2img" if redo_mode(next(x for x in cfg["states"] if x["id"] == sid), c, sid) == "txt"
                                  else "img2img from the sheet cell") + " + openpose + portrait",
                         "strength": float(next(x for x in cfg["states"] if x["id"] == sid).get("redo_strength", 0.75)),
                     }
