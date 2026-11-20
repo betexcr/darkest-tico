@@ -86,6 +86,22 @@ func _run() -> void:
 	d = _dialogs(hub)
 	_check(d.size() == 1 and d[0] is ConfirmationDialog and d[0].ok_button_text == "Despedir", "the dismiss card opens")
 	await _close_all(hub)
+	hub._show_hero_sheet(gs.roster[0])
+	await process_frame
+	d = _dialogs(hub)
+	var cats: Array = load("res://scripts/domain/status_effects.gd").resist_categories()
+	var tips: Array = []
+	if d.size() == 1:
+		tips = d[0].find_children("*", "HBoxContainer", true, false).filter(func(c): return str(c.tooltip_text) != "")
+	ok = tips.size() >= cats.size()
+	for cat in cats:
+		var found: Array = tips.filter(func(c): return str(c.tooltip_text).begins_with(str(cat["name"]) + " — "))
+		ok = ok and found.size() == 1 and str(found[0].tooltip_text).contains(str(cat["desc"])) \
+			and (found[0].get_child(0) is TextureRect and found[0].get_child(0).texture != null or found[0].get_child(0) is PanelContainer)
+	_check(ok, "the hero sheet shows every resistance with an icon and a tooltip")
+	# Other-sex art (P4-24) that the editor hasn't imported yet still loads (raw PNG fallback).
+	_check(gs.load_texture("res://assets/portraits/exorcista_m.png") != null and gs.load_texture("res://assets/portraits/nope.png") == null, "portraits load, imported or not")
+	await _close_all(hub)
 	gs.inventory.clear()
 	hub._confirm_provisions()
 	await process_frame

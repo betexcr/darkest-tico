@@ -207,10 +207,13 @@ func _load_textures(fallback_path: String) -> void:
 	var id: String = GameState.sprite_id(data) if is_hero else str(data.get("id", ""))
 	for st in STATES:
 		var p: String = "res://assets/sprites/%s/%s.png" % [id, st]
-		if ResourceLoader.exists(p):
-			_tex[st] = load(p) as Texture2D
-	if not _tex.has("idle") and ResourceLoader.exists(fallback_path):
-		_tex["idle"] = load(fallback_path) as Texture2D
+		var t: Texture2D = GameState.load_texture(p)
+		if t != null:
+			_tex[st] = t
+	if not _tex.has("idle"):
+		var fb: Texture2D = GameState.load_texture(fallback_path)
+		if fb != null:
+			_tex["idle"] = fb
 
 
 func _show_state(state: String) -> void:

@@ -17,6 +17,19 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (21) — P4-26: missing other-sex portraits; resistance icons + tooltips in the hero sheet
+- **Agent / branch:** Claude Code (cloud) / `betomm/tender-newton-5a2hb7`
+- **Status after session:** P4-26 done.
+- **Changed:**
+  - Cause of the blank portraits: P4-24's other-sex PNGs (`exorcista_m`, `abuela_m`, …) not yet imported by the owner's Godot. `portrait_path` picked them (raw file exists) but every screen loaded through `ResourceLoader`, which only sees imported files → empty picture.
+  - `GameState.load_texture(path)` (cached): imported resource, else `Image.load_from_file` on the raw PNG, else null. Used by `tooltip_card.picture`, the hub roster row, the expedition hero/enemy info portraits, the victory card and battle sprites (`battle_unit._load_textures`).
+  - Hero sheet (`hacienda_hub._resist_grid`): Resistencias is now a 3-column grid, icon (`assets/status/<icon>.png`, or a letter badge) + name + % ("Inmune" in blue), tooltip "Name — %\nwhat it protects against". `data/statuses.json` `resist_categories[]` gained `desc`; Empujones (no icon art) has `color`/`letter` for its badge.
+  - `tests/test_ui.gd`: sheet has every resistance with icon + tooltip; `load_texture` works. New `tools/screens/hero_sheet_screenshot.gd`.
+- **Verified:** validator 0 errors (old amarrado icon warning); Godot 4.7.2 Linux: smoke + all 19 tests 0 failures, no SCRIPT ERROR. Screenshot of the sheet checked (icons, male Exorcista portrait). `smoke_expedition` failed once (2 failures: an expedition that never ended) and passed 3 reruns with and 3 without this change: a pre-existing random flake like the `test_expedition_systems` one in entry (20).
+- **Not verified / risks:** the hover tooltip itself couldn't be captured headless (the sheet is an embedded dialog); the quirk badges in the same dialog use the same `tooltip_text` path. Opening the project in the editor once imports the new art anyway.
+- **Decisions needed:** Empujones has no icon art (letter badge ↔); generate `assets/status/movimiento.png` if wanted.
+- **Next step:** look into the smoke/expedition_systems flake: run `tests/smoke_expedition.gd` in a loop until it fails and read the stuck fight (201 hero turns, 7 moves) — likely a fight that never ends; check the drag penalty in `scripts/combat/` for a case where nobody can hit.
+
 ## 2026-11-20 (20) — P4-25: random starting party, always 2 warriors + 2 supports
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P4-25 done.

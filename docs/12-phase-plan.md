@@ -541,6 +541,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "the first 4 heroes on reset or on clean start should be randomized, but they should be 2 warrior and 2 support heroes always"
 - Done when: [x] every class has `role` warrior | support (validator); [x] a new campaign (no save) and the dev reset draw 2 random warriors (front) + 2 random supports (back), no class twice; [x] `-s` scripts keep the fixed `starter_party.fixed` party so tests and balance baselines don't move; [x] test_hub checks it
 
+### P4-26 · S · Missing other-sex portraits; resistance icons + tooltips in the hero sheet (owner 2026-11-20)
+- Status: `done` · Depends: P4-23, P4-24
+- Files: `scripts/autoload/game_state.gd` (`load_texture`), `scripts/ui/tooltip_card.gd`, `scripts/hacienda/hacienda_hub.gd` (`_resist_grid`), `scripts/expedition/expedition_screen.gd`, `scripts/expedition/victory_screen.gd`, `scripts/combat/battle_unit.gd`, `data/statuses.json` (`resist_categories[].desc`, Empujones badge), `tests/test_ui.gd`, `tools/screens/hero_sheet_screenshot.gd`
+- Spec: owner "after the dev reset these heroes don't have a portrait" (male Exorcista, Abuelo Sabio) and "in the hero details modal add a tooltip and the symbol for the resistances"
+- Done when: [x] portraits/sprites load even when the PNG isn't imported yet (`GameState.load_texture` falls back to reading the file); [x] the sheet's Resistencias is a grid of icon + name + % with a tooltip per category (desc from data); [x] test_ui checks both
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

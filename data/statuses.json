@@ -212,43 +212,53 @@
     {
       "id": "aturdido",
       "name": "Atarantado",
+      "desc": "Probabilidad de no quedar atarantado (pierde el turno).",
       "icon": "aturdido"
     },
     {
       "id": "veneno",
       "name": "Veneno",
+      "desc": "Probabilidad de no quedar envenenado (pierde PV cada turno).",
       "icon": "veneno"
     },
     {
       "id": "sangrado",
       "name": "Sangrado",
+      "desc": "Probabilidad de no quedar sangrando (pierde PV cada turno).",
       "icon": "sangrado"
     },
     {
       "id": "salado",
       "name": "Salado",
+      "desc": "Probabilidad de no quedar salado (baja precisión, esquiva, daño, velocidad o protección).",
       "icon": "salado"
     },
     {
       "id": "movimiento",
       "name": "Empujones",
+      "desc": "Probabilidad de no dejarse empujar, jalar ni revolver de posición, ni quedar amarrado.",
+      "color": "#6b5a3a",
+      "letter": "↔",
       "icon": "movimiento"
     },
     {
       "id": "susto",
       "name": "Susto",
+      "desc": "Probabilidad de no asustarse (el susto sube el estrés cada turno).",
       "icon": "susto",
       "heroes_only": true
     },
     {
       "id": "golpe_de_gracia",
       "name": "Golpe de gracia",
+      "desc": "Probabilidad de sobrevivir un golpe mientras está Al Borde (0 PV). Baja con cada tiro y con mucho estrés.",
       "icon": "al_borde",
       "heroes_only": true
     },
     {
       "id": "trampa",
       "name": "Trampas",
+      "desc": "Probabilidad de librarse de una trampa sin daño.",
       "icon": "trampa",
       "heroes_only": true
     }

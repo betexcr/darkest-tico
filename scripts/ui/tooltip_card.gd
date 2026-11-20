@@ -165,8 +165,7 @@ static func picture(path: String, side: float = 52.0) -> Control:
 	frame.add_theme_stylebox_override("panel", flat(Color(0.14, 0.11, 0.09), BORDER.darkened(0.3), 1, 4, 3))
 	frame.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var tex := TextureRect.new()
-	if ResourceLoader.exists(path):
-		tex.texture = load(path) as Texture2D
+	tex.texture = GameState.load_texture(path)
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	tex.custom_minimum_size = Vector2(side, side)
