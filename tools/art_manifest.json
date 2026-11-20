@@ -3338,7 +3338,7 @@
       },
       {
         "id": "campesino_f",
-        "look": "Costa Rican farm woman, long black braids, wide frayed straw hat, dark loose short-sleeved blouse, dark trousers",
+        "look": "farm woman, long black braids, small straw hat, dark short-sleeved blouse, dark trousers",
         "seed": 5101,
         "body": "humanoid",
         "weapon": "a long steel machete",
@@ -3351,12 +3351,12 @@
         },
         "redo_seeds": {
           "attack": 5501,
-          "idle": 5701,
-          "cast": 5703,
-          "hurt": 5704,
-          "ailment": 5705
+          "idle": 5801,
+          "cast": 5803,
+          "hurt": 5804,
+          "ailment": 5805
         },
-        "negative_extra": "dancing, walking, calm, second machete, man, beard, mustache, extra hat, high heels",
+        "negative_extra": "dancing, calm, extra hat, big hat, basket, shield, disc, high heels, man, beard",
         "redo_ref_scale": {
           "attack": 0.35
         },

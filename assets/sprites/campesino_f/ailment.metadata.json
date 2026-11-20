@@ -1,7 +1,7 @@
 {
   "id": "sprite_campesino_f_ailment",
   "prompt": "character sheet, Costa Rican farm woman, long black braids, wide frayed straw hat, dark loose short-sleeved blouse, dark trousers, six poses, same clothes and a long steel machete in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, walking, calm, second machete, man, beard, mustache, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "negative_prompt": "dancing, walking, calm, second machete, man, beard, mustache, extra hat, high heels, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5101,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -17,5 +17,11 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-19T23:12:15+00:00"
+  "timestamp": "2026-11-20T01:13:02+00:00",
+  "redo": {
+    "prompt": "Costa Rican farm woman, long black braids, wide frayed straw hat, dark loose short-sleeved blouse, dark trousers, hunched over in pain, trembling, sickly and afraid, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5705,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.75
+  }
 }
