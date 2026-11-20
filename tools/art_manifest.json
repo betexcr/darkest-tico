@@ -2064,7 +2064,7 @@
         "brightness": 1.3,
         "contrast": 1.15
       },
-      "seed": 6561,
+      "seed": 6562,
       "subject": "thick coiled rough rope tied in a tight knot, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
       "negative_extra": "person, man, woman, girl, face, portrait, figure, body, hands, building, frame, candle, fire, text, letters"
@@ -2084,8 +2084,8 @@
         "brightness": 1.3,
         "contrast": 1.15
       },
-      "seed": 6581,
-      "subject": "one heavy rough open palm shoving forward with motion streaks, plain black background",
+      "seed": 6601,
+      "subject": "one old muddy leather boot kicking forward with a dust cloud, plain black background",
       "style": "simple bold painted game icon, single object, centered, dark muted colors, painterly",
       "negative_extra": "person, man, woman, girl, face, portrait, figure, building, frame, candle, fire, text, letters"
     },
