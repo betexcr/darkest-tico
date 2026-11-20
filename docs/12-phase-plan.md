@@ -577,8 +577,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Debugger shows no warnings after a hub → map → combat run
 
 ### P4-06 · S · Readable map node icons
-- Status: `todo` · Depends: —
+- Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to look in game) · Depends: —
 - Icons render at 40×40 next to route buttons (`expedition_map.gd:136`) and are hard to read in the owner's screenshots. Try 64×64, or a type label color per node type.
+- Done (2026-11-20, `scripts/expedition/map_view.gd`, the map since P4-09): rooms 38 → 56 px on a 72 px grid (icons ~48 px); a frame color per room type (Pelea orange, Trampa purple, Curiosidad cyan, Fogata green, Jefe red, quiet rooms grey; dimmed once cleared); current room = gold ring and reachable rooms = green ring outside the frame; a legend strip at the bottom that wraps to two rows. New `tools/screens/map_screenshot.gd`. Checked at 1920×1080 and 1280×720.
 
 ### P4-07 · M · Side-view battle screen (owner request 2026-11-07)
 - Status: `done` — folded into P4-09: the stage, `battle_unit.gd` and the combat rules (now `combat_controller.gd`) live in the expedition screen; `combat_scene` was removed. · Depends: —

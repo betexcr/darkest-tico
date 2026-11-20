@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (24) — P4-06: readable map rooms (bigger, color per type, legend)
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P4-06 review. P3-14 (level-tiered hub prices): discussed with the owner, not started; my advice was to defer it to the building upgrades (P3-16/P3-18) or cut it, since it would squeeze the economy P5-06 just settled. Left `todo`.
+- **Changed:** `scripts/expedition/map_view.gd` (CELL 72, ROOM 56, `TYPE_COLORS` / `TYPE_NAMES` frames, outer rings for current/reachable, `_draw_legend` wrapping legend; rooms centered above the legend); new `tools/screens/map_screenshot.gd` (+ .uid).
+- **Verified:** screenshots at 1920×1080 and 1280×720 (xvfb + opengl3); validator 0 errors; test_ui, smoke_expedition, test_retreat, test_enemies 0 failures.
+- **Not verified / risks:** fewer rooms fit in the panel at once (bigger cells; the map stays centered on the current room). Colors picked for contrast on the dark map, not checked for color-blind players (the icons and the tooltip still say the type).
+- **Decisions needed:** owner: keep, or tweak colors/size.
+- **Next step:** owner playtest of the open reviews (P4-06, P4-22–P4-25, P3-13, P3-20, P5-10); then P3-14 decision (defer or cut).
+
+---
+
 ## 2026-11-20 (23) — P1-20: smoke expedition fails on a hang, not on a long fight
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P1-20 done.
