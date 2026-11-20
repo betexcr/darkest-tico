@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (22) — P5-06 closed: week-24 target is "solvent"
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P5-06 done.
+- **Changed:** owner 2026-11-20 chose option (a) from entry (21): the week-24 money target is "solvent (≥ 500 ₡)", not a 4–8k bank. Plan and doc 09 §8 updated. No code or data change.
+- **Verified:** docs only; validator 0 errors.
+- **Not verified / risks:** 1 of 18 bot campaigns still ends under 500 ₡ (169 ₡).
+- **Decisions needed:** none.
+- **Next step:** P1-20 (smoke expedition sometimes runs out of frames): open `tests/smoke_expedition.gd`, run it ~10× with Godot and find which seed/run hits the step limit.
+
+---
+
 ## 2026-11-20 (21) — P5-06: Veterano/Campeón re-measured after drops; bot fixes; bank band open
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P5-06 review (was blocked). Its clear-rate and death targets were already met by P5-08/P5-09; this session re-measured after P5-10 (drops) and looked at the week-24 bank.
