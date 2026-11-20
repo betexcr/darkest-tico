@@ -331,6 +331,15 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
+[node name="guardabosques" type="ScrollContainer" parent="Building/VBox/Pages"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Box" type="VBoxContainer" parent="Building/VBox/Pages/guardabosques"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
 [node name="casa_comunal" type="VBoxContainer" parent="Building/VBox/Pages"]
 layout_mode = 2
 theme_override_constants/separation = 8

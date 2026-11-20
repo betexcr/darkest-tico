@@ -393,6 +393,16 @@ func _hub(row: Dictionary) -> void:
 				continue
 			row["gear_n"] += 1
 			row["gear"] += mark - _gs.colones
+	# Guardabosques (P3-13): one new class camp skill per hero a week while it keeps RESERVE,
+	# a watch skill (prevent_ambush) first.
+	row["camp_learned"] = 0
+	for h in chosen:
+		var unknown: Array = CampingSystemScript.class_pool(h).filter(func(sk): return not CampingSystemScript.knows(h, str(sk["id"])))
+		unknown.sort_custom(func(x, y): return bool(x.get("prevent_ambush", false)) and not bool(y.get("prevent_ambush", false)))
+		if not unknown.is_empty() and _gs.colones - _gs.camp_price("learn") >= RESERVE:
+			if _gs.camp_learn_block_reason(h, str(unknown[0]["id"])) == "":
+				_gs.learn_camp_skill(h, str(unknown[0]["id"]))
+				row["camp_learned"] += 1
 	row["hub_spent"] = c0 - _gs.colones
 
 
@@ -815,7 +825,7 @@ func _camp_skill(screen) -> bool:
 	var pick_user: Dictionary = {}
 	var pick_sk: Dictionary = {}
 	for h in living:
-		for sk in CampingSystemScript.hero_skills(h):
+		for sk in screen.camp_hand(h):
 			if not CampingSystemScript.can_use(h, sk, _gs.party, screen._camp_respite, screen._camp_used):
 				continue
 			if pick_sk.is_empty() or (bool(sk.get("prevent_ambush", false)) and not screen._camp_watch and not bool(pick_sk.get("prevent_ambush", false))):

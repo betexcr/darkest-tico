@@ -225,7 +225,7 @@ func _town(gs) -> void:
 	await process_frame
 	var ids: Array = hub._buildings.keys()
 	ids.sort()
-	_check(ids == ["cantina", "casa_comunal", "clinica", "iglesia", "pulperia", "taller", "terminal"], "the town has the 7 buildings (%s)" % ", ".join(ids))
+	_check(ids == ["cantina", "casa_comunal", "clinica", "guardabosques", "iglesia", "pulperia", "taller", "terminal"], "the town has the 8 buildings (%s)" % ", ".join(ids))
 	var ok: bool = true
 	for bid in hub._buildings:
 		var b = hub._buildings[bid]
@@ -290,6 +290,21 @@ func _town(gs) -> void:
 	hub.open_building("casa_comunal")
 	await process_frame
 	_check(hub._who.visible and hub._skills_row.get_child_count() > 0, "the Casa Comunal shows whose skills they are")
+	hub.close_building()
+	hub.open_building("guardabosques")
+	await process_frame
+	var rows: Array = hub._ranger_box.get_children().filter(func(c): return c is PanelContainer and not c.is_queued_for_deletion())
+	_check(hub._who.visible and rows.size() == 8, "the Guardabosques lists the hero's 6 class + 2 shared camp skills (%d rows)" % rows.size())
+	var col0: int = gs.colones
+	var learn: Array = []
+	for r in rows:
+		for b in r.find_children("*", "Button", true, false):
+			if b.text.begins_with("Aprender") and not b.disabled:
+				learn.append(b)
+	if not learn.is_empty():
+		learn[0].pressed.emit()
+		await process_frame
+	_check(learn.size() == 3 and gs.colones == col0 - gs.BalanceScript.int_of("camp.learn_price"), "…'Aprender' on an unknown skill teaches it")
 	hub.close_building()
 	# With no building open, a hero click opens their full sheet (owner 2026-11-19).
 	await process_frame

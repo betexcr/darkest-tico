@@ -38,7 +38,7 @@ Units are plain dictionaries everywhere. A hero is one dictionary that lives in 
 
 | Key | Contents |
 |---|---|
-| `version` | `GameState.SAVE_VERSION` (12) |
+| `version` | `GameState.SAVE_VERSION` (14) |
 | `colones`, `week` | Campaign money and week |
 | `roster` | Every hired hero dictionary (stats, PV, stress, equipment, skill ranks, Quebranto/Virtud, Resolve XP, `uid`; `busy` = Iglesia/Cantina booking, `town_buffs` = side-effect buffs waiting for the next expedition, `quirks` = quirks and diseases) |
 | `party_uids` | The expedition party in formation order (position 1 first) |
@@ -221,7 +221,7 @@ Every file has a `_doc` string that explains its fields; the validator is the st
 | `curios.json` | Curios: `text`, `blind` outcome, `key_item` + `key_outcome` | `GameState` |
 | `traps.json` | Disarm settings and traps (`difficulty`, `effects` in the outcome vocabulary) | `TrapRules` |
 | `progression.json` | Resolve levels and XP, Casa Comunal skill rank costs, region scaling, the 3 difficulties | `ResolveSystem` |
-| `town_events.json` | 56 weekly town events (`effects`, `requires`, week range, `once`) | `TownEvents` |
+| `town_events.json` | 58 weekly town events (`effects`, `requires`, week range, `once`) | `TownEvents` |
 | `regions/*.json` | Region: Luz start and decay, `provisions`, rewards, `region_level`, then either `nodes` + `edges` or a `generator` block (§3.2) | `ExpeditionLoader`, `MapGenerator` |
 
 **Conventions:**

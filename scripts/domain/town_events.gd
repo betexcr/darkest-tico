@@ -114,12 +114,12 @@ static func is_blocked(ev: Dictionary, item_id: String) -> bool:
 	return effects(ev).get("blocked_items", []).has(item_id)
 
 
-## service: iglesia | cantina | ebais | terminal | pulperia_compra | pulperia_venta | taller_compra | taller_venta | casa_comunal
+## service: iglesia | cantina | ebais | terminal | pulperia_compra | pulperia_venta | taller_compra | taller_venta | casa_comunal | guardabosques
 static func is_closed(ev: Dictionary, service: String) -> bool:
 	return effects(ev).get("closed", []).has(service)
 
 
-## Price multiplier for a hub service (iglesia, cantina, ebais, casa_comunal).
+## Price multiplier for a hub service (iglesia, cantina, ebais, casa_comunal, guardabosques).
 static func service_mult(ev: Dictionary, service: String) -> float:
 	return maxf(1.0 + float(effects(ev).get("service_pct", {}).get(service, 0)) / 100.0, 0.0)
 
@@ -156,7 +156,7 @@ static func kind_label(ev: Dictionary) -> String:
 const CATEGORY_NAMES := {"consumable": "consumibles", "healing": "remedios y vendas", "weapon": "armas", "armor": "armaduras", "accessory": "accesorios"}
 const SERVICE_NAMES := {"iglesia": "Iglesia Vieja", "cantina": "Cantina del Centro", "ebais": "EBAIS", "terminal": "Terminal de Buses",
 	"pulperia_compra": "Pulpería (comprar)", "pulperia_venta": "Pulpería (vender)", "taller_compra": "Taller (comprar)",
-	"taller_venta": "Taller (vender)", "casa_comunal": "Casa Comunal", "clinica": "Clínica de Espantos"}
+	"taller_venta": "Taller (vender)", "casa_comunal": "Casa Comunal", "clinica": "Clínica de Espantos", "guardabosques": "Guardabosques"}
 ## Which shop sells each price category (P4-18): equipment at the Taller, the rest at the Pulpería.
 const CATEGORY_SHOP := {"consumable": "Pulpería", "healing": "Pulpería", "weapon": "Taller", "armor": "Taller", "accessory": "Taller"}
 

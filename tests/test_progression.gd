@@ -229,7 +229,48 @@ func _run() -> void:
 	_check(camp.meal_cost(feast, gs.party) == 3, "…and 3 with one dead")
 	gs.party[3]["dead"] = false
 	for x in gs.party:
-		_check(camp.hero_skills(x).size() == 4, "%s has 4 camp skills" % x.get("class_name", "?"))
+		_check(camp.shared_skills(x).size() == 2 and camp.class_pool(x).size() == 6, "%s: 2 shared + 6 class camp skills" % x.get("class_name", "?"))
+		_check(camp.known_ids(x).size() == 3, "%s starts knowing 3 class camp skills (P3-13)" % x.get("class_name", "?"))
+		var hand: Array = camp.deal_hand(x)
+		var own: int = camp.hand_skills(hand).filter(func(sk): return not "*" in sk["classes"]).size()
+		_check(hand.size() == 4 and own == camp.class_skills_per_camp(), "%s: a fogata hand is 2 shared + %d class skills" % [x.get("class_name", "?"), camp.class_skills_per_camp()])
+	var seen: Dictionary = {}
+	for _k in 60:
+		for sid in camp.deal_hand(gs.party[0]):
+			seen[sid] = true
+	_check(seen.size() == 5, "the draw only uses known class skills (2 shared + 3 known come up)")
+	# Guardabosques (P3-13): learn, fix, let go, swap a shared skill.
+	var gh: Dictionary = gs.party[0]
+	var unknown: String = str(camp.class_pool(gh).filter(func(sk): return not camp.knows(gh, str(sk["id"])))[0]["id"])
+	gs.colones = 2000
+	gs.learn_camp_skill(gh, unknown)
+	_check(camp.knows(gh, unknown) and camp.known_ids(gh).size() == 4 and gs.colones == 2000 - gs.BalanceScript.int_of("camp.learn_price"), "Guardabosques teaches a class skill for its price")
+	_check(gs.camp_learn_block_reason(gh, unknown) != "", "…and not twice")
+	_check(gs.camp_learn_block_reason(gh, "dron_vigia") != "", "…nor another class's skill")
+	gs.fix_camp_skill(gh, unknown)
+	_check(camp.fixed_id(gh) == unknown, "fix a known class skill")
+	var always: bool = true
+	for _k in 30:
+		always = always and camp.deal_hand(gh).has(unknown)
+	_check(always and camp.deal_hand(gh).size() == 4, "the fixed skill comes up at every fogata (hand still 4)")
+	gs.fix_camp_skill(gh, "")
+	_check(camp.fixed_id(gh) == "", "let the fixed skill go")
+	var third: Array = gs.camp_shared_options(gh)
+	var old_shared: String = str(gh["camp_skill_ids"][0])
+	gs.swap_shared_camp_skill(gh, old_shared, str(third[0]))
+	_check(third.size() == 1 and gh["camp_skill_ids"].has(third[0]) and not gh["camp_skill_ids"].has(old_shared), "swap a shared camp skill for the third one")
+	gs.colones = 0
+	_check(gs.camp_fix_block_reason(gh, unknown) != "" and gs.camp_learn_block_reason(gh, str(camp.class_pool(gh).filter(func(sk): return not camp.knows(gh, str(sk["id"])))[0]["id"])) != "", "no money, no lessons")
+	gs.colones = 1000
+	gh["camp_known"] = camp.class_pool(gh).map(func(sk): return str(sk["id"]))
+	seen = {}
+	for _k in 60:
+		for sid in camp.deal_hand(gh):
+			seen[sid] = true
+	_check(seen.size() == 8, "a hero who knows all 6 sees them all come up")
+	var old_loadout: Dictionary = gs.party[0].duplicate(true)
+	old_loadout["camp_skill_ids"] = ["afilar_machete", "cuentos_de_finca", "palabras_de_animo", "vendaje_de_trapo"]
+	_check(camp.shared_skills(old_loadout).size() == 2, "an old 4-skill loadout keeps only its shared skills")
 	var tec: Dictionary = gs.party.filter(func(h): return str(h["hero_id"]) == "tecnologo")[0]
 	var dron: Dictionary = camp.skill("dron_vigia")
 	var used: Array = []
@@ -288,15 +329,23 @@ func _run() -> void:
 	gs.apply_save_data(data)
 	_check(gs.selected_difficulty_id == "veterano", "difficulty saved")
 	_check(int(gs.party[1]["resolve_xp"]) == xp_before and int(gs.party[1]["resolve_level"]) == 1, "resolve XP and level saved")
-	_check(gs.party[1]["camp_skill_ids"].size() == 4, "camp skills saved")
+	_check(gs.party[1]["camp_skill_ids"].size() == 2, "camp skills saved")
 	var old: Dictionary = data.duplicate(true)
 	for e in old["roster"]:
 		e.erase("resolve_xp")
 		e.erase("camp_skill_ids")
 	old.erase("selected_difficulty_id")
 	gs.apply_save_data(old)
-	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 4, "v5 save migrates (XP at level floor, class camp skills)")
+	_check(int(gs.party[1]["resolve_xp"]) == 2 and gs.party[1]["camp_skill_ids"].size() == 2, "v5 save migrates (XP at level floor, class camp skills)")
 	_check(gs.selected_difficulty_id == "aprendiz", "v5 save defaults to Aprendiz")
+	var v12: Dictionary = data.duplicate(true)
+	for e in v12["roster"]:
+		e.erase("camp_known")
+		e.erase("camp_fixed")
+		e["camp_skill_ids"] = ["afilar_machete", "cuentos_de_finca", "palabras_de_animo", "vendaje_de_trapo"]
+	gs.apply_save_data(v12)
+	_check(camp.known_ids(gs.party[1]).size() == 6 and gs.party[1]["camp_known"].size() == 6 and str(gs.party[1]["camp_fixed"]) == "", "v12 save: older heroes know all 6 class camp skills")
+	_check(gs.party[0]["camp_skill_ids"] == ["palabras_de_animo", "vendaje_de_trapo"], "v12 save: the old 4-skill loadout keeps its 2 shared skills")
 	# v9 -> v10 (P5-02d): the curve got longer; a saved hero keeps the level they had.
 	var v9: Dictionary = data.duplicate(true)
 	v9["version"] = 9

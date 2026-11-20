@@ -311,9 +311,22 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] every DD town event has a Tico version; [x] Mano vuelta and Pura Vida lift level limits; [ ] owner reviews the texts (doc 08 tone) and balance
 
 ### P3-13 · S · Guardabosques building: learn and swap camp skills
-- Status: `todo` · Depends: P3-07
-- Spec: `02` §9
-- Done when: [ ] Hub building to swap a hero's 4 camp skills among the class + shared list, and the upgrade tracks from doc 02 §9
+- Status: `review` (Claude Code, `betomm/trusting-hamilton-bga408`, 2026-11-19) · Depends: P3-07, P3-20
+- Spec: `02` §9; owner 2026-11-19: "start knowing 3" (of the 6 class camp skills), upgrade tracks later
+- Files: `data/balance.json` (`camp.*`), `data/town.json` + `assets/town/guardabosques.png` + `assets/town/painted/` (the shed split off the Cantina crop), `scripts/domain/camping_system.gd` (`starting_known`, `known_ids`, `fixed_id`, `deal_hand`), `GameState` (learn/fix/swap, save v13), `hacienda_hub.gd/.tscn` (page `guardabosques`, hero sheet), `tools/playtest_campaign.gd`, `tools/art_manifest.json` (`town_guardabosques`), validator, `test_progression`, `test_ui`
+- Done when: [x] a new hero knows 3 of 6 class camp skills; the fogata draws only known ones; [x] learn / fix / let go / swap shared, with prices in balance.json; [x] town building + page; old saves know all 6; [x] tests; [x] prices approved (owner 2026-11-19); [x] town events close or discount it (service `guardabosques`, 2 new events); [ ] owner playtest; [ ] upgrade tracks (P3-21)
+
+### P3-21 · S · Guardabosques upgrade tracks
+- Status: `todo` · Depends: P3-13, P3-16 (building-upgrade system)
+- Spec: `02` §9 (Guía de Supervivencia: 3 class skills per fogata, later stronger camp skills; Entrenamiento de Patrulla: cheaper lessons and fixing)
+- Done when: [ ] both tracks buyable with materials; [ ] `class_skills_per_camp` and `camp.*` prices read through the track level
+
+### P3-20 · S · Random class camp skills at every fogata (owner request 2026-11-19)
+- Status: `review` (Claude Code, `betomm/trusting-hamilton-bga408`, 2026-11-19) · Depends: P3-07
+- Spec: owner: "add 4 more possible class specific respiros, they will be randomized on every campfire"; `01` §4.4
+- Files: `data/camp_skills.json` (32 new class skills, `class_skills_per_camp`), `data/heroes.json` (`camp_skill_ids` = the 2 shared skills), `scripts/domain/camping_system.gd` (`shared_skills`, `class_pool`, `deal_hand`, `hand_skills`), `scripts/expedition/expedition_screen.gd` (`_camp_hands`, `camp_hand`), `scripts/hacienda/hacienda_hub.gd` (hero sheet), `tools/playtest_campaign.gd`, `tools/validate_data.py`, `tests/test_progression.gd`
+- Done when: [x] every class has 6 class camp skills (2 old + 4 new, Tico names); [x] each fogata deals every hero their 2 shared skills + 2 random class skills; [x] hero sheet shows the pool; [x] validator + test; [ ] owner reviews names/balance
+- Note: P3-13 builds on this (owner 2026-11-19: heroes start knowing 3 of the 6).
 
 ### P3-16 · M · Casa Comunal building upgrades
 - Status: `todo` · Depends: P3-04, a building-upgrade system (materials, doc 02 §11)

@@ -89,6 +89,8 @@ var _inspected_is_hero: bool = false
 var _camp_respite: int = 0
 var _camp_used: Array = []
 var _camp_watch: bool = false
+## Camp skills each hero got at this fogata (uid -> ids): shared + a random draw of class skills.
+var _camp_hands: Dictionary = {}
 var _combat_is_ambush: bool = false
 ## Enemy the player clicked during a fight: single-target attacks/items go straight to it.
 var _selected_enemy: Dictionary = {}
@@ -1124,6 +1126,9 @@ func _camp_begin() -> void:
 	_camp_respite = CampingSystemScript.respite_points()
 	_camp_used = []
 	_camp_watch = false
+	_camp_hands = {}
+	for h in CampingSystemScript.living(GameState.party):
+		_camp_hands[int(h.get("uid", 0))] = CampingSystemScript.deal_hand(h)
 	_log_line("Encienden la fogata (-1 leña).", "ffd27a")
 	_camp_meal()
 
@@ -1154,14 +1159,14 @@ func _camp_meal() -> void:
 ## Respite: every living hero's camp skills; ally skills then ask for a companion.
 func _camp_respite_menu() -> void:
 	_open_event("Fogata — respiro: %d puntos" % _camp_respite,
-		"Cada héroe puede usar cada una de sus habilidades una vez.%s Pasa el mouse por una habilidad para ver qué hace." % (
+		"Cada héroe puede usar cada una de sus habilidades una vez. Las de su oficio cambian en cada fogata.%s Pasa el mouse por una habilidad para ver qué hace." % (
 			" Alguien hace guardia: no habrá emboscada." if _camp_watch else ""))
 	var rest := Button.new()
 	rest.text = "Dormir"
 	rest.tooltip_text = "Terminar el campamento (los puntos que sobren se pierden)."
 	rest.pressed.connect(_camp_sleep)
 	_event_actions.add_child(rest)
-	# One row per hero: name, then their 4 camp skills (cost in brackets; hover for the effect).
+	# One row per hero: name, then tonight's camp skills (cost in brackets; hover for the effect).
 	for h in CampingSystemScript.living(GameState.party):
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 4)
@@ -1171,7 +1176,7 @@ func _camp_respite_menu() -> void:
 		who.add_theme_font_size_override("font_size", 13)
 		who.add_theme_color_override("font_color", Color(0.95, 0.82, 0.55))
 		row.add_child(who)
-		for sk in CampingSystemScript.hero_skills(h):
+		for sk in camp_hand(h):
 			var b := Button.new()
 			b.text = "%s (%d)" % [sk.get("name", "?"), int(sk.get("cost", 0))]
 			b.add_theme_font_size_override("font_size", 13)
@@ -1180,6 +1185,14 @@ func _camp_respite_menu() -> void:
 			b.pressed.connect(_camp_pick.bind(h, sk))
 			row.add_child(b)
 		_event_actions.add_child(row)
+
+
+## Tonight's camp skills for this hero (dealt when the fogata is lit).
+func camp_hand(h: Dictionary) -> Array:
+	var uid: int = int(h.get("uid", 0))
+	if not _camp_hands.has(uid):
+		_camp_hands[uid] = CampingSystemScript.deal_hand(h)
+	return CampingSystemScript.hand_skills(_camp_hands[uid])
 
 
 func _camp_pick(user: Dictionary, sk: Dictionary) -> void:

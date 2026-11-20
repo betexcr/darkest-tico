@@ -17,9 +17,9 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-20 (16) — P4-24: heroes are men and women (names, class names, portraits, sprites)
+## 2026-11-20 (19) — P4-24: heroes are men and women (names, class names, portraits, sprites)
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
-- **Status after session:** P4-24 review.
+- **Status after session:** P4-24 review. Merged main (P3-13/P3-20): both had bumped the save to v13 on their own; now v14 (migrations are field-based, so either v13 save loads).
 - **Changed:**
   - `data/heroes.json`: per class `base_sex`, `class_names` {m, f}, `names_m` + `names_f` (20 each, 320 names, none twice; includes Keilor, Tito, Don Vito, Greivin). The old `names` list is gone (validator rejects it).
   - `game_state.gd`: heroes get `sex` (recruits 50/50), names skip ones in use (roster, recruits, graveyard), `class_name_for`, `art_id` / `portrait_path` / `sprite_id` (other-sex art, falling back to the class art). Save v13: old heroes get a sex from the name lists, else the class's `base_sex`.
@@ -29,7 +29,58 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Verified:** validator 0 errors (1 old warning: status_amarrado icon); smoke + all 19 tests 0 failures; every sprite set reviewed on a contact sheet next to its portrait.
 - **Not verified / risks:** not looked at in a running game window; SD re-rolls are seed-specific (a fresh sheet regeneration would change them).
 - **Decisions needed:** owner look at the art (guachimana dead pose has a dark chair shape behind her; tecnóloga dead has a small brass gear).
-- **Next step:** owner playtest of P4-22/23/24; then P3-13 (see plan).
+- **Next step:** owner playtest of P4-22/23/24; P3-13/P3-20 (merged from main) are also waiting for review.
+
+---
+
+## 2026-11-19 (18) — P3-13 follow-up: town events reach the Guardabosques
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-13 review (prices approved by the owner: 500 / 300 / 100 ₡).
+- **Changed:**
+  - New town-event service `guardabosques` (validator `services`, `TownEvents.SERVICE_NAMES`, `town_events.json` _doc). `data/town.json`: the building is `closed_by` it (greyed in town).
+  - `GameState.camp_price(kind)` = balance price × `service_mult(…, "guardabosques")`; `camp_closed_reason()` blocks learn / fix / swap; the page shows the closure in red and the event prices; the bot reads `camp_price("learn")`.
+  - 2 new events (58 now), `dd` "(Tico extra: Guardabosques)": *Día de los Parques Nacionales* (Guardabosques −50%) and *Quema en el Arenal* (closed; Casa Comunal −50%, the same "one closed, another cheaper" shape as the DD-style negatives).
+  - `test_town_events`: half price, lesson charged at the event price, closed blocks learn and fix, Casa Comunal half price.
+- **Verified:** validator 0 errors; test_town_events, test_ui, test_progression, test_hub 0 failures. Full run (Godot 4.7.2 Linux): smoke + all 18 tests 0 failures, no SCRIPT ERROR.
+- **Not verified / risks:** the two new event texts need the owner's tone check (doc 08); they join the shuffled deck, so every other event comes up a little less often.
+- **Decisions needed:** none.
+- **Next step:** owner playtest the Guardabosques; then P3-21 once P3-16 brings building upgrades.
+
+---
+
+## 2026-11-19 (17) — P3-13: Guardabosques del Arenal (learn, fix, swap camp skills)
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-13 review; P3-21 (upgrade tracks) added as todo (owner: later).
+- **Changed:**
+  - Owner 2026-11-19: a new hero knows **3 of their 6** class camp skills (random, `CampingSystem.starting_known`); the fogata draws only known ones. Heroes from saves before v13 know all 6.
+  - `data/balance.json` `camp`: `known_at_hire` 3, `learn_price` 500, `fix_price` 300, `shared_swap_price` 100 (+ `BALANCE_KEYS`).
+  - `camping_system.gd`: `known_ids`, `knows`, `fixed_id`; `deal_hand` = shared + fixed (if any) + random known class skills up to `class_skills_per_camp`.
+  - `GameState`: hero fields `camp_known`, `camp_fixed`; `learn_camp_skill`, `fix_camp_skill` ("" lets go, free), `swap_shared_camp_skill`, `camp_*_block_reason`, `camp_shared_options`; **SAVE_VERSION 13** (shared-only `camp_skill_ids`, known = all 6, fixed checked).
+  - Town: the shed right of the Cantina is now the Guardabosques. Its pixels were split off `assets/town/painted/cantina.png` (alpha x ≥ 815 moved) into `painted/guardabosques.png`, rect in `painted/layout.json`; `assets/town/guardabosques.png` is the same cut as a stand-in; `data/town.json` entry; `tools/art_manifest.json` `town_guardabosques` for real art. Validator now wants 8 buildings.
+  - Hub: page `guardabosques` (`hacienda_hub.tscn` + `_refresh_guardabosques` / `_ranger_row`): 6 class rows (Aprender / Fijar / Soltar) and 2 shared rows (Cambiar por …); in `HERO_PAGES`. Hero sheet marks unknown and fixed skills.
+  - Bot: learns one class camp skill per hero a week while it keeps RESERVE, watch skills first (`row["camp_learned"]`).
+  - Tests: `test_progression` (start with 3, draw from known, learn/fix/let go/swap, no money, v12 migration), `test_ui` (8 buildings, page rows, Aprender works). Docs 01 §4.4, 02 §9 and hub table.
+- **Verified:** validator 0 errors; test_progression, test_ui, test_hub, test_save 0 failures; screenshots of the town hover and the page (1280×720). Full run with Godot 4.7.2 (Linux, scratchpad): smoke + all 18 tests 0 failures, no SCRIPT ERROR; `playtest_campaign -- --campaigns 1 --weeks 4` runs clean (no SCRIPT ERROR).
+- **Not verified / risks:** the next `tools/town_paint.py` repaint uses the stand-in `guardabosques.png` (a dark 89×97 cut) and the Cantina cut-out still contains the shed, so run `sd_local.py` + `sd_cutout.py` for `town_guardabosques` first. Prices are guesses; the bot spends some money on lessons now, so P5-09 baselines shift a little.
+- **Decisions needed:** answered 2026-11-19: prices kept; town events reach it (entry 18).
+- **Next step:** owner playtest the Guardabosques page; then P3-21 once P3-16 brings building upgrades.
+
+---
+
+## 2026-11-19 (16) — P3-20: 4 more class camp skills per class, drawn at random at every fogata
+- **Agent / branch:** Claude Code (cloud) / `betomm/trusting-hamilton-bga408`
+- **Status after session:** P3-20 review.
+- **Changed:**
+  - `data/camp_skills.json`: 32 new class skills (4 per class, Tico names), so each class has 6; new `class_skills_per_camp: 2`.
+  - `data/heroes.json`: `camp_skill_ids` now lists only the hero's 2 shared skills (was 2 class + 2 shared).
+  - `camping_system.gd`: `shared_skills`, `class_pool`, `class_skills_per_camp`, `deal_hand` (shared + random class draw), `hand_skills`; `hero_skills` = shared + whole pool. Old saves with 4 ids keep only their shared ones (no save bump needed).
+  - `expedition_screen.gd`: `_camp_hands` dealt in `_camp_begin`; the respite menu shows `camp_hand(h)`; the hint says class skills change at every fogata.
+  - `hacienda_hub.gd` hero sheet: the 2 shared skills, then the 6 class skills ("en cada fogata le salen 2 al azar").
+  - `tools/playtest_campaign.gd` bot uses `screen.camp_hand`; `tools/validate_data.py` requires 2 shared ids, 6 class skills per class (one helping others), `class_skills_per_camp` 1..6; `tests/test_progression.gd` checks the hand and the draw.
+- **Verified:** validator 0 errors. Godot 4.7.2 (Linux, scratchpad): import; smoke_expedition + all 18 tests 0 failures, no SCRIPT ERROR (test_guard prints no count; all its checks ok).
+- **Not verified / risks:** camp balance: a hand of 2 random class skills may lack a watch (prevent_ambush) skill more often than the old fixed loadout; no playtest_campaign rerun.
+- **Decisions needed:** owner: review the 32 names/effects (doc 08 tone); is 2 class skills per fogata the right count?
+- **Next step:** owner playtest a fogata; then P3-13 (Guardabosques) — decide whether it picks the shared skills or raises `class_skills_per_camp`.
 
 ---
 

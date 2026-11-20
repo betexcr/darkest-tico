@@ -23,13 +23,14 @@
         "aguante_de_campo"
       ],
       "camp_skill_ids": [
-        "afilar_machete",
-        "cuentos_de_finca",
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
       "base_sex": "m",
-      "class_names": {"m": "Campesino Machetero", "f": "Campesina Machetera"},
+      "class_names": {
+        "m": "Campesino Machetero",
+        "f": "Campesina Machetera"
+      },
       "names_m": [
         "Chepe",
         "Toño",
@@ -108,13 +109,14 @@
         "cataplasma_casero"
       ],
       "camp_skill_ids": [
-        "aguita_de_tilo",
-        "remedio_casero",
         "palabras_de_animo",
         "charla_de_fogon"
       ],
       "base_sex": "f",
-      "class_names": {"m": "Abuelo Sabio", "f": "Abuela Sabia"},
+      "class_names": {
+        "m": "Abuelo Sabio",
+        "f": "Abuela Sabia"
+      },
       "names_m": [
         "Don Ramón",
         "Don Fidel",
@@ -193,13 +195,14 @@
         "firewall_humano"
       ],
       "camp_skill_ids": [
-        "dron_vigia",
-        "radio_con_rancheras",
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
       "base_sex": "m",
-      "class_names": {"m": "Tecnólogo Errante", "f": "Tecnóloga Errante"},
+      "class_names": {
+        "m": "Tecnólogo Errante",
+        "f": "Tecnóloga Errante"
+      },
       "names_m": [
         "Maikol",
         "Kevin",
@@ -277,13 +280,14 @@
         "no_me_tumban"
       ],
       "camp_skill_ids": [
-        "calentar_musculos",
-        "guardia_de_corral",
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
       "base_sex": "m",
-      "class_names": {"m": "Montador de Toros", "f": "Montadora de Toros"},
+      "class_names": {
+        "m": "Montador de Toros",
+        "f": "Montadora de Toros"
+      },
       "names_m": [
         "Chalo",
         "Cuco",
@@ -362,13 +366,14 @@
         "escudo_de_barrio"
       ],
       "camp_skill_ids": [
-        "ronda_con_foco",
-        "cafe_de_termo",
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
       "base_sex": "m",
-      "class_names": {"m": "Guachimán Jubilado", "f": "Guachimana Jubilada"},
+      "class_names": {
+        "m": "Guachimán Jubilado",
+        "f": "Guachimana Jubilada"
+      },
       "names_m": [
         "Don Rigo",
         "Don Lalo",
@@ -446,13 +451,14 @@
         "desfibrilar"
       ],
       "camp_skill_ids": [
-        "chequeo_general",
-        "refuerzo_de_vacunas",
         "palabras_de_animo",
         "charla_de_fogon"
       ],
       "base_sex": "f",
-      "class_names": {"m": "Médico Josefino", "f": "Médica Josefina"},
+      "class_names": {
+        "m": "Médico Josefino",
+        "f": "Médica Josefina"
+      },
       "names_m": [
         "Dr. José",
         "Dr. Arnoldo",
@@ -531,13 +537,14 @@
         "limpia_de_mal_de_ojo"
       ],
       "camp_skill_ids": [
-        "sahumerio",
-        "sobada_de_hueso",
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
       "base_sex": "f",
-      "class_names": {"m": "Curandero Nicoyano", "f": "Curandera Nicoyana"},
+      "class_names": {
+        "m": "Curandero Nicoyano",
+        "f": "Curandera Nicoyana"
+      },
       "names_m": [
         "Don Nacho",
         "Don Chico",
@@ -616,13 +623,14 @@
         "circulo_de_tiza"
       ],
       "camp_skill_ids": [
-        "vigilia_de_oracion",
-        "bendecir_las_armas",
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
       "base_sex": "f",
-      "class_names": {"m": "Exorcista de Barrio", "f": "Exorcista de Barrio"},
+      "class_names": {
+        "m": "Exorcista de Barrio",
+        "f": "Exorcista de Barrio"
+      },
       "names_m": [
         "Padre Mauro",
         "Padre Chaves",

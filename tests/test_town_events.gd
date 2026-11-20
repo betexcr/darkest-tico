@@ -105,6 +105,20 @@ func _run() -> void:
 	gs.draw_town_event("mananita_de_sol")
 	var rel: Array = gs.activity_relief_range("iglesia", "rezo")
 	_check(rel == [39, 66] and gs.activity_relief_range("cantina", "noche_de_fiesta") == [40, 65], "Mañanitas de sol: Rezo relieves 39–66 instead of 30–50 (%s); Cantina unchanged" % str(rel))
+	# Guardabosques (P3-13, owner 2026-11-19: town events reach it too).
+	var camp = load("res://scripts/domain/camping_system.gd")
+	var rh: Dictionary = gs.party[0]
+	var new_sid: String = str(camp.class_pool(rh).filter(func(sk): return not camp.knows(rh, str(sk["id"])))[0]["id"])
+	gs.draw_town_event("dia_de_los_parques")
+	_check(gs.camp_price("learn") == gs.BalanceScript.int_of("camp.learn_price") / 2 and gs.camp_price("fix") == gs.BalanceScript.int_of("camp.fix_price") / 2, "Día de los Parques: Guardabosques at half price")
+	var cg: int = gs.colones
+	gs.learn_camp_skill(rh, new_sid)
+	_check(camp.knows(rh, new_sid) and gs.colones == cg - gs.camp_price("learn"), "…and a lesson charges the event price")
+	gs.draw_town_event("quema_en_el_arenal")
+	var other: Array = camp.class_pool(rh).filter(func(sk): return not camp.knows(rh, str(sk["id"])))
+	_check(gs.camp_closed_reason() != "" and gs.camp_learn_block_reason(rh, str(other[0]["id"])).contains("cerrado")
+		and gs.camp_fix_block_reason(rh, new_sid).contains("cerrado"), "Quema en el Arenal: Guardabosques closed")
+	_check(gs.skill_rank_cost(rh, str(rh["skill_ids"][0])) * 2 == gs.SkillRanksScript.next_cost(rh, str(rh["skill_ids"][0])) or gs.SkillRanksScript.next_cost(rh, str(rh["skill_ids"][0])) == 0, "…Casa Comunal at half price")
 	gs.draw_town_event("arreglan_la_terminal")
 	_check(gs.hire_recruit(0).begins_with("La terminal está cerrada"), "Arreglan la terminal: no hiring")
 

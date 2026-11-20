@@ -2570,6 +2570,18 @@
       "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
+      "id": "town_guardabosques",
+      "out": "assets/town/guardabosques.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 5208,
+      "subject": "exterior of a small dark wooden ranger shack at night, steep plank roof, one hanging lantern by the door, machete and rope on the wall, firewood stack, isolated on black background",
+      "cutout": true,
+      "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
+    },
+    {
       "id": "town_cantina",
       "out": "assets/town/cantina.png",
       "size": [

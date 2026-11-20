@@ -93,6 +93,13 @@
     "heal_min_cost": 100,
     "idle_stress_relief": 20
   },
+  "camp": {
+    "_doc": "Guardabosques del Arenal (P3-13, doc 02 §9, owner 2026-11-19). A new hero knows known_at_hire of their class's 6 camp skills (at random); learn_price teaches one more. fix_price makes one known class skill come up at every fogata (letting it go is free). shared_swap_price swaps one of the hero's 2 shared camp skills for the third. Each fogata draws camp_skills.json class_skills_per_camp of the known class skills.",
+    "known_at_hire": 3,
+    "learn_price": 500,
+    "fix_price": 300,
+    "shared_swap_price": 100
+  },
   "quirks": {
     "_doc": "Quirks (P3-06, data/quirks.json). After each expedition every hero who went may gain at most one new quirk (owner 2026-11-19: it was too common): positive_chance, negative_chance and disease_chance are rolled in random order and the first hit wins; at max_positive / max_negative a new one replaces a random unlocked one (none if all are locked). Recruits arrive with one of each with recruit_positive_chance / recruit_negative_chance. Clínica prices (doc 04 §3.5) by resolve tier: levels below tier_levels[0], below tier_levels[1], the rest. Each hero: one negative removal and one positive lock/removal per week; diseases any time.",
     "positive_chance": 0.08,
