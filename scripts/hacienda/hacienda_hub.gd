@@ -28,6 +28,9 @@ const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
 const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
+const UpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
+## Pages with a "Mejoras" section (P3-16/P3-18/P3-21) and the container it goes in.
+const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box"}
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
 const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "guardabosques"]
@@ -239,8 +242,8 @@ func _say(msg: String) -> void:
 
 
 func _refresh() -> void:
-	_gold.text = "%d ₡" % GameState.colones
-	_gold.tooltip_text = "Colones de la hacienda"
+	_gold.text = "%d ₡ · %d Reliquia%s" % [GameState.colones, GameState.reliquias, "" if GameState.reliquias == 1 else "s"]
+	_gold.tooltip_text = "Colones y Reliquias del Abuelo\nLas Reliquias salen de los objetivos cumplidos, de las peleas de élite y de algunas curiosidades. Con colones, pagan las mejoras de la Casa Comunal, la Iglesia, la Cantina y el Guardabosques."
 	_week.text = "Semana %d" % GameState.week
 	_refresh_equipment()
 	_refresh_skills()
@@ -251,6 +254,7 @@ func _refresh() -> void:
 	_refresh_relief()
 	_refresh_clinic_page()
 	_refresh_guardabosques()
+	_refresh_upgrades()
 	_refresh_town()
 	_refresh_who()
 	_refresh_event_button()
@@ -364,6 +368,9 @@ func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
 			head.text = "%s sigue en %s una semana más (%s)." % [h.get("name", "?"), bname, act.get("name", "?")]
 		return
 	head.text = "Mandar a %s (estrés %d) una semana — no sale de expedición:" % [h.get("name", "?"), int(h.get("stress", 0))]
+	var tm: float = GameState.tier_price_mult(h)
+	if tm > 1.0:
+		box.add_child(CardScript.label("Precio para Resolución %d: ×%s (los héroes curtidos pagan más; las mejoras del edificio lo bajan)." % [int(h.get("resolve_level", 0)), str(snappedf(tm, 0.01))], 12, CardScript.MUTED, true, 0.0))
 	var closed: bool = TownEventsScript.is_closed(GameState.active_event(), bid)
 	if closed:
 		box.add_child(CardScript.label("Cerrada esta semana: no recibe a nadie.", 14, CardScript.BAD, false))
@@ -466,6 +473,71 @@ func _ranger_row(sk: Dictionary, tag: String, tag_col: Color, buttons: Array, li
 	for b in buttons:
 		b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		row.add_child(b)
+	return panel
+
+
+# --- Building upgrades (P3-16 / P3-18 / P3-21) -------------------------------------------
+
+## A "Mejoras" section at the bottom of each upgradeable building's page.
+func _refresh_upgrades() -> void:
+	for bid in UPGRADE_PAGES:
+		var page: Node = _pages.get_node_or_null(bid)
+		if page == null:
+			continue
+		var holder: Node = page if str(UPGRADE_PAGES[bid]) == "" else page.get_node_or_null(str(UPGRADE_PAGES[bid]))
+		if holder == null:
+			continue
+		# The Iglesia/Cantina/Guardabosques refreshes free their whole box, so look the
+		# section up by meta and skip one that is on its way out.
+		var box: VBoxContainer = null
+		for c in holder.get_children():
+			if c.has_meta("mejoras") and not c.is_queued_for_deletion():
+				box = c
+		if box == null:
+			box = VBoxContainer.new()
+			box.set_meta("mejoras", true)
+			box.add_theme_constant_override("separation", 4)
+			holder.add_child(box)
+		holder.move_child(box, -1)
+		for c in box.get_children():
+			c.queue_free()
+		box.add_child(CardScript.section("Mejoras del edificio — %d Reliquia%s del Abuelo" % [GameState.reliquias, "" if GameState.reliquias == 1 else "s"]))
+		for t in UpgradesScript.tracks(bid):
+			box.add_child(_upgrade_row(bid, t))
+
+
+func _upgrade_row(bid: String, t: Dictionary) -> Control:
+	var tid: String = str(t.get("id", ""))
+	var eff: String = str(t.get("effect", ""))
+	var lv: int = GameState.upgrade_level(bid, tid)
+	var top: int = UpgradesScript.max_level(t)
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", CardScript.flat(Color(0.1, 0.075, 0.06), Color(0.5, 0.38, 0.22, 0.7), 1, 4, 8))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	panel.add_child(row)
+	var info := VBoxContainer.new()
+	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info.add_child(CardScript.label("%s  %s" % [t.get("name", tid), "●".repeat(lv) + "○".repeat(top - lv)], 13, CardScript.TEXT, false))
+	var now: String = UpgradesScript.effect_text(eff, UpgradesScript.value_at(t, lv)) if lv > 0 or eff == "rank_cap" else "sin mejora"
+	var line: String = "%s Ahora: %s." % [t.get("desc", ""), now]
+	if lv < top:
+		line += " Siguiente: %s." % UpgradesScript.effect_text(eff, UpgradesScript.value_at(t, lv + 1))
+	info.add_child(CardScript.label(line, 12, CardScript.MUTED, true, 0.0))
+	row.add_child(info)
+	var b := Button.new()
+	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var cost: Dictionary = UpgradesScript.next_cost(GameState.building_levels, bid, tid)
+	if cost.is_empty():
+		b.text = "Al máximo"
+		b.disabled = true
+	else:
+		b.text = "Mejorar — %d Reliq. + %d ₡" % [int(cost["reliquias"]), int(cost["colones"])]
+		var why: String = GameState.upgrade_block_reason(bid, tid)
+		b.disabled = why != ""
+		b.tooltip_text = "%s, nivel %d\n%s" % [t.get("name", tid), lv + 1, why if why != "" else "Pasa a: %s." % UpgradesScript.effect_text(eff, UpgradesScript.value_at(t, lv + 1))]
+		b.pressed.connect(func(): _say(GameState.buy_upgrade(bid, tid)))
+	row.add_child(b)
 	return panel
 
 
@@ -1152,7 +1224,8 @@ func _roster_row(h: Dictionary) -> Control:
 		var heal := Button.new()
 		var ebais_closed: bool = TownEventsScript.is_closed(GameState.active_event(), "ebais")
 		heal.text = "EBAIS cerrado" if ebais_closed else ("EBAIS gratis" if cost == 0 else "EBAIS %d ₡" % cost)
-		heal.tooltip_text = "Curar todos los PV en el EBAIS del pueblo."
+		heal.tooltip_text = "Curar todos los PV en el EBAIS del pueblo.%s" % ("" if GameState.tier_price_mult(h) <= 1.0 else
+			"\nPrecio ×%s por la Resolución %d: los héroes curtidos pagan más." % [str(snappedf(GameState.tier_price_mult(h), 0.01)), int(h.get("resolve_level", 0))])
 		heal.disabled = ebais_closed or GameState.colones < cost
 		heal.pressed.connect(func(): _say(GameState.heal_hero(h)))
 		btns.add_child(heal)

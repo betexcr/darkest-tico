@@ -98,6 +98,9 @@ func _build_rewards() -> void:
 	var treasure: int = int(led.get("treasure_colones", 0))
 	if treasure > 0:
 		_body.add_child(_money_row("Botija desenterrada", treasure))
+	var rel: int = int(led.get("reliquias", 0))
+	if rel > 0:
+		_body.add_child(_label("Reliquias del Abuelo: +%d (para mejorar los edificios de la hacienda)" % rel, 15, GOLD, true))
 	var items: Dictionary = led.get("items", {})
 	if items.is_empty():
 		_body.add_child(_label("Ningún artículo encontrado.", 14, DIM, true))

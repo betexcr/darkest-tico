@@ -950,6 +950,9 @@ func _show_battle_result(title: String, pay: int, drops: Dictionary, then: Calla
 		if pay > 0:
 			col.add_child(_tone_label("+%d colones" % pay))
 			any = true
+		if int(drops.get("reliquias", 0)) > 0:
+			col.add_child(_tone_label("+%d Reliquia del Abuelo" % int(drops["reliquias"])))
+			any = true
 		for id in drops.get("got", []):
 			# Hover the row for the item's card, as in the alforja (owner 2026-11-19).
 			var hover = ItemHoverScript.new()
@@ -1573,6 +1576,7 @@ func _on_combat_over(victory: bool) -> void:
 	GameState.ledger_add("fights")
 	GameState.note_fight_won()
 	var won_pay: int = 0
+	var won_rel: int = 0
 	if roaming:
 		# Roaming mini-boss (P2-05): a bounty if it died, nothing if it ran off.
 		var fled: bool = GameState.combat_context.get("enemies", []).any(func(e): return bool(e.get("fled", false)))
@@ -1594,9 +1598,11 @@ func _on_combat_over(victory: bool) -> void:
 		if bool(nd.get("is_elite", false)) and not bool(nd.get("is_boss", false)):
 			var rel: String = GameState.roll_elite_reliquia()
 			if rel != "":
+				won_rel = 1
 				_log_line(rel, "66aa66")
 	# Enemy drops (P5-10): logged; the boss's go to the expedition's victory screen.
 	var drops: Dictionary = GameState.roll_drops(_combat.enemies)
+	drops["reliquias"] = won_rel
 	for id in drops["got"]:
 		_log_line("Botín: %s." % GameState.get_item(str(id)).get("name", id), "66aa66")
 	for id in drops["lost"]:
