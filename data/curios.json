@@ -44,9 +44,10 @@
       "key_outcomes": [
         {
           "weight": 75,
-          "text": "La llave entra justo. Adentro: los ahorros del abuelo y algo de su equipo.",
+          "text": "La llave entra justo. Adentro: los ahorros del abuelo, algo de su equipo y una reliquia de la familia.",
           "colones": [250, 700],
-          "random_equipment": true
+          "random_equipment": true,
+          "reliquias": 1
         },
         {
           "weight": 25,
@@ -211,7 +212,8 @@
       "key_outcomes": [
         {
           "weight": 75,
-          "text": "Prenden una candela a los santos. Parece que lo agradecen.",
+          "text": "Prenden una candela a los santos. Parece que lo agradecen: detrás de uno aparece una reliquia vieja de la hacienda.",
+          "reliquias": 1,
           "stress_party": -12,
           "buff": { "name": "Bendición del nicho", "mods": { "stress_pct": -10 }, "fights": 3, "party": true }
         },
@@ -311,7 +313,7 @@
       "blind": [
         { "weight": 50, "text": "El abuelo parece asentir. Algo de calma.", "stress_party": -8 },
         { "weight": 30, "text": "El retrato llora lágrimas de cera y las candelas bajan.", "stress_party": 6, "light": -10 },
-        { "weight": 20, "text": "Detrás del cuadro hay una caja fuerte, abierta.", "colones": [150, 300] }
+        { "weight": 20, "text": "Detrás del cuadro hay una caja fuerte, abierta: unos colones y una reliquia del abuelo.", "colones": [150, 300], "reliquias": 1 }
       ] },
     { "id": "campana_de_capilla", "name": "Campana de capilla",
       "text": "Una campana de bronce colgada de una viga. Si suena, todo el sótano se entera.",

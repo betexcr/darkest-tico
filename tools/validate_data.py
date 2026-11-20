@@ -160,8 +160,57 @@ def main() -> int:
             v = d.get(k)
             if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
                 errors.append(f"progression.json: difficulty '{d.get('id')}' needs {k} > 0")
+        rq = d.get("reliquias")
+        if not isinstance(rq, int) or isinstance(rq, bool) or rq < 0:
+            errors.append(f"progression.json: difficulty '{d.get('id')}' needs reliquias (whole number >= 0, P3-16)")
     if not prog.get("difficulties"):
         errors.append("progression.json: no difficulties")
+    # P3-16/P3-18/P3-21 building upgrades (data/upgrades.json, scripts/domain/building_upgrades.gd).
+    up = load(DATA / "upgrades.json") or {}
+    up_effects = {"casa_comunal": {"rank_cap", "rank_discount"},
+                  "iglesia": {"relief_bonus", "cost_discount", "extra_slots"},
+                  "cantina": {"relief_bonus", "cost_discount", "extra_slots"},
+                  "guardabosques": {"camp_extra_class_skills", "lesson_discount"}}
+    fractions = {"rank_discount", "cost_discount", "lesson_discount", "relief_bonus"}
+    max_rank = int(prog.get("skill_ranks", {}).get("max_rank", 5))
+    ub = up.get("buildings")
+    if not isinstance(ub, dict) or not ub:
+        errors.append("upgrades.json: needs buildings {building: [tracks]}")
+        ub = {}
+    seen_tracks = set()
+    for bid, tlist in ub.items():
+        if bid not in up_effects:
+            errors.append(f"upgrades.json: unknown building '{bid}' (known: {sorted(up_effects)})")
+            continue
+        effs = [t.get("effect") for t in tlist]
+        if len(effs) != len(set(effs)):
+            errors.append(f"upgrades.json: '{bid}' uses an effect twice")
+        for t in tlist:
+            tid, eff = t.get("id"), t.get("effect")
+            where = f"upgrades.json: {bid}.{tid}"
+            if not tid or tid in seen_tracks:
+                errors.append(f"{where}: needs a unique id")
+            seen_tracks.add(tid)
+            if eff not in up_effects[bid]:
+                errors.append(f"{where}: effect '{eff}' does not apply to {bid} ({sorted(up_effects[bid])})")
+            if not t.get("name") or not t.get("desc"):
+                errors.append(f"{where}: needs name and desc (Spanish)")
+            lv = t.get("levels")
+            base = t.get("base")
+            if not isinstance(lv, list) or not lv or not isinstance(base, (int, float)):
+                errors.append(f"{where}: needs base and a non-empty levels list")
+                continue
+            vals = [base] + [x.get("value") for x in lv]
+            if any(not isinstance(v, (int, float)) for v in vals) or vals != sorted(vals) or len(set(vals)) != len(vals):
+                errors.append(f"{where}: values must rise from base, level by level")
+                continue
+            for x in lv:
+                if not isinstance(x.get("reliquias"), int) or x["reliquias"] < 0 or not isinstance(x.get("colones"), int) or x["colones"] < 0:
+                    errors.append(f"{where}: each level needs reliquias and colones (whole numbers >= 0)")
+            if eff in fractions and not all(0 <= v <= 1 for v in vals):
+                errors.append(f"{where}: {eff} values are fractions 0-1")
+            if eff == "rank_cap" and not (1 <= vals[0] and vals[-1] == max_rank):
+                errors.append(f"{where}: rank_cap must start >= 1 and end at progression.json max_rank ({max_rank})")
     # Casa Comunal skill ranks (doc 02 §4, doc 04 §3.3); keys match skill_ranks.gd BONUS_KEYS.
     rank_keys = {"damage_min", "damage_max", "skill_accuracy", "skill_crit", "heal_min", "heal_max",
                  "stress_relief", "status_chance", "status_value", "status_mods"}
@@ -735,7 +784,7 @@ def main() -> int:
     # (GameState.apply_event_outcome); every key, status, stat and item must exist.
     outcome_keys = {"heal_party", "stress_party", "colones", "damage_random", "damage_party", "add_item",
                     "reveal_neighbors", "reveal_map", "random_equipment", "applies", "buff", "debuff",
-                    "ambush", "weight", "text", "light", "stress_random"}
+                    "ambush", "weight", "text", "light", "stress_random", "reliquias"}
 
     def check_outcome(where: str, o) -> None:
         if not isinstance(o, dict):
@@ -966,6 +1015,7 @@ BALANCE_KEYS = {
     "enemies.boss_hp_mult": "mult", "enemies.elite_hp_mult": "mult",
     "hub.start_colones": "int>=0", "hub.sell_rate": "chance", "hub.heal_cost_per_hp": "int>=0",
     "hub.heal_min_cost": "int>=0", "hub.idle_stress_relief": "int>=0",
+    "upgrades.elite_reliquia_chance": "chance",
     "camp.known_at_hire": "pos", "camp.learn_price": "int>=0", "camp.fix_price": "int>=0",
     "camp.shared_swap_price": "int>=0",
     "limits.roster_cap": "pos", "limits.inventory_slots": "pos", "limits.recruit_pool": "pos",
@@ -1032,6 +1082,10 @@ def check_balance(errors: list) -> None:
         v = get(f"quirks.{k}")
         if not isinstance(v, list) or len(v) != 3 or any(not isinstance(x, int) or x < 0 for x in v):
             errors.append(f"balance.json: quirks.{k} must be 3 whole prices (one per resolve tier)")
+    # P3-14: EBAIS / Iglesia / Cantina price × this by resolve tier (one per tier, rising, from 1).
+    tpm = get("hub.tier_price_mult")
+    if not isinstance(tpm, list) or len(tpm) != 3 or tpm != sorted(tpm) or any(not isinstance(x, (int, float)) or x < 1 for x in tpm):
+        errors.append("balance.json: hub.tier_price_mult must be 3 rising multipliers >= 1 (one per resolve tier)")
     dmg = get("afflictions.ira_ciega_damage")
     if not isinstance(dmg, list) or len(dmg) != 2 or dmg[0] > dmg[1] or dmg[0] < 0:
         errors.append("balance.json: afflictions.ira_ciega_damage must be [min, max]")
@@ -1053,7 +1107,7 @@ def check_balance(errors: list) -> None:
     for gd in (ROOT / "scripts").rglob("*.gd"):
         used |= set(re.findall(r'BalanceScript\.(?:num|int_of|arr|value)\("([a-z_.]+)"\)', gd.read_text(encoding="utf-8")))
     arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage", "light.tiers",
-              "quirks.tier_levels"}
+              "quirks.tier_levels", "hub.tier_price_mult"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
 

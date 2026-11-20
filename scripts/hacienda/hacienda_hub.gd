@@ -372,10 +372,10 @@ func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
 		var btn = CardButtonScript.new()
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn.custom_minimum_size = Vector2(0, 40)
-		var price: int = GameState.activity_cost(bid, aid)
+		var price: int = GameState.activity_cost(bid, aid, h)
 		var rel: Array = GameState.activity_relief_range(bid, aid)
 		var used: int = GameState.activity_slots_used(bid, aid)
-		var cap: int = HubActivitiesScript.slots(a)
+		var cap: int = GameState.activity_slots(bid, aid)
 		btn.text = "%s — %s · quita %d–%d de estrés · cupos %d/%d" % [a.get("name", aid),
 			"gratis" if price == 0 else "%d ₡" % price, int(rel[0]), int(rel[1]), used, cap]
 		var why: String = GameState.activity_block_reason(h, bid, aid)
@@ -402,7 +402,7 @@ func _refresh_guardabosques() -> void:
 	var h: Dictionary = _selected
 	if h.is_empty():
 		return
-	var per: int = CampingSystemScript.class_skills_per_camp()
+	var per: int = GameState.camp_class_skills_per_camp()
 	var closed: String = GameState.camp_closed_reason()
 	if closed != "":
 		_ranger_box.add_child(CardScript.label(closed, 13, CardScript.BAD, true, 0.0))
@@ -765,6 +765,8 @@ func _refresh_skills() -> void:
 			# Disabled buttons may not show a tooltip, so the resolve gate is in the label itself.
 			if int(h.get("resolve_level", 0)) < need:
 				buy.text = "Rango %d: Resolución %d" % [rank + 1, need]
+			elif rank >= GameState.skill_rank_cap():
+				buy.text = "Rango %d: Maestría" % (rank + 1)
 			else:
 				buy.text = "Rango %d — %s" % [rank + 1, "gratis" if cost == 0 else "%d ₡" % cost]
 			buy.disabled = why != ""
@@ -1041,7 +1043,7 @@ func _show_hero_sheet(h: Dictionary) -> void:
 		col.add_child(CardScript.section("Habilidades de fogata"))
 		for cs in CampingSystemScript.shared_skills(h):
 			col.add_child(CardScript.label("◆ %s (%d pts.) — %s" % [cs.get("name", "?"), int(cs.get("cost", 0)), cs.get("desc", "")], 12, CardScript.TEXT, true, CW))
-		col.add_child(CardScript.label("De su oficio (en cada fogata le salen %d de las que conoce, al azar):" % CampingSystemScript.class_skills_per_camp(), 12, CardScript.MUTED, true, CW))
+		col.add_child(CardScript.label("De su oficio (en cada fogata le salen %d de las que conoce, al azar):" % GameState.camp_class_skills_per_camp(), 12, CardScript.MUTED, true, CW))
 		var fx: String = CampingSystemScript.fixed_id(h)
 		for cs in CampingSystemScript.class_pool(h):
 			var k: bool = CampingSystemScript.knows(h, str(cs["id"]))

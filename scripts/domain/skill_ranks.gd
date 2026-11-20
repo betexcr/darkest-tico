@@ -50,7 +50,9 @@ static func next_cost(hero: Dictionary, sid: String) -> int:
 
 
 ## "" when the next rank can be bought for `price`; otherwise why not (Spanish, for the UI).
-static func block_reason(hero: Dictionary, sid: String, colones: int, price: int) -> String:
+## `cap`: the highest rank the Casa Comunal teaches now (Maestría de Oficio, P3-16); -1 = max_rank.
+## Heroes already above it keep their ranks.
+static func block_reason(hero: Dictionary, sid: String, colones: int, price: int, cap: int = -1) -> String:
 	if not (hero.get("skill_ids", []) as Array).has(sid):
 		return "No conoce esa habilidad."
 	if bool(hero.get("dead", false)):
@@ -58,6 +60,8 @@ static func block_reason(hero: Dictionary, sid: String, colones: int, price: int
 	var r: int = rank(hero, sid)
 	if r >= max_rank():
 		return "Rango máximo."
+	if cap >= 0 and r >= cap:
+		return "La Casa Comunal enseña hasta el rango %d: falta Maestría de Oficio." % cap
 	var need: int = min_resolve_for(r + 1)
 	if int(hero.get("resolve_level", 0)) < need:
 		return "El rango %d necesita Resolución %d." % [r + 1, need]

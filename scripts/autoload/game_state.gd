@@ -23,6 +23,7 @@ const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 const QuirksScript := preload("res://scripts/domain/quirks.gd")
+const BuildingUpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -47,7 +48,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 14
+const SAVE_VERSION := 15
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -204,6 +205,10 @@ var event_deck: Array = []
 var events_done_once: Array = []
 ## Per-week flags: first discounted buy used, offer taken, resurrection done.
 var event_flags: Dictionary = {}
+## Reliquias del Abuelo (P3-16, doc 02 §11): the material building upgrades cost, with colones.
+var reliquias: int = 0
+## Bought building-upgrade levels {building: {track: level}} (data/upgrades.json).
+var building_levels: Dictionary = {}
 ## Fallen heroes (for Día de los Difuntos) and items taken by the Ladrón de gallinas.
 var graveyard: Array = []
 var stolen_items: Array = []
@@ -450,6 +455,8 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 		colones += amt_c
 		ledger_add("loot_colones", amt_c)
 		logs.append("+%d colones." % amt_c)
+	if outcome.has("reliquias"):
+		logs.append(grant_reliquias(int(outcome["reliquias"])))
 	if bool(outcome.get("random_equipment", false)):
 		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)))
 		if not gear.is_empty():
@@ -681,14 +688,15 @@ func hero_skill(hero: Dictionary, skill_id: String) -> Dictionary:
 ## Price of the hero's next rank in `skill_id` this week (0 at max rank).
 func skill_rank_cost(hero: Dictionary, skill_id: String) -> int:
 	var base: int = SkillRanksScript.next_cost(hero, skill_id)
-	return int(round(base * TownEventsScript.service_mult(active_event(), "casa_comunal")))
+	var plan: float = 1.0 - upgrade_effect("casa_comunal", "rank_discount")
+	return int(round(base * plan * TownEventsScript.service_mult(active_event(), "casa_comunal")))
 
 
 ## "" when the next rank can be bought now; otherwise the reason (Spanish).
 func skill_rank_block_reason(hero: Dictionary, skill_id: String) -> String:
 	if TownEventsScript.is_closed(active_event(), "casa_comunal"):
 		return "La Casa Comunal está cerrada esta semana (%s)." % active_event().get("name", "")
-	return SkillRanksScript.block_reason(hero, skill_id, colones, skill_rank_cost(hero, skill_id))
+	return SkillRanksScript.block_reason(hero, skill_id, colones, skill_rank_cost(hero, skill_id), skill_rank_cap())
 
 
 func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
@@ -710,7 +718,18 @@ func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
 ## This week's price of a Guardabosques service: learn | fix | shared_swap (balance.json
 ## camp.<kind>_price, times the town event's guardabosques service_pct).
 func camp_price(kind: String) -> int:
-	return int(round(BalanceScript.int_of("camp.%s_price" % kind) * TownEventsScript.service_mult(active_event(), "guardabosques")))
+	# Entrenamiento de Patrulla (P3-21) makes lessons and fixing cheaper; the shared swap is not a lesson.
+	var patrol: float = 1.0 if kind == "shared_swap" else 1.0 - upgrade_effect("guardabosques", "lesson_discount")
+	return int(round(BalanceScript.int_of("camp.%s_price" % kind) * patrol * TownEventsScript.service_mult(active_event(), "guardabosques")))
+
+
+## Class camp skills dealt at each fogata: camp_skills.json plus Guía de Supervivencia (P3-21).
+func camp_class_skills_per_camp() -> int:
+	return CampingSystemScript.class_skills_per_camp() + camp_extra_class_skills()
+
+
+func camp_extra_class_skills() -> int:
+	return int(upgrade_effect("guardabosques", "camp_extra_class_skills"))
 
 
 ## "" when the Guardabosques is open this week; otherwise the reason.
@@ -1327,7 +1346,7 @@ func heal_cost(hero: Dictionary) -> int:
 	if missing <= 0 or bool(hero.get("dead", false)):
 		return 0
 	var base: int = maxi(missing * BalanceScript.int_of("hub.heal_cost_per_hp"), BalanceScript.int_of("hub.heal_min_cost"))
-	return int(round(base * TownEventsScript.service_mult(active_event(), "ebais")))
+	return int(round(base * tier_price_mult(hero) * TownEventsScript.service_mult(active_event(), "ebais")))
 
 
 func heal_hero(hero: Dictionary) -> String:
@@ -1547,16 +1566,92 @@ func clinic_treat(hero: Dictionary, quirk_id: String, action: String) -> String:
 	return "Eso no se trata aquí."
 
 
+# --- Building upgrades + Reliquias del Abuelo (P3-14/P3-16/P3-18/P3-21) ----------------
+
+## P3-14: EBAIS and Iglesia/Cantina prices × this by the hero's resolve tier (levels 0–2,
+## 3–4, 5–6, the Clínica's tiers). An empty hero pays the base tier.
+func tier_price_mult(hero: Dictionary) -> float:
+	var m: Array = BalanceScript.arr("hub.tier_price_mult")
+	if hero.is_empty() or m.is_empty():
+		return 1.0
+	return float(m[mini(QuirksScript.tier(hero), m.size() - 1)])
+
+
+func upgrade_level(building_id: String, track_id: String) -> int:
+	return BuildingUpgradesScript.level(building_levels, building_id, track_id)
+
+
+## Current value of an upgrade effect at a building (0 when the building has no such track).
+func upgrade_effect(building_id: String, effect: String) -> float:
+	return BuildingUpgradesScript.effect_value(building_levels, building_id, effect)
+
+
+## Highest Casa Comunal rank a skill can be trained to now (Maestría de Oficio).
+func skill_rank_cap() -> int:
+	return int(upgrade_effect("casa_comunal", "rank_cap"))
+
+
+## "" when the next level of the track can be bought now; otherwise why not (Spanish).
+func upgrade_block_reason(building_id: String, track_id: String) -> String:
+	if TownEventsScript.is_closed(active_event(), building_id):
+		return "Está cerrado esta semana (%s)." % active_event().get("name", "")
+	return BuildingUpgradesScript.block_reason(building_levels, building_id, track_id, reliquias, colones)
+
+
+func buy_upgrade(building_id: String, track_id: String) -> String:
+	var t: Dictionary = BuildingUpgradesScript.track(building_id, track_id)
+	var why: String = upgrade_block_reason(building_id, track_id)
+	if why != "":
+		return "%s: %s" % [t.get("name", track_id), why]
+	var c: Dictionary = BuildingUpgradesScript.next_cost(building_levels, building_id, track_id)
+	reliquias -= int(c["reliquias"])
+	colones -= int(c["colones"])
+	if not building_levels.get(building_id, null) is Dictionary:
+		building_levels[building_id] = {}
+	var lv: int = upgrade_level(building_id, track_id) + 1
+	building_levels[building_id][track_id] = lv
+	return "%s sube a nivel %d: %s (-%d Reliquias, -%d ₡)." % [t.get("name", track_id), lv,
+		BuildingUpgradesScript.effect_text(str(t.get("effect", "")), BuildingUpgradesScript.value_at(t, lv)),
+		int(c["reliquias"]), int(c["colones"])]
+
+
+## Adds Reliquias (counted in the expedition ledger when one is running). Returns a log line.
+func grant_reliquias(n: int) -> String:
+	if n <= 0:
+		return ""
+	reliquias += n
+	ledger_add("reliquias", n)
+	return "+%d Reliquia%s del Abuelo." % [n, "" if n == 1 else "s"]
+
+
+## An elite fight won or a roaming mini-boss killed: maybe one Reliquia. "" if none.
+func roll_elite_reliquia() -> String:
+	if randf() < BalanceScript.num("upgrades.elite_reliquia_chance"):
+		return grant_reliquias(1)
+	return ""
+
+
 # --- Iglesia Vieja + Cantina del Centro: stress activities (doc 02 §7, P3-03) ---------
 
-func activity_cost(building_id: String, activity_id: String) -> int:
-	return HubActivitiesScript.cost(HubActivitiesScript.activity(building_id, activity_id),
-		TownEventsScript.service_mult(active_event(), building_id))
+## Price for `hero` (P3-14: × their resolve tier; no hero = the base tier), less the building's
+## cost upgrade (P3-18), × the town event.
+func activity_cost(building_id: String, activity_id: String, hero: Dictionary = {}) -> int:
+	var mult: float = tier_price_mult(hero) * (1.0 - upgrade_effect(building_id, "cost_discount")) \
+		* TownEventsScript.service_mult(active_event(), building_id)
+	return HubActivitiesScript.cost(HubActivitiesScript.activity(building_id, activity_id), mult)
 
 
-## Town events' relief_pct only touches the Iglesia Vieja.
+## Relief multiplier: the building's relief upgrade (P3-18); town events' relief_pct only
+## touches the Iglesia Vieja.
 func activity_relief_mult(building_id: String) -> float:
-	return TownEventsScript.relief_mult(active_event()) if building_id == "iglesia" else 1.0
+	var ev: float = TownEventsScript.relief_mult(active_event()) if building_id == "iglesia" else 1.0
+	return ev * (1.0 + upgrade_effect(building_id, "relief_bonus"))
+
+
+## Slots of one activity this week: the data plus the building's slot upgrade (P3-18).
+func activity_slots(building_id: String, activity_id: String) -> int:
+	return HubActivitiesScript.slots(HubActivitiesScript.activity(building_id, activity_id)) \
+		+ int(upgrade_effect(building_id, "extra_slots"))
 
 
 func activity_relief_range(building_id: String, activity_id: String) -> Array:
@@ -1589,12 +1684,12 @@ func activity_block_reason(hero: Dictionary, building_id: String, activity_id: S
 	var refusal: Dictionary = QuirksScript.refusal(hero, building_id)
 	if not refusal.is_empty():
 		return "%s (%s) no pone un pie en %s." % [hero.get("name", "?"), refusal.get("name", ""), bname]
-	if activity_slots_used(building_id, activity_id) >= HubActivitiesScript.slots(act):
+	if activity_slots_used(building_id, activity_id) >= activity_slots(building_id, activity_id):
 		return "%s: no quedan cupos esta semana." % act.get("name", "?")
 	# Someone has to go on the expedition, or the week never ends.
 	if _free_heroes().size() <= 1:
 		return "Alguien tiene que salir de expedición: %s es el único libre." % hero.get("name", "?")
-	var price: int = activity_cost(building_id, activity_id)
+	var price: int = activity_cost(building_id, activity_id, hero)
 	if colones < price:
 		return "No alcanza: %s cuesta %d ₡." % [act.get("name", "?"), price]
 	return ""
@@ -1606,7 +1701,7 @@ func send_to_activity(hero: Dictionary, building_id: String, activity_id: String
 	if why != "":
 		return why
 	var act: Dictionary = HubActivitiesScript.activity(building_id, activity_id)
-	var price: int = activity_cost(building_id, activity_id)
+	var price: int = activity_cost(building_id, activity_id, hero)
 	colones -= price
 	set_in_party(hero, false)
 	hero["busy"] = {"building": building_id, "activity": activity_id, "cost": price, "weeks_left": 1, "resolved": false}
@@ -1740,7 +1835,7 @@ func start_mission(region_path: String = "") -> bool:
 	mission_firewood = int(r.get("firewood", CampingSystemScript.data().get("firewood_per_expedition", 1))) + int(mission_event.get("firewood", 0))
 	camped_node_ids = []
 	mission_ledger = {"loot_colones": 0, "objective_colones": 0, "items": {}, "fights": 0, "elites": 0,
-		"bosses": 0, "ambushes": 0, "curios": 0, "camps": 0, "rooms": 0}
+		"bosses": 0, "ambushes": 0, "curios": 0, "camps": 0, "rooms": 0, "reliquias": 0}
 	_prepare_party_for_mission()
 	mission_params = {
 		"light_decay": maxi(int(round(int(r.get("light_decay_per_move", 5)) * (1.0 + int(mission_event.get("light_decay_pct", 0)) / 100.0))), 1),
@@ -2017,6 +2112,9 @@ func finish_roaming(killed: bool) -> PackedStringArray:
 	var pay: int = int(round(randi_range(int(b[0]), int(b[1])) * float(mission_difficulty.get("reward", 1.0))))
 	ledger_add("elites")
 	out.append("¡Cazaron al %s!" % str(_enemies_by_id.get(str(rc.get("enemy_id", "")), {}).get("name", "mini-jefe")))
+	var rel_line: String = roll_elite_reliquia()
+	if rel_line != "":
+		out.append(rel_line)
 	out.append_array(apply_event_outcome({"colones": pay, "random_equipment": bool(rc.get("bounty_equipment", false))}))
 	return out
 
@@ -2273,6 +2371,10 @@ func apply_objective_rewards() -> void:
 	var rew: int = int(round(int(mission_params.get("objective_reward", 0)) * float(mission_difficulty.get("reward", 1.0))))
 	colones += rew
 	ledger_add("objective_colones", rew)
+	# P3-16: Reliquias del Abuelo for clearing the objective, by difficulty.
+	var rq: int = int(ResolveSystemScript.difficulty(str(mission_difficulty.get("id", selected_difficulty_id))).get("reliquias", 0))
+	if rq > 0:
+		grant_reliquias(rq)
 
 
 ## Objective done: pay out, give every survivor Resolve XP, build the victory summary.
@@ -2431,6 +2533,24 @@ func apply_save_data(data: Dictionary) -> void:
 	var wc = data.get("week_colones", {})
 	week_colones_in = maxi(int(wc.get("in", 0)), 0) if wc is Dictionary else 0
 	week_colones_out = maxi(int(wc.get("out", 0)), 0) if wc is Dictionary else 0
+	# v15 (P3-16): Reliquias and building upgrades. Older saves: none, except the Maestría de
+	# Oficio levels the best trained skill already needs (ranks bought before the cap existed).
+	reliquias = maxi(int(data.get("reliquias", 0)), 0)
+	if data.get("building_levels", null) is Dictionary:
+		building_levels = BuildingUpgradesScript.sanitize(data["building_levels"])
+	else:
+		building_levels = {}
+		var best: int = 1
+		for h in roster + graveyard:
+			if h is Dictionary and h.get("skill_ranks", null) is Dictionary:
+				for r in h["skill_ranks"].values():
+					best = maxi(best, int(r))
+		var mt: Dictionary = BuildingUpgradesScript.track_with_effect("casa_comunal", "rank_cap")
+		var lv: int = 0
+		while not mt.is_empty() and lv < BuildingUpgradesScript.max_level(mt) and BuildingUpgradesScript.value_at(mt, lv) < best:
+			lv += 1
+		if lv > 0:
+			building_levels = {"casa_comunal": {str(mt["id"]): lv}}
 
 
 func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
@@ -2548,6 +2668,8 @@ func to_save_dict() -> Dictionary:
 		"stolen_items": stolen_items.duplicate(),
 		"inventory": inventory.duplicate(true),
 		"week_colones": {"in": week_colones_in, "out": week_colones_out},
+		"reliquias": reliquias,
+		"building_levels": building_levels.duplicate(true),
 	}
 
 

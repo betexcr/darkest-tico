@@ -1128,7 +1128,7 @@ func _camp_begin() -> void:
 	_camp_watch = false
 	_camp_hands = {}
 	for h in CampingSystemScript.living(GameState.party):
-		_camp_hands[int(h.get("uid", 0))] = CampingSystemScript.deal_hand(h)
+		_camp_hands[int(h.get("uid", 0))] = CampingSystemScript.deal_hand(h, GameState.camp_extra_class_skills())
 	_log_line("Encienden la fogata (-1 leña).", "ffd27a")
 	_camp_meal()
 
@@ -1191,7 +1191,7 @@ func _camp_respite_menu() -> void:
 func camp_hand(h: Dictionary) -> Array:
 	var uid: int = int(h.get("uid", 0))
 	if not _camp_hands.has(uid):
-		_camp_hands[uid] = CampingSystemScript.deal_hand(h)
+		_camp_hands[uid] = CampingSystemScript.deal_hand(h, GameState.camp_extra_class_skills())
 	return CampingSystemScript.hand_skills(_camp_hands[uid])
 
 
@@ -1591,6 +1591,10 @@ func _on_combat_over(victory: bool) -> void:
 		elif bool(nd.get("is_elite", false)):
 			GameState.ledger_add("elites")
 		_log_line("Botín: +%d colones." % pay, "66aa66")
+		if bool(nd.get("is_elite", false)) and not bool(nd.get("is_boss", false)):
+			var rel: String = GameState.roll_elite_reliquia()
+			if rel != "":
+				_log_line(rel, "66aa66")
 	# Enemy drops (P5-10): logged; the boss's go to the expedition's victory screen.
 	var drops: Dictionary = GameState.roll_drops(_combat.enemies)
 	for id in drops["got"]:

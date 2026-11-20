@@ -1,0 +1,77 @@
+{
+  "_doc": "Building upgrades (P3-16/P3-18/P3-21, owner 2026-11-20; doc 02 §4/§7/§9/§11). Each building has tracks; a track starts at level 0 with `base` and each bought level i (1..n) costs levels[i-1].reliquias Reliquias del Abuelo + .colones and sets the track's value to levels[i-1].value. Levels are bought in order. Effects (each building may use an effect once): rank_cap (max Casa Comunal skill rank; heroes already above it keep their ranks), rank_discount (fraction off rank prices), relief_bonus (fraction added to the stress relief rolled), cost_discount (fraction off the activity price), extra_slots (slots added to every activity), camp_extra_class_skills (class camp skills added to each fogata hand), lesson_discount (fraction off Guardabosques learn / fix prices). Rules: scripts/domain/building_upgrades.gd. Reliquia sources: progression.json difficulties[].reliquias (objective cleared), balance.json upgrades.elite_reliquia_chance (elite or roaming mini-boss killed), curio outcome `reliquias`.",
+  "buildings": {
+    "casa_comunal": [
+      { "id": "maestria_oficio", "name": "Maestría de Oficio", "effect": "rank_cap", "base": 3,
+        "desc": "Maestros de oficio que enseñan los rangos altos.",
+        "levels": [
+          { "reliquias": 2, "colones": 1500, "value": 4 },
+          { "reliquias": 4, "colones": 3000, "value": 5 }
+        ] },
+      { "id": "plan_formacion", "name": "Plan de Formación", "effect": "rank_discount", "base": 0,
+        "desc": "Clases ordenadas: los rangos salen más baratos.",
+        "levels": [
+          { "reliquias": 1, "colones": 1000, "value": 0.15 },
+          { "reliquias": 2, "colones": 2000, "value": 0.3 },
+          { "reliquias": 3, "colones": 3500, "value": 0.5 }
+        ] }
+    ],
+    "iglesia": [
+      { "id": "iglesia_alivio", "name": "Bancas de Cedro", "effect": "relief_bonus", "base": 0,
+        "desc": "Más calma en cada actividad de la Iglesia.",
+        "levels": [
+          { "reliquias": 1, "colones": 800, "value": 0.1 },
+          { "reliquias": 2, "colones": 1600, "value": 0.2 },
+          { "reliquias": 3, "colones": 2800, "value": 0.3 }
+        ] },
+      { "id": "iglesia_limosna", "name": "Cofradía de la Limosna", "effect": "cost_discount", "base": 0,
+        "desc": "La cofradía ayuda a pagar: actividades más baratas.",
+        "levels": [
+          { "reliquias": 1, "colones": 800, "value": 0.1 },
+          { "reliquias": 2, "colones": 1600, "value": 0.2 },
+          { "reliquias": 3, "colones": 2800, "value": 0.3 }
+        ] },
+      { "id": "iglesia_capilla", "name": "Capilla Lateral", "effect": "extra_slots", "base": 0,
+        "desc": "Un cupo más en cada actividad.",
+        "levels": [
+          { "reliquias": 1, "colones": 1200, "value": 1 },
+          { "reliquias": 2, "colones": 2400, "value": 2 }
+        ] }
+    ],
+    "cantina": [
+      { "id": "cantina_alivio", "name": "Marimba de Planta", "effect": "relief_bonus", "base": 0,
+        "desc": "Más desahogo en cada actividad de la Cantina.",
+        "levels": [
+          { "reliquias": 1, "colones": 800, "value": 0.1 },
+          { "reliquias": 2, "colones": 1600, "value": 0.2 },
+          { "reliquias": 3, "colones": 2800, "value": 0.3 }
+        ] },
+      { "id": "cantina_fiado", "name": "Cuenta al Fiado", "effect": "cost_discount", "base": 0,
+        "desc": "El cantinero fía: actividades más baratas.",
+        "levels": [
+          { "reliquias": 1, "colones": 800, "value": 0.1 },
+          { "reliquias": 2, "colones": 1600, "value": 0.2 },
+          { "reliquias": 3, "colones": 2800, "value": 0.3 }
+        ] },
+      { "id": "cantina_corredor", "name": "Corredor Techado", "effect": "extra_slots", "base": 0,
+        "desc": "Un cupo más en cada actividad.",
+        "levels": [
+          { "reliquias": 1, "colones": 1200, "value": 1 },
+          { "reliquias": 2, "colones": 2400, "value": 2 }
+        ] }
+    ],
+    "guardabosques": [
+      { "id": "guia_supervivencia", "name": "Guía de Supervivencia", "effect": "camp_extra_class_skills", "base": 0,
+        "desc": "Una habilidad de oficio más en cada fogata.",
+        "levels": [
+          { "reliquias": 3, "colones": 2500, "value": 1 }
+        ] },
+      { "id": "entrenamiento_patrulla", "name": "Entrenamiento de Patrulla", "effect": "lesson_discount", "base": 0,
+        "desc": "Aprender y fijar habilidades sale más barato.",
+        "levels": [
+          { "reliquias": 1, "colones": 600, "value": 0.25 },
+          { "reliquias": 2, "colones": 1200, "value": 0.5 }
+        ] }
+    ]
+  }
+}

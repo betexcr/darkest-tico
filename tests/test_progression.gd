@@ -58,7 +58,11 @@ func _test_skill_ranks(gs) -> void:
 	_check(sr.rank(campe, "machetazo") == 2 and gs.colones == before - 300, "Resolución 1 buys rank 2 for 300 ₡")
 	_check(gs.skill_rank_block_reason(campe, "machetazo").contains("Resolución 2"), "rank 3 needs Resolución 2")
 	campe["resolve_level"] = 6
+	# P3-16: the Casa Comunal starts teaching up to rank 3; Maestría de Oficio raises the cap.
+	gs.building_levels = {}
 	gs.buy_skill_rank(campe, "machetazo")
+	_check(sr.rank(campe, "machetazo") == 3 and gs.skill_rank_block_reason(campe, "machetazo").contains("Maestría"), "without Maestría de Oficio: rank 3 is the cap")
+	gs.building_levels = {"casa_comunal": {"maestria_oficio": 2}}
 	gs.buy_skill_rank(campe, "machetazo")
 	gs.buy_skill_rank(campe, "machetazo")
 	_check(sr.rank(campe, "machetazo") == 5 and gs.colones == before - 300 - 900 - 1500 - 2700, "ranks 3-5 cost 900 / 1500 / 2700 ₡")

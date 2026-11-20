@@ -174,10 +174,10 @@ static func fixed_id(hero: Dictionary) -> String:
 
 ## The skills this hero has tonight: their shared skills, the fixed class skill if any, and
 ## known class skills drawn at random up to class_skills_per_camp (owner 2026-11-19: a new
-## draw at every fogata). Returns ids.
-static func deal_hand(hero: Dictionary) -> Array:
+## draw at every fogata). `extra`: more class skills (Guía de Supervivencia, P3-21). Returns ids.
+static func deal_hand(hero: Dictionary, extra: int = 0) -> Array:
 	var ids: Array = shared_skills(hero).map(func(sk): return str(sk["id"]))
-	var want: int = class_skills_per_camp()
+	var want: int = class_skills_per_camp() + extra
 	var fixed: String = fixed_id(hero)
 	if fixed != "":
 		ids.append(fixed)
