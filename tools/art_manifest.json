@@ -3429,7 +3429,7 @@
       },
       {
         "id": "tecnologo_f",
-        "look": "young woman, short curly dark hair, brass goggles, dark leather jacket with straps and buckles",
+        "look": "young woman, short curly dark hair, brass goggles, long dark leather coat with buckles, dark trousers, flat boots",
         "seed": 5130,
         "body": "humanoid",
         "weapon": "a small homemade drone",
@@ -3441,24 +3441,28 @@
         },
         "redo_seeds": {
           "attack": 5530,
-          "cast": 5732,
-          "hurt": 5733,
-          "ailment": 5734
+          "cast": 5843,
+          "hurt": 5844,
+          "ailment": 5845,
+          "idle": 5841
         },
-        "negative_extra": "dancing, walking, calm, man, beard, mustache, wheel, gear, disc, shield",
+        "negative_extra": "dancing, calm, wheel, gear, disc, shield, circle, garter, stockings, high heels, miniskirt, shorts, man",
         "redo_ref_scale": {
           "attack": 0.35
         },
         "redo_states": [
+          "idle",
           "cast",
           "hurt",
           "ailment"
         ],
         "redo_modes": {
+          "idle": "txt",
           "cast": "txt",
           "hurt": "txt",
           "ailment": "txt"
-        }
+        },
+        "redo_reference": "portrait"
       },
       {
         "id": "guachiman_f",
