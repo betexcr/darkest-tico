@@ -17,10 +17,10 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-20T01:55:18+00:00",
+  "timestamp": "2026-11-20T03:23:05+00:00",
   "redo": {
     "prompt": "stern man doctor, short dark hair, thick mustache, white doctor's coat over black vest, stethoscope, black trousers, dark shoes, lying dead on the ground, collapsed body, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-    "seed": 5756,
+    "seed": 5956,
     "mode": "txt2img + openpose + portrait",
     "strength": 0.75
   }

@@ -3446,10 +3446,10 @@
           "attack": 5931,
           "cast": 5843,
           "hurt": 5944,
-          "ailment": 5945,
+          "ailment": 6045,
           "idle": 5841
         },
-        "negative_extra": "dancing, calm, wheel, gear, disc, shield, circle, garter, stockings, high heels, miniskirt, shorts, man, ring, halo, hoop, bare legs, fishnet, tights",
+        "negative_extra": "dancing, calm, wheel, gear, disc, shield, circle, garter, stockings, high heels, miniskirt, shorts, man, ring, halo, hoop, bare legs, fishnet, tights, porthole, frame, portal, background",
         "redo_ref_scale": {
           "attack": 0.35
         },
