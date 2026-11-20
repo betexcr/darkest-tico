@@ -1,0 +1,21 @@
+{
+  "id": "sprite_medica_josefina_m_dead",
+  "prompt": "character sheet, stern man doctor, short dark hair, thick mustache, white doctor's coat over black vest, stethoscope, black trousers, dark shoes, six poses, same clothes and a syringe in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, walking, calm, woman, skirt, nurse cap, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5151,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "960x960 sheet, cell 6 of 6",
+  "mode": "sheet",
+  "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "reference": {
+    "image": "assets/portraits/medica_josefina_m.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-20T00:38:42+00:00"
+}
