@@ -426,6 +426,21 @@ def main() -> int:
                 seen_names[n] = hid
         if "names" in h:
             errors.append(f"heroes.json: '{hid}' still has the old 'names' list (use names_m / names_f)")
+        if h.get("role") not in ("warrior", "support"):
+            errors.append(f"heroes.json: '{hid}' role must be warrior | support (starting party draw)")
+
+    # Starting party (owner 2026-11-20): random classes, N warriors + M supports, no repeats.
+    sp = (load(heroes_path) or {}).get("starter_party") or {}
+    for role in ("warrior", "support"):
+        want = sp.get(role)
+        have = [hid for hid, h in heroes.items() if h.get("role") == role]
+        if not isinstance(want, int) or want < 0 or want > len(have):
+            errors.append(f"heroes.json: starter_party.{role} must be 0..{len(have)} (classes with that role)")
+    if isinstance(sp.get("warrior"), int) and isinstance(sp.get("support"), int) and sp["warrior"] + sp["support"] != 4:
+        errors.append("heroes.json: starter_party warrior + support must be 4 (a full party)")
+    fixed = sp.get("fixed") or []
+    if len(fixed) != 4 or len(set(fixed)) != 4 or any(f not in heroes for f in fixed):
+        errors.append("heroes.json: starter_party.fixed must be 4 different class ids")
 
     # Owner rule (2026-11-07): one basic attack + 1-3 specials; one special magical or ailment.
     for eid, en in enemies.items():

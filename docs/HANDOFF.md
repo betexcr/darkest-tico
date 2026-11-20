@@ -17,6 +17,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (20) — P4-25: random starting party, always 2 warriors + 2 supports
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P4-25 done.
+- **Changed:**
+  - `data/heroes.json`: each class has `role` — warrior: campesino, montador, guachiman, exorcista (doc 03 Vanguard + the front-line Exorcista [1,2,3]); support: abuela, medica_josefina, curandero, tecnologo (Sustain + the back-line Tecnólogo [2,3,4]). New top-level `starter_party` {warrior: 2, support: 2, fixed: [campesino, montador, abuela, tecnologo]}.
+  - `GameState.reset_party_from_catalog(random_classes := false)`; `true` draws `starter_class_ids_random()` (warriors first, each group sorted by front-most preferred position). Used by a clean start (`SaveService._ready` with no save) and `dev_reset_campaign`. Tests, sims, playtest bot and screenshot tools still call it without the flag and get the fixed party.
+  - `tools/validate_data.py`: `role` required; `starter_party` counts must fit the roles and add to 4; `fixed` = 4 different classes.
+  - `tests/test_hub.gd`: 30 random draws are always warrior, warrior, support, support with no repeats, and vary.
+- **Verified:** validator 0 errors (old amarrado icon warning); Godot 4.7.2 Linux: smoke + all 19 tests 0 failures, no SCRIPT ERROR. `test_expedition_systems` failed once (1 failure) in the first full run and passed 5 reruns, with and without this change — looks like a pre-existing random flake.
+- **Not verified / risks:** not looked at in a running game window. Saves are untouched (no SAVE_VERSION change): an existing campaign keeps its heroes; only a new one or the dev reset rolls.
+- **Decisions needed:** owner check the role split (Exorcista as warrior, Tecnólogo as support) — change `role` in `data/heroes.json` if wanted.
+- **Next step:** owner playtest of P4-22/23/24/25; find the `test_expedition_systems` flake (run it ~20× and print the failing check).
+
+---
+
 ## 2026-11-20 (19) — P4-24: heroes are men and women (names, class names, portraits, sprites)
 - **Agent / branch:** Claude Code (cloud) / `claude/p3-03-followup-48gkar`
 - **Status after session:** P4-24 review. Merged main (P3-13/P3-20): both had bumped the save to v13 on their own; now v14 (migrations are field-based, so either v13 save loads).

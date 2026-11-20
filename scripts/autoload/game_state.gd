@@ -171,6 +171,8 @@ var node_item_uses: Dictionary = {}
 var _items_by_id: Dictionary = {}
 var _item_order: Array = []
 var _starter_inventory: Array = []
+## heroes.json `starter_party`: how many random warriors / supports a new campaign starts with.
+var _starter_party: Dictionary = {}
 var _curios_by_id: Dictionary = {}
 ## Rooms revealed by curios (map scouting) this mission.
 var scouted_node_ids: Array = []
@@ -264,6 +266,7 @@ func _load_registries() -> void:
 	var e_data = DataLoaderScript.load_json(ENEMIES_PATH)
 	if h_data is Dictionary:
 		_heroes_by_id = DataLoaderScript.heroes_catalog(h_data)
+		_starter_party = h_data.get("starter_party", {})
 	if s_data is Dictionary:
 		_skills_by_id = DataLoaderScript.skills_catalog(s_data)
 	if e_data is Dictionary and e_data.get("enemies") is Dictionary:
@@ -804,12 +807,15 @@ func get_hero_template(hero_id: String) -> Dictionary:
 	return _heroes_by_id.get(hero_id, {})
 
 
-## New game: the four starter classes, all in the party, plus a fresh recruit pool.
-func reset_party_from_catalog() -> void:
+## New game: four starter heroes, all in the party, plus a fresh recruit pool.
+## `random_classes` (a real new campaign, owner 2026-11-20): random classes, always
+## `starter_party.warrior` warriors and `starter_party.support` supports, warriors in front.
+## Without it (tests, sims) the fixed `starter_party.fixed` classes, so runs stay comparable.
+func reset_party_from_catalog(random_classes: bool = false) -> void:
 	roster.clear()
 	party.clear()
 	# Formation order (P1-03a): each starting hero stands in one of their class's positions.
-	for id in ["campesino", "montador", "abuela", "tecnologo"]:
+	for id in (starter_class_ids_random() if random_classes else _starter_party.get("fixed", [])):
 		var t: Dictionary = _heroes_by_id.get(id, {})
 		if not t.is_empty():
 			var h: Dictionary = _instantiate_hero(t)
@@ -818,6 +824,25 @@ func reset_party_from_catalog() -> void:
 			party.append(h)
 	refresh_recruits()
 	reset_week_counters()
+
+
+## Random starting classes: the warriors first (front), then the supports, no class twice.
+## Each group is ordered so a hero stands in one of their class's positions where possible.
+func starter_class_ids_random() -> Array:
+	var out: Array = []
+	for role in ["warrior", "support"]:
+		var pool: Array = _heroes_by_id.keys().filter(func(k): return str(_heroes_by_id[k].get("role", "")) == role)
+		pool.shuffle()
+		var pick: Array = pool.slice(0, int(_starter_party.get(role, 0)))
+		# Front-most preferred position first (e.g. Médica Josefina [3, 4] behind a [2, 3, 4]).
+		pick.sort_custom(func(a, b): return _front_rank(a) < _front_rank(b))
+		out.append_array(pick)
+	return out
+
+
+func _front_rank(class_id: String) -> int:
+	var r: Array = _heroes_by_id.get(class_id, {}).get("ranks", [])
+	return int(r.min()) if not r.is_empty() else PARTY_SIZE
 
 
 ## The class's name for a man or a woman ("Campesino Machetero" / "Campesina Machetera").
@@ -1412,7 +1437,7 @@ func dev_reset_campaign() -> void:
 	fresh.free()
 	_load_registries()
 	reset_inventory_to_starter()
-	reset_party_from_catalog()
+	reset_party_from_catalog(true)
 
 
 ## One more resolve level (its XP, as on the victory screen). Returns a message.

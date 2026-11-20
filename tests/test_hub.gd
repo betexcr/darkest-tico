@@ -195,5 +195,21 @@ func _run() -> void:
 	_check(gs.roster.size() == 4 and gs.party.size() == 4 and int(gs.party[0]["stress"]) == 0, "…the four starter heroes, fresh")
 	_check(not gs.get_item("gallo_pinto").is_empty() and gs.get_hero_template("campesino").size() > 0, "…catalogs still loaded")
 	_check(start_inv > 0 and not gs.recruit_pool.is_empty(), "…starter alforja and new candidates")
+	# New campaign (owner 2026-11-20): random classes, always 2 warriors in front + 2 supports.
+	var combos: Dictionary = {}
+	for _i in 30:
+		gs.reset_party_from_catalog(true)
+		var roles: Array = gs.party.map(func(h): return str(gs.get_hero_template(str(h["hero_id"])).get("role", "")))
+		var ids: Array = gs.party.map(func(h): return str(h["hero_id"]))
+		var start_ids: Dictionary = {}
+		for id in ids:
+			start_ids[id] = true
+		if roles != ["warrior", "warrior", "support", "support"] or start_ids.size() != 4:
+			_check(false, "new campaign party is 2 warriors then 2 supports, no class twice (got %s)" % [ids])
+			break
+		combos[",".join(ids)] = true
+	_check(combos.size() > 1, "…and the classes change between new campaigns")
+	gs.reset_party_from_catalog()
+	_check(gs.party.map(func(h): return str(h["hero_id"])) == ["campesino", "montador", "abuela", "tecnologo"], "…while scripts keep the fixed starter party")
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

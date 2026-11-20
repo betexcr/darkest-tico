@@ -24,7 +24,7 @@ func _ready() -> void:
 		GameState.reset_party_from_catalog()
 		return
 	if not load_game():
-		GameState.reset_party_from_catalog()
+		GameState.reset_party_from_catalog(true)  # new campaign: random 2 warriors + 2 supports
 	save_game()
 
 

@@ -535,6 +535,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "add Keilor and Tito to Campesino Machetero, Don Vito to Curandero Nicoyano, Greivin to Tecnólogo Errante; at least 40 names per class (15+ male, 15+ female), Tico flavour; heroes male and female, with names and sprites separated per sex; make the other sex's sprites and portraits"
 - Done when: [x] 20 male + 20 female names per class, no name twice (validator); [x] recruits 50/50, name not already in use, class name per sex (Campesina Machetera, Abuelo Sabio, Médico Josefino…); [x] old saves get a sex from the name lists (else the class's base sex); [x] portrait + sprites follow the sex, falling back to the class art; [x] 8 new portraits (campesina re-rolled to hold her machete, guachimana retouched, priest re-rolled without glowing eyes); [x] 8 new sprite sets with every pose matching the portrait (flawed poses re-rolled with per-character `redo_*`; redrawn dead poses use `redo_band`); [ ] owner look at the art in game
 
+### P4-25 · S · Random starting party: 2 warriors + 2 supports (owner 2026-11-20)
+- Status: `done` · Depends: —
+- Files: `data/heroes.json` (`role` per class, `starter_party`), `scripts/autoload/game_state.gd` (`reset_party_from_catalog(random_classes)`, `starter_class_ids_random`), `scripts/autoload/save_service.gd`, `tools/validate_data.py`, `tests/test_hub.gd`
+- Spec: owner "the first 4 heroes on reset or on clean start should be randomized, but they should be 2 warrior and 2 support heroes always"
+- Done when: [x] every class has `role` warrior | support (validator); [x] a new campaign (no save) and the dev reset draw 2 random warriors (front) + 2 random supports (back), no class twice; [x] `-s` scripts keep the fixed `starter_party.fixed` party so tests and balance baselines don't move; [x] test_hub checks it
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)

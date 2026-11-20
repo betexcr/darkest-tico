@@ -1,5 +1,6 @@
 {
-  "_doc": "Hero classes. names: Tico names given to recruits of this class. Recruits at the Terminal de Buses are free (owner 2026-11-15, as in Darkest Dungeon). Every class needs an ally or party skill (AGENTS.md §4). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
+  "_doc": "Hero classes. names: Tico names given to recruits of this class. Recruits at the Terminal de Buses are free (owner 2026-11-15, as in Darkest Dungeon). Every class needs an ally or party skill (AGENTS.md §4). role: warrior (front-liner) | support (back-liner), used to draw the starting party (starter_party). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
+  "starter_party": {"_doc": "A new campaign (no save, or the dev reset) starts with this many random classes of each role (owner 2026-11-20); warriors stand in front. -s scripts (tests, sims) use fixed instead.", "warrior": 2, "support": 2, "fixed": ["campesino", "montador", "abuela", "tecnologo"]},
   "heroes": [
     {
       "id": "campesino",
@@ -26,6 +27,7 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
+      "role": "warrior",
       "base_sex": "m",
       "class_names": {
         "m": "Campesino Machetero",
@@ -112,6 +114,7 @@
         "palabras_de_animo",
         "charla_de_fogon"
       ],
+      "role": "support",
       "base_sex": "f",
       "class_names": {
         "m": "Abuelo Sabio",
@@ -198,6 +201,7 @@
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
+      "role": "support",
       "base_sex": "m",
       "class_names": {
         "m": "Tecnólogo Errante",
@@ -283,6 +287,7 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
+      "role": "warrior",
       "base_sex": "m",
       "class_names": {
         "m": "Montador de Toros",
@@ -369,6 +374,7 @@
         "vendaje_de_trapo",
         "charla_de_fogon"
       ],
+      "role": "warrior",
       "base_sex": "m",
       "class_names": {
         "m": "Guachimán Jubilado",
@@ -454,6 +460,7 @@
         "palabras_de_animo",
         "charla_de_fogon"
       ],
+      "role": "support",
       "base_sex": "f",
       "class_names": {
         "m": "Médico Josefino",
@@ -540,6 +547,7 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
+      "role": "support",
       "base_sex": "f",
       "class_names": {
         "m": "Curandero Nicoyano",
@@ -626,6 +634,7 @@
         "palabras_de_animo",
         "vendaje_de_trapo"
       ],
+      "role": "warrior",
       "base_sex": "f",
       "class_names": {
         "m": "Exorcista de Barrio",
