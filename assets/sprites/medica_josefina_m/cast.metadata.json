@@ -1,7 +1,7 @@
 {
   "id": "sprite_medica_josefina_m_cast",
   "prompt": "character sheet, stern man doctor, short dark hair, thick mustache, white doctor's coat over black vest, stethoscope, black trousers, dark shoes, six poses, same clothes and a syringe in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, walking, calm, woman, skirt, nurse cap, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "negative_prompt": "dancing, walking, calm, woman, skirt, nurse cap, black coat, dark coat, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5151,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -17,5 +17,11 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-20T00:38:40+00:00"
+  "timestamp": "2026-11-20T01:55:17+00:00",
+  "redo": {
+    "prompt": "stern man doctor, short dark hair, thick mustache, white doctor's coat over black vest, stethoscope, black trousers, dark shoes, casting a spell, arm raised high with glowing light, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5753,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.75
+  }
 }

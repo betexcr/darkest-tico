@@ -1,7 +1,7 @@
 {
   "id": "sprite_tecnologo_f_hurt",
-  "prompt": "character sheet, young woman, short curly dark hair, brass goggles, dark leather jacket with straps and buckles, six poses, same clothes and a small homemade drone in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, walking, calm, man, beard, mustache, wheel, gear, disc, shield, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "prompt": "character sheet, young woman, short curly dark hair, brass goggles, long dark leather coat with buckles, dark trousers, flat boots, six poses, same clothes and a small homemade drone in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, calm, wheel, gear, disc, shield, circle, garter, stockings, high heels, miniskirt, shorts, man, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5130,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -17,10 +17,10 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-20T01:36:18+00:00",
+  "timestamp": "2026-11-20T03:03:27+00:00",
   "redo": {
-    "prompt": "young woman, short curly dark hair, brass goggles, dark leather jacket with straps and buckles, recoiling in pain, flinching backward, wounded, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-    "seed": 5733,
+    "prompt": "young woman, short curly dark hair, brass goggles, long dark leather coat with buckles, dark trousers, flat boots, recoiling in pain, flinching backward, wounded, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5844,
     "mode": "txt2img + openpose + portrait",
     "strength": 0.75
   }
