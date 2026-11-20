@@ -1,0 +1,15 @@
+{
+  "id": "event_pego_la_chances",
+  "prompt": "dark fantasy painting, smiling old man holding a winning lottery ticket, gold coins spilling on a wooden table, lamplight, dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
+  "negative_prompt": "monochrome, sepia, grayscale, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 7008,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "768x432",
+  "output_resolution": "640x360",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-20T07:45:10+00:00"
+}
