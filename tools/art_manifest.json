@@ -2715,7 +2715,11 @@
         "strength": 0.95,
         "pose": "lying dead on the ground, collapsed body",
         "beast_pose": "lying dead on its side on the ground",
-        "beast_strength": 0.85
+        "beast_strength": 0.85,
+        "redo_band": [
+          0.5,
+          1.0
+        ]
       }
     ],
     "_skeleton_doc": "OpenPose COCO-18 keypoints as [x, y] fractions of the canvas, order: nose, neck, r_shoulder, r_elbow, r_wrist, l_shoulder, l_elbow, l_wrist, r_hip, r_knee, r_ankle, l_hip, l_knee, l_ankle, r_eye, l_eye, r_ear, l_ear. Humanoid characters follow these poses; beasts use plain img2img.",
@@ -3397,8 +3401,7 @@
           "attack": 0.35
         },
         "redo_poses": {
-          "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling",
-          "dead": "lying dead on her back on the ground, alone, collapsed body, hat fallen beside her"
+          "attack": "facing left, violent lunge, right arm whipping a lasso toward the left, snarling"
         },
         "redo_states": [
           "dead"
@@ -3478,7 +3481,7 @@
         },
         "redo_seeds": {
           "attack": 5540,
-          "dead": 5745
+          "dead": 5831
         },
         "negative_extra": "dancing, walking, calm, long hair, ponytail, man, beard, mustache",
         "redo_ref_scale": {

@@ -360,6 +360,15 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
             src = dict(image=[skel, weapon], width=w, height=h)
             pipe = pipes["txt_pose_weapon"]
             scale = [scale, float(cfg["weapon_guide"].get("scale", 0.7))]
+        elif redo_mode(st, c, sid) == "txt" and st.get("redo_band"):
+            # A lying pose drawn on the tall canvas leaves room for a second, standing figure
+            # (it kept happening). Draw only the band the body lies in, on a wide canvas.
+            top, bot = st["redo_band"]
+            band = skel.crop((0, int(h * top), w, int(h * bot)))
+            bw = (int(w * 1.5) // 8) * 8
+            bh = (int(band.height * bw / w) // 8) * 8
+            src = dict(image=band.resize((bw, bh)), width=bw, height=bh)
+            pipe = pipes["txt_pose"]
         elif redo_mode(st, c, sid) == "txt":
             src = dict(image=skel, width=w, height=h)
             pipe = pipes["txt_pose"]
@@ -383,6 +392,11 @@ def generate_sheet(pipes, cfg, manifest, c, negative, steps, guidance, control_s
         ).images[0]
         if ref_kw and ref_scale is not None:
             pipes["txt"].set_ip_adapter_scale(float(cfg.get("reference", {}).get("scale", 0.6)))
+        if redo_mode(st, c, sid) == "txt" and st.get("redo_band") and init_from is None and weapon is None:
+            top, bot = st["redo_band"]
+            tall = Image.new("RGB", (w, h), (128, 128, 128))
+            tall.paste(big.resize((w, int(h * bot) - int(h * top)), Image.LANCZOS), (0, int(h * top)))
+            big = tall
         out[sid] = big.resize((cw, ch), Image.LANCZOS)
         i = order.index(sid)
         img.paste(out[sid], ((i % cols) * cw, (i // cols) * ch))
