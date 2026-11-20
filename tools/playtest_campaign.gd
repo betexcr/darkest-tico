@@ -51,6 +51,7 @@ const SimPolicyScript := preload("res://tools/sim_policy.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
+const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 
 const MAX_STEPS := 60000
 const RESERVE := 1000
@@ -64,9 +65,16 @@ const STRESS_ITEM := "cafe_chorreado"
 const STRESS_ITEM_AT := 50
 const EQUIP_SLOTS := ["weapon", "armor", "accessory1", "accessory2"]
 ## Hub spending by sink, in the order the report prints it.
-const SINKS := ["provisions", "heal_items", "stress_items", "ebais", "iglesia", "ranks", "gear", "hires"]
+const SINKS := ["provisions", "heal_items", "stress_items", "ebais", "iglesia", "ranks", "gear", "hires", "upgrades"]
+## Building upgrades the bot buys (P3-16/P3-18/P3-21), first that it can afford wins; Maestría
+## only when a hero going out is held back by the rank cap.
+const UPGRADE_ORDER := [["casa_comunal", "maestria_oficio"], ["casa_comunal", "plan_formacion"],
+	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["iglesia", "iglesia_alivio"],
+	["cantina", "cantina_alivio"], ["guardabosques", "entrenamiento_patrulla"], ["iglesia", "iglesia_capilla"],
+	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"]]
 const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
-	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires"}
+	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires",
+	"upgrades": "Building upgrades"}
 
 var _gs
 var _loader
@@ -162,6 +170,8 @@ func _new_campaign() -> void:
 	_gs.graveyard = []
 	_gs.active_event_id = ""
 	_gs.event_flags = {}
+	_gs.reliquias = 0
+	_gs.building_levels = {}
 	_gs.selected_difficulty_id = str(_opts["difficulty"])
 	if not _opts["party"].is_empty():
 		_gs.roster.clear()
@@ -172,6 +182,13 @@ func _new_campaign() -> void:
 	if int(_opts["start-colones"]) >= 0:
 		_gs.colones = int(_opts["start-colones"])
 	var rs = load("res://scripts/domain/resolve_system.gd")
+	# --start-ranks above the Casa Comunal's starting cap: Maestría de Oficio already bought.
+	var mt: Dictionary = _gs.BuildingUpgradesScript.track_with_effect("casa_comunal", "rank_cap")
+	var mlv: int = 0
+	while mlv < _gs.BuildingUpgradesScript.max_level(mt) and _gs.BuildingUpgradesScript.value_at(mt, mlv) < int(_opts["start-ranks"]):
+		mlv += 1
+	if mlv > 0:
+		_gs.building_levels = {"casa_comunal": {str(mt["id"]): mlv}}
 	for h in _gs.roster:
 		h["resolve_level"] = clampi(int(_opts["start-level"]), 0, rs.MAX_LEVEL)
 		h["resolve_xp"] = rs.xp_for_level(int(h["resolve_level"]))
@@ -216,6 +233,12 @@ func _play_week() -> Dictionary:
 	_gs.end_of_expedition_week()
 	_gs.draw_town_event()
 	row["colones_end"] = _gs.colones
+	row["reliquias_end"] = _gs.reliquias
+	var up_lv: int = 0
+	for b in _gs.building_levels.values():
+		for lv in b.values():
+			up_lv += int(lv)
+	row["upgrade_levels"] = up_lv
 	return row
 
 
@@ -362,6 +385,23 @@ func _hub(row: Dictionary) -> void:
 	mark = _gs.colones
 	_stock(STRESS_ITEM, chosen.filter(func(h): return int(h.get("stress", 0)) >= STRESS_ITEM_AT).size())
 	row["stress_items"] = mark - _gs.colones
+	# Building upgrades (P3-16): with Reliquias in hand, in UPGRADE_ORDER, keeping RESERVE.
+	mark = _gs.colones
+	row["upgrades_n"] = 0
+	var bought_up: bool = true
+	while bought_up:
+		bought_up = false
+		for u in UPGRADE_ORDER:
+			if u[1] == "maestria_oficio" and not chosen.any(func(h): return _capped(h)):
+				continue
+			var cost: Dictionary = _gs.BuildingUpgradesScript.next_cost(_gs.building_levels, u[0], u[1])
+			if cost.is_empty() or _gs.upgrade_block_reason(u[0], u[1]) != "" or _gs.colones - int(cost["colones"]) < RESERVE:
+				continue
+			_gs.buy_upgrade(u[0], u[1])
+			row["upgrades_n"] += 1
+			bought_up = true
+			break
+	row["upgrades"] = mark - _gs.colones
 	# Upgrades, cheapest first: the next Casa Comunal rank of any skill, or one piece of
 	# equipment per hero a week (the dearest the bot can afford for the first empty slot).
 	row["gear"] = 0
@@ -422,6 +462,16 @@ func _hub(row: Dictionary) -> void:
 				_gs.learn_camp_skill(h, str(unknown[0]["id"]))
 				row["camp_learned"] += 1
 	row["hub_spent"] = c0 - _gs.colones
+
+
+## True when one of the hero's skills is at the Casa Comunal cap and their resolve allows the next rank.
+func _capped(h: Dictionary) -> bool:
+	var cap: int = _gs.skill_rank_cap()
+	for sid in h.get("skill_ids", []):
+		var r: int = SkillRanksScript.rank(h, str(sid))
+		if r >= cap and r < SkillRanksScript.max_rank() and int(h.get("resolve_level", 0)) >= SkillRanksScript.min_resolve_for(r + 1):
+			return true
+	return false
 
 
 ## Buys `id` until the alforja holds `want` of it (keeping RESERVE).
@@ -523,8 +573,8 @@ func _book_relief(h: Dictionary) -> String:
 	var best_act: Array = []
 	for b in ["iglesia", "cantina"]:
 		for a in ["meditacion", "rezo", "penitencia", "guaro_conversa", "juegos_de_azar", "noche_de_fiesta"]:
-			if _gs.activity_block_reason(h, b, a) == "" and (best_act.is_empty() or _gs.activity_cost(b, a) < int(best_act[2])):
-				best_act = [b, a, _gs.activity_cost(b, a)]
+			if _gs.activity_block_reason(h, b, a) == "" and (best_act.is_empty() or _gs.activity_cost(b, a, h) < int(best_act[2])):
+				best_act = [b, a, _gs.activity_cost(b, a, h)]
 	if best_act.is_empty() or _gs.colones - int(best_act[2]) < RESERVE:
 		return ""
 	_gs.send_to_activity(h, str(best_act[0]), str(best_act[1]))
@@ -1045,6 +1095,19 @@ func _print_economy() -> void:
 			marks.append("wk %d: %d" % [weeks[-1], bank[c][weeks[-1]]])
 		lines.append("campaign %d — %s" % [c, ", ".join(marks)])
 	print("\n- Colones in the bank: %s." % "; ".join(lines))
+	# P3-16: building-upgrade levels bought and Reliquias in hand at each campaign's last week.
+	var total_lv: int = 0
+	for bid in _gs.BuildingUpgradesScript.building_ids():
+		for t in _gs.BuildingUpgradesScript.tracks(bid):
+			total_lv += _gs.BuildingUpgradesScript.max_level(t)
+	var up_lines: PackedStringArray = PackedStringArray()
+	var last: Dictionary = {}
+	for r in _all_rows:
+		last[r["campaign"]] = r
+	for c in last:
+		up_lines.append("campaign %d — wk %d: %d of %d levels, %d Reliquias left" % [c, int(last[c]["week"]),
+			int(last[c].get("upgrade_levels", 0)), total_lv, int(last[c].get("reliquias_end", 0))])
+	print("- Building upgrades: %s." % "; ".join(up_lines))
 
 
 ## Fight kind for the report: roaming (the mini-boss, P2-05) | ambush | boss | elite | combat.
