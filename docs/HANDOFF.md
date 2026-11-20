@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-20 (23) — P1-20: smoke expedition fails on a hang, not on a long fight
+- **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
+- **Status after session:** P1-20 done.
+- **Changed:** `tests/smoke_expedition.gd`: the 3000-frame total cap is gone (96 expeditions measured today: median 1444, max 2938 frames — almost at the cap). Now a run fails when nothing happens for `STALL_STEPS` (600) frames in a row (no room move, hero turn, target pick, event button or screen-mode change); `MAX_STEPS` 30000 only stops an endless loop. The "expedition ended" line prints frames used and the longest still stretch. `-- --hang-test` makes the bot stop acting in fights to prove a hang still fails.
+- **Verified:** Godot 4.7.2 Linux: 32 smoke runs in a row, 0 failures, no SCRIPT ERROR (longest 2525 frames, longest still stretch 102); `--hang-test`: all 3 expeditions FAIL with "HANG". Validator 0 errors. Other tests not rerun (only this test file changed).
+- **Not verified / risks:** none known.
+- **Decisions needed:** none.
+- **Next step:** P3-14 (level-tiered hub prices): read doc 04 for the price tiers, then `GameState` price helpers (`camp_price`, `activity_cost`, EBAIS) and `data/balance.json`.
+
+---
+
 ## 2026-11-20 (22) — P5-06 closed: week-24 target is "solvent"
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P5-06 done.

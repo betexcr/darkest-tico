@@ -7,10 +7,17 @@ extends SceneTree
 ## also read the output for "SCRIPT ERROR" lines.
 
 const RUNS := 3
-const MAX_STEPS := 3000
+## A hang is STALL_STEPS frames in a row with no progress (a room move, a hero turn, an event
+## button pressed or a screen-mode change). Normal expeditions take ~1000–3000 frames in all
+## and never sit still more than a few dozen (enemy turns, animations), so long fights pass
+## (P1-20: the old 3000-frame total cap failed about 1 run in 27). MAX_STEPS only stops a
+## loop that keeps "progressing" forever.
+const STALL_STEPS := 600
+const MAX_STEPS := 30000
 
 var _failures: int = 0
 var _finished: String = ""
+var _event_presses: int = 0
 
 
 func _initialize() -> void:
@@ -69,9 +76,21 @@ func _run() -> void:
 			if str(gs.mission_nodes_index[nid].get("type", "")) == "camp":
 				camp_id = str(nid)
 				break
-		while _finished == "" and steps < MAX_STEPS:
+		# `--hang-test` (after `--`): the bot stops acting in fights, to check that a hang fails.
+		var hang_test: bool = OS.get_cmdline_user_args().has("--hang-test")
+		var idle: int = 0
+		var max_idle: int = 0
+		var last_mark: Array = []
+		while _finished == "" and steps < MAX_STEPS and idle < STALL_STEPS:
 			steps += 1
 			await process_frame
+			var mark: Array = [rooms_moved, hero_turns, picks, int(screen._mode), gs.current_node_id, _event_presses]
+			if mark == last_mark:
+				idle += 1
+				max_idle = maxi(max_idle, idle)
+			else:
+				idle = 0
+				last_mark = mark
 			match int(screen._mode):
 				0:  # EXPLORE
 					var goal: String = gs.objective_node_id
@@ -84,10 +103,11 @@ func _run() -> void:
 				1, 3:  # EVENT, ENDED: take the first option that can be used
 					var actions = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion() and not b.disabled)
 					if not actions.is_empty():
+						_event_presses += 1
 						actions[0].pressed.emit()
 				2:  # COMBAT
 					var hero: Dictionary = screen._combat.active_hero()
-					if not hero.is_empty():
+					if not hero.is_empty() and not hang_test:
 						var buttons = screen._skills.get_children()
 						# After a hero acts the bar stays up, locked (P4-16): wait for an unlocked one.
 						if buttons.any(func(b): return not b.is_queued_for_deletion() and not b.disabled):
@@ -125,7 +145,8 @@ func _run() -> void:
 								var opts: Array = screen._living_units(heroes)
 								max_squad = maxi(max_squad, screen._enemy_units.size())
 								screen._on_unit_clicked(opts[opts.size() - 1])
-		_check(_finished != "", "expedition ended (%s) after %d moves, %d hero turns, %d guards" % [_finished, rooms_moved, hero_turns, guards])
+		_check(_finished != "", "expedition ended (%s) after %d moves, %d hero turns, %d guards; %d frames, longest still %d%s" % [
+			_finished, rooms_moved, hero_turns, guards, steps, max_idle, " — HANG: nothing happened for %d frames" % STALL_STEPS if idle >= STALL_STEPS else ""])
 		_check(_finished in ["objective", "defeat"], "ended by boss victory or defeat")
 		if camp_id != "":
 			_check(int(gs.mission_ledger.get("camps", 0)) == 1 or _finished == "defeat", "camped once (%d ambush)" % int(gs.mission_ledger.get("ambushes", 0)))

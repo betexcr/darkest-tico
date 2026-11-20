@@ -432,11 +432,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [x] `tests/test_save.gd` (17 checks); the real save's md5 is unchanged after the whole suite
 
 ### P1-20 · S · Smoke expedition sometimes runs out of frames
-- Status: `todo` · Depends: —
+- Status: `done` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20): a stall detector (600 frames with no progress) replaces the 3000-frame total cap; MAX_STEPS 30000 is only a backstop · Depends: —
 - Why: `tests/smoke_expedition.gd` stops after `MAX_STEPS` (3000 frames). About 1 run in 27 (2026-11-12) has a fight that doesn't end in time ("expedition ended () after 4 moves, 288 hero turns"); normal runs already reach ~250 hero turns. Fights got longer with hero accuracy in the dark (P1-17), and the bot plays badly (it often presses the first skill).
 - Files: `tests/smoke_expedition.gd`
 - Done when:
-  - [ ] The smoke passes 30 runs in a row (raise `MAX_STEPS`, cap a fight's rounds in the bot, or seed `randi`), and still fails when an expedition really hangs
+  - [x] The smoke passes 30 runs in a row (32 of 32, 96 expeditions; longest 2525 frames, longest still stretch 102), and still fails when an expedition really hangs (`-- --hang-test` stops the bot in fights: every expedition fails with "HANG")
 
 ### P1-21 · S · A lone hero stuck where none of their skills work
 - Status: `done` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17) · Depends: —
