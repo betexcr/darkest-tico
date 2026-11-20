@@ -17,5 +17,11 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-20T00:24:02+00:00"
+  "timestamp": "2026-11-20T01:44:20+00:00",
+  "redo": {
+    "prompt": "old woman night watchman, grey hair in a bun, black peaked guard cap with badge, black uniform coat, lying dead on the ground, collapsed body, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5745,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.75
+  }
 }
