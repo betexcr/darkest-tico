@@ -171,7 +171,8 @@ def main() -> int:
                   "iglesia": {"relief_bonus", "cost_discount", "extra_slots"},
                   "cantina": {"relief_bonus", "cost_discount", "extra_slots"},
                   "guardabosques": {"camp_extra_class_skills", "lesson_discount"},
-                  "feria": {"extra_stock", "cost_discount"}}
+                  "feria": {"extra_stock", "cost_discount"},
+                  "taller": {"weapon_rank_cap", "armor_rank_cap", "cost_discount"}}
     fractions = {"rank_discount", "cost_discount", "lesson_discount", "relief_bonus"}
     max_rank = int(prog.get("skill_ranks", {}).get("max_rank", 5))
     ub = up.get("buildings")
@@ -212,6 +213,9 @@ def main() -> int:
                 errors.append(f"{where}: {eff} values are fractions 0-1")
             if eff == "rank_cap" and not (1 <= vals[0] and vals[-1] == max_rank):
                 errors.append(f"{where}: rank_cap must start >= 1 and end at progression.json max_rank ({max_rank})")
+            gear_max = ((load(DATA / "balance.json") or {}).get("taller") or {}).get("max_rank")
+            if eff in ("weapon_rank_cap", "armor_rank_cap") and not (1 <= vals[0] and vals[-1] == gear_max):
+                errors.append(f"{where}: {eff} must start >= 1 and end at balance.json taller.max_rank ({gear_max})")
     # Casa Comunal skill ranks (doc 02 §4, doc 04 §3.3); keys match skill_ranks.gd BONUS_KEYS.
     rank_keys = {"damage_min", "damage_max", "skill_accuracy", "skill_crit", "heal_min", "heal_max",
                  "stress_relief", "status_chance", "status_value", "status_mods"}
@@ -1041,6 +1045,8 @@ BALANCE_KEYS = {
     "drops.max_total_chance": "chance",
     "feria.stock_size": "pos", "feria.cheap_price": "int>=0", "feria.pricey_min_weight": "chance",
     "feria.full_stock_week": "pos", "feria.cursed_chance": "chance",
+    "taller.max_rank": "pos", "taller.top_rank_reliquias": "int>=0", "taller.weapon_damage_per_rank": "int>=0",
+    "taller.weapon_accuracy_per_rank": "int>=0", "taller.armor_prot_per_rank": "int>=0", "taller.armor_hp_per_rank": "int>=0",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).
@@ -1098,6 +1104,10 @@ def check_balance(errors: list) -> None:
         if not isinstance(v, list) or len(v) != 3 or any(not isinstance(x, int) or x < 0 for x in v):
             errors.append(f"balance.json: quirks.{k} must be 3 whole prices (one per resolve tier)")
     # P3-14: EBAIS / Iglesia / Cantina price × this by resolve tier (one per tier, rising, from 1).
+    rc = get("taller.rank_costs")
+    if not isinstance(rc, list) or len(rc) != int(get("taller.max_rank") or 0) + 1 \
+            or any(not isinstance(c, int) or c < 0 for c in rc) or rc[2:] != sorted(rc[2:]):
+        errors.append("balance.json: taller.rank_costs needs max_rank + 1 whole numbers >= 0, rising from rank 2 (P3-05d)")
     tpm = get("hub.tier_price_mult")
     if not isinstance(tpm, list) or len(tpm) != 3 or tpm != sorted(tpm) or any(not isinstance(x, (int, float)) or x < 1 for x in tpm):
         errors.append("balance.json: hub.tier_price_mult must be 3 rising multipliers >= 1 (one per resolve tier)")
@@ -1122,7 +1132,7 @@ def check_balance(errors: list) -> None:
     for gd in (ROOT / "scripts").rglob("*.gd"):
         used |= set(re.findall(r'BalanceScript\.(?:num|int_of|arr|value)\("([a-z_.]+)"\)', gd.read_text(encoding="utf-8")))
     arrays = {"death.stress_penalties", "enemies.squad_hp_scale", "afflictions.ira_ciega_damage", "light.tiers",
-              "quirks.tier_levels", "hub.tier_price_mult"}
+              "quirks.tier_levels", "hub.tier_price_mult", "taller.rank_costs"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
 

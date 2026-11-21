@@ -5,7 +5,8 @@ extends SceneTree
 ## Mejoras rows), the page with the equipment fold open, and the Taller without accessories.
 ##   Windows:  Godot_v4.7.2-stable_win64.exe --path . -s tools/screens/feria_screenshot.gd -- <out_dir>
 ##   Linux:    xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/feria_screenshot.gd -- <out_dir>
-## Saves feria_town.png, feria_page.png, feria_equip.png and feria_taller.png in <out_dir>.
+## Saves feria_town.png, feria_page.png, feria_equip.png, feria_taller.png and taller_ranks.png
+## (P3-05d: weapon / armor ranks with the fold open) in <out_dir>.
 
 
 func _initialize() -> void:
@@ -54,5 +55,17 @@ func _run() -> void:
 	hub.open_building("taller")
 	hub._refresh()
 	await _snap(out_dir, "feria_taller.png")
+	# P3-05d: the Taller's weapon / armor ranks under the hero's slots, and its Mejoras.
+	gs.building_levels = {"taller": {"forja_machetes": 1}}
+	gs.reliquias = 2
+	var h: Dictionary = gs.roster[0]
+	h["resolve_level"] = 3
+	h["gear_ranks"] = {"weapon": 2}
+	gs.recompute_stats(h)
+	hub._selected = h
+	hub.open_building("taller")
+	hub._equip_open = true
+	hub._refresh()
+	await _snap(out_dir, "taller_ranks.png")
 	print("saved to ", out_dir)
 	quit(0)

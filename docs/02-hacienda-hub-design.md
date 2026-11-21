@@ -109,6 +109,12 @@ The EBAIS stays a button on each roster row. Mejoras de Hacienda has no picture 
 - Equipment ranks capped by building tier.
 - Late gear tiers require infernal currency fragments.
 
+### Built (P3-05d, 2026-11-21)
+
+- **Weapon and armor ranks**, as Darkest Dungeon's blacksmith (doc 04 §3.4): with a hero's equipment fold open, the Taller page shows *Afilar* (weapon slot) and *Reforzar* (armor slot). Rank 1–5; each rank above 1 gives +1 daño / +1 precisión (weapon) or +3% protección / +2 PV máx. (armor) while something is worn in that slot. The rank is the hero's, so it carries over to a new weapon or armor. Rank N needs the same resolve as a skill rank N. Prices 600 / 1300 / 2200 / 3500 ₡, and rank 5 also 1 Reliquia (doc 04's "infernal fragments"). Rules `scripts/domain/gear_ranks.gd`, numbers `balance.json` `taller.*`, hero field `gear_ranks` (save v17).
+- **Tracks** (`data/upgrades.json` `taller`): *Forja de Machetes* raises the weapon cap 2 → 3 / 4 / 5, *Chapería de Armaduras* the armor cap the same way (1 R + 500 ₡, 2 R + 1000 ₡, 3 R + 1600 ₡); *Horno Eficiente* takes 15 / 30% off rank prices (1 R + 400 ₡, 2 R + 800 ₡). "Reduces upgrade prices" read as the rank prices, not the building's own tracks.
+- The Taller's Mejoras step aside while a hero's fold is open there (the page can't fit both). A town event closing the Taller's buying (`taller_compra`) also stops sharpening and reinforcing.
+
 ## 6) Clinica de Espantos (Trait and Disease Management)
 
 ### Upgrade Tracks

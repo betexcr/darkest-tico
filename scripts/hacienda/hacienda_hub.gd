@@ -30,7 +30,8 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const UpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 ## Pages with a "Mejoras" section (P3-16/P3-18/P3-21) and the container it goes in.
-const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box", "feria": ""}
+const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box", "feria": "", "taller": ""}
+const GearRanksScript := preload("res://scripts/domain/gear_ranks.gd")
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
 const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "feria", "guardabosques"]
@@ -535,6 +536,18 @@ func _refresh_upgrades() -> void:
 		box.add_child(CardScript.section("Mejoras del edificio — %d Reliquia%s del Abuelo" % [GameState.reliquias, "" if GameState.reliquias == 1 else "s"]))
 		for t in UpgradesScript.tracks(bid):
 			box.add_child(_upgrade_row(bid, t))
+	_fit_taller_page()
+
+
+## The Taller's page can't show the hero's slots and ranks, the shop and its Mejoras at once
+## (P3-05d): while the equipment fold is open there, the Mejoras step aside.
+func _fit_taller_page() -> void:
+	var page: Node = _pages.get_node_or_null("taller")
+	if page == null:
+		return
+	for c in page.get_children():
+		if c.has_meta("mejoras") and not c.is_queued_for_deletion():
+			c.visible = not (_equip_open and _open_building == "taller")
 
 
 func _upgrade_row(bid: String, t: Dictionary) -> Control:
@@ -1607,6 +1620,56 @@ func _refresh_who() -> void:
 	_who.get_child(1).size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 
+## Taller (P3-05d): "Afilar el arma" / "Reforzar la armadura" for the selected hero, under
+## their equipment slots while the fold is open on the Taller's page.
+var _gear_box: VBoxContainer = null
+
+
+func _refresh_gear_ranks() -> void:
+	var page: Control = _pages.get_node_or_null("taller")
+	if page == null:
+		return
+	if _gear_box == null:
+		_gear_box = VBoxContainer.new()
+		_gear_box.add_theme_constant_override("separation", 4)
+		page.add_child(_gear_box)
+	for c in _gear_box.get_children():
+		c.queue_free()
+	_gear_box.visible = _equip_open and _open_building == "taller" and not _selected.is_empty()
+	_fit_taller_page()
+	var at: int = _equip_row.get_index() + 1 if _equip_row.get_parent() == page else 0
+	page.move_child(_gear_box, at)
+	if not _gear_box.visible:
+		return
+	var h: Dictionary = _selected
+	for kind in GearRanksScript.KINDS:
+		var r: int = GearRanksScript.rank(h, kind)
+		var top: int = GearRanksScript.max_rank()
+		var worn: bool = str(h.get("equipment", {}).get(kind, "")) != ""
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 10)
+		var text: String = "%s de %s: rango %d %s — %s" % ["Arma" if kind == "weapon" else "Armadura", h.get("name", "?"), r,
+			"●".repeat(r) + "○".repeat(top - r), GearRanksScript.bonus_text(kind, r)]
+		if not worn and r > 1:
+			text += " (cuenta cuando lleve %s)" % ("un arma" if kind == "weapon" else "una armadura")
+		var l := CardScript.label(text, 13, CardScript.TEXT, true, 0.0)
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(l)
+		var b := Button.new()
+		var why: String = GameState.gear_rank_block_reason(h, kind)
+		if r >= top:
+			b.text = "Rango máximo"
+			b.disabled = true
+		else:
+			var rel: int = GearRanksScript.reliquias_for(r + 1)
+			b.text = "%s — %d ₡%s" % ["Afilar" if kind == "weapon" else "Reforzar", GameState.gear_rank_cost(h, kind), (" + %d Reliq." % rel) if rel > 0 else ""]
+			b.disabled = why != ""
+			b.tooltip_text = "Rango %d: %s%s" % [r + 1, GearRanksScript.bonus_text(kind, r + 1), ("\n" + why) if why != "" else ""]
+			b.pressed.connect(func(): _say(GameState.buy_gear_rank(h, kind)))
+		row.add_child(b)
+		_gear_box.add_child(row)
+
+
 ## The equipment fold lives on the Taller's page and moves to the Feria Nocturna's while
 ## that one is open (P3-05a), so accessories can be put on right where they are bought.
 func _move_equip_to(bid: String) -> void:
@@ -1642,6 +1705,7 @@ func _refresh_equip_fold() -> void:
 	_equip_bar.text = ("▾ Equipo de %s  ✕" % who) if _equip_open else ("▸ Equipo de %s (clic en un héroe para ponerle o quitarle equipo)" % who)
 	_equip_title.visible = _equip_open
 	_equip_row.visible = _equip_open
+	_refresh_gear_ranks()
 
 
 # --- Dev menu (debug builds only, owner 2026-11-19) -------------------------------------

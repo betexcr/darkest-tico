@@ -69,7 +69,8 @@ const SINKS := ["provisions", "heal_items", "stress_items", "ebais", "iglesia", 
 ## Building upgrades the bot buys (P3-16/P3-18/P3-21), first that it can afford wins; Maestría
 ## only when a hero going out is held back by the rank cap.
 const UPGRADE_ORDER := [["casa_comunal", "maestria_oficio"], ["casa_comunal", "plan_formacion"],
-	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["iglesia", "iglesia_alivio"],
+	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["taller", "forja_machetes"], ["taller", "chaperia_armaduras"],
+	["iglesia", "iglesia_alivio"], ["taller", "horno_eficiente"],
 	["cantina", "cantina_alivio"], ["guardabosques", "entrenamiento_patrulla"], ["iglesia", "iglesia_capilla"],
 	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"]]
 const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
@@ -446,6 +447,17 @@ func _hub(row: Dictionary) -> void:
 				continue
 			row["gear_n"] += 1
 			row["gear"] += mark - _gs.colones
+	# Taller weapon / armor ranks (P3-05d), with what skill ranks and gear left: weapon first,
+	# keeping RESERVE; counted as gear spending.
+	for kind in ["weapon", "armor"]:
+		for h in chosen:
+			if str(h.get("equipment", {}).get(kind, "")) == "":
+				continue
+			var gc: int = _gs.gear_rank_cost(h, kind)
+			if _gs.gear_rank_block_reason(h, kind) == "" and _gs.colones - gc >= RESERVE:
+				_gs.buy_gear_rank(h, kind)
+				row["gear_n"] += 1
+				row["gear"] += gc
 	# Building upgrades (P3-16), with what ranks and gear left: with Reliquias in hand, in
 	# UPGRADE_ORDER, keeping RESERVE (power first, as a careful player would).
 	mark = _gs.colones

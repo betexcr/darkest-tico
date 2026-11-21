@@ -25,6 +25,7 @@ const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 const QuirksScript := preload("res://scripts/domain/quirks.gd")
 const BuildingUpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 const FeriaScript := preload("res://scripts/domain/feria.gd")
+const GearRanksScript := preload("res://scripts/domain/gear_ranks.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -49,7 +50,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 16
+const SAVE_VERSION := 17
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -773,6 +774,46 @@ func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
 	return "En la Casa Comunal, %s practica %s: ahora es rango %d (-%d ₡)." % [hero.get("name", "?"), sk_name, r, cost]
 
 
+# --- Taller: weapon and armor ranks (P3-05d, doc 04 §3.4) ---------------------------------
+
+## Highest weapon / armor rank the Taller works now (Forja de Machetes / Chapería de Armaduras).
+func gear_rank_cap(kind: String) -> int:
+	return int(upgrade_effect("taller", "%s_rank_cap" % kind))
+
+
+## Colones for the hero's next weapon / armor rank (Horno Eficiente off; 0 at max).
+func gear_rank_cost(hero: Dictionary, kind: String) -> int:
+	var r: int = GearRanksScript.rank(hero, kind)
+	if r >= GearRanksScript.max_rank():
+		return 0
+	return int(round(GearRanksScript.cost_for(r + 1) * (1.0 - upgrade_effect("taller", "cost_discount"))))
+
+
+func gear_rank_block_reason(hero: Dictionary, kind: String) -> String:
+	if TownEventsScript.is_closed(active_event(), "taller_compra"):
+		return "El taller está cerrado esta semana (%s)." % active_event().get("name", "")
+	return GearRanksScript.block_reason(hero, kind, gear_rank_cap(kind), colones, gear_rank_cost(hero, kind), reliquias)
+
+
+## Afilar el arma / Reforzar la armadura. Returns a message for the hub.
+func buy_gear_rank(hero: Dictionary, kind: String) -> String:
+	var why: String = gear_rank_block_reason(hero, kind)
+	var what: String = "el arma" if kind == "weapon" else "la armadura"
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), what, why]
+	var r: int = GearRanksScript.rank(hero, kind) + 1
+	var cost: int = gear_rank_cost(hero, kind)
+	var rel: int = GearRanksScript.reliquias_for(r)
+	colones -= cost
+	reliquias -= rel
+	if not hero.get("gear_ranks") is Dictionary:
+		hero["gear_ranks"] = {}
+	hero["gear_ranks"][kind] = r
+	recompute_stats(hero)
+	return "En el taller %s %s de %s: rango %d, %s (-%d ₡%s)." % ["afilan" if kind == "weapon" else "refuerzan", what,
+		hero.get("name", "?"), r, GearRanksScript.bonus_text(kind, r), cost, (", -%d Reliquia" % rel) if rel > 0 else ""]
+
+
 # --- Guardabosques del Arenal (camp skills, P3-13, doc 02 §9) ------------------------------
 
 ## This week's price of a Guardabosques service: learn | fix | shared_swap (balance.json
@@ -1293,6 +1334,12 @@ func recompute_stats(hero: Dictionary) -> void:
 				start_status.append(item["start_status"])
 			if bool(item.get("scout", false)):
 				scout = true
+		# P3-05d: the Taller's weapon / armor rank, while something is worn in that slot.
+		for kind in GearRanksScript.KINDS:
+			if str(eq.get(kind, "")) != "":
+				var gb: Dictionary = GearRanksScript.bonus(kind, GearRanksScript.rank(hero, kind))
+				for k in gb:
+					stats[k] = int(stats.get(k, 0)) + int(gb[k])
 	for k in ["accuracy", "crit", "dodge", "speed", "hp_max"]:
 		hero[k] = stats[k]
 	hero["hp_max"] = maxi(int(hero["hp_max"]), 1)
@@ -2666,6 +2713,13 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["dead"] = bool(out.get("dead", false))
 	out["al_borde"] = bool(out.get("al_borde", false))
 	out["borde_checks"] = int(out.get("borde_checks", 0))
+	# v17 (P3-05d): Taller weapon / armor ranks. Older saves: rank 1 in both.
+	var gr: Dictionary = {}
+	if out.get("gear_ranks", null) is Dictionary:
+		for kind in GearRanksScript.KINDS:
+			if out["gear_ranks"].has(kind):
+				gr[kind] = clampi(int(out["gear_ranks"][kind]), 1, GearRanksScript.max_rank())
+	out["gear_ranks"] = gr
 	if not out.has("skill_ids"):
 		out["skill_ids"] = []
 	# v9: the loadout always follows the class (heroes can't change skills). When a class's

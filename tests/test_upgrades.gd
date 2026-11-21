@@ -8,6 +8,7 @@ const UpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const GearRanksScript := preload("res://scripts/domain/gear_ranks.gd")
 
 var _fail: int = 0
 
@@ -179,6 +180,54 @@ func _run() -> void:
 		gs.apply_event_outcome({"random_equipment": true})
 		gifts += gs.inventory.filter(func(e): return gs.is_cursed(str(e["id"]))).size()
 	_check(gifts == 0, "curios never hand out a cursed trinket")
+
+	# P3-05d: Taller weapon / armor ranks, capped by Forja de Machetes / Chapería de Armaduras.
+	gs.active_event_id = ""
+	gs.building_levels = {}
+	gs.reliquias = 10
+	gs.colones = 50000
+	var w: Dictionary = gs.roster[0]
+	w["gear_ranks"] = {}
+	w["resolve_level"] = 6
+	gs.add_item("machete_cartago", 1)
+	gs.equip(w, "machete_cartago", "weapon")
+	gs.recompute_stats(w)
+	var dmg1: int = int(w["dmg_bonus"])
+	var acc1: int = int(w["accuracy"])
+	_check(gs.gear_rank_cap("weapon") == 2 and gs.gear_rank_cap("armor") == 2, "a new Taller works weapons and armor up to rank 2")
+	var c2: int = gs.colones
+	_check(gs.buy_gear_rank(w, "weapon").contains("rango 2") and c2 - gs.colones == 600, "Afilar: rank 2 for 600 ₡")
+	_check(int(w["dmg_bonus"]) == dmg1 + 1 and int(w["accuracy"]) == acc1 + 1, "…+1 daño, +1 precisión while the weapon is worn")
+	_check(gs.gear_rank_block_reason(w, "weapon").contains("Forja de Machetes"), "rank 3 needs the Forja de Machetes")
+	gs.buy_upgrade("taller", "forja_machetes")
+	_check(gs.gear_rank_cap("weapon") == 3 and gs.gear_rank_block_reason(w, "weapon") == "", "Forja 1: rank 3 open")
+	gs.buy_upgrade("taller", "horno_eficiente")
+	_check(gs.gear_rank_cost(w, "weapon") == int(round(1300 * 0.85)), "Horno Eficiente 1: -15%% (%d ₡)" % gs.gear_rank_cost(w, "weapon"))
+	gs.buy_gear_rank(w, "weapon")
+	gs.unequip(w, "weapon")
+	_check(int(w["dmg_bonus"]) == dmg1 - int(gs.get_item("machete_cartago")["bonus"]["damage"]) and GearRanksScript.rank(w, "weapon") == 3,
+		"without a weapon the rank doesn't count, but the hero keeps it (rank 3)")
+	var young: Dictionary = gs.roster[1]
+	young["gear_ranks"] = {}
+	young["resolve_level"] = 0
+	gs.building_levels["taller"]["chaperia_armaduras"] = 3
+	young["gear_ranks"]["armor"] = 2
+	_check(gs.gear_rank_block_reason(young, "armor").begins_with("Necesita resolución"), "rank 3 needs resolve, as skill ranks do")
+	young["gear_ranks"]["armor"] = 4
+	young["resolve_level"] = 6
+	gs.reliquias = 0
+	_check(gs.gear_rank_block_reason(young, "armor").contains("Reliquia"), "rank 5 also costs a Reliquia")
+	gs.reliquias = 1
+	gs.buy_gear_rank(young, "armor")
+	_check(GearRanksScript.rank(young, "armor") == 5 and gs.reliquias == 0, "…paid: rank 5")
+	var gsave: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))
+	gs.apply_save_data(gsave)
+	_check(GearRanksScript.rank(gs.roster[1], "armor") == 5 and GearRanksScript.rank(gs.roster[0], "weapon") == 3, "weapon / armor ranks survive a save")
+	for e in gsave["roster"]:
+		e.erase("gear_ranks")
+	gsave["version"] = 16
+	gs.apply_save_data(gsave)
+	_check(GearRanksScript.rank(gs.roster[1], "armor") == 1, "v16 save: everyone at rank 1")
 
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

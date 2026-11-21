@@ -125,6 +125,8 @@ Weapon/armor costs per hero:
 - Rank 3 -> 4: 3,400
 - Rank 4 -> 5: 5,600 + 3 infernal fragments
 
+Built (P3-05d, 2026-11-21) at 600 / 1,300 / 2,200 / 3,500 ₡ and 1 Reliquia del Abuelo for rank 5 (`balance.json` `taller.*`): the prices above would have cost about a week's income per rank next to skill ranks (300–2,700). Cap and discount come from the Taller's tracks (doc 02 §5).
+
 ## 3.5 Trait and Disease Treatment
 
 - Negative trait remove: 1,500 / 2,100 / 2,700 (tiered by resolve)

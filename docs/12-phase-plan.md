@@ -295,11 +295,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] both tracks in `data/upgrades.json`; [x] 5 cursed accessories (a strong bonus and a real cost, Tico names per doc 08) that only the Feria offers, at a small weekly chance (0.25); [ ] owner reads the names and plays; [ ] real icons (owner's machine)
 
 ### P3-05c · S · Feria Nocturna town art + repaint
-- Status: `todo` · Depends: P3-05a · Needs a GPU (owner's machine)
+- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-21; trying CPU generation in the cloud container)` · Depends: P3-05a · Needs a GPU (owner's machine)
 - Done when: [ ] `town_feria` in `tools/art_manifest.json` (`cutout`), generated with `tools/sd_local.py` + `tools/sd_cutout.py`; the town repainted with `tools/town_paint.py`; the stand-in from P3-05a replaced
 
 ### P3-05d · M · Taller upgrade tracks + gear tiers
-- Status: `todo` · Depends: P3-16
+- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-21)` · Depends: P3-16
 - Spec: `02` §5 (Forja de Machetes, Chapería de Armaduras, Horno Eficiente; equipment ranks capped by building tier)
 - Done when: [ ] weapons and armor have tiers, the better tiers unlocked by Taller upgrades (Reliquias + colones); [ ] the three tracks in `data/upgrades.json`; [ ] the playtest bot buys them; balance checked against the P5 baselines
 

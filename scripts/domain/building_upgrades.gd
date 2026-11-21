@@ -110,6 +110,10 @@ static func effect_text(effect: String, v: float) -> String:
 			return "+%d%% de alivio" % int(round(v * 100.0))
 		"extra_slots":
 			return "+%d cupo%s por actividad" % [int(v), "" if int(v) == 1 else "s"]
+		"weapon_rank_cap":
+			return "armas hasta rango %d" % int(v)
+		"armor_rank_cap":
+			return "armaduras hasta rango %d" % int(v)
 		"extra_stock":
 			return "+%d accesorio%s en el puesto" % [int(v), "" if int(v) == 1 else "s"]
 		"camp_extra_class_skills":

@@ -2722,6 +2722,18 @@
       "negative_extra": "interior, inside a room, furniture, indoor, gothic stone cathedral, victorian, other buildings, background buildings, street, town, village, landscape, sky, moon"
     },
     {
+      "id": "town_feria",
+      "out": "assets/town/feria.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 5209,
+      "subject": "exterior of a covered wooden market wagon at night, red cloth canopy, hanging lanterns, amulets and trinkets on a table, big wooden cart wheels, isolated on black background",
+      "cutout": true,
+      "negative_extra": "people, crowd, other buildings, background buildings, street, town, village, landscape, sky, moon"
+    },
+    {
       "id": "town_cantina",
       "out": "assets/town/cantina.png",
       "size": [
