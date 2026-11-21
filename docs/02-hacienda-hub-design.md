@@ -221,7 +221,7 @@ Each branch has 3 activities with independent slots and upgrade levels.
 
 - The Feria sells **all accessories**; the Taller keeps weapons and armor. It buys accessories back at half price (they don't go back on the stall).
 - Each week the stall shows `feria.stock_size` (6) different accessories, one of each; buying one takes it off until the next week. Accessories dearer than `feria.cheap_price` (550 ₡) are drawn at `feria.pricey_min_weight` (0.35) of the weight in week 1, rising to full weight by `feria.full_stock_week` (8). Regions don't weigh in yet (only Sótanos is playable). Rules: `scripts/domain/feria.gd`; stock: `GameState.feria_stock` (save v16).
-- Its page carries the same equipment fold as the Taller, so a hero can put on an accessory where it was bought. Town events can close it (`feria_compra`, `feria_venta`); *La de la feria anda de buenas* (was *El herrero…*) gives the first accessory −80%.
+- Its page carries the same equipment fold as the Taller, so a hero can put on an accessory where it was bought. Town events close it (owner 2026-11-21): *Aguacero de octubre* (buying and selling), *Huelga de transportistas* (buying); *La de la feria anda de buenas* (was *El herrero…*) gives the first accessory −80%.
 - Still to do: the two upgrade tracks and cursed trinkets (P3-05b), its own town art (P3-05c).
 
 ## 9) Guardabosques del Arenal (Camp Skills)

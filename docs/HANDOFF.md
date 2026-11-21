@@ -29,7 +29,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Validator: `feria.*` keys, 9 town buildings, new services. Tests: `test_hub` (stall, one of each, sell-back, week reroll, save v15→v16), `test_town_events`, `test_ui`. `tools/screens/feria_screenshot.gd`. AGENTS.md §4, doc 02.
 - **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR; screenshots at 1080p (town, Feria page, equipment fold, Taller). Bot comparison (6 × 16 weeks, seed 3, this branch vs. before): running at commit time; results in the next commit.
 - **Not verified / risks:** with 6 accessories a week the bot (and players) gear up a little slower; balance not rerun at the P5-11 scale. The stand-in art is brighter and flatter than the painted town. Not played in a window.
-- **Decisions needed:** owner: 6 accessories a week, one of each — right size? Should the Feria be closed by some town events (none do yet)?
+- **Owner decisions (2026-11-21):** 6 accessories a week, one of each: yes. Town events close the Feria: yes — *Aguacero de octubre* closes buying and selling (the carreta is stuck in the mud), *Huelga de transportistas* closes buying (the road is blocked); texts updated, same pictures. Tested in `test_town_events`.
+- **Decisions needed:** none.
 - **Next step:** owner playtest of P3-05a; then P5-11 (balance, see entry 28) or P3-05b (open `data/upgrades.json`, add the Feria's two tracks; cursed accessories in `data/items.json`).
 
 ---

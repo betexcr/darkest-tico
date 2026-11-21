@@ -74,6 +74,17 @@ func _run() -> void:
 	gs.draw_town_event("huelga_de_transportistas")
 	var gp: int = int(gs.get_item("gallo_pinto")["price"])
 	_check(gs.item_price("gallo_pinto") == int(round(gp * 1.5)), "Huelga de transportistas: gallo pinto %d -> %d" % [gp, gs.item_price("gallo_pinto")])
+	# P3-05a (owner 2026-11-21): town events can close the Feria Nocturna.
+	gs.feria_stock = ["escapulario", "chonete"]
+	gs.colones = 5000
+	_check(gs.buy_item("escapulario").begins_with("La Feria Nocturna está cerrada"), "…and the Feria's carreta didn't come: can't buy")
+	gs.add_item("chonete", 1)
+	_check(gs.sell_item("chonete").begins_with("Vendiste"), "…but it still buys accessories")
+	gs.draw_town_event("temporal_de_octubre")
+	_check(gs.buy_block_reason("chonete").begins_with("La Feria Nocturna está cerrada"), "Aguacero de octubre: Feria closed")
+	gs.add_item("escapulario", 1)
+	_check(gs.sell_item("escapulario").begins_with("La Feria Nocturna no compra"), "…no selling either")
+	gs.remove_item("escapulario", 1)
 	gs.draw_town_event("guino_de_la_pulpera")
 	var acc: String = "escapulario"
 	gs.feria_stock = ["escapulario", "chonete"]  # P3-05a: on this week's stall

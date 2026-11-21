@@ -286,7 +286,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; owner to play the hub and check the stand-in art) · Depends: P4-18
 - Spec: `02` §8; owner 2026-11-20: accessories are sold (and bought back) at the Feria, no longer at the Taller
 - Files: `GameState` (`shop_of` → `feria`, weekly stock, save), `data/balance.json` (`feria.*`), `data/town.json` (+ stand-in art), `data/town_events.json` (closures `feria_compra/_venta`, artesanía discount), `scripts/domain/town_events.gd`, `hacienda_hub.gd/.tscn` (page `feria`), `tools/playtest_campaign.gd`, validator, tests, `AGENTS.md` §4, doc 02
-- Done when: [x] accessories are sold only at the Feria, which buys them back at half price; the Taller keeps weapons and armor; [x] the Feria shows a few accessories each week (count in balance.json), rerolled every week and saved (save v16); [x] town building (stand-in art) + page with the equipment fold; per-shop closures; [x] the playtest bot still buys accessories; [x] tests; [ ] owner playtest
+- Done when: [x] accessories are sold only at the Feria, which buys them back at half price; the Taller keeps weapons and armor; [x] the Feria shows a few accessories each week (count in balance.json), rerolled every week and saved (save v16); [x] town building (stand-in art) + page with the equipment fold; per-shop closures, used by *Aguacero de octubre* and *Huelga de transportistas* (owner 2026-11-21); [x] owner: 6 a week, one of each; [x] the playtest bot still buys accessories; [x] tests; [ ] owner playtest
 
 ### P3-05b · S · Feria Nocturna upgrade tracks + cursed trinkets
 - Status: `todo` · Depends: P3-05a, P3-16 (building-upgrade system)
