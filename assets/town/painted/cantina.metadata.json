@@ -13,7 +13,7 @@
   "init": "layout from data/town.json (tools/town_paint.py compose)",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/town_paint.py (diffusers)",
-  "timestamp": "2026-11-17T17:57:10+00:00",
+  "timestamp": "2026-11-21T09:28:43+00:00",
   "crop_of": "assets/town/town_painted.png",
   "rect": [
     620,
@@ -22,5 +22,5 @@
     155
   ],
   "alpha_from": "its cut-out in data/town.json",
-  "alpha_note": "x >= 815 (the shed) moved to guardabosques.png on 2026-11-19T22:38:59+00:00"
+  "split": "alpha cleared from x >= 814 (design) \u2014 the shed there is the Guardabosques' own crop (P3-13 split, redone after the P3-05c repaint)"
 }

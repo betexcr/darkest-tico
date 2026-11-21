@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (34) — P3-05c + P3-05d: Feria art and town repaint; Taller weapon/armor ranks
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P3-05c review, P3-05d review (owner asked for both).
+- **Changed (P3-05d):**
+  - New `scripts/domain/gear_ranks.gd`: weapon / armor ranks 1–5 per hero slot (DD blacksmith, doc 04 §3.4), kept across items, counted only while the slot is worn, resolve as skill ranks; `data/balance.json` `taller.*` (600 / 1300 / 2200 / 3500 ₡, rank 5 + 1 Reliquia; +1 daño/+1 precisión or +3% prot/+2 PV per rank).
+  - `data/upgrades.json` `taller`: Forja de Machetes (`weapon_rank_cap` 2→5), Chapería de Armaduras (`armor_rank_cap` 2→5), Horno Eficiente (`cost_discount` 15/30% on rank prices).
+  - `GameState`: `gear_rank_cap/cost/block_reason`, `buy_gear_rank`, bonus in `recompute_stats`, hero `gear_ranks`, **SAVE_VERSION 17**. A `taller_compra` closure stops sharpening too.
+  - Hub: Afilar / Reforzar rows under the hero's slots on the Taller page; its Mejoras hide while that fold is open (the page can't fit both). Bot: buys ranks after skill ranks and gear, the three tracks in `UPGRADE_ORDER`.
+  - Validator (`taller.*`, `rank_costs` shape, cap tracks end at `taller.max_rank`), `test_upgrades` (+16 checks), AGENTS.md, docs 02 §5 / 04 §3.4.
+- **Changed (P3-05c):** generated on CPU here (dreamshaper-8, ~40 min for the repaint): `assets/town/feria.png` (`town_feria`, seed 5209, cut out), town repainted (`town_painted.png` + 9 crops, `painted/layout.json` now has `feria`), Cantina crop alpha cleared from x ≥ 814 again (the shed is the Guardabosques' crop). Real icons for the five cursed trinkets (seeds in the manifest; the Diente prompt reworded after two horse heads, seed 6411 is a bone pendant).
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures after P3-05d; test_ui, test_hub, smoke again after the repaint, 0 failures; screenshots (Taller ranks fold open / closed, town with the painted Feria). Balance: 12 seeds × 3 × 24 weeks with the Taller: Veterano 75%, Campeón 60% (70 exp.), deaths 0.14, 34 of 36 solvent — every P5-11 band holds (`docs/playtests/2026-11-21-p5-11.md`).
+- **Not verified / risks:** not played by hand. The repaint changed every building crop slightly (same seed/strength; the old ones are in git history). Rank prices are below doc 04's.
+- **Decisions needed:** owner: Taller rank prices 600/1300/2200/3500 (doc 04 said 900/1900/3400/5600) — keep? Diente de la Segua icon: keep the bone pendant or re-roll on your machine?
+- **Next step:** owner playtest of the P3-05 Feria/Taller work and the town; then pick from the plan's remaining todo (P4-01 prep/extraction screens, P4-02 tooltips, P4-04 audio) or P5-03 sign-off once reviews are done.
+
+---
+
 ## 2026-11-21 (33) — P5-11: Veterano / Campeón retuned for the upgraded game
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P5-11 done.

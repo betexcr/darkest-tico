@@ -295,8 +295,8 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] both tracks in `data/upgrades.json`; [x] 5 cursed accessories (a strong bonus and a real cost, Tico names per doc 08) that only the Feria offers, at a small weekly chance (0.25); [ ] owner reads the names and plays; [ ] real icons (owner's machine)
 
 ### P3-05c · S · Feria Nocturna town art + repaint
-- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-21; trying CPU generation in the cloud container)` · Depends: P3-05a · Needs a GPU (owner's machine)
-- Done when: [ ] `town_feria` in `tools/art_manifest.json` (`cutout`), generated with `tools/sd_local.py` + `tools/sd_cutout.py`; the town repainted with `tools/town_paint.py`; the stand-in from P3-05a replaced
+- Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; generated on CPU in the cloud container; owner to look at the town and the icons) · Depends: P3-05a
+- Done when: [x] `town_feria` in `tools/art_manifest.json` (`cutout`), generated with `tools/sd_local.py` + `tools/sd_cutout.py`; [x] the town repainted with `tools/town_paint.py` (seed 5300, strength 0.7; Cantina/Guardabosques split redone); [x] the stand-in from P3-05a replaced; [x] (added) real icons for the five cursed trinkets; [ ] owner look
 
 ### P3-05d · M · Taller upgrade tracks + gear tiers
 - Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; owner to try Afilar / Reforzar and confirm the lower prices) · Depends: P3-16
