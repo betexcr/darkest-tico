@@ -299,9 +299,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [ ] `town_feria` in `tools/art_manifest.json` (`cutout`), generated with `tools/sd_local.py` + `tools/sd_cutout.py`; the town repainted with `tools/town_paint.py`; the stand-in from P3-05a replaced
 
 ### P3-05d · M · Taller upgrade tracks + gear tiers
-- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-21)` · Depends: P3-16
-- Spec: `02` §5 (Forja de Machetes, Chapería de Armaduras, Horno Eficiente; equipment ranks capped by building tier)
-- Done when: [ ] weapons and armor have tiers, the better tiers unlocked by Taller upgrades (Reliquias + colones); [ ] the three tracks in `data/upgrades.json`; [ ] the playtest bot buys them; balance checked against the P5 baselines
+- Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; owner to try Afilar / Reforzar and confirm the lower prices) · Depends: P3-16
+- Spec: `02` §5 (Forja de Machetes, Chapería de Armaduras, Horno Eficiente; equipment ranks capped by building tier), `04` §3.4 (weapon / armor rank costs)
+- Files: `scripts/domain/gear_ranks.gd` (new), `data/balance.json` (`taller.*`), `data/upgrades.json` (`taller`), `GameState` (`gear_rank_cap/cost/block_reason`, `buy_gear_rank`, `recompute_stats`, save v17), `building_upgrades.gd` (texts), `hacienda_hub.gd` (rank rows in the Taller fold, Mejoras step aside while it is open), `tools/playtest_campaign.gd`, validator, `test_upgrades`, `tools/screens/feria_screenshot.gd` (`taller_ranks.png`), AGENTS.md, docs 02 / 04
+- Done when: [x] weapons and armor have ranks 1–5 (DD blacksmith, doc 04 §3.4: per hero slot, kept across items), the higher ranks unlocked by Taller upgrades (Reliquias + colones); [x] the three tracks in `data/upgrades.json`; [x] the playtest bot buys them; balance checked against the P5-11 baseline (12 seeds: Veterano 75%, Campeón 60%, deaths 0.14, 34 of 36 solvent; `docs/playtests/2026-11-21-p5-11.md`); [ ] owner: prices 600/1300/2200/3500 instead of doc 04's 900/1900/3400/5600
 
 ### P3-06 · M · Clínica de Espantos + quirks
 - Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): built and tested headless; owner to read the quirk names and try the Clínica · Depends: P3-01
