@@ -1,8 +1,8 @@
 {
   "id": "item_peseta_del_diablo",
-  "prompt": "dark fantasy painting, small oval religious medal on a chain, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "prompt": "dark fantasy painting, one old worn silver coin with a faint red glow at its edge, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
   "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6318,
+  "seed": 6405,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,8 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-07T06:29:10+00:00",
-  "stand_in": "recoloured from assets/items/medalla_de_la_romeria.png (red-violet curse tint + vignette, P3-05b, 2026-11-21) until tools/sd_local.py makes item_peseta_del_diablo",
-  "derived_from": "assets/items/medalla_de_la_romeria.png",
-  "timestamp_derived": "2026-11-21T00:22:15+00:00"
+  "timestamp": "2026-11-21T09:02:32+00:00"
 }
