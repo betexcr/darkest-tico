@@ -1,5 +1,5 @@
 {
-  "_doc": "Items. usable: explore | combat | both | curio (key only) | equip. Consumables: target ally | party | enemy | none; effects heal, stress, light, damage [min,max] (+element), hp_risk, cure. Equipment (usable equip, max_stack 1): slot weapon | armor | accessory; bonus {damage, accuracy, crit, dodge, speed, hp_max, prot (% less physical damage), stress_resist (% less stress)}; weapon element (its attacks deal that element); resist {element: multiplier, <1 resists, 0 immune}; immune [ailments]; scout true (accessory): the party sees full enemy data. Consumable effects may include applies {status, chance, turns, value} for enemy-target items. Heroes: 1 weapon, 1 armor, 2 accessories. uses_per_node: per hero per room outside combat.",
+  "_doc": "Items. usable: explore | combat | both | curio (key only) | equip. Consumables: target ally | party | enemy | none; effects heal, stress, light, damage [min,max] (+element), hp_risk, cure. Equipment (usable equip, max_stack 1): slot weapon | armor | accessory; bonus {damage, accuracy, crit, dodge, speed, hp_max, prot (% less physical damage), stress_resist (% less stress)}; weapon element (its attacks deal that element); resist {element: multiplier, <1 resists, 0 immune}; immune [ailments]; scout true (accessory): the party sees full enemy data; cursed true (accessory, P3-05b): a strong bonus with a real drawback, only sold at the Feria Nocturna (balance.json feria.cursed_chance), never dropped or given. Consumable effects may include applies {status, chance, turns, value} for enemy-target items. Heroes: 1 weapon, 1 armor, 2 accessories. uses_per_node: per hero per room outside combat.",
   "starter_inventory": [
     {
       "id": "gallo_pinto",
@@ -1296,6 +1296,101 @@
       },
       "status_resist": {
         "susto": 25
+      }
+    },
+    {
+      "id": "diente_de_la_segua",
+      "name": "Diente de la Segua",
+      "description": "Lo dejó la Segua en la cuneta, al lado de un sombrero. Muerde con ganas, pero su risa no deja dormir a nadie.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "cursed": true,
+      "effects": {},
+      "bonus": {
+        "damage": 4,
+        "crit": 3,
+        "stress_resist": -15
+      }
+    },
+    {
+      "id": "rosario_del_padre_sin_cabeza",
+      "name": "Rosario del Padre sin Cabeza",
+      "description": "Cuentas de hueso que todavía rezan solas. Nada asusta a quien lo lleva, pero camina como en procesión.",
+      "price": 1000,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "cursed": true,
+      "effects": {},
+      "bonus": {
+        "stress_resist": 30,
+        "speed": -3
+      },
+      "status_resist": {
+        "susto": 30
+      }
+    },
+    {
+      "id": "espuela_del_mandador",
+      "name": "Espuela del Mandador",
+      "description": "Del mandador en pena que todavía cobra en los potreros. Arrea rápido y certero, pero se cobra en carne.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "cursed": true,
+      "effects": {},
+      "bonus": {
+        "speed": 4,
+        "accuracy": 3,
+        "hp_max": -6
+      }
+    },
+    {
+      "id": "cascabel_de_la_tulevieja",
+      "name": "Cascabel de la Tulevieja",
+      "description": "Suena lejos cuando está cerca. Nadie le atina a quien lo carga, pero la oscuridad lo encuentra.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "cursed": true,
+      "effects": {},
+      "bonus": {
+        "dodge": 6
+      },
+      "resist": {
+        "oscuridad": 1.5
+      }
+    },
+    {
+      "id": "peseta_del_diablo",
+      "name": "Peseta del Diablo",
+      "description": "Una peseta del 48 que siempre vuelve al bolsillo. Da cuero de toro, pero el día que toque, toca.",
+      "price": 1100,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "accessory",
+      "cursed": true,
+      "effects": {},
+      "bonus": {
+        "hp_max": 8,
+        "prot": 4
+      },
+      "status_resist": {
+        "golpe_de_gracia": -15
       }
     },
     {

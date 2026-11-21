@@ -137,11 +137,61 @@ func _run() -> void:
 	gs.apply_save_data(old)
 	_check(gs.skill_rank_cap() == 3, "v14 save without high ranks: cap 3")
 
+	# P3-05b: the Feria Nocturna's two tracks and its cursed trinkets.
+	gs.active_event_id = ""
+	gs.building_levels = {}
+	gs.reliquias = 10
+	gs.colones = 50000
+	var size0: int = BalanceScript.int_of("feria.stock_size")
+	var ordinary := func(): return gs.feria_stock.filter(func(i): return not gs.is_cursed(str(i))).size()
+	BalanceScript.override("feria.cursed_chance", 0.0)
+	gs.refresh_feria()
+	_check(ordinary.call() == size0 and gs.feria_stock.size() == size0, "no curse rolled: %d accessories, none cursed" % size0)
+	_check(gs.buy_upgrade("feria", "feria_puestos").contains("nivel 1") and gs.feria_stock.size() == size0 + 1, "Tamaño de Puestos 1: one more accessory on the stall right away")
+	_check(gs.feria_stock.size() == _unique(gs.feria_stock), "…no accessory twice")
+	gs.end_of_expedition_week()
+	_check(ordinary.call() == size0 + 1, "…and every week after (%d)" % ordinary.call())
+	var acc: String = str(gs.feria_stock[0])
+	var list_price: int = int(gs.get_item(acc)["price"])
+	gs.buy_upgrade("feria", "feria_cadena")
+	_check(gs.item_price(acc) == int(round(list_price * 0.9)), "Cadena de Comerciantes 1: Feria prices -10%")
+	_check(gs.item_price("gallo_pinto") == int(gs.get_item("gallo_pinto")["price"]), "…the Pulpería's are not touched")
+	_check(gs.sell_price(acc) == list_price / 2, "…selling back still pays half the list price")
+	BalanceScript.override("feria.cursed_chance", 1.0)
+	gs.refresh_feria()
+	var cursed: Array = gs.feria_stock.filter(func(i): return gs.is_cursed(str(i)))
+	_check(cursed.size() == 1 and ordinary.call() == size0 + 1, "a curse rolled: one cursed trinket on top of the stall")
+	var cid: String = str(cursed[0]) if not cursed.is_empty() else ""
+	_check(gs.shop_of(cid) == "feria", "…sold at the Feria")
+	BalanceScript.reset()
+	var h: Dictionary = gs.roster[0]
+	for slot in ["accessory1", "accessory2"]:
+		gs.unequip(h, slot)
+	var hp0: int = int(h["hp_max"])
+	gs.add_item("espuela_del_mandador", 1)
+	gs.equip(h, "espuela_del_mandador", "accessory1")
+	_check(int(h["hp_max"]) == hp0 - 6, "Espuela del Mandador: -6 PV máx. while worn (%d -> %d)" % [hp0, int(h["hp_max"])])
+	gs.unequip(h, "accessory1")
+	_check(int(h["hp_max"]) == hp0, "…back when taken off")
+	var gifts: int = 0
+	for k in 60:
+		gs.inventory.clear()
+		gs.apply_event_outcome({"random_equipment": true})
+		gifts += gs.inventory.filter(func(e): return gs.is_cursed(str(e["id"]))).size()
+	_check(gifts == 0, "curios never hand out a cursed trinket")
+
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
 
 
 ## A town event id that closes `building` (or "" if none does).
+func _unique(a: Array) -> int:
+	var seen: Dictionary = {}
+	for x in a:
+		seen[x] = true
+	return seen.size()
+
+
 func _closing_event(gs, building: String) -> String:
 	for e in gs.TownEventsScript.data().get("events", []):
 		if (e.get("effects", {}).get("closed", []) as Array).has(building):

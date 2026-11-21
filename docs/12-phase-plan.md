@@ -289,9 +289,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] accessories are sold only at the Feria, which buys them back at half price; the Taller keeps weapons and armor; [x] the Feria shows a few accessories each week (count in balance.json), rerolled every week and saved (save v16); [x] town building (stand-in art) + page with the equipment fold; per-shop closures, used by *Aguacero de octubre* and *Huelga de transportistas* (owner 2026-11-21); [x] owner: 6 a week, one of each; [x] the playtest bot still buys accessories; [x] tests; [ ] owner playtest
 
 ### P3-05b · S · Feria Nocturna upgrade tracks + cursed trinkets
-- Status: `todo` · Depends: P3-05a, P3-16 (building-upgrade system)
+- Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; owner to read the curse names and try the upgrades) · Depends: P3-05a, P3-16 (building-upgrade system)
 - Spec: `02` §8 (Tamaño de Puestos: more trinkets per week; Cadena de Comerciantes: lower prices; small chance of a cursed trinket with a strong upside)
-- Done when: [ ] both tracks in `data/upgrades.json`; [ ] 4–6 cursed accessories (a strong bonus and a real cost, Tico names per doc 08) that only the Feria offers, at a small weekly chance
+- Files: `data/upgrades.json` (`feria`), `data/items.json` (5 `cursed`), `data/balance.json` (`feria.cursed_chance`), `GameState` (`refresh_feria`, `feria_stock_size`, `_top_up_feria`, `is_cursed`, Feria price discount, no curses in curio loot / gifts), `scripts/domain/feria.gd`, `building_upgrades.gd` (`extra_stock` text), `hacienda_hub.gd` (Mejoras on the Feria page), `tooltip_card.gd` + item card (curse, weakness, lower resist in red), `assets/items/` (5 tinted stand-in icons), `tools/art_manifest.json`, `tools/playtest_campaign.gd`, validator, `test_upgrades`, `test_hub`
+- Done when: [x] both tracks in `data/upgrades.json`; [x] 5 cursed accessories (a strong bonus and a real cost, Tico names per doc 08) that only the Feria offers, at a small weekly chance (0.25); [ ] owner reads the names and plays; [ ] real icons (owner's machine)
 
 ### P3-05c · S · Feria Nocturna town art + repaint
 - Status: `todo` · Depends: P3-05a · Needs a GPU (owner's machine)

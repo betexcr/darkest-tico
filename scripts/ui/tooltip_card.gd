@@ -103,7 +103,12 @@ static func is_bad_line(s: String) -> bool:
 	# "no va a la Iglesia Vieja": a refusal (quirks) is a drawback too.
 	if t.begins_with("no "):
 		return true
+	# A curse, a weakness or a lower resistance ("Resist. estrés % -15") is bad news too.
+	if t.begins_with("Maldito") or t.begins_with("Débil a"):
+		return true
 	var negative: bool = t.begins_with("-") or t.contains(" -")
+	if negative and t.begins_with("Resist."):
+		return true
 	if t.contains("estrés recibido"):
 		return not negative
 	# Less stress is good ("-50 estrés a todos").

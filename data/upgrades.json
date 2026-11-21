@@ -1,5 +1,5 @@
 {
-  "_doc": "Building upgrades (P3-16/P3-18/P3-21, owner 2026-11-20; doc 02 §4/§7/§9/§11). Each building has tracks; a track starts at level 0 with `base` and each bought level i (1..n) costs levels[i-1].reliquias Reliquias del Abuelo + .colones and sets the track's value to levels[i-1].value. Levels are bought in order. Effects (each building may use an effect once): rank_cap (max Casa Comunal skill rank; heroes already above it keep their ranks), rank_discount (fraction off rank prices), relief_bonus (fraction added to the stress relief rolled), cost_discount (fraction off the activity price), extra_slots (slots added to every activity), camp_extra_class_skills (class camp skills added to each fogata hand), lesson_discount (fraction off Guardabosques learn / fix prices). Rules: scripts/domain/building_upgrades.gd. Reliquia sources: progression.json difficulties[].reliquias (objective cleared), balance.json upgrades.elite_reliquia_chance (elite or roaming mini-boss killed), curio outcome `reliquias`.",
+  "_doc": "Building upgrades (P3-16/P3-18/P3-21, owner 2026-11-20; doc 02 §4/§7/§9/§11). Each building has tracks; a track starts at level 0 with `base` and each bought level i (1..n) costs levels[i-1].reliquias Reliquias del Abuelo + .colones and sets the track's value to levels[i-1].value. Levels are bought in order. Effects (each building may use an effect once): rank_cap (max Casa Comunal skill rank; heroes already above it keep their ranks), rank_discount (fraction off rank prices), relief_bonus (fraction added to the stress relief rolled), cost_discount (fraction off the activity price), extra_slots (slots added to every activity), camp_extra_class_skills (class camp skills added to each fogata hand), lesson_discount (fraction off Guardabosques learn / fix prices), extra_stock (accessories added to the Feria Nocturna's weekly stall, P3-05b); cost_discount at the Feria is a fraction off its accessory prices. Rules: scripts/domain/building_upgrades.gd. Reliquia sources: progression.json difficulties[].reliquias (objective cleared), balance.json upgrades.elite_reliquia_chance (elite or roaming mini-boss killed), curio outcome `reliquias`.",
   "buildings": {
     "casa_comunal": [
       { "id": "maestria_oficio", "name": "Maestría de Oficio", "effect": "rank_cap", "base": 3,
@@ -71,6 +71,22 @@
         "levels": [
           { "reliquias": 1, "colones": 300, "value": 0.25 },
           { "reliquias": 2, "colones": 600, "value": 0.5 }
+        ] }
+    ],
+    "feria": [
+      { "id": "feria_puestos", "name": "Tamaño de Puestos", "effect": "extra_stock", "base": 0,
+        "desc": "Más toldos en la carreta: más accesorios en el puesto cada semana (los nuevos llegan de una vez).",
+        "levels": [
+          { "reliquias": 1, "colones": 500, "value": 1 },
+          { "reliquias": 2, "colones": 1000, "value": 2 },
+          { "reliquias": 3, "colones": 1600, "value": 3 }
+        ] },
+      { "id": "feria_cadena", "name": "Cadena de Comerciantes", "effect": "cost_discount", "base": 0,
+        "desc": "Los feriantes traen de otros pueblos: accesorios más baratos.",
+        "levels": [
+          { "reliquias": 1, "colones": 400, "value": 0.1 },
+          { "reliquias": 2, "colones": 800, "value": 0.2 },
+          { "reliquias": 3, "colones": 1400, "value": 0.3 }
         ] }
     ]
   }

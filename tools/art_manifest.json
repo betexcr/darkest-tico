@@ -1189,6 +1189,106 @@
       "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
+      "id": "item_diente_de_la_segua",
+      "out": "assets/items/diente_de_la_segua.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6400,
+      "subject": "a single long yellowed horse tooth hanging from a red cord, faint ghostly glow, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_rosario_del_padre_sin_cabeza",
+      "out": "assets/items/rosario_del_padre_sin_cabeza.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6401,
+      "subject": "rosary of small carved bone beads with a dark iron cross, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_espuela_del_mandador",
+      "out": "assets/items/espuela_del_mandador.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6402,
+      "subject": "old rusty iron spur with a spiked rowel and a broken leather strap, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cascabel_de_la_tulevieja",
+      "out": "assets/items/cascabel_de_la_tulevieja.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6403,
+      "subject": "small tarnished brass bell tied with dark feathers and dry leaves, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_peseta_del_diablo",
+      "out": "assets/items/peseta_del_diablo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6404,
+      "subject": "one old worn silver coin with a faint red glow at its edge, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
       "id": "item_botas_de_hule",
       "out": "assets/items/botas_de_hule.png",
       "size": [

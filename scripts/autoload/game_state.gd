@@ -462,7 +462,7 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 	if outcome.has("reliquias"):
 		logs.append(grant_reliquias(int(outcome["reliquias"])))
 	if bool(outcome.get("random_equipment", false)):
-		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)))
+		var gear: Array = _item_order.filter(func(id): return is_equipment(str(id)) and not is_cursed(str(id)))
 		if not gear.is_empty():
 			var pick: String = str(gear[randi() % gear.size()])
 			var got_eq: int = add_item(pick, items_mult())
@@ -556,7 +556,8 @@ func remove_item(item_id: String, qty: int = 1) -> bool:
 	return true
 
 
-## Pulpería price this week (town events: discounts, surcharges, first-buy deal).
+## Shop price this week (town events: discounts, surcharges, first-buy deal; at the Feria
+## Nocturna, less its Cadena de Comerciantes upgrade, P3-05b).
 func item_price(item_id: String) -> int:
 	var item: Dictionary = get_item(item_id)
 	var ev: Dictionary = active_event()
@@ -564,7 +565,8 @@ func item_price(item_id: String) -> int:
 	var fb: int = TownEventsScript.first_buy_pct(ev, item)
 	if fb != 0 and not bool(event_flags.get("first_buy_used", false)):
 		pct += fb
-	return maxi(int(round(int(item.get("price", 0)) * (1.0 + pct / 100.0))), 0)
+	var up: float = 1.0 - upgrade_effect("feria", "cost_discount") if shop_of(item_id) == "feria" else 1.0
+	return maxi(int(round(int(item.get("price", 0)) * (1.0 + pct / 100.0) * up)), 0)
 
 
 ## Which hub shop sells an item (P4-18, owner 2026-11-17; P3-05a, owner 2026-11-20): the
@@ -578,6 +580,11 @@ func shop_of(item_id: String) -> String:
 
 func is_accessory(item_id: String) -> bool:
 	return str(get_item(item_id).get("slot", "")) == "accessory"
+
+
+## Cursed trinkets (P3-05b): a strong bonus and a real drawback; only the Feria sells them.
+func is_cursed(item_id: String) -> bool:
+	return bool(get_item(item_id).get("cursed", false))
 
 
 const SHOP_NAMES := {"pulperia": "La pulpería", "taller": "El taller", "feria": "La Feria Nocturna"}
@@ -619,15 +626,38 @@ func buy_item(item_id: String) -> String:
 	return "Compraste %s (-%d ₡)." % [item.get("name", item_id), price]
 
 
-## A new stall for the week (P3-05a): accessories drawn by data/balance.json `feria.*`.
+## A new stall for the week (P3-05a): accessories drawn by data/balance.json `feria.*`, plus
+## the Tamaño de Puestos upgrade, and maybe one cursed trinket on top (P3-05b).
 func refresh_feria() -> void:
-	var accs: Array = []
-	for id in all_item_ids():
-		if is_equipment(str(id)) and is_accessory(str(id)):
-			accs.append(get_item(str(id)))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = randi()
-	feria_stock = FeriaScript.roll_stock(accs, week, rng)
+	feria_stock = FeriaScript.roll_stock(_feria_pool(false), week, rng, feria_stock_size())
+	var cursed: Array = _feria_pool(true)
+	if not cursed.is_empty() and rng.randf() < BalanceScript.num("feria.cursed_chance"):
+		feria_stock.append(str(cursed[rng.randi() % cursed.size()]["id"]))
+
+
+## How many ordinary accessories the stall brings each week.
+func feria_stock_size() -> int:
+	return BalanceScript.int_of("feria.stock_size") + int(upgrade_effect("feria", "extra_stock"))
+
+
+## The accessories the Feria can bring: the ordinary ones, or the cursed ones.
+func _feria_pool(cursed: bool) -> Array:
+	var out: Array = []
+	for id in all_item_ids():
+		if is_equipment(str(id)) and is_accessory(str(id)) and is_cursed(str(id)) == cursed:
+			out.append(get_item(str(id)))
+	return out
+
+
+## Tamaño de Puestos bought mid-week: the new places are filled right away with accessories
+## not already on the stall.
+func _top_up_feria(n: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = randi()
+	var rest: Array = _feria_pool(false).filter(func(it): return not feria_stock.has(str(it["id"])))
+	feria_stock.append_array(FeriaScript.roll_stock(rest, week, rng, n))
 
 
 func _item_use_key(hero: Dictionary, item_id: String) -> String:
@@ -1055,6 +1085,8 @@ func item_tooltip_parts(item_id: String) -> Dictionary:
 	var labels := {"damage": "Daño", "accuracy": "Precisión", "crit": "Crítico", "dodge": "Esquiva",
 		"speed": "Velocidad", "hp_max": "PV máx.", "prot": "Protección %", "stress_resist": "Resist. estrés %"}
 	var parts: PackedStringArray = PackedStringArray()
+	if bool(it.get("cursed", false)):
+		parts.append("Maldito: mucho poder, con su precio")
 	var slot_names := {"weapon": "Arma", "armor": "Armadura", "accessory": "Accesorio"}
 	for k in it.get("bonus", {}):
 		parts.append("%s %+d" % [labels.get(k, k), int(it["bonus"][k])])
@@ -1062,7 +1094,7 @@ func item_tooltip_parts(item_id: String) -> Dictionary:
 		parts.append("Elemento: %s" % ELEMENT_NAMES.get(str(it["element"]), it["element"]))
 	for e in it.get("resist", {}):
 		var m: float = float(it["resist"][e])
-		parts.append("%s %s" % ["Inmune a" if m == 0.0 else "Resiste", ELEMENT_NAMES.get(str(e), e)])
+		parts.append("%s %s" % ["Inmune a" if m == 0.0 else ("Débil a" if m > 1.0 else "Resiste"), ELEMENT_NAMES.get(str(e), e)])
 	var SE = load("res://scripts/domain/status_effects.gd")
 	for st in it.get("immune", []):
 		parts.append("Inmune: %s" % SE.display_name(str(st)))
@@ -1665,7 +1697,10 @@ func buy_upgrade(building_id: String, track_id: String) -> String:
 	if not building_levels.get(building_id, null) is Dictionary:
 		building_levels[building_id] = {}
 	var lv: int = upgrade_level(building_id, track_id) + 1
+	var extra_before: int = int(upgrade_effect(building_id, "extra_stock"))
 	building_levels[building_id][track_id] = lv
+	if building_id == "feria":
+		_top_up_feria(int(upgrade_effect("feria", "extra_stock")) - extra_before)
 	return "%s sube a nivel %d: %s (-%d Reliquias, -%d ₡)." % [t.get("name", track_id), lv,
 		BuildingUpgradesScript.effect_text(str(t.get("effect", "")), BuildingUpgradesScript.value_at(t, lv)),
 		int(c["reliquias"]), int(c["colones"])]
@@ -2792,7 +2827,7 @@ func _apply_event_now(ev: Dictionary) -> PackedStringArray:
 		out.append("+%d ₡ para la hacienda." % int(fx["gift_colones"]))
 	if fx.has("gift_item"):
 		var slot: String = str(fx["gift_item"])
-		var pool: Array = _item_order.filter(func(i): return str(get_item(str(i)).get("slot", "")) == slot)
+		var pool: Array = _item_order.filter(func(i): return str(get_item(str(i)).get("slot", "")) == slot and not is_cursed(str(i)))
 		if not pool.is_empty():
 			var pick: String = str(pool[randi() % pool.size()])
 			if add_item(pick, 1) > 0:

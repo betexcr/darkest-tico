@@ -1,0 +1,21 @@
+{
+  "id": "item_espuela_del_mandador",
+  "prompt": "dark fantasy painting, pair of worn leather work gloves, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6320,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "128x128",
+  "post": {
+    "brightness": 1.4,
+    "contrast": 1.15
+  },
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-07T06:32:48+00:00",
+  "stand_in": "recoloured from assets/items/guantes_de_vaquero.png (red-violet curse tint + vignette, P3-05b, 2026-11-21) until tools/sd_local.py makes item_espuela_del_mandador",
+  "derived_from": "assets/items/guantes_de_vaquero.png",
+  "timestamp_derived": "2026-11-21T00:22:15+00:00"
+}

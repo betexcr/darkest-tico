@@ -150,7 +150,7 @@
     "max_total_chance": 0.9
   },
   "feria": {
-    "_doc": "Feria Nocturna (P3-05a, doc 02 §8): the accessory stall. Each week it brings stock_size different accessories, one of each, rerolled when the week turns. Accessories dearer than cheap_price are rarer early: their draw weight grows from pricey_min_weight in week 1 to 1 by full_stock_week.",
-    "stock_size": 6, "cheap_price": 550, "pricey_min_weight": 0.35, "full_stock_week": 8
+    "_doc": "Feria Nocturna (P3-05a, doc 02 §8): the accessory stall. Each week it brings stock_size different accessories, one of each, rerolled when the week turns. Accessories dearer than cheap_price are rarer early: their draw weight grows from pricey_min_weight in week 1 to 1 by full_stock_week. Cursed accessories (items.json cursed, P3-05b) never come in the normal draw: each week, at cursed_chance, one of them is added to the stall on top.",
+    "stock_size": 6, "cheap_price": 550, "pricey_min_weight": 0.35, "full_stock_week": 8, "cursed_chance": 0.25
   }
 }

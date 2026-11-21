@@ -71,7 +71,7 @@ const SINKS := ["provisions", "heal_items", "stress_items", "ebais", "iglesia", 
 const UPGRADE_ORDER := [["casa_comunal", "maestria_oficio"], ["casa_comunal", "plan_formacion"],
 	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["iglesia", "iglesia_alivio"],
 	["cantina", "cantina_alivio"], ["guardabosques", "entrenamiento_patrulla"], ["iglesia", "iglesia_capilla"],
-	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"]]
+	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"]]
 const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
 	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires",
 	"upgrades": "Building upgrades"}
@@ -200,7 +200,7 @@ func _new_campaign() -> void:
 			var best: String = ""
 			for id in _gs.all_item_ids():
 				var sid: String = str(id)
-				if _gs.is_equipment(sid) and _gs.slots_for(sid).has(slot) and not worn.has(sid) and (best == "" or _gs.item_price(sid) > _gs.item_price(best)):
+				if _gs.is_equipment(sid) and not _gs.is_cursed(sid) and _gs.slots_for(sid).has(slot) and not worn.has(sid) and (best == "" or _gs.item_price(sid) > _gs.item_price(best)):
 					best = sid
 			if best != "" and _gs.add_item(best, 1) > 0:
 				_gs.equip(h, best, slot)
@@ -505,7 +505,7 @@ func _gear_for(h: Dictionary) -> Array:
 		var best: String = ""
 		for id in _gs.all_item_ids():
 			var sid: String = str(id)
-			if not _gs.is_equipment(sid) or not _gs.slots_for(sid).has(slot) or eq.values().has(sid):
+			if not _gs.is_equipment(sid) or not _gs.slots_for(sid).has(slot) or eq.values().has(sid) or _gs.is_cursed(sid):
 				continue
 			if _gs.item_count(sid) > 0 or _gs.buy_block_reason(sid) != "" or _gs.colones - _gs.item_price(sid) < RESERVE:
 				continue

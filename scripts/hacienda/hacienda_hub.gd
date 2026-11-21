@@ -30,7 +30,7 @@ const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const UpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 ## Pages with a "Mejoras" section (P3-16/P3-18/P3-21) and the container it goes in.
-const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box"}
+const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box", "feria": ""}
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
 const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "feria", "guardabosques"]

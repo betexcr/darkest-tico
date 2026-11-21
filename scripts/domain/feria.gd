@@ -3,7 +3,8 @@ extends RefCounted
 ## Feria Nocturna (P3-05a, doc 02 §8; owner 2026-11-20): the accessory stall of the
 ## hacienda, Darkest Dungeon's Nomad Wagon. Each week it brings a few different
 ## accessories, one of each; buying one takes it off the stall until the next week. The
-## dearer ones are rarer early in the campaign. Numbers: data/balance.json `feria.*`.
+## dearer ones are rarer early in the campaign. Numbers: data/balance.json `feria.*`; the
+## stall size and the cursed trinket on top are decided in GameState.refresh_feria (P3-05b).
 ## Pure; no nodes.
 
 const BalanceScript := preload("res://scripts/domain/balance.gd")
@@ -19,12 +20,12 @@ static func weight(item: Dictionary, week: int) -> float:
 	return lerpf(lo, 1.0, clampf((week - 1) / full, 0.0, 1.0))
 
 
-## This week's stall: up to feria.stock_size different ids from `items` (accessory
-## dictionaries), drawn by weight without repeats, in the order of `items`.
-static func roll_stock(items: Array, week: int, rng: RandomNumberGenerator) -> Array:
+## This week's stall: up to `count` different ids from `items` (accessory dictionaries),
+## drawn by weight without repeats, in the order of `items`.
+static func roll_stock(items: Array, week: int, rng: RandomNumberGenerator, count: int) -> Array:
 	var pool: Array = items.filter(func(it): return it is Dictionary and str(it.get("id", "")) != "")
 	var picked: Dictionary = {}
-	var want: int = mini(BalanceScript.int_of("feria.stock_size"), pool.size())
+	var want: int = mini(count, pool.size())
 	while picked.size() < want:
 		var total: float = 0.0
 		for it in pool:

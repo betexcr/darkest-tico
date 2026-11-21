@@ -170,7 +170,8 @@ def main() -> int:
     up_effects = {"casa_comunal": {"rank_cap", "rank_discount"},
                   "iglesia": {"relief_bonus", "cost_discount", "extra_slots"},
                   "cantina": {"relief_bonus", "cost_discount", "extra_slots"},
-                  "guardabosques": {"camp_extra_class_skills", "lesson_discount"}}
+                  "guardabosques": {"camp_extra_class_skills", "lesson_discount"},
+                  "feria": {"extra_stock", "cost_discount"}}
     fractions = {"rank_discount", "cost_discount", "lesson_discount", "relief_bonus"}
     max_rank = int(prog.get("skill_ranks", {}).get("max_rank", 5))
     ub = up.get("buildings")
@@ -276,6 +277,8 @@ def main() -> int:
         for d in dr:
             if d.get("item") not in item_map:
                 errors.append(f"{where}: unknown item '{d.get('item')}'")
+            elif item_map[d.get("item")].get("cursed"):
+                errors.append(f"{where}: '{d.get('item')}' is cursed (only the Feria Nocturna sells those, P3-05b)")
             c = d.get("chance")
             if not isinstance(c, (int, float)) or not 0 < c < 1:
                 errors.append(f"{where}: chance must be between 0 and 1 ({d.get('item')})")
@@ -766,6 +769,13 @@ def main() -> int:
             for st in it.get("immune", []):
                 if st not in ailments:
                     errors.append(f"items.json: '{iid}' immune to unknown ailment '{st}'")
+            # P3-05b cursed trinkets: accessories with a strong bonus and a real drawback.
+            if it.get("cursed"):
+                bad = any(v < 0 for v in it.get("bonus", {}).values()) or any(v < 0 for v in it.get("status_resist", {}).values()) \
+                    or any(v > 1 for v in it.get("resist", {}).values())
+                good = any(v > 0 for v in it.get("bonus", {}).values()) or any(v > 0 for v in it.get("status_resist", {}).values())
+                if it.get("slot") != "accessory" or not bad or not good:
+                    errors.append(f"items.json: cursed '{iid}' must be an accessory with a bonus and a drawback (a negative bonus or status resist, or an element weakness > 1)")
             continue
         fx = it.get("effects", {})
         if fx.get("element") and fx["element"] not in elements:
@@ -1030,7 +1040,7 @@ BALANCE_KEYS = {
     "drops.chance_mult.aprendiz": "mult", "drops.chance_mult.veterano": "mult", "drops.chance_mult.campeon": "mult",
     "drops.max_total_chance": "chance",
     "feria.stock_size": "pos", "feria.cheap_price": "int>=0", "feria.pricey_min_weight": "chance",
-    "feria.full_stock_week": "pos",
+    "feria.full_stock_week": "pos", "feria.cursed_chance": "chance",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).

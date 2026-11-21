@@ -104,7 +104,7 @@ func _run() -> void:
 	_check(counts["weapon"] + counts["armor"] == equip_ids.size() - acc_ids.size(),
 		"the Taller's filters split it: %d armas, %d armaduras" % [counts["weapon"], counts["armor"]])
 	var stall: Array = live.call(hub._feria_grid)
-	_check(stall.size() == gs.feria_stock.size() and gs.feria_stock.size() == mini(gs.BalanceScript.int_of("feria.stock_size"), acc_ids.size()),
+	_check(stall.size() == gs.feria_stock.size() and gs.feria_stock.filter(func(i): return not gs.is_cursed(str(i))).size() == gs.BalanceScript.int_of("feria.stock_size"),
 		"the Feria Nocturna shows this week's %d accessories" % stall.size())
 	_check(stall.all(func(t): return gs.is_accessory(t.item_id)), "…all of them accessories")
 	_check(gs.shop_of("gallo_pinto") == "pulperia" and gs.shop_of("cotona_de_cuero") == "taller" and gs.shop_of(str(acc_ids[0])) == "feria",
@@ -128,7 +128,7 @@ func _run() -> void:
 	_check(gs.sell_item(on_stall).begins_with("Vendiste") and gs.colones - c_s == int(gs.get_item(on_stall)["price"]) / 2 and not gs.feria_stock.has(on_stall),
 		"the Feria buys it back at half price (it doesn't go back on the stall)")
 	gs.end_of_expedition_week()
-	_check(gs.feria_stock.size() == mini(gs.BalanceScript.int_of("feria.stock_size"), acc_ids.size()), "a new week brings a full stall again")
+	_check(gs.feria_stock.filter(func(i): return not gs.is_cursed(str(i))).size() == gs.BalanceScript.int_of("feria.stock_size"), "a new week brings a full stall again")
 	var fsave: Dictionary = gs.to_save_dict()
 	var kept: Array = gs.feria_stock.duplicate()
 	gs.feria_stock = []

@@ -17,6 +17,24 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (30) — P3-05b: Feria Nocturna upgrades + cursed trinkets
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P3-05b review. Owner order (2026-11-21): P3-05b first, then P5-11.
+- **Changed:**
+  - `data/upgrades.json` `feria`: *Tamaño de Puestos* (`extra_stock` +1/+2/+3, fills at once when bought) and *Cadena de Comerciantes* (`cost_discount` 10/20/30% on Feria prices; sell-back still half the list price).
+  - `data/items.json`: 5 `cursed` accessories (Diente de la Segua, Rosario del Padre sin Cabeza, Espuela del Mandador, Cascabel de la Tulevieja, Peseta del Diablo; 900–1100 ₡). `data/balance.json` `feria.cursed_chance` 0.25: one on top of the stall that week. Never dropped (validator), never from curios or event gifts (code).
+  - `GameState`: `is_cursed`, `feria_stock_size`, `_feria_pool`, `_top_up_feria` (from `buy_upgrade`), Feria discount in `item_price`. `feria.gd` `roll_stock(..., count)`. No save change (v16).
+  - Item card: "Maldito" line, "Débil a <elemento>" for resist > 1 (it used to say "Resiste"), and lower resistances now red (`tooltip_card.is_bad_line`; also fixes Colmillo de cadejo's −5 resist. estrés showing as good).
+  - Hub: Mejoras rows on the Feria page. Bot: skips cursed trinkets; buys the two Feria tracks last in `UPGRADE_ORDER`.
+  - Icons: 5 tinted stand-ins in `assets/items/` (+ metadata `stand_in`), real prompts in `tools/art_manifest.json` (`item_<id>`).
+  - Validator: `feria` upgrade effects, `feria.cursed_chance`, cursed = accessory with a bonus and a drawback, no cursed drops. Tests: `test_upgrades` (+12 checks), `test_hub`. AGENTS.md §4, doc 02 §8. `tools/screens/feria_screenshot.gd` shows a curse + the Mejoras.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: test_upgrades, test_hub, test_town_events, test_equipment, test_ui 0 failures; Feria page screenshot at 1080p. Full suite (smoke + 20) was still running at commit time; result in the next commit.
+- **Not verified / risks:** curse strength not balanced by simulation (the bot never buys them). Stand-in icons only roughly match (fang icon shows a dog, coin shows a portrait).
+- **Decisions needed:** owner: read the five curse names and texts (doc 08); is 25% a week right?
+- **Next step:** P5-11 (owner order): start from `docs/playtests/2026-11-20-p3-upgrades.md`; Veterano enemy_hp/dmg ~+10%, Campeón ~−10% in `data/progression.json`, 6 seeds × 3 × 24 weeks.
+
+---
+
 ## 2026-11-21 (29) — P3-05 split; P3-05a: Feria Nocturna (accessories move off the Taller)
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P3-05 split into P3-05a–d (owner 2026-11-20: "move accessories to the Feria, split and start it"). P3-05a review. P3-05b (Feria upgrades + cursed trinkets), P3-05c (Feria art + repaint, needs a GPU), P3-05d (Taller tracks + gear tiers) todo.
