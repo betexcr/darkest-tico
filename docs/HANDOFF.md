@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (31) — P4-30: hero sheet closes on an outside click
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ptolemy-yhk24c`
+- **Status after session:** P4-30 review.
+- **Changed:** `hacienda_hub.gd`: `_close_on_outside_click(dlg)` (exclusive off, `popup_window` on) used by `_show_hero_sheet`. `tests/test_ui.gd`: click inside keeps it open, click outside closes it (`_click` helper pushes real mouse events; the test fails without the fix).
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR.
+- **Not verified / risks:** not tried in a window. Other hub dialogs (Clínica, Despedir, Provisiones, events) are unchanged; reuse `_close_on_outside_click` if the owner wants the same there.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of P4-29/P4-30; otherwise as entry (29).
+
+---
+
 ## 2026-11-21 (30) — P4-29: sharper text at 1080p
 - **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ptolemy-yhk24c`
 - **Status after session:** P4-29 review (owner to look at 1080p on Windows).

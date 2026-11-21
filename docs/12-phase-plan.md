@@ -583,6 +583,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "1080 text looks blurry, I guess it's because we are stretching from 720p, can we fix that?"
 - Findings: with `canvas_items` stretch, Godot 4.7 already redraws the text at the window's resolution (font oversampling); turning oversampling off gives the truly stretched, blurry look, so that is not the cause. What remains is grayscale anti-aliasing at ×1.5, which looks soft next to Windows' ClearType. Full hinting, no subpixel positioning and pixel snapping were tried at 1080p: no sharper, and full hinting makes letter spacing uneven.
 - Done when: [x] default font uses LCD subpixel anti-aliasing (ClearType-style); [x] screenshots at 1080p (hub, battle); [x] tests pass; [ ] owner confirms on Windows (if still soft: check it runs as its own window, not scaled inside the editor's Game tab)
+
+### P4-30 · S · Hero sheet closes on an outside click (owner 2026-11-21)
+- Status: `review` (Claude Code, `betomm/sleepy-ptolemy-yhk24c`, 2026-11-21): owner to try it · Depends: P4-23
+- Files: `scripts/hacienda/hacienda_hub.gd` (`_close_on_outside_click`, `_show_hero_sheet`), `tests/test_ui.gd`
+- Spec: owner "clicking anywhere besides the modal should close the hero details modals"
+- Done when: [x] the town's "Ficha de X" closes on a click outside it (non-exclusive popup window) and stays open on a click inside; [x] the battle's hero/enemy panel already closed on an outside click (P4-21 era, `expedition_screen.gd` `_input`); [x] test
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)
