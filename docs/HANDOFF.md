@@ -17,7 +17,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-21 (31) — P5-11: Veterano / Campeón retuned for the upgraded game
+## 2026-11-21 (33) — P5-11: Veterano / Campeón retuned for the upgraded game
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P5-11 done.
 - **Changed:**
@@ -31,7 +31,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-21 (30) — P3-05b: Feria Nocturna upgrades + cursed trinkets
+## 2026-11-21 (32) — P3-05b: Feria Nocturna upgrades + cursed trinkets
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P3-05b review. Owner order (2026-11-21): P3-05b first, then P5-11.
 - **Changed:**
@@ -47,6 +47,28 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Not verified / risks:** curse strength not balanced by simulation (the bot never buys them). Stand-in icons only roughly match (fang icon shows a dog, coin shows a portrait).
 - **Decisions needed:** owner: read the five curse names and texts (doc 08); is 25% a week right?
 - **Next step:** P5-11 (owner order): start from `docs/playtests/2026-11-20-p3-upgrades.md`; Veterano enemy_hp/dmg ~+10%, Campeón ~−10% in `data/progression.json`, 6 seeds × 3 × 24 weeks.
+
+---
+
+## 2026-11-21 (31) — P4-30: hero sheet closes on an outside click
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ptolemy-yhk24c`
+- **Status after session:** P4-30 review.
+- **Changed:** `hacienda_hub.gd`: `_close_on_outside_click(dlg)` (exclusive off, `popup_window` on) used by `_show_hero_sheet`. `tests/test_ui.gd`: click inside keeps it open, click outside closes it (`_click` helper pushes real mouse events; the test fails without the fix).
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR.
+- **Not verified / risks:** not tried in a window. Other hub dialogs (Clínica, Despedir, Provisiones, events) are unchanged; reuse `_close_on_outside_click` if the owner wants the same there.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of P4-29/P4-30; otherwise as entry (29).
+
+---
+
+## 2026-11-21 (30) — P4-29: sharper text at 1080p
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ptolemy-yhk24c`
+- **Status after session:** P4-29 review (owner to look at 1080p on Windows).
+- **Changed:** `project.godot`: `gui/theme/default_font_antialiasing=2` (LCD subpixel, ClearType-style). Plan entry P4-29 with the findings.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR; hub and battle screenshots at 1920×1080. Text is already drawn at the window's resolution (font oversampling, also after a resize); oversampling off reproduces the stretched blur. Full hinting / no subpixel positioning / 2D pixel snap gave no sharper text (full hinting spaces letters unevenly), so they were left out.
+- **Not verified / risks:** LCD anti-aliasing can't be judged in a Linux screenshot; it shows on a real monitor. On a BGR or rotated screen colored fringes are possible (`gui/theme/lcd_subpixel_layout`).
+- **Decisions needed:** if the text is still soft: is the game run as its own window or inside the editor's Game tab (which can scale the picture)?
+- **Next step:** owner playtest of P4-29 at 1080p; otherwise as entry (29).
 
 ---
 

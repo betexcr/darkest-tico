@@ -722,6 +722,13 @@ func _card_dialog(title: String, width: float = 520.0, confirm: bool = false) ->
 	return [dlg, col]
 
 
+## A click anywhere outside the dialog closes it (owner 2026-11-21: hero sheets). A popup
+## window sends close_requested on an outside click, which an AcceptDialog answers by hiding.
+func _close_on_outside_click(dlg: AcceptDialog) -> void:
+	dlg.exclusive = false
+	dlg.popup_window = true
+
+
 ## Autowrapped labels report a huge height on the first pass: size to content after layout.
 func _popup_card(dlg: AcceptDialog) -> void:
 	dlg.popup_centered()
@@ -1028,6 +1035,7 @@ func _show_hero_sheet(h: Dictionary) -> void:
 	var dlg: AcceptDialog = made[0]
 	var outer: VBoxContainer = made[1]
 	dlg.ok_button_text = "Cerrar"
+	_close_on_outside_click(dlg)
 	var scroll := ScrollContainer.new()
 	scroll.name = "SheetScroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

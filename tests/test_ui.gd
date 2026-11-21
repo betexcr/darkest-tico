@@ -350,7 +350,15 @@ func _town(gs) -> void:
 		var all_t: String = " ".join(texts)
 		_check(all_t.contains("Precisión") and all_t.contains("Protección") and all_t.contains("RESISTENCIAS") and all_t.contains("EQUIPO"), "…with stats, resistances and equipment")
 		_check(skills == gs.party[2]["skill_ids"].size(), "…and every skill as an icon with its card (%d)" % skills)
-		sheets[0].hide()
+		# Owner 2026-11-21: a click inside keeps the sheet open, a click outside closes it.
+		var sheet: AcceptDialog = sheets[0]
+		var inside := Vector2(sheet.position) + Vector2(sheet.size) * 0.5
+		await _click(inside)
+		_check(sheet.visible, "…a click inside the sheet keeps it open")
+		await _click(Vector2(sheet.position) - Vector2(30, 30))
+		_check(not is_instance_valid(sheet) or not sheet.visible, "…a click outside the sheet closes it")
+		if is_instance_valid(sheet) and sheet.visible:
+			sheet.hide()
 	_check(hub._roster_click_hint().contains("ficha"), "the roster hint says a click opens the sheet")
 	hub.queue_free()
 	await process_frame
@@ -471,3 +479,14 @@ func _event_result(gs) -> void:
 	gs.end_mission_abandon()
 	await process_frame
 
+
+func _click(at: Vector2) -> void:
+	for down in [true, false]:
+		var mb := InputEventMouseButton.new()
+		mb.button_index = MOUSE_BUTTON_LEFT
+		mb.pressed = down
+		mb.position = at
+		mb.global_position = at
+		root.push_input(mb)
+		await process_frame
+	await process_frame
