@@ -23,7 +23,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Changed:**
   - `data/progression.json`: Veterano `enemy_hp` 1.15 → 1.18, `enemy_dmg` 1.1 → 1.13; Campeón `enemy_hp` 1.6 → 1.65, `enemy_dmg` 1.4 → 1.44. Rewards untouched (owner).
   - `docs/playtests/2026-11-21-p5-11.md` (settings v0–v3 + raw seed-1 output of the kept one), doc 01 §difficulty table, doc 09 summary.
-- **Verified:** 12 seeds × 3 campaigns × 24 weeks per setting (`tools/playtest_campaign.gd`, route full). Kept v3: Veterano 77%, Campeón 65% on 63 expeditions, deaths 0.15 per expedition, 34 of 36 campaigns with ≥ 500 ₡ at week 24. Validator 0 errors; smoke + all 20 tests: see the commit after this one if still running at commit time.
+- **Verified:** 12 seeds × 3 campaigns × 24 weeks per setting (`tools/playtest_campaign.gd`, route full). Kept v3: Veterano 77%, Campeón 65% on 63 expeditions, deaths 0.15 per expedition, 34 of 36 campaigns with ≥ 500 ₡ at week 24. Validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR (with the new numbers).
 - **Findings:** 6 seeds are too few (unchanged data: Campeón 67% on seeds 1–6, 81% on 7–12). With upgrades + the Feria both tiers were too easy (12 seeds: 82% / 76%), so entry 28's idea of easing Campeón was a small-sample artefact. The tiers are coupled through money: v2 (Veterano +5%, Campeón +10%) halved upgrades and dropped Campeón to 32%.
 - **Not verified / risks:** Campeón deaths 0.30 per Campeón expedition (at the limit). Aprendiz 68% (was 71%). Cursed trinkets not in the bot's play. Not played by hand.
 - **Decisions needed:** none.
