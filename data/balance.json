@@ -148,5 +148,9 @@
     "_doc": "Enemy drops (P5-10, data/enemies.json drops): chance multiplier per difficulty (times the Luz/event loot multiplier), and the most one enemy's three chances may add up to after every multiplier.",
     "chance_mult": { "aprendiz": 1.0, "veterano": 1.15, "campeon": 1.3 },
     "max_total_chance": 0.9
+  },
+  "feria": {
+    "_doc": "Feria Nocturna (P3-05a, doc 02 §8): the accessory stall. Each week it brings stock_size different accessories, one of each, rerolled when the week turns. Accessories dearer than cheap_price are rarer early: their draw weight grows from pricey_min_weight in week 1 to 1 by full_stock_week.",
+    "stock_size": 6, "cheap_price": 550, "pricey_min_weight": 0.35, "full_stock_week": 8
   }
 }

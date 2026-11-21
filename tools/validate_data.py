@@ -252,7 +252,7 @@ def main() -> int:
     mission_keys = {"region", "xp_pct", "dmg_pct", "virtue_pct", "light_decay_pct", "loot_pct", "items_pct",
                     "firewood", "no_level_limits", "tough", "treasure", "quebranto_start_stress"}
     cats = {"consumable", "healing", "weapon", "armor", "accessory"}
-    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "casa_comunal", "clinica", "guardabosques"}
+    services = {"iglesia", "cantina", "ebais", "terminal", "pulperia_compra", "pulperia_venta", "taller_compra", "taller_venta", "feria_compra", "feria_venta", "casa_comunal", "clinica", "guardabosques"}
     # Item effects (owner 2026-11-19: every item says what it does): only keys the item card
     # describes (GameState.item_tooltip_parts); a new key needs a line there first.
     ITEM_EFFECT_KEYS = {"heal", "stress", "damage", "element", "light", "hp_risk", "cure", "cure_all", "applies"}
@@ -307,8 +307,8 @@ def main() -> int:
         for c in list(b.get("closed_by", [])) + list(b.get("note_by", {}).keys()):
             if c not in services:
                 errors.append(f"{where} unknown service '{c}'")
-    if town_ids != {"iglesia", "casa_comunal", "clinica", "terminal", "taller", "pulperia", "cantina", "guardabosques"}:
-        errors.append("town.json: needs exactly the 8 hub buildings (iglesia, casa_comunal, clinica, terminal, taller, pulperia, cantina, guardabosques)")
+    if town_ids != {"iglesia", "casa_comunal", "clinica", "terminal", "taller", "pulperia", "cantina", "guardabosques", "feria"}:
+        errors.append("town.json: needs exactly the 9 hub buildings (iglesia, casa_comunal, clinica, terminal, taller, pulperia, cantina, guardabosques, feria)")
     for ev in te_raw.get("events", []):
         eid = ev.get("id")
         where = f"town_events.json: '{eid}'"
@@ -1029,6 +1029,8 @@ BALANCE_KEYS = {
     "quirks.recruit_positive_chance": "chance", "quirks.recruit_negative_chance": "chance",
     "drops.chance_mult.aprendiz": "mult", "drops.chance_mult.veterano": "mult", "drops.chance_mult.campeon": "mult",
     "drops.max_total_chance": "chance",
+    "feria.stock_size": "pos", "feria.cheap_price": "int>=0", "feria.pricey_min_weight": "chance",
+    "feria.full_stock_week": "pos",
 }
 
 # P1-17: every Luz tier needs these keys (numbers are percent points / stress; may be negative).

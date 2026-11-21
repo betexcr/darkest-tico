@@ -76,10 +76,11 @@ func _run() -> void:
 	_check(gs.item_price("gallo_pinto") == int(round(gp * 1.5)), "Huelga de transportistas: gallo pinto %d -> %d" % [gp, gs.item_price("gallo_pinto")])
 	gs.draw_town_event("guino_de_la_pulpera")
 	var acc: String = "escapulario"
+	gs.feria_stock = ["escapulario", "chonete"]  # P3-05a: on this week's stall
 	var full: int = int(gs.get_item(acc)["price"])
-	_check(gs.item_price(acc) == int(round(full * 0.2)), "El herrero anda de buenas: first accessory -80%")
+	_check(gs.item_price(acc) == int(round(full * 0.2)), "La de la feria anda de buenas: first accessory -80%")
 	gs.buy_item(acc)
-	_check(gs.item_price(acc) == full, "…only the first one")
+	_check(gs.item_price("chonete") == int(gs.get_item("chonete")["price"]), "…only the first one")
 	gs.draw_town_event("compraventa")
 	_check(gs.sell_price(acc) == full, "Compraventa: accessories sell at full price")
 	gs.draw_town_event("ley_seca")

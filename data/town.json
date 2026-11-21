@@ -52,7 +52,7 @@
       "id": "taller",
       "name": "Taller de Herrería y Carretas",
       "art": "res://assets/town/taller.png",
-      "text": "Armas, armaduras y accesorios: se compran aquí y aquí se le ponen o quitan a cada héroe. También compra equipo usado a la mitad del precio.",
+      "text": "Armas y armaduras: se compran aquí y aquí se le ponen o quitan a cada héroe. También compra armas y armaduras usadas a la mitad del precio.",
       "x": 575,
       "bottom": 525,
       "height": 165,
@@ -85,6 +85,19 @@
       "closed_by": [
         "cantina"
       ]
+    },
+    {
+      "id": "feria",
+      "name": "Feria Nocturna",
+      "art": "res://assets/town/feria.png",
+      "text": "La carreta de los feriantes llega de noche con amuletos, chunches y accesorios. Cada semana trae otros, uno de cada uno; también compra accesorios usados a la mitad del precio.",
+      "x": 190,
+      "bottom": 505,
+      "height": 100,
+      "note_by": {
+        "feria_compra": "No vende esta semana",
+        "feria_venta": "No compra esta semana"
+      }
     },
     {
       "id": "guardabosques",

@@ -30,10 +30,11 @@ The hub is drawn as a painted town, like the Darkest Dungeon hamlet: one paintin
 | Iglesia Vieja / Cantina del Centro | the selected hero's week of rest |
 | Clínica de Espantos | every hero, with a button to their quirk card |
 | Casa Comunal | the selected hero's skill ranks |
-| Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) and the equipment shop: weapons, armor, accessories, with a filter; buys used equipment back, the only place that does (P4-18) |
+| Taller de Herrería y Carretas | the selected hero's equipment slots (drag from the alforja) and the weapon and armor shop, with a filter; buys used weapons and armor back (P4-18; accessories moved to the Feria in P3-05a) |
+| Feria Nocturna | this week's accessories (one of each, rerolled weekly), the same equipment slots, and buys used accessories back (P3-05a) |
 | Guardabosques del Arenal | the selected hero's camp skills: learn, fix one, swap a shared one (§9) |
 
-The EBAIS stays a button on each roster row. The Feria Nocturna and Mejoras de Hacienda have no picture until they are built. The Guardabosques is the shed by the Cantina, cut from the painted town; `tools/art_manifest.json` `town_guardabosques` is its own art for the next repaint.
+The EBAIS stays a button on each roster row. Mejoras de Hacienda has no picture (its rows are on each building's page). The Feria Nocturna (P3-05a) stands at the right of the plaza with a stand-in cut from the *Feria de artesanía* event picture (`assets/town/feria.png`) until P3-05c paints its own and repaints the town. The Guardabosques is the shed by the Cantina, cut from the painted town; `tools/art_manifest.json` `town_guardabosques` is its own art for the next repaint.
 
 ## 2) Building Mapping
 
@@ -215,6 +216,13 @@ Each branch has 3 activities with independent slots and upgrade levels.
 - Inventory rotates weekly.
 - Stock weighted by game phase and unlocked regions.
 - Small chance for cursed trinket with strong upside.
+
+### Built (P3-05a, owner 2026-11-20)
+
+- The Feria sells **all accessories**; the Taller keeps weapons and armor. It buys accessories back at half price (they don't go back on the stall).
+- Each week the stall shows `feria.stock_size` (6) different accessories, one of each; buying one takes it off until the next week. Accessories dearer than `feria.cheap_price` (550 ₡) are drawn at `feria.pricey_min_weight` (0.35) of the weight in week 1, rising to full weight by `feria.full_stock_week` (8). Regions don't weigh in yet (only Sótanos is playable). Rules: `scripts/domain/feria.gd`; stock: `GameState.feria_stock` (save v16).
+- Its page carries the same equipment fold as the Taller, so a hero can put on an accessory where it was bought. Town events can close it (`feria_compra`, `feria_venta`); *La de la feria anda de buenas* (was *El herrero…*) gives the first accessory −80%.
+- Still to do: the two upgrade tracks and cursed trinkets (P3-05b), its own town art (P3-05c).
 
 ## 9) Guardabosques del Arenal (Camp Skills)
 

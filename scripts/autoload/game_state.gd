@@ -24,6 +24,7 @@ const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
 const QuirksScript := preload("res://scripts/domain/quirks.gd")
 const BuildingUpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
+const FeriaScript := preload("res://scripts/domain/feria.gd")
 
 
 const HEROES_PATH := "res://data/heroes.json"
@@ -48,7 +49,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 15
+const SAVE_VERSION := 16
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -109,6 +110,8 @@ var roster: Array = []
 var party: Array = []
 ## Candidates at the Terminal de Buses, refreshed every week.
 var recruit_pool: Array = []
+## Feria Nocturna (P3-05a): this week's accessories on the stall (ids, one of each).
+var feria_stock: Array = []
 var _next_uid: int = 1
 var _tex_cache: Dictionary = {}
 ## True while a fight is on: only `equip_turn_hero` may change equipment, and it costs
@@ -564,13 +567,22 @@ func item_price(item_id: String) -> int:
 	return maxi(int(round(int(item.get("price", 0)) * (1.0 + pct / 100.0))), 0)
 
 
-## Which hub shop sells an item (P4-18, owner 2026-11-17): the Taller de Herrería y
-## Carretas sells weapons, armor and accessories; the Pulpería sells everything else.
+## Which hub shop sells an item (P4-18, owner 2026-11-17; P3-05a, owner 2026-11-20): the
+## Taller de Herrería y Carretas sells weapons and armor, the Feria Nocturna accessories
+## (a few each week), the Pulpería everything else.
 func shop_of(item_id: String) -> String:
-	return "taller" if is_equipment(item_id) else "pulperia"
+	if not is_equipment(item_id):
+		return "pulperia"
+	return "feria" if is_accessory(item_id) else "taller"
 
 
-const SHOP_NAMES := {"pulperia": "La pulpería", "taller": "El taller"}
+func is_accessory(item_id: String) -> bool:
+	return str(get_item(item_id).get("slot", "")) == "accessory"
+
+
+const SHOP_NAMES := {"pulperia": "La pulpería", "taller": "El taller", "feria": "La Feria Nocturna"}
+## What each shop buys back, for the "wrong shop" message.
+const SHOP_BUYS := {"pulperia": "consumibles", "taller": "armas y armaduras", "feria": "accesorios"}
 
 
 ## Why its shop won't sell this now ("" if it will).
@@ -578,7 +590,9 @@ func buy_block_reason(item_id: String) -> String:
 	var ev: Dictionary = active_event()
 	var shop: String = shop_of(item_id)
 	if TownEventsScript.is_closed(ev, shop + "_compra"):
-		return "%s está cerrad%s esta semana (%s)." % [SHOP_NAMES[shop], "a" if shop == "pulperia" else "o", ev.get("name", "")]
+		return "%s está cerrad%s esta semana (%s)." % [SHOP_NAMES[shop], "o" if shop == "taller" else "a", ev.get("name", "")]
+	if shop == "feria" and not feria_stock.has(item_id):
+		return "La Feria Nocturna no trae %s esta semana." % get_item(item_id).get("name", item_id)
 	if TownEventsScript.is_blocked(ev, item_id):
 		return "Esta semana no se vende %s (%s)." % [get_item(item_id).get("name", item_id), ev.get("name", "")]
 	return ""
@@ -598,9 +612,22 @@ func buy_item(item_id: String) -> String:
 	if add_item(item_id, 1) == 0:
 		return "No cabe más en la alforja."
 	colones -= price
+	if shop_of(item_id) == "feria":
+		feria_stock.erase(item_id)
 	if TownEventsScript.first_buy_pct(active_event(), item) != 0:
 		event_flags["first_buy_used"] = true
 	return "Compraste %s (-%d ₡)." % [item.get("name", item_id), price]
+
+
+## A new stall for the week (P3-05a): accessories drawn by data/balance.json `feria.*`.
+func refresh_feria() -> void:
+	var accs: Array = []
+	for id in all_item_ids():
+		if is_equipment(str(id)) and is_accessory(str(id)):
+			accs.append(get_item(str(id)))
+	var rng := RandomNumberGenerator.new()
+	rng.seed = randi()
+	feria_stock = FeriaScript.roll_stock(accs, week, rng)
 
 
 func _item_use_key(hero: Dictionary, item_id: String) -> String:
@@ -612,18 +639,20 @@ func sell_price(item_id: String) -> int:
 	return int(floor(int(get_item(item_id).get("price", 0)) * (rate if rate >= 0.0 else BalanceScript.num("hub.sell_rate"))))
 
 
-## Buys back one unit at half price, at the shop that sells it (P4-18, owner 2026-11-17):
-## the Pulpería buys consumables, the Taller weapons, armor and accessories. `shop` = ""
-## sells at the item's own shop. Returns a message for the hub.
+## Buys back one unit at half price, at the shop that sells it (P4-18, owner 2026-11-17;
+## P3-05a): the Pulpería buys consumables, the Taller weapons and armor, the Feria Nocturna
+## accessories (they don't go back on its stall). `shop` = "" sells at the item's own shop.
+## Returns a message for the hub.
 func sell_item(item_id: String, shop: String = "") -> String:
 	if item_count(item_id) <= 0:
 		return "No tienes ese artículo."
 	if shop == "":
 		shop = shop_of(item_id)
-	if shop == "taller" and not is_equipment(item_id):
-		return "El taller solo compra armas, armaduras y accesorios; lo demás, en la pulpería."
-	if shop == "pulperia" and is_equipment(item_id):
-		return "La pulpería no compra equipo; las armas, armaduras y accesorios se venden en el taller."
+	var own: String = shop_of(item_id)
+	if shop != own:
+		if shop == "pulperia":
+			return "La pulpería no compra equipo; %s se vende%s en %s." % ["los accesorios" if own == "feria" else "las armas y armaduras", "n", "la Feria Nocturna" if own == "feria" else "el taller"]
+		return "%s solo compra %s; esto se vende en %s." % [SHOP_NAMES.get(shop, shop), SHOP_BUYS.get(shop, ""), str(SHOP_NAMES.get(own, own)).to_lower()]
 	if TownEventsScript.is_closed(active_event(), shop + "_venta"):
 		return "%s no compra nada esta semana (%s)." % [SHOP_NAMES.get(shop, shop), active_event().get("name", "")]
 	var price: int = sell_price(item_id)
@@ -843,6 +872,7 @@ func reset_party_from_catalog(random_classes: bool = false) -> void:
 			roster.append(h)
 			party.append(h)
 	refresh_recruits()
+	refresh_feria()
 	reset_week_counters()
 
 
@@ -1429,10 +1459,11 @@ func end_of_expedition_week(went_out: bool = true) -> void:
 	var activity_lines: PackedStringArray = _resolve_hub_activities()
 	_log_week(fallen.size(), roster.filter(func(h): return hero_busy(h)).size())
 	refresh_recruits()
+	refresh_feria()
 	last_week_report = "Semana %d." % week
 	if not fallen.is_empty():
 		last_week_report += " Descansen en paz: %s." % ", ".join(fallen)
-	last_week_report += " Llegaron candidatos nuevos a la terminal."
+	last_week_report += " Llegaron candidatos nuevos a la terminal y la Feria Nocturna trae otros accesorios."
 	if not quirk_lines.is_empty():
 		last_week_report += "\n" + "\n".join(quirk_lines)
 	if not activity_lines.is_empty():
@@ -2552,6 +2583,11 @@ func apply_save_data(data: Dictionary) -> void:
 				recruit_pool.append(_sanitize_runtime_hero(e))
 	else:
 		refresh_recruits()
+	# v16 (P3-05a): the Feria Nocturna's stall. Older saves: a fresh one for this week.
+	if data.get("feria_stock", null) is Array:
+		feria_stock = (data["feria_stock"] as Array).map(func(x): return str(x)).filter(func(x): return is_equipment(x) and is_accessory(x))
+	else:
+		refresh_feria()
 	# Never resume mid-expedition in this slice.
 	end_mission_abandon()
 	# v11 (P5-01): the week's money in / out so far (older saves: start counting now).
@@ -2680,6 +2716,7 @@ func to_save_dict() -> Dictionary:
 		"roster": roster.duplicate(true),
 		"party_uids": party.map(func(h): return int(h["uid"])),
 		"recruit_pool": recruit_pool.duplicate(true),
+		"feria_stock": feria_stock.duplicate(),
 		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
 		"selected_difficulty_id": selected_difficulty_id,

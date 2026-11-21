@@ -33,7 +33,9 @@ const UpgradesScript := preload("res://scripts/domain/building_upgrades.gd")
 const UPGRADE_PAGES := {"casa_comunal": "", "iglesia": "Box", "cantina": "Box", "guardabosques": "Box"}
 const TOWN_PATH := "res://data/town.json"
 ## Pages that are about one hero show who at the top (click another hero on the right).
-const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "guardabosques"]
+const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "feria", "guardabosques"]
+## Pages that show the hero's equipment fold (the Taller and the Feria Nocturna, P3-05a).
+const EQUIP_PAGES := ["taller", "feria"]
 
 @onready var _bg: TextureRect = $BgTexture
 @onready var _town: Control = $Town
@@ -43,16 +45,19 @@ const HERO_PAGES := ["iglesia", "cantina", "casa_comunal", "taller", "guardabosq
 @onready var _window: PanelContainer = $Building
 @onready var _pages: Control = $Building/VBox/Pages
 @onready var _who: HBoxContainer = $Building/VBox/Who
-## Two shops (P4-18, owner 2026-11-17): the Pulpería sells consumables, the Taller
-## weapons, armor and accessories (with a filter). Sell mode is shared by both.
+## Three shops (P4-18, owner 2026-11-17; P3-05a, owner 2026-11-20): the Pulpería sells
+## consumables, the Taller weapons and armor (with a filter), the Feria Nocturna this
+## week's accessories. Sell mode is shared by all three.
 @onready var _shop_grid: HFlowContainer = $Building/VBox/Pages/pulperia/ShopScroll/ShopGrid
 @onready var _btn_sell: Button = $Building/VBox/Pages/pulperia/ShopHead/BtnSell
 @onready var _taller_grid: HFlowContainer = $Building/VBox/Pages/taller/ShopScroll/ShopGrid
 @onready var _btn_sell_taller: Button = $Building/VBox/Pages/taller/ShopHead/BtnSell
 @onready var _shop_filters: HBoxContainer = $Building/VBox/Pages/taller/ShopFilters
+@onready var _feria_grid: HFlowContainer = $Building/VBox/Pages/feria/ShopScroll/ShopGrid
+@onready var _btn_sell_feria: Button = $Building/VBox/Pages/feria/ShopHead/BtnSell
 
 const SHOP_FILTERS := [
-	["todo", "Todo"], ["weapon", "Armas"], ["armor", "Armaduras"], ["accessory", "Accesorios"],
+	["todo", "Todo"], ["weapon", "Armas"], ["armor", "Armaduras"],
 ]
 ## The Taller's filter.
 var _shop_filter: String = "todo"
@@ -115,11 +120,12 @@ func _ready() -> void:
 	_build_town()
 	_build_shop_filters()
 	_build_shop()
-	for b in [_btn_sell, _btn_sell_taller]:
+	for b in [_btn_sell, _btn_sell_taller, _btn_sell_feria]:
 		b.toggled.connect(_set_selling)
 	# Drop an inventory item on a shop to sell one there.
 	$Building/VBox/Pages/pulperia/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("pulperia"))
 	$Building/VBox/Pages/taller/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("taller"))
+	$Building/VBox/Pages/feria/ShopScroll.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("feria"))
 	for slot in GameState.EQUIP_SLOTS:
 		var es = EquipSlotScript.new()
 		es.setup(slot)
@@ -247,9 +253,11 @@ func _refresh() -> void:
 	_week.text = "Semana %d" % GameState.week
 	_refresh_equipment()
 	_refresh_skills()
-	for g in [_shop_grid, _taller_grid]:
+	if _feria_shown != GameState.feria_stock:
+		_build_feria()
+	for g in [_shop_grid, _taller_grid, _feria_grid]:
 		for b in g.get_children():
-			if not b.is_queued_for_deletion():
+			if not b.is_queued_for_deletion() and b.has_method("refresh"):
 				b.refresh()
 	_refresh_relief()
 	_refresh_clinic_page()
@@ -296,8 +304,8 @@ func _category(item: Dictionary) -> String:
 
 
 ## One icon tile per item (data/items.json), in file order: consumables at the Pulpería,
-## equipment in the Taller's chosen category. The tile shows the price; name, stats and
-## description are in its tooltip card.
+## weapons and armor in the Taller's chosen category. The tile shows the price; name, stats
+## and description are in its tooltip card. The Feria Nocturna has its own (_build_feria).
 func _build_shop() -> void:
 	for g in [_shop_grid, _taller_grid]:
 		for c in g.get_children():
@@ -305,6 +313,8 @@ func _build_shop() -> void:
 	for id in GameState.all_item_ids():
 		var item: Dictionary = GameState.get_item(str(id))
 		var shop: String = GameState.shop_of(str(id))
+		if shop == "feria":
+			continue
 		if shop == "taller" and _shop_filter != "todo" and _category(item) != _shop_filter:
 			continue
 		var b = ShopSlotScript.new()
@@ -312,11 +322,32 @@ func _build_shop() -> void:
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind(shop))
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		(_taller_grid if shop == "taller" else _shop_grid).add_child(b)
+	_build_feria()
 
 
-## Sell mode is one switch shown in both shops.
+## The stall ids the Feria grid shows now (rebuilt when GameState.feria_stock changes).
+var _feria_shown: Array = []
+
+
+## The Feria Nocturna (P3-05a): this week's accessories, one tile each; a bought one leaves
+## the stall until next week.
+func _build_feria() -> void:
+	for c in _feria_grid.get_children():
+		c.queue_free()
+	_feria_shown = GameState.feria_stock.duplicate()
+	for id in _feria_shown:
+		var b = ShopSlotScript.new()
+		b.setup(str(id))
+		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("feria"))
+		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
+		_feria_grid.add_child(b)
+	if _feria_shown.is_empty():
+		_feria_grid.add_child(CardScript.label("Ya se vendió todo lo del puesto. La otra semana la Feria trae otros accesorios.", 13, CardScript.HINT, true))
+
+
+## Sell mode is one switch shown in every shop.
 func _set_selling(on: bool) -> void:
-	for b in [_btn_sell, _btn_sell_taller]:
+	for b in [_btn_sell, _btn_sell_taller, _btn_sell_feria]:
 		b.set_pressed_no_signal(on)
 	_refresh()
 
@@ -327,7 +358,7 @@ func _selling() -> bool:
 
 ## Where a sale happens: the shop whose window is open, else the item's own shop ("").
 func _sell_shop() -> String:
-	return _open_building if _open_building in ["pulperia", "taller"] else ""
+	return _open_building if _open_building in ["pulperia", "taller", "feria"] else ""
 
 
 # --- Iglesia Vieja + Cantina del Centro (P3-03) ---------------------------------------
@@ -1194,7 +1225,7 @@ func _roster_row(h: Dictionary) -> Control:
 			_refresh()
 			_show_hero_sheet(h)
 			return
-		if _open_building == "taller":
+		if _open_building in EQUIP_PAGES:
 			_equip_open = not (_equip_open and is_same(_selected, h))
 		_selected = h
 		_refresh()
@@ -1529,8 +1560,9 @@ func open_building(bid: String) -> void:
 	for page in _pages.get_children():
 		page.visible = page.name == bid
 	_window.visible = true
-	if bid == "taller":
+	if bid in EQUIP_PAGES:
 		_equip_open = false
+		_move_equip_to(bid)
 	_refresh_who()
 
 
@@ -1557,7 +1589,7 @@ func _refresh_who() -> void:
 		c.queue_free()
 	_refresh_equip_fold()
 	_who.visible = _window.visible and _open_building in HERO_PAGES and not _selected.is_empty() \
-		and (_open_building != "taller" or _equip_open)
+		and (not _open_building in EQUIP_PAGES or _equip_open)
 	if not _who.visible:
 		return
 	var head: Control = HeroCardScript.header(_selected, 44.0)
@@ -1565,6 +1597,22 @@ func _refresh_who() -> void:
 	_who.add_child(head)
 	_who.add_child(CardScript.label("Clic en otro héroe a la derecha para cambiar.", 12, CardScript.HINT, false))
 	_who.get_child(1).size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+
+## The equipment fold lives on the Taller's page and moves to the Feria Nocturna's while
+## that one is open (P3-05a), so accessories can be put on right where they are bought.
+func _move_equip_to(bid: String) -> void:
+	var page: Control = _pages.get_node_or_null(bid)
+	if page == null:
+		return
+	var k: int = 0
+	for n in [_equip_bar, _equip_title, _equip_row]:
+		if n == null:
+			continue
+		if n.get_parent() != page:
+			n.reparent(page, false)
+		page.move_child(n, k)
+		k += 1
 
 
 ## The Taller's fold bar: "▸ Equipo de X" (closed) / "▾ Equipo de X ✕" (open), and the
@@ -1581,6 +1629,7 @@ func _refresh_equip_fold() -> void:
 		var page: Control = _pages.get_node("taller")
 		page.add_child(_equip_bar)
 		page.move_child(_equip_bar, 0)
+		_move_equip_to(_open_building if _open_building in EQUIP_PAGES else "taller")
 	var who: String = str(_selected.get("name", "—"))
 	_equip_bar.text = ("▾ Equipo de %s  ✕" % who) if _equip_open else ("▸ Equipo de %s (clic en un héroe para ponerle o quitarle equipo)" % who)
 	_equip_title.visible = _equip_open

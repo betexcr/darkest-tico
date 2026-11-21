@@ -83,29 +83,65 @@ func _run() -> void:
 	await process_frame
 	_check(hub._roster_list.get_child_count() == 4, "hub lists 4 heroes")
 	_check(hub._recruit_box.get_child_count() == 3, "hub lists 3 candidates")
-	# P4-18: the Pulpería sells consumables, the Taller weapons, armor and accessories.
+	# P4-18 / P3-05a: the Pulpería sells consumables, the Taller weapons and armor, the
+	# Feria Nocturna this week's accessories.
 	var live := func(g): return g.get_children().filter(func(b): return not b.is_queued_for_deletion())
 	var equip_ids: Array = gs.all_item_ids().filter(func(i): return gs.is_equipment(str(i)))
+	var acc_ids: Array = equip_ids.filter(func(i): return gs.is_accessory(str(i)))
 	hub._shop_filter = "todo"
 	hub._build_shop()
 	await process_frame
 	var pul: Array = live.call(hub._shop_grid)
 	_check(pul.size() == gs.all_item_ids().size() - equip_ids.size() and pul.all(func(t): return not gs.is_equipment(t.item_id)),
 		"the Pulpería sells only consumables (%d)" % pul.size())
-	_check(live.call(hub._taller_grid).size() == equip_ids.size(), "the Taller sells all %d pieces of equipment" % equip_ids.size())
+	_check(live.call(hub._taller_grid).size() == equip_ids.size() - acc_ids.size(), "the Taller sells all %d weapons and armors, no accessories" % (equip_ids.size() - acc_ids.size()))
 	var counts: Dictionary = {}
-	for f in ["weapon", "armor", "accessory"]:
+	for f in ["weapon", "armor"]:
 		hub._shop_filter = f
 		hub._build_shop()
 		await process_frame
 		counts[f] = live.call(hub._taller_grid).size()
-	_check(counts["weapon"] + counts["armor"] + counts["accessory"] == equip_ids.size(),
-		"the Taller's filters split it: %d armas, %d armaduras, %d accesorios" % [counts["weapon"], counts["armor"], counts["accessory"]])
-	_check(gs.shop_of("gallo_pinto") == "pulperia" and gs.shop_of(str(equip_ids[0])) == "taller", "shop_of: food at the Pulpería, gear at the Taller")
+	_check(counts["weapon"] + counts["armor"] == equip_ids.size() - acc_ids.size(),
+		"the Taller's filters split it: %d armas, %d armaduras" % [counts["weapon"], counts["armor"]])
+	var stall: Array = live.call(hub._feria_grid)
+	_check(stall.size() == gs.feria_stock.size() and gs.feria_stock.size() == mini(gs.BalanceScript.int_of("feria.stock_size"), acc_ids.size()),
+		"the Feria Nocturna shows this week's %d accessories" % stall.size())
+	_check(stall.all(func(t): return gs.is_accessory(t.item_id)), "…all of them accessories")
+	_check(gs.shop_of("gallo_pinto") == "pulperia" and gs.shop_of("cotona_de_cuero") == "taller" and gs.shop_of(str(acc_ids[0])) == "feria",
+		"shop_of: food at the Pulpería, armor at the Taller, accessories at the Feria")
+	var gone: String = ""
+	for a in acc_ids:
+		if not gs.feria_stock.has(a):
+			gone = str(a)
+			break
+	_check(gone == "" or gs.buy_item(gone).begins_with("La Feria Nocturna no trae"), "an accessory not on the stall this week can't be bought")
+	var on_stall: String = str(gs.feria_stock[0])
+	gs.colones = 5000
+	var c_f: int = gs.colones
+	_check(gs.buy_item(on_stall).begins_with("Compraste") and gs.colones < c_f and not gs.feria_stock.has(on_stall), "buying one takes it off the stall")
+	hub._refresh()
+	await process_frame
+	_check(live.call(hub._feria_grid).size() == gs.feria_stock.size(), "the stall's tiles follow (%d left)" % gs.feria_stock.size())
+	_check(gs.buy_item(on_stall).begins_with("La Feria Nocturna no trae"), "…one of each: no second one this week")
+	_check(gs.sell_item(on_stall, "taller").begins_with("El taller solo compra"), "the Taller doesn't buy accessories")
+	var c_s: int = gs.colones
+	_check(gs.sell_item(on_stall).begins_with("Vendiste") and gs.colones - c_s == int(gs.get_item(on_stall)["price"]) / 2 and not gs.feria_stock.has(on_stall),
+		"the Feria buys it back at half price (it doesn't go back on the stall)")
+	gs.end_of_expedition_week()
+	_check(gs.feria_stock.size() == mini(gs.BalanceScript.int_of("feria.stock_size"), acc_ids.size()), "a new week brings a full stall again")
+	var fsave: Dictionary = gs.to_save_dict()
+	var kept: Array = gs.feria_stock.duplicate()
+	gs.feria_stock = []
+	gs.apply_save_data(fsave)
+	_check(gs.feria_stock == kept, "the stall is saved and loaded")
+	fsave.erase("feria_stock")
+	gs.apply_save_data(fsave)
+	_check(gs.feria_stock.size() > 0, "an old save (v15) gets a fresh stall")
 	gs.add_item("gallo_pinto", 1)
 	_check(gs.sell_item("gallo_pinto", "taller").begins_with("El taller solo compra"), "the Taller doesn't buy food")
 	gs.add_item("cotona_de_cuero", 1)
 	_check(gs.sell_item("cotona_de_cuero", "pulperia").begins_with("La pulpería no compra equipo"), "the Pulpería doesn't buy equipment")
+	_check(gs.sell_item("cotona_de_cuero", "feria").begins_with("La Feria Nocturna solo compra accesorios"), "the Feria doesn't buy armor")
 	var c2: int = gs.colones
 	_check(gs.sell_item("cotona_de_cuero").begins_with("Vendiste") and gs.colones - c2 == 350, "with no shop given, it sells at its own shop (the Taller)")
 	# Pulpería tiles are icons with a price; the full text lives in the tooltip card.

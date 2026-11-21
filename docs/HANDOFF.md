@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (29) — P3-05 split; P3-05a: Feria Nocturna (accessories move off the Taller)
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P3-05 split into P3-05a–d (owner 2026-11-20: "move accessories to the Feria, split and start it"). P3-05a review. P3-05b (Feria upgrades + cursed trinkets), P3-05c (Feria art + repaint, needs a GPU), P3-05d (Taller tracks + gear tiers) todo.
+- **Changed:**
+  - `GameState`: `shop_of` → pulperia | taller | feria, `is_accessory`, `feria_stock` (rerolled in `end_of_expedition_week` and at a new campaign, `refresh_feria`), Feria buy/sell rules and messages; **SAVE_VERSION 16** (old saves get a fresh stall).
+  - `scripts/domain/feria.gd` (new, pure): weekly draw, dearer accessories rarer early. `data/balance.json` `feria.*` (6 a week, one of each; > 550 ₡ at 0.35 weight in week 1, full by week 8).
+  - Hub: page `feria` in `hacienda_hub.tscn`; `hacienda_hub.gd` `_build_feria`, the equipment fold moves to whichever of Taller/Feria is open (`_move_equip_to`); Taller filter without Accesorios; shop texts.
+  - Town: `data/town.json` `feria` at x 190 / bottom 505 (left of the church, above the bus; x > 900 is under the roster panel). Stand-in art `assets/town/feria.png` cut from the *Feria de artesanía* event picture (`tools/sd_cutout.py --file` + hand mask, dimmed).
+  - Town events: `feria_compra/_venta` closures, accessory prices/sell rates name the Feria; *El herrero anda de buenas* → *La de la feria anda de buenas* (same id `guino_de_la_pulpera`, same effect).
+  - Validator: `feria.*` keys, 9 town buildings, new services. Tests: `test_hub` (stall, one of each, sell-back, week reroll, save v15→v16), `test_town_events`, `test_ui`. `tools/screens/feria_screenshot.gd`. AGENTS.md §4, doc 02.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR; screenshots at 1080p (town, Feria page, equipment fold, Taller). Bot comparison (6 × 16 weeks, seed 3, this branch vs. before): running at commit time; results in the next commit.
+- **Not verified / risks:** with 6 accessories a week the bot (and players) gear up a little slower; balance not rerun at the P5-11 scale. The stand-in art is brighter and flatter than the painted town. Not played in a window.
+- **Decisions needed:** owner: 6 accessories a week, one of each — right size? Should the Feria be closed by some town events (none do yet)?
+- **Next step:** owner playtest of P3-05a; then P5-11 (balance, see entry 28) or P3-05b (open `data/upgrades.json`, add the Feria's two tracks; cursed accessories in `data/items.json`).
+
+---
+
 ## 2026-11-20 (28) — P3-14 + P3-16 + P3-18 + P3-21: building upgrades, Reliquias del Abuelo, tiered hub prices
 - **Agent / branch:** Claude Code (cloud) / `betomm/relaxed-darwin-k1c6iz`
 - **Status after session:** P3-14, P3-16, P3-18, P3-21 review (owner to play). New P5-11 todo (tier retune).

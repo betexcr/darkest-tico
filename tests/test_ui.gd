@@ -246,7 +246,7 @@ func _town(gs) -> void:
 	await process_frame
 	var ids: Array = hub._buildings.keys()
 	ids.sort()
-	_check(ids == ["cantina", "casa_comunal", "clinica", "guardabosques", "iglesia", "pulperia", "taller", "terminal"], "the town has the 8 buildings (%s)" % ", ".join(ids))
+	_check(ids == ["cantina", "casa_comunal", "clinica", "feria", "guardabosques", "iglesia", "pulperia", "taller", "terminal"], "the town has the 9 buildings (%s)" % ", ".join(ids))
 	var ok: bool = true
 	for bid in hub._buildings:
 		var b = hub._buildings[bid]

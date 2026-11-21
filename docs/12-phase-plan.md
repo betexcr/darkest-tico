@@ -279,10 +279,28 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] Heroes gain resolve XP per mission; [x] levels 0–6 add resistances; [x] difficulty gating (refuse / under-leveled penalty); [x] skill ranks purchasable; [x] per-region level on top of the picker (owner 2026-11-08, Sótanos easiest)
 - Follow-ups: P3-16 (building upgrade tracks), P3-17 (skill unlocks).
 
-### P3-05 · M · Taller (equipment) + Feria Nocturna (trinkets)
-- Status: `todo` · Depends: P3-04
-- Spec: `02` §5, §8
-- Done when: [ ] Weapon/armor tiers; trinket slots with market rotation
+### P3-05 · L→ split · Taller (equipment) + Feria Nocturna (trinkets)
+- Status: split into P3-05a–d (owner 2026-11-20: "move accessories to the Feria, split and start it"). The Taller already sells all equipment (P3-11, P4-18); what was left is the Feria and the Taller's progression.
+
+### P3-05a · M · Feria Nocturna: weekly trinket stall (accessories move off the Taller)
+- Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; owner to play the hub and check the stand-in art) · Depends: P4-18
+- Spec: `02` §8; owner 2026-11-20: accessories are sold (and bought back) at the Feria, no longer at the Taller
+- Files: `GameState` (`shop_of` → `feria`, weekly stock, save), `data/balance.json` (`feria.*`), `data/town.json` (+ stand-in art), `data/town_events.json` (closures `feria_compra/_venta`, artesanía discount), `scripts/domain/town_events.gd`, `hacienda_hub.gd/.tscn` (page `feria`), `tools/playtest_campaign.gd`, validator, tests, `AGENTS.md` §4, doc 02
+- Done when: [x] accessories are sold only at the Feria, which buys them back at half price; the Taller keeps weapons and armor; [x] the Feria shows a few accessories each week (count in balance.json), rerolled every week and saved (save v16); [x] town building (stand-in art) + page with the equipment fold; per-shop closures; [x] the playtest bot still buys accessories; [x] tests; [ ] owner playtest
+
+### P3-05b · S · Feria Nocturna upgrade tracks + cursed trinkets
+- Status: `todo` · Depends: P3-05a, P3-16 (building-upgrade system)
+- Spec: `02` §8 (Tamaño de Puestos: more trinkets per week; Cadena de Comerciantes: lower prices; small chance of a cursed trinket with a strong upside)
+- Done when: [ ] both tracks in `data/upgrades.json`; [ ] 4–6 cursed accessories (a strong bonus and a real cost, Tico names per doc 08) that only the Feria offers, at a small weekly chance
+
+### P3-05c · S · Feria Nocturna town art + repaint
+- Status: `todo` · Depends: P3-05a · Needs a GPU (owner's machine)
+- Done when: [ ] `town_feria` in `tools/art_manifest.json` (`cutout`), generated with `tools/sd_local.py` + `tools/sd_cutout.py`; the town repainted with `tools/town_paint.py`; the stand-in from P3-05a replaced
+
+### P3-05d · M · Taller upgrade tracks + gear tiers
+- Status: `todo` · Depends: P3-16
+- Spec: `02` §5 (Forja de Machetes, Chapería de Armaduras, Horno Eficiente; equipment ranks capped by building tier)
+- Done when: [ ] weapons and armor have tiers, the better tiers unlocked by Taller upgrades (Reliquias + colones); [ ] the three tracks in `data/upgrades.json`; [ ] the playtest bot buys them; balance checked against the P5 baselines
 
 ### P3-06 · M · Clínica de Espantos + quirks
 - Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): built and tested headless; owner to read the quirk names and try the Clínica · Depends: P3-01
