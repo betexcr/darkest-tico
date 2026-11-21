@@ -412,7 +412,8 @@ func _test_room_events(gs) -> void:
 	opts = gs.curio_options(nicho)
 	_check(opts.size() == 2 and str(opts[0]["label"]).begins_with("Usar"), "with a candle: Usar first")
 	got = gs.pick_curio_option(opts[0])
-	_check(gs.item_count("candela_sebo") == 0 and int(got.get("stress_party", 0)) == -12, "the key item is spent for its outcome")
+	# Either key outcome (P3-16 made it weighted: -12 with a Reliquia 75%, -4 25%).
+	_check(gs.item_count("candela_sebo") == 0 and int(got.get("stress_party", 0)) in [-12, -4], "the key item is spent for its outcome")
 
 	# P2-10: conditions. The Mercado only right after a won fight; the Visión only in low Luz.
 	var mid: String = "sim_cond"
