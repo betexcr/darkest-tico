@@ -1,8 +1,8 @@
 {
   "id": "item_diente_de_la_segua",
-  "prompt": "dark fantasy painting, large black canine fang on a cord, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-  "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6224,
+  "prompt": "dark fantasy painting, a single long sharp yellowed fang hanging from a frayed red string, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "negative_prompt": "candle, candles, fire, flame, table, scenery, horse, animal, head, person, face, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6411,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,8 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-07T05:56:11+00:00",
-  "stand_in": "recoloured from assets/items/colmillo_de_cadejo.png (red-violet curse tint + vignette, P3-05b, 2026-11-21) until tools/sd_local.py makes item_diente_de_la_segua",
-  "derived_from": "assets/items/colmillo_de_cadejo.png",
-  "timestamp_derived": "2026-11-21T00:22:15+00:00"
+  "timestamp": "2026-11-21T09:12:44+00:00"
 }
