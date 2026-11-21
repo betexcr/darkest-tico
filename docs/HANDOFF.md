@@ -17,6 +17,17 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (30) — P4-29: sharper text at 1080p
+- **Agent / branch:** Claude Code (cloud) / `betomm/sleepy-ptolemy-yhk24c`
+- **Status after session:** P4-29 review (owner to look at 1080p on Windows).
+- **Changed:** `project.godot`: `gui/theme/default_font_antialiasing=2` (LCD subpixel, ClearType-style). Plan entry P4-29 with the findings.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux: smoke + all 20 tests 0 failures, no SCRIPT ERROR; hub and battle screenshots at 1920×1080. Text is already drawn at the window's resolution (font oversampling, also after a resize); oversampling off reproduces the stretched blur. Full hinting / no subpixel positioning / 2D pixel snap gave no sharper text (full hinting spaces letters unevenly), so they were left out.
+- **Not verified / risks:** LCD anti-aliasing can't be judged in a Linux screenshot; it shows on a real monitor. On a BGR or rotated screen colored fringes are possible (`gui/theme/lcd_subpixel_layout`).
+- **Decisions needed:** if the text is still soft: is the game run as its own window or inside the editor's Game tab (which can scale the picture)?
+- **Next step:** owner playtest of P4-29 at 1080p; otherwise as entry (29).
+
+---
+
 ## 2026-11-21 (29) — P3-05 split; P3-05a: Feria Nocturna (accessories move off the Taller)
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P3-05 split into P3-05a–d (owner 2026-11-20: "move accessories to the Feria, split and start it"). P3-05a review. P3-05b (Feria upgrades + cursed trinkets), P3-05c (Feria art + repaint, needs a GPU), P3-05d (Taller tracks + gear tiers) todo.

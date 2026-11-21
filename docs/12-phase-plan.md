@@ -576,6 +576,13 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "a modal like Darkest Dungeon's town-event scroll: Title, Image, Flavour text, Effects; generate images for all current town events in our style, coloured"
 - Done when: [x] the event card shows title, a 16:9 picture, the flavour text and the effects in their own box (choices — resurrect, paid offer — stay below); [x] every event has `assets/events/<id>.png` + metadata (validator error otherwise); [x] test_ui opens every event's card and checks title + picture; [ ] owner looks at the art
 
+
+### P4-29 · S · Sharper text at 1080p (owner 2026-11-21)
+- Status: `review` (Claude Code, `betomm/sleepy-ptolemy-yhk24c`, 2026-11-21): owner to look at the text at 1080p on Windows · Depends: P4-21
+- Files: `project.godot` (`gui/theme/default_font_antialiasing`)
+- Spec: owner "1080 text looks blurry, I guess it's because we are stretching from 720p, can we fix that?"
+- Findings: with `canvas_items` stretch, Godot 4.7 already redraws the text at the window's resolution (font oversampling); turning oversampling off gives the truly stretched, blurry look, so that is not the cause. What remains is grayscale anti-aliasing at ×1.5, which looks soft next to Windows' ClearType. Full hinting, no subpixel positioning and pixel snapping were tried at 1080p: no sharper, and full hinting makes letter spacing uneven.
+- Done when: [x] default font uses LCD subpixel anti-aliasing (ClearType-style); [x] screenshots at 1080p (hub, battle); [x] tests pass; [ ] owner confirms on Windows (if still soft: check it runs as its own window, not scaled inside the editor's Game tab)
 ### P3-08 · M · Save v4 + migration tests
 - Status: `todo` · Depends: P3-01
 - Spec: `06` risk register (save corruption)
