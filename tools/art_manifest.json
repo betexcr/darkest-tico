@@ -1203,10 +1203,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6400,
-      "subject": "a single long yellowed horse tooth hanging from a red cord, faint ghostly glow, isolated object, close-up, plain black background",
+      "seed": 6410,
+      "subject": "a single long sharp yellowed fang hanging from a frayed red string, isolated object, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "candle, candles, fire, flame, table, scenery, horse, animal, head, person, face"
     },
     {
       "id": "item_rosario_del_padre_sin_cabeza",
