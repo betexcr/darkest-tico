@@ -331,8 +331,8 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
 | Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / stress / accuracy / ailment resist | Pay |
 |---|---|---|---|---|---|
 | Aprendiz | 1 | 0–2 | 4 | ×0.8 / ×0.8 / ×0.95 / +0 / +0% | ×1 |
-| Veterano | 3 | 3–4 | 8 | ×1.15 / ×1.1 / ×1.3 / +3 / +10% | ×1.6 |
-| Campeón | 5 | 5–6 | 16 | ×1.6 / ×1.4 / ×1.65 / +6 / +20% | ×2.5 |
+| Veterano | 3 | 3–4 | 8 | ×1.18 / ×1.13 / ×1.3 / +3 / +10% | ×1.6 |
+| Campeón | 5 | 5–6 | 16 | ×1.65 / ×1.44 / ×1.65 / +6 / +20% | ×2.5 |
 
 - The stress multiplier applies to the stress an enemy skill causes; the extra stress of an enemy crit is not scaled.
 - Why the later tiers grow so much: skill ranks and equipment make a seasoned party about twice as strong. With the old ×1.22 and ×1.46 a seasoned party found Veterano and Campeón easier than a new party found Aprendiz.

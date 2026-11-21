@@ -755,10 +755,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] 3 themed drops per enemy, one roll, at most one item; [x] chance by strength (vermin ~15% … bosses ~70%) × difficulty × Luz/event loot, capped; [x] a card after every won fight: colones, drops (and what didn't fit), each hero's PV and stress change, fallen, new Quebranto/Virtud; boss drops go to the expedition's victory screen; [x] validator + tests; [ ] owner feel check (bot: Aprendiz 96% on 4 seeds, slightly above the 85–90 band: drop chances are the knob)
 
 ### P5-11 · M · Retune Veterano and Campeón for the upgraded game
-- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-21)` · Depends: P3-14, P3-16, P3-18, P3-21 (owner 2026-11-21: after P3-05b, so the Feria is in the measured economy)
+- Status: `done` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-21; `docs/playtests/2026-11-21-p5-11.md`) · Depends: P3-14, P3-16, P3-18, P3-21 (owner 2026-11-21: after P3-05b, so the Feria is in the measured economy)
 - Why (2026-11-20, docs/playtests/2026-11-20-p3-upgrades.md): with building upgrades, Reliquias and tiered prices, 24-week bot campaigns clear Veterano 86% (band 70–80) and Campeón 49% on 39 expeditions (band 55–70; 0.33 deaths there). Cheaper, stronger relief and rank 4 make Veterano easier; the rank cap (Maestría needed for 4–5) and ×1.8 relief make Campeón harder, and more campaigns now reach it.
 - Lever: Veterano / Campeón `enemy_hp` / `enemy_dmg` / `enemy_stress` in `data/progression.json`, or the Maestría / tier-price numbers; owner: no reward changes. Same setup as P5-06 (6 seeds × 3 × 24 weeks, full route; scratchpad `run.sh` + `agg.py` were used — rewrite them if the scratchpad is gone).
-- Done when: [ ] Veterano 70–80% and Campeón 55–70% cleared with ≥ 30 Campeón expeditions, deaths ≤ 0.3, ≥ 17 of 18 campaigns solvent in week 24
+- Done when: [x] Veterano 70–80% and Campeón 55–70% cleared with ≥ 30 Campeón expeditions, deaths ≤ 0.3, ≥ 17 of 18 campaigns solvent in week 24 — kept Veterano ×1.18 / ×1.13, Campeón ×1.65 / ×1.44: 77% / 65% (63 exp. on 36 campaigns), deaths 0.15, 34 of 36 solvent (12 seeds; 6 proved too noisy)
 
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5

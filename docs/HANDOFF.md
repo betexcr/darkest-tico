@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-21 (31) — P5-11: Veterano / Campeón retuned for the upgraded game
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P5-11 done.
+- **Changed:**
+  - `data/progression.json`: Veterano `enemy_hp` 1.15 → 1.18, `enemy_dmg` 1.1 → 1.13; Campeón `enemy_hp` 1.6 → 1.65, `enemy_dmg` 1.4 → 1.44. Rewards untouched (owner).
+  - `docs/playtests/2026-11-21-p5-11.md` (settings v0–v3 + raw seed-1 output of the kept one), doc 01 §difficulty table, doc 09 summary.
+- **Verified:** 12 seeds × 3 campaigns × 24 weeks per setting (`tools/playtest_campaign.gd`, route full). Kept v3: Veterano 77%, Campeón 65% on 63 expeditions, deaths 0.15 per expedition, 34 of 36 campaigns with ≥ 500 ₡ at week 24. Validator 0 errors; smoke + all 20 tests: see the commit after this one if still running at commit time.
+- **Findings:** 6 seeds are too few (unchanged data: Campeón 67% on seeds 1–6, 81% on 7–12). With upgrades + the Feria both tiers were too easy (12 seeds: 82% / 76%), so entry 28's idea of easing Campeón was a small-sample artefact. The tiers are coupled through money: v2 (Veterano +5%, Campeón +10%) halved upgrades and dropped Campeón to 32%.
+- **Not verified / risks:** Campeón deaths 0.30 per Campeón expedition (at the limit). Aprendiz 68% (was 71%). Cursed trinkets not in the bot's play. Not played by hand.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of the open reviews (P3-05a/b Feria, the P3 upgrades, P4-22–P4-25); then P3-05d (Taller tracks + gear tiers: open `data/upgrades.json`, doc 02 §5) or P3-05c on the owner's GPU machine (Feria town art + cursed trinket icons from `tools/art_manifest.json`). Future balance runs: use 12 seeds.
+
+---
+
 ## 2026-11-21 (30) — P3-05b: Feria Nocturna upgrades + cursed trinkets
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P3-05b review. Owner order (2026-11-21): P3-05b first, then P5-11.
