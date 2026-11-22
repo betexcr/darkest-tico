@@ -4723,7 +4723,9 @@
         "_doc_look": "owner 2026-11-22: keep the portrait's horns and demon face, but a bat's body (no human torso, legs or feet); ref_scale 0.35 carries the face, the negatives keep the body a bat",
         "poses": {
           "idle": "flying with wings spread wide, hovering in the air, seen from the front, no legs touching the ground"
-        }
+        },
+        "single_figure": "bottom",
+        "_doc_single_figure": "the tall canvas draws two bats stacked; keep the lower one (keep_bottom_figure)"
       },
       {
         "id": "monaguillo_porton",

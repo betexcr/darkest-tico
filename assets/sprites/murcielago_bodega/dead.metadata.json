@@ -1,7 +1,6 @@
 {
-  "id": "murcielago_bodega_dead",
-  "derived_from": "tools/.sprite_cache/murcielago_bodega/idle_raw.png (seed 5130)",
-  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
-  "generator": "tools/sd_sprites.py",
-  "timestamp": "2026-11-22T15:33:12+00:00"
+  "id": "sprite_murcielago_bodega_dead",
+  "derived_from": "assets/sprites/murcielago_bodega/idle.png (seed 5132, the single-bat idle)",
+  "mode": "idle sprite rotated 90 degrees (dead_tipped), cropped",
+  "generator": "tools/sd_sprites.py manifest + hand post-process (P4-08, 2026-11-22)"
 }
