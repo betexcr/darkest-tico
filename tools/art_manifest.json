@@ -4702,10 +4702,8 @@
         "seed": 5120,
         "body": "beast",
         "weapon": "bared fangs",
-        "txt_states": [
-          "dead"
-        ],
-        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
+        "dead_tipped": true,
+        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side"
       },
       {
         "id": "murcielago_bodega",
@@ -4713,10 +4711,8 @@
         "seed": 5130,
         "body": "beast",
         "weapon": "bared fangs",
-        "txt_states": [
-          "dead"
-        ],
-        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
+        "dead_tipped": true,
+        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side"
       },
       {
         "id": "monaguillo_porton",
@@ -4773,10 +4769,8 @@
         "seed": 5190,
         "body": "beast",
         "weapon": "bared fangs",
-        "txt_states": [
-          "dead"
-        ],
-        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
+        "dead_tipped": true,
+        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side"
       },
       {
         "id": "mayordomo_hundido",

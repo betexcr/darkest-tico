@@ -623,6 +623,30 @@ def main() -> int:
         ref_img = reference_image(cfg, c)
         if ref_img is not None:
             common["ip_adapter_image"] = ref_img
+        # A beast with dead_tipped: its corpse is its own idle picture tipped onto its side (the
+        # model draws beasts standing whatever the prompt says; the game tips a missing corpse
+        # the same way). No diffusion call.
+        if beast and sid == "dead" and c.get("dead_tipped"):
+            base = raw_cache.get(cid)
+            if base is None and raw_path.exists():
+                base = Image.open(raw_path).convert("RGB")
+            if base is not None:
+                bg = base.getpixel((2, 2))
+                tipped = base.rotate(90 if c.get("faces", "left") == "left" else -90, expand=True, fillcolor=bg)
+                image = Image.new("RGB", (w, h), bg)
+                tipped.thumbnail((w, h))
+                image.paste(tipped, ((w - tipped.width) // 2, h - tipped.height))
+                if remover is not None:
+                    image = remover(image)
+                out.parent.mkdir(parents=True, exist_ok=True)
+                image.save(out)
+                out.with_suffix(".metadata.json").write_text(json.dumps({
+                    "id": f"{cid}_{sid}", "derived_from": f"tools/.sprite_cache/{cid}/idle_raw.png (seed {c['seed']})",
+                    "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+                    "generator": "tools/sd_sprites.py", "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                print(f"{cid} {sid}: tipped idle", flush=True)
+                continue
         # A beast's state listed in its txt_states is drawn from scratch (still with the portrait
         # reference), not repainted from idle: light img2img can't lay a standing beast down.
         if s["mode"] == "txt2img" or (beast and sid in c.get("txt_states", [])):
