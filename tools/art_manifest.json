@@ -4788,11 +4788,12 @@
       },
       {
         "id": "segua_boss",
-        "look": "tall monster with a horse skull for a head, long black hair, long tattered pale dress to the floor, bony hands",
-        "seed": 5221,
+        "look": "seductive woman with the rotting head of a dead black horse, bare skull muzzle, glowing orange eyes, long black hair, tight black corset dress, stockings, high heels",
+        "seed": 5222,
         "body": "humanoid",
         "weapon": "sharp hooves and claws",
-        "negative_extra": "corset, lingerie, stockings, garter, high heels, cleavage, bare legs, horse body, whole horse"
+        "negative_extra": "human face, woman face, mask, nude, nudity, topless, nipples, whole horse, horse body",
+        "_doc_look": "owner 2026-11-22: the Segua of the legend, seductive (non-explicit) with the dead horse head of her portrait"
       }
     ]
   }
