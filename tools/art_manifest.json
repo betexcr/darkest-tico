@@ -4772,7 +4772,11 @@
         "look": "enormous shaggy black dog with glowing red eyes, broken chains",
         "seed": 5190,
         "body": "beast",
-        "weapon": "bared fangs"
+        "weapon": "bared fangs",
+        "txt_states": [
+          "dead"
+        ],
+        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
       },
       {
         "id": "mayordomo_hundido",
