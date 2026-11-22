@@ -21,6 +21,10 @@ const HERO_SIZE := Vector2(160, 262)
 const ENEMY_SIZE := Vector2(140, 140)
 ## With more than 4 enemies on the stage they stack in two lines, smaller (owner 2026-11-19).
 const ENEMY_COMPACT := Vector2(118, 118)  # 4 per line fit the half-stage, a 5th never does
+## Enemies with battle sprites (P4-08) stand as cut-outs like the heroes, a little narrower so
+## 4 still fit the half-stage; compact, two lines of them still fit the stage's height.
+const ENEMY_SPRITE_SIZE := Vector2(140, 240)
+const ENEMY_SPRITE_COMPACT := Vector2(104, 170)
 ## Highlight colours (P4-21: a glow around the fighter instead of a line under it).
 const GLOW_ACTIVE := Color(1.0, 0.82, 0.38)
 const GLOW_ALLY := Color(0.45, 0.95, 0.55)
@@ -58,6 +62,9 @@ const COLOR_MISS := Color(0.85, 0.85, 0.85)
 
 var data: Dictionary = {}
 var is_hero: bool = true
+## Drawn as a cut-out sprite with a silhouette glow (heroes, and enemies that have sprites);
+## otherwise a framed square portrait.
+var _cutout: bool = true
 
 var _tex: Dictionary = {}
 var _holder: Control
@@ -88,7 +95,8 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	is_hero = hero
 	# Party on the right facing left, enemies on the left facing right: lunges go toward the middle.
 	_dir = -1.0 if hero else 1.0
-	_size = HERO_SIZE if hero else ENEMY_SIZE
+	_cutout = hero or ResourceLoader.exists("res://assets/sprites/%s/idle.png" % str(unit_data.get("id", "")))
+	_size = HERO_SIZE if hero else (ENEMY_SPRITE_SIZE if _cutout else ENEMY_SIZE)
 	alignment = BoxContainer.ALIGNMENT_END
 	custom_minimum_size = Vector2(_size.x, 0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -116,7 +124,7 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
 
-	if not hero:
+	if not _cutout:
 		_frame = Panel.new()
 		_frame.position = Vector2(-3, -3)
 		_frame.size = _size + Vector2(6, 6)
@@ -132,7 +140,7 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	# enemy); enemies are mirrored so they face the party on the right.
 	_sprite.flip_h = not hero
 	_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if hero:
+	if _cutout:
 		if _outline == null:
 			_outline = Shader.new()
 			_outline.code = OUTLINE_SHADER
@@ -397,7 +405,7 @@ func _stop_idle() -> void:
 func set_compact(on: bool) -> void:
 	if is_hero:
 		return
-	var want: Vector2 = ENEMY_COMPACT if on else ENEMY_SIZE
+	var want: Vector2 = (ENEMY_SPRITE_COMPACT if on else ENEMY_SPRITE_SIZE) if _cutout else (ENEMY_COMPACT if on else ENEMY_SIZE)
 	if want == _size:
 		return
 	_size = want
@@ -444,7 +452,7 @@ func _update_glow() -> void:
 		col = GLOW_ALLY if is_hero else GLOW_ENEMY
 	elif _targeted:
 		col = GLOW_ENEMY
-	if is_hero:
+	if _cutout:
 		if _sprite != null and _glow_mat != null:
 			_glow_mat.set_shader_parameter("glow", col)
 			_glow_mat.set_shader_parameter("on", 1.0)

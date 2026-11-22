@@ -643,13 +643,16 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Click-to-target once there are several enemies (P1-02)
 
 ### P4-08 · L · Battle sprites for all characters
-- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-22; enemies on CPU in the cloud; was Claude Code, betomm/sleepy-ramanujan-78dwh9, 2026-11-07 for the heroes)` · Depends: —
+- Status: `review` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-22: the 15 enemies, on CPU in the cloud; heroes by Claude Code, `betomm/sleepy-ramanujan-78dwh9`, 2026-11-07; owner to look at them in a fight) · Depends: —
 - 23 characters × 6 states (idle, attack, cast, hurt, ailment, dead) = 138 transparent PNGs in `assets/sprites/<id>/<state>.png`, made by `tools/sd_sprites.py` from the `sprites` section of `tools/art_manifest.json`. Humanoids: one character sheet with all 6 poses (OpenPose per cell), attack redrawn full-size; beasts: img2img from idle. Every call uses the character's portrait (cut out on grey) as an IP-Adapter reference so the sprite looks like the portrait (owner rule). Background cut with rembg. ~12 min per humanoid on CPU.
 - Workflow per character: `--only <id> --try-seeds 2 --preview-dir <dir>` → pick a seed (and `redo_seeds.attack` if the attack cell has a third hand / no blade) → set them in the manifest → `--only <id> --force`.
-- Progress: all 8 heroes done; attack poses face LEFT with the weapon in the right arm (stage mirrored 2026-11-08). 15 enemies left.
+- Progress: all 8 heroes done (both sexes since P4-24: 16 sets); attack poses face LEFT with the weapon in the right arm (stage mirrored 2026-11-08). All 15 enemies done 2026-11-22 (~15–20 min each on 4 CPU cores).
+- Beasts (rata, murciélago, cadejo): the model draws them standing whatever the prompt says, even from text, so their corpse is the idle picture tipped on its side (`dead_tipped` in the manifest, `tools/sd_sprites.py`); their other poses are near-identical (the game's tweens do the moving).
+- The battle stage (P4-21 drew enemies as framed square portraits): an enemy with sprites now stands as a cut-out like the heroes, 140×240 (104×170 when two lines are stacked), with a silhouette glow; one without keeps its framed portrait (`scripts/combat/battle_unit.gd`).
 - Done when:
-  - [ ] All 138 generated with metadata
-  - [ ] Reviewed; bad ones re-rolled (`--only <id> --states <state> --force` after changing seed/look)
+  - [x] All generated with metadata (31 sets × 6 = 186 PNGs: 16 hero sets, 15 enemies)
+  - [x] Reviewed; bad ones re-rolled: Monaguillo hurt/ailment (two figures), Susurro (bodysuit → drowned dress), Segua (sexualized → robed), beast corpses (tipped)
+  - [ ] Owner look; known nits: Sombra reads feminine; Susurro's and Segua's attack poses drift to a slit dress (the full-size attack redraw holds the look less); Nuboso's ailment kept a fog box; the rat reads as hound + pup
 
 ### P4-04 · M · Audio mood + narrator lines
 - Status: `todo` · Depends: — · Spec: `08`

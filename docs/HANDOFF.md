@@ -17,6 +17,22 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-22 (36) — P4-08: battle sprites for all 15 enemies; enemies stand as cut-outs in battle
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P4-08 review (owner to look at the enemies in a fight).
+- **Changed:**
+  - `assets/sprites/<enemy>/` for all 15 enemies, 6 poses each, generated on CPU here with `tools/sd_sprites.py` (~15–20 min per enemy; 90 PNGs + metadata).
+  - Re-rolls: Monaguillo hurt/ailment redrawn (they had two figures); Susurro redone (look: soaked tattered dress; negatives: bodysuit, latex); Segua redone (look: robed, horse skull; negatives: corset, stockings, heels); manifest seeds updated.
+  - `tools/sd_sprites.py`: `dead_tipped` (a beast's corpse = its idle picture tipped onto its side; set for rata, murciélago, cadejo, since the model draws them standing whatever the prompt says) and `txt_states` (draw a beast state from text). `tools/art_manifest.json` docs these.
+  - `scripts/combat/battle_unit.gd`: an enemy with sprites is a cut-out like the heroes (140×240, compact 104×170 for two lines; silhouette glow, no frame); without sprites it keeps the P4-21 framed square. `tests/test_ui.gd` compact check takes either size.
+  - Environment notes: the venv needed `rembg[cpu]` and a CPU torchvision matching torch (`controlnet_aux` had pulled a mismatched one: "torchvision::nms does not exist"); a model download was cut once by the proxy and simply retried.
+- **Verified:** `run_tests.gd` 22 of 22 (after the test_ui fix: test_ui, test_enemies, test_feedback rerun green); validator 0 errors; battle screenshot at 1280×720 shows a sprite enemy with the red silhouette glow.
+- **Not verified / risks:** the crowded-stage layout (6 sprite enemies in two lines) only through test_ui's fit checks, not by eye. Known art nits listed in the plan entry.
+- **Decisions needed:** owner: keep the nits or re-roll on your machine (Sombra's look, Susurro's/Segua's attack pose, Nuboso's ailment fog box, the rat).
+- **Next step:** owner playtest of the open reviews; then the plan's remaining todo (P1-15 expedition sim, P4-02 tooltips, P4-01 prep/extraction, P4-04 audio) or P5-03 sign-off.
+
+---
+
 ## 2026-11-22 (35) — P1-01 + P3-08: one test runner; rules tests; real saves from every old version
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P1-01 done, P3-08 done. Owner order (2026-11-22): P1-01, P3-08, then P4-08 (enemy sprites).
