@@ -140,7 +140,7 @@ func _bar(screen) -> Array:
 
 ## Waits (up to 30 s of real time: the fight plays its animations) for a hero's turn.
 func _wait_turn(screen) -> Dictionary:
-	var until: int = Time.get_ticks_msec() + 30000
+	var until: int = Time.get_ticks_msec() + 120000  # wall clock: a busy machine (parallel imports, sims) can be slow
 	while Time.get_ticks_msec() < until:
 		var h: Dictionary = screen._combat.active_hero()
 		if not h.is_empty() and _bar(screen).any(func(b): return not b.disabled):

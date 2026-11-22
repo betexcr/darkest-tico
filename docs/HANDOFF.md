@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-22 (35) — P1-01 + P3-08: one test runner; rules tests; real saves from every old version
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P1-01 done, P3-08 done. Owner order (2026-11-22): P1-01, P3-08, then P4-08 (enemy sprites).
+- **Changed:**
+  - `tests/run_tests.gd` (new): runs the smoke test and every `tests/test_*.gd`, each in its own Godot process (`OS.execute`, works on Windows too); fails on a non-zero exit or a `SCRIPT ERROR`; `--only`, `--skip`, `--verbose`. AGENTS.md §3 now gives this one command instead of the list.
+  - `tests/test_rules.gd` (new): combat resolver (hit band, crit cap / multiplier, damage floor, protection cap, death-save penalties) and stress (relief floor, Quebranto / Virtud and its reset, Colapso → Al Borde, a second Colapso's death roll), every threshold read from balance.json.
+  - `tests/fixtures/save_v3…v16.json` (13 files; v14 never existed): real saves written by the commit that introduced each version, with `tools/dump_save.gd` (how-to in `tests/fixtures/README.md`). `tests/test_save_migration.gd` (new) loads each with today's code: progress kept, today's hero fields present, saves as v17, nothing lost on reload, then stable. AGENTS.md §6: add the outgoing fixture before bumping `SAVE_VERSION`.
+  - `tests/test_ui.gd` `_wait_turn`: 30 s → 120 s wall clock (it failed once while 4 cores were busy importing old checkouts; 3 of 3 alone).
+  - The repo clone was unshallowed (`git fetch --unshallow`) to reach the old commits.
+- **Verified:** validator 0 errors; `run_tests.gd`: 22 of 22 passed in 104 s (Godot 4.7.2 Linux).
+- **Findings:** every old save loads; the first reload after migrating still fills defaults (fresh recruits for saves that had none, whole-number resistances, a sorted camp-skill list) — harmless, so the test checks "nothing lost, then stable" rather than byte-identical.
+- **Not verified / risks:** the runner was not tried on Windows (it only uses `OS.execute` with the running executable).
+- **Decisions needed:** none.
+- **Next step:** P4-08: generate the 15 enemies' battle sprites with `tools/sd_sprites.py` (heroes are done); workflow in the plan entry (`--only <id> --try-seeds 2 --preview-dir`, pick, set seeds in `tools/art_manifest.json`, `--force`). CPU works but is slow.
+
+---
+
 ## 2026-11-21 (34) — P3-05c + P3-05d: Feria art and town repaint; Taller weapon/armor ranks
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P3-05c review, P3-05d review (owner asked for both).

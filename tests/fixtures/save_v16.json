@@ -1,0 +1,486 @@
+{
+  "active_event_id": "",
+  "building_levels": {},
+  "colones": 4321,
+  "event_deck": [],
+  "event_flags": {},
+  "event_seen": true,
+  "events_done_once": [],
+  "feria_stock": [
+    "escapulario",
+    "botas_de_hule",
+    "guantes_de_vaquero",
+    "chonete",
+    "cinta_roja",
+    "ojo_de_buey"
+  ],
+  "graveyard": [],
+  "inventory": [
+    {
+      "id": "gallo_pinto",
+      "qty": 7
+    },
+    {
+      "id": "candela_sebo",
+      "qty": 2
+    },
+    {
+      "id": "agua_pipa",
+      "qty": 2
+    },
+    {
+      "id": "cafe_chorreado",
+      "qty": 1
+    }
+  ],
+  "next_uid": 9,
+  "party_uids": [
+    5,
+    6,
+    7,
+    8
+  ],
+  "radiant_mode": false,
+  "recruit_pool": [
+    {
+      "accuracy": 6,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "receta_de_reposo",
+        "suero_oral",
+        "desinfectar_heridas"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "charla_de_fogon"
+      ],
+      "class_id": "medica_josefina",
+      "class_name": "Médico Josefino",
+      "crit": 3,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 7,
+      "element": "",
+      "equipment": {},
+      "hero_id": "medica_josefina",
+      "hp": 24,
+      "hp_max": 24,
+      "immune": [],
+      "name": "Dr. Adrián",
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "m",
+      "skill_ids": [
+        "bisturi",
+        "triage_urbano",
+        "antibiotico_de_guardia",
+        "desfibrilar"
+      ],
+      "skill_ranks": {},
+      "speed": 5,
+      "status_resist": {
+        "aturdido": 30.0,
+        "golpe_de_gracia": 67.0,
+        "movimiento": 20.0,
+        "salado": 40.0,
+        "sangrado": 60.0,
+        "susto": 30.0,
+        "trampa": 20.0,
+        "veneno": 70.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 0,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "aguita_de_tilo",
+        "emplasto_de_sabila",
+        "rezar_el_rosario"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "charla_de_fogon"
+      ],
+      "class_id": "abuela",
+      "class_name": "Abuelo Sabio",
+      "crit": 3,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 4,
+      "element": "",
+      "equipment": {},
+      "hero_id": "abuela",
+      "hp": 26,
+      "hp_max": 26,
+      "immune": [],
+      "name": "Don Patrocinio",
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "m",
+      "skill_ids": [
+        "cucharonazo",
+        "sopa_milagrosa",
+        "regano_santo",
+        "cataplasma_casero"
+      ],
+      "skill_ranks": {},
+      "speed": 3,
+      "status_resist": {
+        "aturdido": 20.0,
+        "golpe_de_gracia": 67.0,
+        "movimiento": 30.0,
+        "salado": 50.0,
+        "sangrado": 30.0,
+        "susto": 50.0,
+        "trampa": 10.0,
+        "veneno": 60.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 0,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 6,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "te_de_hombre_grande",
+        "sobada_de_hueso",
+        "amuleto_de_jicaro"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "vendaje_de_trapo"
+      ],
+      "class_id": "curandero",
+      "class_name": "Curandera Nicoyana",
+      "crit": 4,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 6,
+      "element": "",
+      "equipment": {},
+      "hero_id": "curandero",
+      "hp": 26,
+      "hp_max": 26,
+      "immune": [],
+      "name": "Doña Ramona",
+      "prot": 0,
+      "quirks": [
+        {
+          "id": "nacio_con_estrella",
+          "locked": false
+        },
+        {
+          "id": "goma_eterna",
+          "locked": false
+        }
+      ],
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "f",
+      "skill_ids": [
+        "deuda_espiritual",
+        "rezo_de_nicoya",
+        "humo_de_hierbas",
+        "limpia_de_mal_de_ojo"
+      ],
+      "skill_ranks": {},
+      "speed": 4,
+      "status_resist": {
+        "aturdido": 30.0,
+        "golpe_de_gracia": 67.0,
+        "movimiento": 30.0,
+        "salado": 50.0,
+        "sangrado": 40.0,
+        "susto": 50.0,
+        "trampa": 30.0,
+        "veneno": 60.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 0,
+      "virtud_id": ""
+    }
+  ],
+  "reliquias": 0,
+  "roster": [
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "chapear_el_contorno",
+        "ensenar_a_afilar",
+        "afilar_machete"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "vendaje_de_trapo"
+      ],
+      "class_id": "machetero",
+      "class_name": "Campesina Machetera",
+      "crit": 5,
+      "dead": false,
+      "dmg_bonus": 2,
+      "dodge": 6,
+      "element": "",
+      "equipment": {
+        "weapon": "machete_cartago"
+      },
+      "hero_id": "campesino",
+      "hp": 29,
+      "hp_max": 32,
+      "immune": [],
+      "name": "Lidieth",
+      "on_hit": [
+        {
+          "chance": 0.2,
+          "status": "sangrado",
+          "turns": 3.0,
+          "value": 2.0
+        }
+      ],
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 2,
+      "resolve_xp": 0,
+      "scout": false,
+      "sex": "f",
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro",
+        "golpe_de_faena",
+        "aguante_de_campo"
+      ],
+      "skill_ranks": {},
+      "speed": 5,
+      "start_status": [],
+      "status_resist": {
+        "aturdido": 60,
+        "golpe_de_gracia": 67,
+        "movimiento": 40,
+        "salado": 50,
+        "sangrado": 60,
+        "susto": 30,
+        "trampa": 50,
+        "veneno": 60
+      },
+      "stress": 37,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 5,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "sobarse_los_golpes",
+        "la_monta_de_zapote",
+        "nudo_de_vaquero"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "vendaje_de_trapo"
+      ],
+      "class_id": "montador",
+      "class_name": "Montadora de Toros",
+      "crit": 4,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 5,
+      "element": "",
+      "equipment": {},
+      "hero_id": "montador",
+      "hp": 34,
+      "hp_max": 34,
+      "immune": [],
+      "name": "Tatiana",
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "f",
+      "skill_ids": [
+        "mecatazo",
+        "entrada_brava",
+        "patada_de_corral",
+        "no_me_tumban"
+      ],
+      "skill_ranks": {},
+      "speed": 4,
+      "status_resist": {
+        "aturdido": 60.0,
+        "golpe_de_gracia": 72.0,
+        "movimiento": 60.0,
+        "salado": 30.0,
+        "sangrado": 50.0,
+        "susto": 30.0,
+        "trampa": 20.0,
+        "veneno": 30.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 6,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "reganada_de_abuela",
+        "emplasto_de_sabila",
+        "rezar_el_rosario"
+      ],
+      "camp_skill_ids": [
+        "palabras_de_animo",
+        "charla_de_fogon"
+      ],
+      "class_id": "abuela",
+      "class_name": "Abuela Sabia",
+      "crit": 3,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 4,
+      "element": "",
+      "equipment": {},
+      "hero_id": "abuela",
+      "hp": 26,
+      "hp_max": 26,
+      "immune": [],
+      "name": "Doña Lucha",
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "f",
+      "skill_ids": [
+        "cucharonazo",
+        "sopa_milagrosa",
+        "regano_santo",
+        "cataplasma_casero"
+      ],
+      "skill_ranks": {},
+      "speed": 3,
+      "status_resist": {
+        "aturdido": 20.0,
+        "golpe_de_gracia": 67.0,
+        "movimiento": 30.0,
+        "salado": 50.0,
+        "sangrado": 30.0,
+        "susto": 50.0,
+        "trampa": 10.0,
+        "veneno": 60.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 7,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 9,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "camp_buffs": [],
+      "camp_fixed": "",
+      "camp_known": [
+        "dron_vigia",
+        "buscar_senal",
+        "radio_con_rancheras"
+      ],
+      "camp_skill_ids": [
+        "vendaje_de_trapo",
+        "charla_de_fogon"
+      ],
+      "class_id": "tecnologo",
+      "class_name": "Tecnóloga Errante",
+      "crit": 6,
+      "dead": false,
+      "dmg_bonus": 0,
+      "dodge": 8,
+      "element": "",
+      "equipment": {},
+      "hero_id": "tecnologo",
+      "hp": 24,
+      "hp_max": 24,
+      "immune": [],
+      "name": "Fiorella",
+      "prot": 0,
+      "resist": {},
+      "resolve_level": 0,
+      "resolve_xp": 0,
+      "sex": "f",
+      "skill_ids": [
+        "corrientazo",
+        "dron_casero",
+        "exploit_zero_day",
+        "firewall_humano"
+      ],
+      "skill_ranks": {},
+      "speed": 6,
+      "status_resist": {
+        "aturdido": 30.0,
+        "golpe_de_gracia": 67.0,
+        "movimiento": 20.0,
+        "salado": 40.0,
+        "sangrado": 30.0,
+        "susto": 20.0,
+        "trampa": 60.0,
+        "veneno": 30.0
+      },
+      "stress": 0,
+      "stress_max": 200,
+      "stress_resist": 0,
+      "uid": 8,
+      "virtud_id": ""
+    }
+  ],
+  "selected_difficulty_id": "aprendiz",
+  "selected_mission_region_path": "res://data/regions/sotanos.json",
+  "stolen_items": [],
+  "version": 16,
+  "week": 6,
+  "week_colones": {
+    "in": 0,
+    "out": 679
+  }
+}

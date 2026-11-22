@@ -1,0 +1,102 @@
+{
+  "colones": 4321,
+  "hub_pending_food": 0,
+  "hub_pending_light_bonus": 0,
+  "party": [
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "machetero",
+      "crit": 5,
+      "dead": false,
+      "dodge": 6,
+      "hero_id": "campesino",
+      "hp": 29,
+      "hp_max": 32,
+      "name": "Campesino Machetero",
+      "resolve_level": 2,
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro"
+      ],
+      "speed": 5,
+      "stress": 37,
+      "stress_max": 200,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "abuela",
+      "crit": 3,
+      "dead": false,
+      "dodge": 4,
+      "hero_id": "abuela",
+      "hp": 26,
+      "hp_max": 26,
+      "name": "Abuela Sabia",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "sopa_milagrosa"
+      ],
+      "speed": 3,
+      "stress": 0,
+      "stress_max": 200,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 9,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "tecnologo",
+      "crit": 6,
+      "dead": false,
+      "dodge": 8,
+      "hero_id": "tecnologo",
+      "hp": 24,
+      "hp_max": 24,
+      "name": "Tecnólogo Errante",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "dron_casero"
+      ],
+      "speed": 6,
+      "stress": 0,
+      "stress_max": 200,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "montador",
+      "crit": 4,
+      "dead": false,
+      "dodge": 5,
+      "hero_id": "montador",
+      "hp": 34,
+      "hp_max": 34,
+      "name": "Montador de Toros",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "entrada_brava"
+      ],
+      "speed": 4,
+      "stress": 0,
+      "stress_max": 200,
+      "virtud_id": ""
+    }
+  ],
+  "selected_mission_region_path": "res://data/regions/sotanos.json",
+  "version": 3,
+  "week": 6
+}

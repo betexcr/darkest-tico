@@ -71,8 +71,32 @@ func _run() -> void:
 		_check(gs.reliquias >= 0 and gs.building_levels is Dictionary and gs.feria_stock.size() > 0, "v%d: Reliquias, upgrades and a Feria stall set up" % v)
 		var again: Dictionary = gs.to_save_dict()
 		_check(int(again["version"]) == gs.SAVE_VERSION, "v%d: saves again as v%d" % [v, gs.SAVE_VERSION])
-		var text1: String = JSON.stringify(again)
+		# The first reload may still fill defaults (recruits rolled fresh for saves that had none,
+		# whole-number resistances, a sorted camp-skill list); after it nothing may be lost and
+		# the save must be stable.
+		var text1: String = JSON.stringify(again, "", true)
 		gs.apply_save_data(JSON.parse_string(text1))
-		_check(JSON.stringify(gs.to_save_dict()) == text1, "v%d: and that save loads back unchanged" % v)
+		var second: Dictionary = gs.to_save_dict()
+		var text2: String = JSON.stringify(second, "", true)
+		_check(_lost(again, second).is_empty(), "v%d: reloading it loses nothing%s" % [v, ("" if _lost(again, second).is_empty() else " (lost " + ", ".join(_lost(again, second)) + ")")])
+		gs.apply_save_data(JSON.parse_string(text2))
+		_check(JSON.stringify(gs.to_save_dict(), "", true) == text2, "v%d: and from then on it loads back unchanged" % v)
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)
+
+
+## Keys present in `a` but gone in `b` (dictionaries compared recursively, arrays by index).
+func _lost(a, b, path: String = "") -> Array:
+	var out: Array = []
+	if a is Dictionary and b is Dictionary:
+		for k in a:
+			if not b.has(k):
+				out.append(path + str(k))
+			else:
+				out.append_array(_lost(a[k], b[k], path + str(k) + "."))
+	elif a is Array and b is Array:
+		if b.size() < a.size():
+			out.append(path + "[%d → %d]" % [a.size(), b.size()])
+		for i in mini(a.size(), b.size()):
+			out.append_array(_lost(a[i], b[i], path + "%d." % i))
+	return out

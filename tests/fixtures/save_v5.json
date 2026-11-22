@@ -1,0 +1,224 @@
+{
+  "colones": 4321,
+  "inventory": [
+    {
+      "id": "gallo_pinto",
+      "qty": 7
+    },
+    {
+      "id": "candela_sebo",
+      "qty": 2
+    },
+    {
+      "id": "agua_pipa",
+      "qty": 2
+    },
+    {
+      "id": "cafe_chorreado",
+      "qty": 1
+    }
+  ],
+  "next_uid": 9,
+  "party_uids": [
+    5,
+    6,
+    7,
+    8
+  ],
+  "recruit_pool": [
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "guachiman",
+      "class_name": "Guachimán Jubilado",
+      "crit": 4,
+      "dead": false,
+      "dodge": 4,
+      "hero_id": "guachiman",
+      "hp": 34,
+      "hp_max": 34,
+      "name": "Don Lalo",
+      "resolve_level": 0,
+      "skill_ids": [
+        "silbatazo",
+        "reten",
+        "ronda_nocturna",
+        "escudo_de_barrio"
+      ],
+      "speed": 3,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 0,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "machetero",
+      "class_name": "Campesino Machetero",
+      "crit": 5,
+      "dead": false,
+      "dodge": 6,
+      "hero_id": "campesino",
+      "hp": 32,
+      "hp_max": 32,
+      "name": "Lalo",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro",
+        "golpe_de_faena",
+        "aguante_de_campo"
+      ],
+      "speed": 5,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 0,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "machetero",
+      "class_name": "Campesino Machetero",
+      "crit": 5,
+      "dead": false,
+      "dodge": 6,
+      "hero_id": "campesino",
+      "hp": 32,
+      "hp_max": 32,
+      "name": "Toño",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro",
+        "golpe_de_faena",
+        "aguante_de_campo"
+      ],
+      "speed": 5,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 0,
+      "virtud_id": ""
+    }
+  ],
+  "roster": [
+    {
+      "accuracy": 8,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "machetero",
+      "class_name": "Campesino Machetero",
+      "crit": 5,
+      "dead": false,
+      "dodge": 6,
+      "hero_id": "campesino",
+      "hp": 29,
+      "hp_max": 32,
+      "name": "Toño",
+      "resolve_level": 2,
+      "skill_ids": [
+        "machetazo",
+        "trabajo_duro",
+        "golpe_de_faena",
+        "aguante_de_campo"
+      ],
+      "speed": 5,
+      "stress": 37,
+      "stress_max": 200,
+      "uid": 5,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "abuela",
+      "class_name": "Abuela Sabia",
+      "crit": 3,
+      "dead": false,
+      "dodge": 4,
+      "hero_id": "abuela",
+      "hp": 26,
+      "hp_max": 26,
+      "name": "Doña Cuca",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "sopa_milagrosa",
+        "regano_santo",
+        "cataplasma_casero"
+      ],
+      "speed": 3,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 6,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 9,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "tecnologo",
+      "class_name": "Tecnólogo Errante",
+      "crit": 6,
+      "dead": false,
+      "dodge": 8,
+      "hero_id": "tecnologo",
+      "hp": 24,
+      "hp_max": 24,
+      "name": "Yendry",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "dron_casero",
+        "exploit_zero_day",
+        "firewall_humano"
+      ],
+      "speed": 6,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 7,
+      "virtud_id": ""
+    },
+    {
+      "accuracy": 7,
+      "affliction_id": "",
+      "al_borde": false,
+      "borde_checks": 0,
+      "class_id": "montador",
+      "class_name": "Montador de Toros",
+      "crit": 4,
+      "dead": false,
+      "dodge": 5,
+      "hero_id": "montador",
+      "hp": 34,
+      "hp_max": 34,
+      "name": "Pipo",
+      "resolve_level": 0,
+      "skill_ids": [
+        "machetazo",
+        "entrada_brava",
+        "patada_de_corral",
+        "no_me_tumban"
+      ],
+      "speed": 4,
+      "stress": 0,
+      "stress_max": 200,
+      "uid": 8,
+      "virtud_id": ""
+    }
+  ],
+  "selected_mission_region_path": "res://data/regions/sotanos.json",
+  "version": 5,
+  "week": 6
+}
