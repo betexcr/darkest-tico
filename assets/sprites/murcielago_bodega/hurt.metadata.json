@@ -1,0 +1,23 @@
+{
+  "id": "sprite_murcielago_bodega_hurt",
+  "prompt": "huge cave bat with tattered leathery wings, glowing eyes, fangs, recoiling in pain, wounded, flinching, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5133,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x768",
+  "mode": "img2img",
+  "strength": 0.6,
+  "pose_control": null,
+  "init_image": "idle (same character, before cutout)",
+  "reference": {
+    "image": "assets/enemies/murcielago_bodega.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-22T12:00:12+00:00"
+}
