@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-22 (38) — P3-05e: the Taller's stock changes every week; 53 new weapons and armors
+- **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
+- **Status after session:** P3-05e review (owner request: "make taller equipment randomized per week too, and add much more possible equipments weapons and armour").
+- **Changed:**
+  - `data/items.json`: +27 weapons, +26 armors (now 37 and 36), Tico names (Chuzo de boyero, Picahielos de raspados, Mazo de trapiche, Cadena del Cadejo; Gabacha de pulpería, Overol del ICE, Traje de mascarada, Coraza de carreta pintada…), prices 300–1800, elements, on-hit statuses, element and status resistances.
+  - `data/balance.json` `taller.stock_weapons/stock_armor` (6 + 6), `cheap_price` 800, `pricey_min_weight` 0.3, `full_stock_week` 8; validator `BALANCE_KEYS`.
+  - `scripts/domain/feria.gd`: the stall draw takes a balance `section` ("feria" default, "taller").
+  - `GameState`: `taller_stock`, `refresh_taller()` (new game, every week, old saves), `buy_block_reason` ("El taller no tiene X esta semana."), a buy takes it off the stock, save v18. The week report mentions the Taller.
+  - `hacienda_hub.gd`: the Taller grid shows only this week's stock (rebuilt when it changes), with a hint when a filter is empty.
+  - `tests/fixtures/save_v17.json` (made from e49c068; README updated), `test_hub` (stock size, filters, buy/remove, save/load, cheap-early draw), `test_town_events`, `test_save_migration`.
+  - `tools/art_manifest.json` + `assets/items/`: 53 icons (seeds 6800+), CPU dreamshaper-8, not hand-picked.
+  - Docs: AGENTS.md shop rule, doc 02 §5, plan P3-05e.
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux `run_tests.gd` 22 of 22; `playtest_campaign.gd --campaigns 2 --weeks 6`: 12/12 cleared, 0 deaths, the bot still buys gear (13% of spending).
+- **Not verified / risks:** no long balance run: the dearest new pieces (damage +4, prot 25) are stronger than the old top ones, so later-week runs may get easier; icons were generated once each, not picked from candidates; nobody has looked at the Taller in the running game.
+- **Decisions needed:** stock size 6 + 6 OK? Should a Taller upgrade add stock like the Feria's *Tamaño de Puestos*? (Not done.)
+- **Next step:** owner playtest of the Taller over a few weeks; then a P5 balance run (`tools/playtest_campaign.gd --campaigns 6 --weeks 12`) against the latest baseline in `docs/playtests/`, and re-roll any weak icon with `tools/sd_local.py --only item_<id> --try-seeds 3 --preview-dir <dir>`.
+
 ## 2026-11-22 (37) — P4-31 + P4-32: event choices hide odds and outcomes; enemies the heroes' size
 - **Agent / branch:** Claude Code (cloud) / `betomm/zen-mayer-gmak4j`
 - **Status after session:** P4-31 review, P4-32 review (owner requests from screenshots).
