@@ -4712,12 +4712,15 @@
       },
       {
         "id": "murcielago_bodega",
-        "look": "huge cave bat with tattered leathery wings, glowing eyes, fangs",
-        "seed": 5130,
+        "look": "giant vampire bat, real animal, furry brown body, huge leathery wings spread, clawed hind feet, glowing red eyes, fangs, flying",
+        "seed": 5131,
         "body": "beast",
         "weapon": "bared fangs",
         "dead_tipped": true,
-        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side"
+        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side",
+        "negative_extra": "human, humanoid, person, man, woman, demon, horns, human legs, human feet, standing upright, boots, clothes",
+        "ref_scale": 0.15,
+        "_doc_look": "owner 2026-11-22: an actual bat, not a bat-demon with human feet; its portrait is a demon, so ref_scale 0.15 keeps only its mood"
       },
       {
         "id": "monaguillo_porton",

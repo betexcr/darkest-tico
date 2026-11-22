@@ -623,6 +623,9 @@ def main() -> int:
         ref_img = reference_image(cfg, c)
         if ref_img is not None:
             common["ip_adapter_image"] = ref_img
+            # A character's own ref_scale (e.g. a portrait that is off-model, such as a bat-demon
+            # portrait for a plain bat) weakens how much the portrait steers the sprite.
+            pipes["txt"].set_ip_adapter_scale(float(c.get("ref_scale", cfg.get("reference", {}).get("scale", 0.6))))
         # A beast with dead_tipped: its corpse is its own idle picture tipped onto its side (the
         # model draws beasts standing whatever the prompt says; the game tips a missing corpse
         # the same way). No diffusion call.
