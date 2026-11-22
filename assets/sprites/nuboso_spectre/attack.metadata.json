@@ -1,0 +1,27 @@
+{
+  "id": "sprite_nuboso_spectre_attack",
+  "prompt": "character sheet, tall mist specter of fog and hanging moss, long thin arms, glowing face, six poses, same clothes and long misty claws in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5210,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "960x960 sheet, cell 2 of 6",
+  "mode": "sheet",
+  "pose_control": "lllyasviel/control_v11p_sd15_openpose",
+  "reference": {
+    "image": "assets/enemies/nuboso_spectre.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-22T14:36:37+00:00",
+  "redo": {
+    "prompt": "tall mist specter of fog and hanging moss, long thin arms, glowing face, facing left, violent lunge, right arm raising long misty claws toward the left, snarling, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5211,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.9
+  }
+}
