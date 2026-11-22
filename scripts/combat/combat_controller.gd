@@ -1234,6 +1234,12 @@ func _sync_rows() -> void:
 static func layout_enemy_row(units: Array) -> void:
 	var n: int = units.size()
 	var front: int = mini(n, 4)  # structural: one line holds four
+	# Up to four hero-sized cut-outs overlap a little to fit the half-stage (P4-32); two compact
+	# lines keep a gap, so a fifth enemy always wraps to the upper line.
+	for u in units:
+		if u != null and u.get_parent() is HFlowContainer:
+			u.get_parent().add_theme_constant_override("h_separation", -14 if n <= front else 10)  # structural
+			break
 	for k in n:
 		var u = units[k]
 		if u == null or u.get_parent() == null:

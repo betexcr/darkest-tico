@@ -52,6 +52,7 @@ const BalanceScript := preload("res://scripts/domain/balance.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const LightSystemScript := preload("res://scripts/domain/light_system.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const TrapRulesScript := preload("res://scripts/domain/trap_rules.gd")
 
 const MAX_STEPS := 60000
 const RESERVE := 1000
@@ -868,9 +869,11 @@ func _event_step(screen, row: Dictionary) -> void:
 			_press(share if share != null else find.call("Aguantar el hambre"))
 		return
 	# Traps.
-	var dis = find.call("Desarmar (")
+	var dis = find.call("Desarmar")
 	if dis != null:
-		var pct: int = int(str(dis.text).get_slice("(", 1).get_slice("%", 0))
+		# The button no longer shows the odds; the bot reads them from the rules.
+		var trap: Dictionary = TrapRulesScript.get_trap(str(_gs.current_node().get("trap_id", "")))
+		var pct: int = TrapRulesScript.disarm_chance(trap, _gs.party, _gs.mission_light) if not trap.is_empty() else 50
 		var careful = find.call("Pasar con cuidado")
 		if pct >= 50 or careful == null:
 			row["disarmed"] += 1

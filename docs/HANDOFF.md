@@ -17,7 +17,7 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-22 (37) — P4-08 follow-up: owner art changes (Segua, Campesina, Murciélago)
+## 2026-11-22 (38) — P4-08 follow-up: owner art changes (Segua, Campesina, Murciélago)
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P4-08 review (owner asked for these three after seeing the sheets).
 - **Changed:**
@@ -29,6 +29,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Not verified / risks:** the Segua's and the bat's corpses and the bat's crop were done by hand on the PNGs; rerunning `sd_sprites.py --force` for them overwrites that (noted in the manifest `_doc_*`). Faint grey smudge above the bat's head in two poses.
 - **Decisions needed:** none.
 - **Next step:** owner look at the three in a fight; then the plan's remaining todo (P1-15 expedition sim, P4-02 tooltips, P4-01 prep/extraction, P4-04 audio) or P5-03 sign-off.
+
+---
+
+## 2026-11-22 (37) — P4-31 + P4-32: event choices hide odds and outcomes; enemies the heroes' size
+- **Agent / branch:** Claude Code (cloud) / `betomm/zen-mayer-gmak4j`
+- **Status after session:** P4-31 review, P4-32 review (owner requests from screenshots).
+- **Changed:**
+  - `scripts/expedition/expedition_screen.gd`: trap buttons "Desarmar" / "Pasar con cuidado" with no %, trap text no longer gives the disarm or trigger odds; hunger text no longer spells out the penalty; "Calentarse" no longer shows its relief; night-ambush log line drops its %. Outcomes still show after the pick (result card / log).
+  - `tools/playtest_campaign.gd`: the bot gets the disarm chance from `TrapRules.disarm_chance` instead of parsing the button.
+  - `scripts/combat/battle_unit.gd`: `ENEMY_SPRITE_SIZE = HERO_SIZE` (160×262); a unit is a cut-out if its idle PNG exists on disk even when not yet imported (`*.import` is git-ignored, so after a pull the enemies fell back to the framed square with a square glow — the owner's screenshot).
+  - `scenes/expedition/expedition_screen.tscn` + `CombatController.layout_enemy_row`: enemy row h_separation −14 for one line (4 × 160 fit the 600 px half-stage), 10 when two compact lines stack (so the 5th still wraps).
+- **Verified:** validator 0 errors; Godot 4.7.2 Linux `run_tests.gd`: 21 of 22, then test_ui fixed (row separation) and test_ui, test_enemies, test_feedback rerun green; 1280×720 screenshot: 3 enemies at hero size, red glow hugging the silhouette.
+- **Not verified / risks:** no screenshot of a full 4-enemy line (positions computed to fit); the playtest bot's trap branch not run in a campaign.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of P4-31/P4-32 and the other open reviews; then the plan's remaining todo (P1-15 expedition sim, P4-02 tooltips, P4-01 prep/extraction, P4-04 audio) or P5-03 sign-off.
 
 ---
 

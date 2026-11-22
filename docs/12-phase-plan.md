@@ -591,6 +591,17 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Files: `scripts/hacienda/hacienda_hub.gd` (`_close_on_outside_click`, `_show_hero_sheet`), `tests/test_ui.gd`
 - Spec: owner "clicking anywhere besides the modal should close the hero details modals"
 - Done when: [x] the town's "Ficha de X" closes on a click outside it (non-exclusive popup window) and stays open on a click inside; [x] the battle's hero/enemy panel already closed on an outside click (P4-21 era, `expedition_screen.gd` `_input`); [x] test
+### P4-31 · S · Dungeon events never show odds or outcomes before the pick (owner 2026-11-22)
+- Status: `review` (Claude Code, `betomm/zen-mayer-gmak4j`, 2026-11-22): owner to try a trap · Depends: P2-01
+- Files: `scripts/expedition/expedition_screen.gd` (`_open_trap`, `_open_hunger`, `_open_camp`, `_camp_sleep`), `tools/playtest_campaign.gd` (bot reads the disarm odds from `TrapRules`)
+- Spec: owner "lets not show the results explicitly in the dungeon events … show the result only after the selection, but never show the odds"
+- Done when: [x] trap buttons are just "Desarmar" / "Pasar con cuidado" and the text no longer gives the disarm % or the trigger %; [x] hunger no longer spells out the penalty, "Calentarse" no longer says how much stress it relieves (both still reported after the pick); [x] the night-ambush log line no longer prints its %; curio buttons keep only their cost (item / colones)
+### P4-32 · S · Enemy sprites the heroes' size, glow along the silhouette (owner 2026-11-22)
+- Status: `review` (Claude Code, `betomm/zen-mayer-gmak4j`, 2026-11-22): owner to look at a fight · Depends: P4-08
+- Files: `scripts/combat/battle_unit.gd`, `scenes/expedition/expedition_screen.tscn` + `scripts/combat/combat_controller.gd` `layout_enemy_row` (EnemyRow h_separation −14 for one line so 4 × 160 px fit the half-stage, 10 for two compact lines)
+- Spec: owner screenshot (bat in a red square): "make the enemy sprites the same size as the hero sprites, also make the highlight surround the sprite itself not that square"
+- Cause: `*.import` is git-ignored, so on a fresh pull `ResourceLoader.exists` is false for the new enemy PNGs and the unit fell back to the framed square (while `load_texture` still read the PNG from disk). Now the file check counts too.
+- Done when: [x] enemies with sprites are 160×262 like heroes (compact 104×170 unchanged); [x] cut-out + silhouette glow even before Godot imports the PNGs; [x] 1280×720 screenshot: glow hugs the sprite, 4 fit one line
 ### P3-08 · M · Save v4 + migration tests
 - Status: `done` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-22; the save is v17 now, so the task grew from "v3→v4" to every version) · Depends: P3-01
 - Spec: `06` risk register (save corruption)
@@ -648,7 +659,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Workflow per character: `--only <id> --try-seeds 2 --preview-dir <dir>` → pick a seed (and `redo_seeds.attack` if the attack cell has a third hand / no blade) → set them in the manifest → `--only <id> --force`.
 - Progress: all 8 heroes done (both sexes since P4-24: 16 sets); attack poses face LEFT with the weapon in the right arm (stage mirrored 2026-11-08). All 15 enemies done 2026-11-22 (~15–20 min each on 4 CPU cores).
 - Beasts (rata, murciélago, cadejo): the model draws them standing whatever the prompt says, even from text, so their corpse is the idle picture tipped on its side (`dead_tipped` in the manifest, `tools/sd_sprites.py`); their other poses are near-identical (the game's tweens do the moving).
-- The battle stage (P4-21 drew enemies as framed square portraits): an enemy with sprites now stands as a cut-out like the heroes, 140×240 (104×170 when two lines are stacked), with a silhouette glow; one without keeps its framed portrait (`scripts/combat/battle_unit.gd`).
+- The battle stage (P4-21 drew enemies as framed square portraits): an enemy with sprites now stands as a cut-out like the heroes, 160×262 since P4-32 (104×170 when two lines are stacked), with a silhouette glow; one without keeps its framed portrait (`scripts/combat/battle_unit.gd`).
 - Done when:
   - [x] All generated with metadata (31 sets × 6 = 186 PNGs: 16 hero sets, 15 enemies)
   - [x] Reviewed; bad ones re-rolled: Monaguillo hurt/ailment (two figures), Susurro (bodysuit → drowned dress), Segua (sexualized → robed), beast corpses (tipped)

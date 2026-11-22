@@ -805,8 +805,7 @@ func _on_flee_pressed() -> void:
 func _open_hunger() -> void:
 	var need: int = CampingSystemScript.travel_meal_cost(GameState.party)
 	var food: int = GameState.item_count("gallo_pinto")
-	_open_event("Hambre", "La cuadrilla tiene hambre. Comer cuesta %d gallo pinto (uno por héroe); llevan %d. Quien no come pierde %d%% de PV y gana %d de estrés." % [
-		need, food, BalanceScript.int_of("hunger.hp_pct"), BalanceScript.int_of("hunger.stress")])
+	_open_event("Hambre", "La cuadrilla tiene hambre. Comer cuesta %d gallo pinto (uno por héroe); llevan %d. Quien no come lo va a sentir." % [need, food])
 	if food >= need:
 		_event_button("Comer (%d gallo pinto)" % need, _hunger_meal.bind(need))
 	elif food > 0:
@@ -1020,11 +1019,11 @@ func _open_trap() -> void:
 	var spotter: Dictionary = TrapRulesScript.spotter(GameState.party)
 	var careful_light: int = TrapRulesScript.num("careful_light")
 	var careful_pct: int = TrapRulesScript.num("careful_trigger_pct")
+	# Owner 2026-11-22: event choices never show odds or outcomes; the result shows after the pick.
 	_open_event(str(trap.get("name", "Trampa")), "%s
 
-%s la vio primero. Desarmarla: %d%% (Luz %s). Si falla, la trampa salta." % [
-		trap.get("text", ""), spotter.get("name", "Alguien"), chance, LightSystemScript.tier_name(GameState.mission_light)])
-	_event_button("Desarmar (%d%%)" % chance, func():
+%s la vio primero." % [trap.get("text", ""), spotter.get("name", "Alguien")])
+	_event_button("Desarmar", func():
 		if randi() % 100 < chance:
 			var relief: int = TrapRulesScript.num("disarm_relief")
 			var got: PackedStringArray = PackedStringArray(["%s: -%d estrés" % [spotter.get("name", "Alguien"), relief]])
@@ -1035,7 +1034,7 @@ func _open_trap() -> void:
 		else:
 			_spring_trap(trap)
 	)
-	_event_button("Pasar con cuidado (-%d Luz, %d%% de que salte)" % [careful_light, careful_pct], func():
+	_event_button("Pasar con cuidado", func():
 		GameState.mission_light = maxi(GameState.mission_light - careful_light, 0)
 		if randi() % 100 < careful_pct:
 			_spring_trap(trap)
@@ -1105,7 +1104,7 @@ func _open_camp() -> void:
 	if not GameState.can_camp_at(nid):
 		_open_event("Fogata de trocha", "No queda leña para acampar. Solo pueden calentarse las manos.")
 		var warm: int = int(BalanceScript.req(CampingSystemScript.data(), "no_firewood_relief", "camp_skills.json"))
-		_event_button("Calentarse (-%d estrés)" % warm, func():
+		_event_button("Calentarse", func():
 			_party_stress(-warm)
 			_resolve_event("Un respiro corto. -%d estrés." % warm)
 		)
@@ -1231,7 +1230,7 @@ func _camp_sleep() -> void:
 	GameState.mark_node_cleared(GameState.current_node_id)
 	if randi() % 100 < chance:
 		_close_event()
-		_log_line("¡Emboscada nocturna! Algo sale de la oscuridad (%d%% de probabilidad)." % chance, "cc4444")
+		_log_line("¡Emboscada nocturna! Algo sale de la oscuridad.", "cc4444")
 		GameState.ledger_add("ambushes")
 		GameState.build_ambush_context(GameState.current_node_id)
 		_start_combat_from_context(GameState.current_node_id)
