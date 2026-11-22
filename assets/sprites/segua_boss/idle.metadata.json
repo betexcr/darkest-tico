@@ -1,8 +1,8 @@
 {
   "id": "sprite_segua_boss_idle",
-  "prompt": "character sheet, monster with a horse skull head, long black hair, tattered pale dress, six poses, same clothes and sharp hooves and claws in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5220,
+  "prompt": "character sheet, tall monster with a horse skull for a head, long black hair, long tattered pale dress to the floor, bony hands, six poses, same clothes and sharp hooves and claws in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "corset, lingerie, stockings, garter, high heels, cleavage, bare legs, horse body, whole horse, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5221,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-22T14:53:17+00:00"
+  "timestamp": "2026-11-22T15:48:47+00:00"
 }
