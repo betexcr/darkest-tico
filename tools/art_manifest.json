@@ -4701,21 +4701,42 @@
         "look": "two feral giant rats on all fours, matted fur, red eyes, bloody teeth",
         "seed": 5120,
         "body": "beast",
-        "weapon": "bared fangs"
+        "weapon": "bared fangs",
+        "txt_states": [
+          "dead"
+        ],
+        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
       },
       {
         "id": "murcielago_bodega",
         "look": "huge cave bat with tattered leathery wings, glowing eyes, fangs",
         "seed": 5130,
         "body": "beast",
-        "weapon": "bared fangs"
+        "weapon": "bared fangs",
+        "txt_states": [
+          "dead"
+        ],
+        "_doc_txt_states": "dead drawn from text (P4-08 re-roll: repainting idle left it standing)"
       },
       {
         "id": "monaguillo_porton",
         "look": "cult acolyte in a dark red hooded robe, candle and smoking censer",
         "seed": 5140,
         "body": "humanoid",
-        "weapon": "a smoking censer"
+        "weapon": "a smoking censer",
+        "redo_states": [
+          "hurt",
+          "ailment"
+        ],
+        "redo_modes": {
+          "hurt": "txt",
+          "ailment": "txt"
+        },
+        "redo_seeds": {
+          "hurt": 5741,
+          "ailment": 5742
+        },
+        "negative_extra": "two people, duplicate, second figure"
       },
       {
         "id": "vigia_porton",
@@ -4726,10 +4747,11 @@
       },
       {
         "id": "susurro_aljibe",
-        "look": "translucent drowned spirit woman, long dripping hair covering the face",
-        "seed": 5160,
+        "look": "translucent drowned spirit woman, long soaked tattered white dress, long dripping hair covering the face",
+        "seed": 5161,
         "body": "humanoid",
-        "weapon": "long dripping hands"
+        "weapon": "long dripping hands",
+        "negative_extra": "bodysuit, latex, catsuit, tight clothes, leggings"
       },
       {
         "id": "duende_sotano",

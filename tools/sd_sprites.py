@@ -623,7 +623,9 @@ def main() -> int:
         ref_img = reference_image(cfg, c)
         if ref_img is not None:
             common["ip_adapter_image"] = ref_img
-        if s["mode"] == "txt2img":
+        # A beast's state listed in its txt_states is drawn from scratch (still with the portrait
+        # reference), not repainted from idle: light img2img can't lay a standing beast down.
+        if s["mode"] == "txt2img" or (beast and sid in c.get("txt_states", [])):
             if pose_img is not None:
                 image = pipes["txt_pose"](prompt=prompt, image=pose_img, width=w, height=h,
                                           controlnet_conditioning_scale=control_scale, **common).images[0]
