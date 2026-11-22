@@ -559,6 +559,9 @@ def main() -> int:
                     print(f"[{k + 1}/{args.redo_tries}] {cid} {'/'.join(args.states)} seeds "
                           f"{sorted(seeds.values())} ({time.time() - t0:.0f}s)", flush=True)
                 continue
+            # A character's own ref_scale steers the sheet harder (or softer) toward its portrait.
+            if ref_img is not None:
+                pipes["txt"].set_ip_adapter_scale(float(c.get("ref_scale", cfg.get("reference", {}).get("scale", 0.6))))
             crops, sheet_img, prompt, raw = generate_sheet(
                 pipes, cfg, manifest, c, neg_c, steps, guidance, control_scale, torch,
                 {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
