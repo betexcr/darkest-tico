@@ -4434,7 +4434,7 @@
       },
       {
         "id": "campesino_f",
-        "look": "farm woman, long black braids, small straw hat, dark short-sleeved blouse, dark trousers",
+        "look": "farm woman, long black braids, small round straw hat, dark short-sleeved blouse, dark cropped trousers to mid-calf, leather sandals",
         "seed": 5101,
         "body": "humanoid",
         "weapon": "a long steel machete",
@@ -4452,9 +4452,13 @@
           "hurt": 5804,
           "ailment": 5805
         },
-        "negative_extra": "dancing, calm, extra hat, big hat, basket, shield, disc, high heels, man, beard",
+        "negative_extra": "dancing, calm, extra hat, big hat, wide hat, sombrero, wide brim, long trousers, wide trousers, skirt, long skirt, basket, shield, disc, high heels, boots, man, beard",
         "redo_ref_scale": {
-          "attack": 0.35
+          "attack": 0.35,
+          "idle": 0.6,
+          "cast": 0.6,
+          "hurt": 0.6,
+          "ailment": 0.6
         },
         "redo_states": [
           "idle",
@@ -4468,7 +4472,8 @@
           "hurt": "txt",
           "ailment": "txt"
         },
-        "redo_reference": "portrait"
+        "redo_reference": "attack",
+        "_doc_look": "owner 2026-11-22: every pose dressed as the attack pose (small straw hat, cropped trousers, sandals); idle/cast/hurt/ailment are redrawn with the attack sprite as reference"
       },
       {
         "id": "montador_f",
