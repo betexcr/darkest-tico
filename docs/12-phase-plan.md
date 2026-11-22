@@ -465,6 +465,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Found in P2-05 sim runs (about 1 stall in 300 chains): the last hero standing (e.g. the Tecnólogo) ends up in position 1, where none of their attacks can be used, and can't Moverse with nobody beside them. The fight never ends.
 - Done when: [x] a lone hero can always act on the enemy, with a test. The last one standing on a side ignores `use_ranks`; `target_ranks` still apply.
 
+
+### P1-22 · S · test_ui "a hero's turn comes up in a fight" is flaky
+- Status: `todo` · Depends: P1-01
+- Seen 2026-11-22 (Claude Code, `betomm/hopeful-hopper-ope58w`): 2 failures in about 8 runs of `tests/test_ui.gd`, once on a busy machine, once idle (126 s, i.e. the whole 120 s wait). `_combat_bar` walks next to a combat room through `GameState` (`move_to_node` + `mark_node_cleared`), opens the expedition screen and calls `_on_room_clicked(fight_room)`; on a failure the screen is still in map mode (mode 0) when the wait ends, so the click did not start the fight. The next check ("the bar has Guardia") fails as a consequence.
+- Files: `tests/test_ui.gd` (`_combat_bar`, `_wait_turn`), maybe `scripts/expedition/expedition_screen.gd` (`_on_room_clicked`)
+- Done when: [ ] the cause is found (log `fight_room`, the screen mode and any popup each frame on a failing seed; run the test 20× with `run_tests.gd -- --only test_ui`); [ ] 20 runs in a row pass
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
