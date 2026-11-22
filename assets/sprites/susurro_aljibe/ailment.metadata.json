@@ -1,8 +1,8 @@
 {
   "id": "sprite_susurro_aljibe_ailment",
-  "prompt": "character sheet, translucent drowned spirit woman, long dripping hair covering the face, six poses, same clothes and long dripping hands in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5160,
+  "prompt": "character sheet, translucent drowned spirit woman, long soaked tattered white dress, long dripping hair covering the face, six poses, same clothes and long dripping hands in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "bodysuit, latex, catsuit, tight clothes, leggings, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5161,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-22T13:13:29+00:00"
+  "timestamp": "2026-11-22T15:32:35+00:00"
 }
