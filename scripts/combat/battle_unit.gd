@@ -15,15 +15,15 @@ signal equipment_dropped(message: String)
 const DEAD_Z := -1
 const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 ## Box each fighter's art is drawn in (P4-21, 1080p pass): heroes are cut-out sprites and
-## may overlap a little (the row uses negative separation); enemies keep their square
+## may overlap a little (the row uses negative separation); enemies without sprites keep square
 ## portraits, drawn as framed squares standing on the same line.
 const HERO_SIZE := Vector2(160, 262)
 const ENEMY_SIZE := Vector2(140, 140)
 ## With more than 4 enemies on the stage they stack in two lines, smaller (owner 2026-11-19).
 const ENEMY_COMPACT := Vector2(118, 118)  # 4 per line fit the half-stage, a 5th never does
-## Enemies with battle sprites (P4-08) stand as cut-outs like the heroes, a little narrower so
-## 4 still fit the half-stage; compact, two lines of them still fit the stage's height.
-const ENEMY_SPRITE_SIZE := Vector2(140, 240)
+## Enemies with battle sprites (P4-08) stand as cut-outs the same size as the heroes (owner
+## 2026-11-22); compact, two lines of them still fit the stage's height.
+const ENEMY_SPRITE_SIZE := HERO_SIZE
 const ENEMY_SPRITE_COMPACT := Vector2(104, 170)
 ## Highlight colours (P4-21: a glow around the fighter instead of a line under it).
 const GLOW_ACTIVE := Color(1.0, 0.82, 0.38)
@@ -95,7 +95,10 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	is_hero = hero
 	# Party on the right facing left, enemies on the left facing right: lunges go toward the middle.
 	_dir = -1.0 if hero else 1.0
-	_cutout = hero or ResourceLoader.exists("res://assets/sprites/%s/idle.png" % str(unit_data.get("id", "")))
+	# Check the file too: *.import is git-ignored, so a fresh checkout has the PNG before Godot
+	# imports it (load_texture reads it straight from disk then) and the enemy must still be a cut-out.
+	var idle_path := "res://assets/sprites/%s/idle.png" % str(unit_data.get("id", ""))
+	_cutout = hero or ResourceLoader.exists(idle_path) or FileAccess.file_exists(idle_path)
 	_size = HERO_SIZE if hero else (ENEMY_SPRITE_SIZE if _cutout else ENEMY_SIZE)
 	alignment = BoxContainer.ALIGNMENT_END
 	custom_minimum_size = Vector2(_size.x, 0)
