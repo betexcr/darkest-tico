@@ -4809,17 +4809,15 @@
         "_doc_look": "owner 2026-11-22: the Segua of the legend, seductive (non-explicit) with the dead horse head of her portrait",
         "ref_scale": 0.8,
         "redo_states": [
-          "ailment",
-          "dead"
+          "ailment"
         ],
         "redo_modes": {
-          "ailment": "txt",
-          "dead": "txt"
+          "ailment": "txt"
         },
         "redo_seeds": {
-          "ailment": 5831,
-          "dead": 5832
-        }
+          "ailment": 5831
+        },
+        "_doc_dead": "dead.png is idle.png tipped 90 degrees by hand (P4-08): every drawn corpse came with a second, human-faced Segua; rerunning the sheet overwrites it, so tip the idle again after"
       }
     ]
   }
