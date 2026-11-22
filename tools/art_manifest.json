@@ -4794,10 +4794,11 @@
       },
       {
         "id": "segua_boss",
-        "look": "monster with a horse skull head, long black hair, tattered pale dress",
-        "seed": 5220,
+        "look": "tall monster with a horse skull for a head, long black hair, long tattered pale dress to the floor, bony hands",
+        "seed": 5221,
         "body": "humanoid",
-        "weapon": "sharp hooves and claws"
+        "weapon": "sharp hooves and claws",
+        "negative_extra": "corset, lingerie, stockings, garter, high heels, cleavage, bare legs, horse body, whole horse"
       }
     ]
   }
