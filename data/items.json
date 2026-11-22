@@ -954,6 +954,999 @@
       }
     },
     {
+      "id": "cuchara_de_albanil",
+      "name": "Cuchara de albañil",
+      "description": "Para repellar o para defenderse. Peor es nada.",
+      "price": 400,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1
+      }
+    },
+    {
+      "id": "cuchillo_cebollero",
+      "name": "Cuchillo cebollero",
+      "description": "Salió del cajón de la cocina. Corto y filoso.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "crit": 1
+      }
+    },
+    {
+      "id": "rejo_de_cuero",
+      "name": "Rejo de cuero",
+      "description": "Rejo de arriar ganado. Llega lejos y rápido.",
+      "price": 550,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "accuracy": 1,
+        "speed": 1
+      }
+    },
+    {
+      "id": "chuzo_de_boyero",
+      "name": "Chuzo de boyero",
+      "description": "La vara con punta del boyero. Los bueyes saben lo que es; los espantos aprenden. Deja al enemigo fichado.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "accuracy": 2
+      },
+      "on_hit": {
+        "status": "fichado",
+        "chance": 0.2,
+        "turns": 3
+      }
+    },
+    {
+      "id": "cadena_de_porton",
+      "name": "Cadena de portón",
+      "description": "La cadena con candado del portón de la finca. Pesada y ruidosa. A veces deja atarantado.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "accuracy": -1
+      },
+      "on_hit": {
+        "status": "aturdido",
+        "chance": 0.1,
+        "turns": 1
+      }
+    },
+    {
+      "id": "tijera_de_podar",
+      "name": "Tijera de podar café",
+      "description": "Del cafetal, para la poda de enero. Busca las coyunturas. Puede dejar sangrando.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "crit": 3
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.2,
+        "turns": 3,
+        "value": 2
+      }
+    },
+    {
+      "id": "papalote_de_navajillas",
+      "name": "Papalote de navajillas",
+      "description": "Papalote de los vientos de diciembre, con navajillas en la cola. Corta desde lejos.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "accuracy": 3
+      },
+      "element": "viento",
+      "on_hit": {
+        "status": "fichado",
+        "chance": 0.2,
+        "turns": 3
+      }
+    },
+    {
+      "id": "cutacha_de_monte",
+      "name": "Cutacha de monte",
+      "description": "Machete corto para chapear monte. Liviana: se saca rápido.",
+      "price": 850,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "speed": 1
+      }
+    },
+    {
+      "id": "lanza_de_pejibaye",
+      "name": "Lanza de pejibaye",
+      "description": "Asta de palma de pejibaye, con las espinas puestas. Deja sangrando.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.3,
+        "turns": 3,
+        "value": 2
+      }
+    },
+    {
+      "id": "picahielos_de_raspados",
+      "name": "Picahielos de raspados",
+      "description": "Del carrito de raspados del parque. Siempre frío, siempre con sirope.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "crit": 2
+      },
+      "element": "hielo"
+    },
+    {
+      "id": "bate_de_guayacan",
+      "name": "Bate de guayacán",
+      "description": "Madera de guayacán, la más dura del monte. A veces deja atarantado.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3
+      },
+      "on_hit": {
+        "status": "aturdido",
+        "chance": 0.15,
+        "turns": 1
+      }
+    },
+    {
+      "id": "bordon_de_peregrino",
+      "name": "Bordón de peregrino",
+      "description": "Hizo la romería a pie, de San José a Cartago. Lo santo se le pegó en el camino.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 1,
+        "stress_resist": 5
+      },
+      "element": "sagrado"
+    },
+    {
+      "id": "garrocha_de_sabanero",
+      "name": "Garrocha de sabanero",
+      "description": "La vara larga del sabanero guanacasteco. Para arrear toros y para no dejar que se acerquen.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "accuracy": 1
+      }
+    },
+    {
+      "id": "navaja_de_barberia",
+      "name": "Navaja de barbería",
+      "description": "La navaja de afeitar de la barbería del pueblo. Un pasón y listo. Deja sangrando.",
+      "price": 1000,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "crit": 4
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.3,
+        "turns": 3,
+        "value": 2
+      }
+    },
+    {
+      "id": "antorcha_de_canfin",
+      "name": "Antorcha de canfín",
+      "description": "Trapo, palo y canfín. Huele a apagón de los ochentas.",
+      "price": 1050,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2
+      },
+      "element": "fuego"
+    },
+    {
+      "id": "hacha_de_lenatero",
+      "name": "Hacha de leñatero",
+      "description": "Hacha de partir leña para el fogón. Cae con todo.",
+      "price": 1050,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3,
+        "crit": 1
+      }
+    },
+    {
+      "id": "machete_de_zafra",
+      "name": "Machete de zafra",
+      "description": "Machete cañero, ancho y pesado. Hecho para cortar mil cañas al día. Deja sangrando.",
+      "price": 1100,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3,
+        "speed": -1
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.25,
+        "turns": 3,
+        "value": 2
+      }
+    },
+    {
+      "id": "hoz_de_arrozal",
+      "name": "Hoz de arrozal",
+      "description": "Hoz de cosechar arroz en Guanacaste. La curva encuentra el cuello.",
+      "price": 1100,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "crit": 2
+      }
+    },
+    {
+      "id": "arpon_de_tarcoles",
+      "name": "Arpón de Tárcoles",
+      "description": "Arpón de pescador del río Tárcoles, donde los lagartos miran. Pega como corriente. Deja sangrando.",
+      "price": 1150,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "accuracy": 1
+      },
+      "element": "agua",
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.2,
+        "turns": 3,
+        "value": 2
+      }
+    },
+    {
+      "id": "cuchillo_de_matanza",
+      "name": "Cuchillo de la matanza",
+      "description": "El cuchillo de la matanza de diciembre, cuando se hacen los tamales. Deja sangrando feo.",
+      "price": 1200,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2
+      },
+      "on_hit": {
+        "status": "sangrado",
+        "chance": 0.35,
+        "turns": 3,
+        "value": 3
+      }
+    },
+    {
+      "id": "pico_de_abangares",
+      "name": "Pico de Abangares",
+      "description": "Pico de las viejas minas de oro de Abangares. Rompe roca y lo que se le ponga. A veces deja atarantado.",
+      "price": 1250,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3
+      },
+      "element": "tierra",
+      "on_hit": {
+        "status": "aturdido",
+        "chance": 0.1,
+        "turns": 1
+      }
+    },
+    {
+      "id": "mazo_de_trapiche",
+      "name": "Mazo de trapiche",
+      "description": "El mazo de madera del trapiche de dulce. Lento, pero el que lo recibe no se levanta pronto.",
+      "price": 1300,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 4,
+        "accuracy": -2,
+        "speed": -1
+      },
+      "on_hit": {
+        "status": "aturdido",
+        "chance": 0.2,
+        "turns": 1
+      }
+    },
+    {
+      "id": "pararrayos_de_campanario",
+      "name": "Pararrayos de campanario",
+      "description": "Lo bajaron del campanario después de la tormenta. Guardó un rayo adentro.",
+      "price": 1300,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "accuracy": 1
+      },
+      "element": "rayo"
+    },
+    {
+      "id": "cuchilla_del_rincon",
+      "name": "Cuchilla del Rincón de la Vieja",
+      "description": "Templada en los barros hirvientes del volcán. Todavía echa humo.",
+      "price": 1500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 2,
+        "crit": 2
+      },
+      "element": "fuego"
+    },
+    {
+      "id": "crucifijo_de_hierro",
+      "name": "Crucifijo de hierro",
+      "description": "Cruz de hierro forjado de un cementerio viejo. Pesa como una penitencia.",
+      "price": 1600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3,
+        "stress_resist": 5
+      },
+      "element": "sagrado"
+    },
+    {
+      "id": "trabuco_del_abuelo",
+      "name": "Trabuco del abuelo",
+      "description": "Escopeta de chispa que el abuelo guardaba en el ropero. El ruido despierta a todo el cantón.",
+      "price": 1700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 4,
+        "accuracy": 1,
+        "speed": -2
+      }
+    },
+    {
+      "id": "cadena_del_cadejo",
+      "name": "Cadena del Cadejo",
+      "description": "La cadena que arrastra el Cadejo, todavía tibia. Suena aunque nadie la mueva. Deja al enemigo fichado.",
+      "price": 1800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "weapon",
+      "effects": {},
+      "bonus": {
+        "damage": 3,
+        "crit": 2
+      },
+      "element": "oscuridad",
+      "on_hit": {
+        "status": "fichado",
+        "chance": 0.3,
+        "turns": 3
+      }
+    },
+    {
+      "id": "saco_de_gangoche",
+      "name": "Saco de gangoche",
+      "description": "Saco de café con huecos para los brazos. Raspa, pero algo para.",
+      "price": 300,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 3
+      },
+      "status_resist": {
+        "sangrado": 5
+      }
+    },
+    {
+      "id": "gabacha_de_pulperia",
+      "name": "Gabacha de pulpería",
+      "description": "La gabacha del pulpero, con lapicero en la bolsa. Da paciencia.",
+      "price": 450,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 3,
+        "stress_resist": 5
+      }
+    },
+    {
+      "id": "chaqueta_de_mezclilla",
+      "name": "Chaqueta de mezclilla",
+      "description": "Mezclilla gruesa del mercado de Cartago. Aguanta raspones.",
+      "price": 500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 8,
+        "dodge": 1
+      }
+    },
+    {
+      "id": "chaleco_de_mecate",
+      "name": "Chaleco de mecate",
+      "description": "Mecate tejido a mano. Cuesta mucho moverlo a uno de su lugar.",
+      "price": 600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 8
+      },
+      "status_resist": {
+        "movimiento": 25
+      }
+    },
+    {
+      "id": "capote_de_boyero",
+      "name": "Capote de boyero",
+      "description": "El capote encerado del boyero para las lluvias del camino.",
+      "price": 650,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10
+      },
+      "resist": {
+        "agua": 0.75
+      }
+    },
+    {
+      "id": "mantilla_de_la_abuela",
+      "name": "Mantilla de la abuela",
+      "description": "Encaje negro de misa de seis. Nadie se atreve con quien la lleva.",
+      "price": 700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 3,
+        "dodge": 2
+      },
+      "status_resist": {
+        "susto": 15,
+        "salado": 10
+      }
+    },
+    {
+      "id": "traje_de_apicultor",
+      "name": "Traje de apicultor",
+      "description": "De los apiarios del cafetal. Las picadas no pasan.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5
+      },
+      "status_resist": {
+        "veneno": 30
+      }
+    },
+    {
+      "id": "armadura_de_latas",
+      "name": "Armadura de latas",
+      "description": "Latas de sardina aplanadas y cosidas. Suena como pulpería en terremoto.",
+      "price": 750,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 18,
+        "speed": -2,
+        "dodge": -1
+      }
+    },
+    {
+      "id": "overol_bananero",
+      "name": "Overol bananero",
+      "description": "Overol de hule de la finca bananera. Ni el agua ni el veneno.",
+      "price": 800,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10
+      },
+      "resist": {
+        "agua": 0.75
+      },
+      "status_resist": {
+        "veneno": 15
+      }
+    },
+    {
+      "id": "chaleco_de_transito",
+      "name": "Chaleco de tránsito",
+      "description": "Chaleco reflectivo de oficial de tránsito. Todo el mundo lo esquiva.",
+      "price": 850,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 3
+      }
+    },
+    {
+      "id": "cuera_de_sabanero",
+      "name": "Cuera de sabanero",
+      "description": "Cuero de sabanero guanacasteco, curtido al sol de la bajura.",
+      "price": 850,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 15,
+        "dodge": 1
+      }
+    },
+    {
+      "id": "bata_del_san_juan",
+      "name": "Bata del San Juan de Dios",
+      "description": "Bata de médico del hospital viejo. Huele a alcohol y paciencia.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5
+      },
+      "status_resist": {
+        "veneno": 20,
+        "sangrado": 20
+      }
+    },
+    {
+      "id": "chaqueta_de_tope",
+      "name": "Chaqueta de tope",
+      "description": "La chaqueta bordada del tope de diciembre. Para lucirse y para correr.",
+      "price": 900,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 2,
+        "speed": 1
+      }
+    },
+    {
+      "id": "chaqueta_de_chirripo",
+      "name": "Chaqueta del Chirripó",
+      "description": "Para la noche en el refugio del cerro, donde escarcha.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 12
+      },
+      "resist": {
+        "hielo": 0.5
+      }
+    },
+    {
+      "id": "overol_del_ice",
+      "name": "Overol del ICE",
+      "description": "Overol de cuadrilla de electricistas. La corriente se lo piensa dos veces.",
+      "price": 950,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10
+      },
+      "resist": {
+        "rayo": 0.5
+      },
+      "status_resist": {
+        "aturdido": 15
+      }
+    },
+    {
+      "id": "traje_de_buzo",
+      "name": "Traje de buzo de Cahuita",
+      "description": "Traje de bucear del arrecife. Se resbala entre los golpes.",
+      "price": 1000,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 2
+      },
+      "resist": {
+        "agua": 0.5
+      }
+    },
+    {
+      "id": "gabardina_del_oij",
+      "name": "Gabardina del OIJ",
+      "description": "Gabardina de detective del OIJ. Huele a café de soda y a expediente sin resolver.",
+      "price": 1000,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10,
+        "dodge": 2,
+        "accuracy": 1
+      }
+    },
+    {
+      "id": "traje_de_mascarada",
+      "name": "Traje de mascarada",
+      "description": "Traje de gigante de mascarada. El que baila adentro no le tiene miedo a nada.",
+      "price": 1050,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 5,
+        "dodge": 1,
+        "stress_resist": 15
+      },
+      "status_resist": {
+        "susto": 20
+      }
+    },
+    {
+      "id": "uniforme_de_bombero",
+      "name": "Uniforme de bombero",
+      "description": "Prestado por los bomberos del cantón, que lo quieren de vuelta.",
+      "price": 1100,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 15
+      },
+      "resist": {
+        "fuego": 0.5
+      }
+    },
+    {
+      "id": "coraza_de_cuero_de_res",
+      "name": "Coraza de cuero de res",
+      "description": "Cuero doble, curtido con corteza de nance. Duro como suela.",
+      "price": 1100,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 20
+      },
+      "status_resist": {
+        "sangrado": 15
+      }
+    },
+    {
+      "id": "coraza_de_comal",
+      "name": "Coraza de comal",
+      "description": "Dos comales de hierro amarrados al pecho. Aguanta fuego de leña y de lo otro.",
+      "price": 1150,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 20,
+        "speed": -1
+      },
+      "resist": {
+        "fuego": 0.75
+      }
+    },
+    {
+      "id": "habito_franciscano",
+      "name": "Hábito franciscano",
+      "description": "Hábito de lana café del convento de Cartago. Las sombras le abren campo.",
+      "price": 1200,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 10,
+        "stress_resist": 10
+      },
+      "resist": {
+        "oscuridad": 0.6
+      },
+      "status_resist": {
+        "susto": 15
+      }
+    },
+    {
+      "id": "chaleco_del_reten",
+      "name": "Chaleco del retén",
+      "description": "Chaleco antibalas olvidado en un retén de carretera. Pesado y serio.",
+      "price": 1400,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 25,
+        "speed": -1
+      },
+      "status_resist": {
+        "sangrado": 20
+      }
+    },
+    {
+      "id": "coraza_de_carreta",
+      "name": "Coraza de carreta pintada",
+      "description": "Tablas de carreta pintadas a mano en Sarchí, con su mandala de colores. La hizo el mismo taller.",
+      "price": 1500,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 22,
+        "hp_max": 3,
+        "speed": -1
+      },
+      "status_resist": {
+        "aturdido": 10
+      }
+    },
+    {
+      "id": "cota_de_cadenas",
+      "name": "Cota de cadenas del portón",
+      "description": "Las cadenas del portón grande, tejidas en cota. No entra filo.",
+      "price": 1600,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 25,
+        "speed": -1
+      },
+      "status_resist": {
+        "sangrado": 30
+      }
+    },
+    {
+      "id": "casulla_de_la_basilica",
+      "name": "Casulla de la Basílica",
+      "description": "Vestidura de misa grande de la Basílica de los Ángeles. Lo oscuro no la toca.",
+      "price": 1700,
+      "max_stack": 1,
+      "uses_per_node": 1,
+      "usable": "equip",
+      "target": "none",
+      "slot": "armor",
+      "effects": {},
+      "bonus": {
+        "prot": 8,
+        "stress_resist": 15
+      },
+      "resist": {
+        "oscuridad": 0.5,
+        "sagrado": 0.75
+      },
+      "status_resist": {
+        "susto": 25,
+        "salado": 15
+      }
+    },
+    {
       "id": "lentes_del_abuelo",
       "name": "Lentes del abuelo",
       "description": "Con ellos se ven las cosas como son: vida exacta, mañas y debilidades de cada enemigo.",

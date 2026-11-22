@@ -20,6 +20,7 @@ Each was made from the commit that introduced that `SAVE_VERSION` (v14 was never
 | 13 | 7d4e898 |
 | 15 | 8d76b96 |
 | 16 | 0f7dc35 |
+| 17 | e49c068 (v17 was introduced in 5ecacb9) |
 
 How (run once per version; the save holds colones 4321, week 6, the first hero at 37 stress
 with a machete equipped, and some gallo pinto, where that version had those things):

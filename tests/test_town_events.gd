@@ -98,7 +98,7 @@ func _run() -> void:
 	_check(gs.buy_block_reason("guaro_contrabando") != "" and gs.buy_block_reason("gallo_pinto") == "", "Ley seca: no guaro, gallo pinto ok")
 	gs.draw_town_event("asalto_a_la_pulperia")
 	_check(gs.buy_item("gallo_pinto").begins_with("La pulpería está cerrada"), "Asaltaron la pulpería: can't buy")
-	_check(gs.buy_block_reason("cotona_de_cuero") == "", "…but the Taller still sells equipment (P4-18)")
+	_check(gs.buy_block_reason(str(gs.taller_stock[0])) == "", "…but the Taller still sells equipment (P4-18; this week's, P3-05e)")
 	gs.draw_town_event("corte_de_luz")
 	_check(gs.sell_item("gallo_pinto").begins_with("La pulpería no compra"), "Corte de luz: can't sell")
 	gs.add_item("cotona_de_cuero", 1)

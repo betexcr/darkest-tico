@@ -1045,6 +1045,8 @@ BALANCE_KEYS = {
     "drops.max_total_chance": "chance",
     "feria.stock_size": "pos", "feria.cheap_price": "int>=0", "feria.pricey_min_weight": "chance",
     "feria.full_stock_week": "pos", "feria.cursed_chance": "chance",
+    "taller.stock_weapons": "pos", "taller.stock_armor": "pos", "taller.cheap_price": "int>=0",
+    "taller.pricey_min_weight": "chance", "taller.full_stock_week": "pos",
     "taller.max_rank": "pos", "taller.top_rank_reliquias": "int>=0", "taller.weapon_damage_per_rank": "int>=0",
     "taller.weapon_accuracy_per_rank": "int>=0", "taller.armor_prot_per_rank": "int>=0", "taller.armor_hp_per_rank": "int>=0",
 }

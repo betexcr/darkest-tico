@@ -154,6 +154,8 @@
     "stock_size": 6, "cheap_price": 550, "pricey_min_weight": 0.35, "full_stock_week": 8, "cursed_chance": 0.25
   },
   "taller": {
+    "_doc_stock": "Taller weekly stock (P3-05e, owner 2026-11-22; same draw as the Feria): each week the Taller brings stock_weapons different weapons and stock_armor different armors, one of each, rerolled when the week turns; a bought one is gone until next week. Items dearer than cheap_price are rarer early: their draw weight grows from pricey_min_weight in week 1 to 1 by full_stock_week.",
+    "stock_weapons": 6, "stock_armor": 6, "cheap_price": 800, "pricey_min_weight": 0.3, "full_stock_week": 8,
     "_doc": "Taller weapon and armor ranks (P3-05d, doc 04 §3.4, DD blacksmith): each hero's weapon slot and armor slot go from rank 1 to max_rank; rank N costs rank_costs[N] colones (doc 04 had 900/1900/3400/5600, lowered to sit next to skill ranks) and the last rank also top_rank_reliquias Reliquias (doc 04's infernal fragments). Each rank above 1 adds the per_rank numbers while something is worn in that slot. The Taller's upgrade tracks (data/upgrades.json) cap the rank and discount the price.",
     "max_rank": 5, "rank_costs": [0, 0, 600, 1300, 2200, 3500], "top_rank_reliquias": 1,
     "weapon_damage_per_rank": 1, "weapon_accuracy_per_rank": 1, "armor_prot_per_rank": 3, "armor_hp_per_rank": 2

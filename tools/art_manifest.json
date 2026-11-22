@@ -2650,6 +2650,1066 @@
       "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
     {
+      "id": "item_cuchara_de_albanil",
+      "out": "assets/items/cuchara_de_albanil.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6800,
+      "subject": "bricklayer trowel with wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cuchillo_cebollero",
+      "out": "assets/items/cuchillo_cebollero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6801,
+      "subject": "kitchen knife with worn wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_rejo_de_cuero",
+      "out": "assets/items/rejo_de_cuero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6802,
+      "subject": "coiled braided leather whip, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chuzo_de_boyero",
+      "out": "assets/items/chuzo_de_boyero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6803,
+      "subject": "long wooden ox goad stick with iron tip, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cadena_de_porton",
+      "out": "assets/items/cadena_de_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6804,
+      "subject": "heavy rusty iron chain with padlock, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_tijera_de_podar",
+      "out": "assets/items/tijera_de_podar.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6805,
+      "subject": "pruning shears with red handles, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_papalote_de_navajillas",
+      "out": "assets/items/papalote_de_navajillas.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6806,
+      "subject": "paper kite with razor blades on its tail, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cutacha_de_monte",
+      "out": "assets/items/cutacha_de_monte.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6807,
+      "subject": "short curved machete with leather grip, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_lanza_de_pejibaye",
+      "out": "assets/items/lanza_de_pejibaye.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6808,
+      "subject": "spear made of spiny palm trunk, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_picahielos_de_raspados",
+      "out": "assets/items/picahielos_de_raspados.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6809,
+      "subject": "frosted ice pick with wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_bate_de_guayacan",
+      "out": "assets/items/bate_de_guayacan.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6810,
+      "subject": "heavy dark hardwood club bat, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_bordon_de_peregrino",
+      "out": "assets/items/bordon_de_peregrino.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6811,
+      "subject": "wooden pilgrim staff with small cross on top, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_garrocha_de_sabanero",
+      "out": "assets/items/garrocha_de_sabanero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6812,
+      "subject": "long wooden cattle lance with iron point, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_navaja_de_barberia",
+      "out": "assets/items/navaja_de_barberia.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6813,
+      "subject": "folding straight razor with bone handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_antorcha_de_canfin",
+      "out": "assets/items/antorcha_de_canfin.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6814,
+      "subject": "burning kerosene torch made of cloth and stick, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_hacha_de_lenatero",
+      "out": "assets/items/hacha_de_lenatero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6815,
+      "subject": "woodcutter axe with worn wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_machete_de_zafra",
+      "out": "assets/items/machete_de_zafra.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6816,
+      "subject": "wide heavy sugarcane machete, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_hoz_de_arrozal",
+      "out": "assets/items/hoz_de_arrozal.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6817,
+      "subject": "curved harvest sickle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_arpon_de_tarcoles",
+      "out": "assets/items/arpon_de_tarcoles.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6818,
+      "subject": "fishing harpoon with barbed iron tip and rope, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cuchillo_de_matanza",
+      "out": "assets/items/cuchillo_de_matanza.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6819,
+      "subject": "large butcher knife with wooden handle, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_pico_de_abangares",
+      "out": "assets/items/pico_de_abangares.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6820,
+      "subject": "old rusty mining pickaxe, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_mazo_de_trapiche",
+      "out": "assets/items/mazo_de_trapiche.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6821,
+      "subject": "huge wooden mallet, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_pararrayos_de_campanario",
+      "out": "assets/items/pararrayos_de_campanario.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6822,
+      "subject": "iron lightning rod spear with sparks, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cuchilla_del_rincon",
+      "out": "assets/items/cuchilla_del_rincon.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6823,
+      "subject": "glowing red hot blade dagger smoking, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_crucifijo_de_hierro",
+      "out": "assets/items/crucifijo_de_hierro.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6824,
+      "subject": "heavy wrought iron cross used as a mace, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_trabuco_del_abuelo",
+      "out": "assets/items/trabuco_del_abuelo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6825,
+      "subject": "antique flintlock blunderbuss with wooden stock, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cadena_del_cadejo",
+      "out": "assets/items/cadena_del_cadejo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6826,
+      "subject": "black iron chain with glowing red embers, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_saco_de_gangoche",
+      "out": "assets/items/saco_de_gangoche.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6827,
+      "subject": "burlap coffee sack worn as a tunic, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_gabacha_de_pulperia",
+      "out": "assets/items/gabacha_de_pulperia.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6828,
+      "subject": "shopkeeper apron with pen in pocket, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaqueta_de_mezclilla",
+      "out": "assets/items/chaqueta_de_mezclilla.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6829,
+      "subject": "worn blue denim jacket, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaleco_de_mecate",
+      "out": "assets/items/chaleco_de_mecate.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6830,
+      "subject": "vest woven from thick rope, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_capote_de_boyero",
+      "out": "assets/items/capote_de_boyero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6831,
+      "subject": "waxed dark cloak of an ox cart driver, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_mantilla_de_la_abuela",
+      "out": "assets/items/mantilla_de_la_abuela.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6832,
+      "subject": "black lace church veil shawl, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_traje_de_apicultor",
+      "out": "assets/items/traje_de_apicultor.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6833,
+      "subject": "beekeeper suit with mesh hat, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_armadura_de_latas",
+      "out": "assets/items/armadura_de_latas.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6834,
+      "subject": "armor made of flattened tin cans, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_overol_bananero",
+      "out": "assets/items/overol_bananero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6835,
+      "subject": "yellow rubber work overalls, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaleco_de_transito",
+      "out": "assets/items/chaleco_de_transito.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6836,
+      "subject": "reflective fluorescent safety vest, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cuera_de_sabanero",
+      "out": "assets/items/cuera_de_sabanero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6837,
+      "subject": "leather cowboy jacket with fringes, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_bata_del_san_juan",
+      "out": "assets/items/bata_del_san_juan.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6838,
+      "subject": "white doctor coat stained, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaqueta_de_tope",
+      "out": "assets/items/chaqueta_de_tope.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6839,
+      "subject": "embroidered horse rider parade jacket, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaqueta_de_chirripo",
+      "out": "assets/items/chaqueta_de_chirripo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6840,
+      "subject": "thick wool mountain jacket with frost, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_overol_del_ice",
+      "out": "assets/items/overol_del_ice.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6841,
+      "subject": "electrician work overalls with insulated gloves, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_traje_de_buzo",
+      "out": "assets/items/traje_de_buzo.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6842,
+      "subject": "black neoprene diving wetsuit, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_gabardina_del_oij",
+      "out": "assets/items/gabardina_del_oij.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6843,
+      "subject": "long beige detective trench coat, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_traje_de_mascarada",
+      "out": "assets/items/traje_de_mascarada.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6844,
+      "subject": "colorful giant carnival costume with papier mache head, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_uniforme_de_bombero",
+      "out": "assets/items/uniforme_de_bombero.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6845,
+      "subject": "firefighter turnout coat with reflective stripes, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_coraza_de_cuero_de_res",
+      "out": "assets/items/coraza_de_cuero_de_res.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6846,
+      "subject": "thick brown leather breastplate, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_coraza_de_comal",
+      "out": "assets/items/coraza_de_comal.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6847,
+      "subject": "breastplate made of round cast iron griddles, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_habito_franciscano",
+      "out": "assets/items/habito_franciscano.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6848,
+      "subject": "brown monk robe with rope belt, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_chaleco_del_reten",
+      "out": "assets/items/chaleco_del_reten.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6849,
+      "subject": "black tactical bulletproof vest, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_coraza_de_carreta",
+      "out": "assets/items/coraza_de_carreta.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6850,
+      "subject": "armor made of painted oxcart wooden planks with colorful mandala, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_cota_de_cadenas",
+      "out": "assets/items/cota_de_cadenas.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6851,
+      "subject": "chainmail shirt made of iron gate chains, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
+      "id": "item_casulla_de_la_basilica",
+      "out": "assets/items/casulla_de_la_basilica.png",
+      "size": [
+        512,
+        512
+      ],
+      "out_size": [
+        128,
+        128
+      ],
+      "post": {
+        "brightness": 1.4,
+        "contrast": 1.15
+      },
+      "seed": 6852,
+      "subject": "embroidered gold and white priest chasuble, isolated object, close-up, plain black background",
+      "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+      "negative_extra": "candle, candles, fire, flame, table, scenery"
+    },
+    {
       "id": "town_terminal",
       "out": "assets/town/terminal.png",
       "size": [

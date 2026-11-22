@@ -68,7 +68,7 @@ func _run() -> void:
 		if raw.has("roster") and raw["roster"] is Array and raw["roster"][0].get("equipment", {}) is Dictionary \
 				and str(raw["roster"][0].get("equipment", {}).get("weapon", "")) != "":
 			_check(eq is Dictionary and str(eq.get("weapon", "")) == "machete_cartago", "v%d: the equipped machete kept" % v)
-		_check(gs.reliquias >= 0 and gs.building_levels is Dictionary and gs.feria_stock.size() > 0, "v%d: Reliquias, upgrades and a Feria stall set up" % v)
+		_check(gs.reliquias >= 0 and gs.building_levels is Dictionary and gs.feria_stock.size() > 0 and gs.taller_stock.size() > 0, "v%d: Reliquias, upgrades, a Feria stall and a Taller stock set up" % v)
 		var again: Dictionary = gs.to_save_dict()
 		_check(int(again["version"]) == gs.SAVE_VERSION, "v%d: saves again as v%d" % [v, gs.SAVE_VERSION])
 		# The first reload may still fill defaults (recruits rolled fresh for saves that had none,

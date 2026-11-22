@@ -6,6 +6,13 @@ extends SceneTree
 var _fail: int = 0
 
 
+func _unique(a: Array) -> int:
+	var seen: Dictionary = {}
+	for x in a:
+		seen[x] = true
+	return seen.size()
+
+
 func _check(cond: bool, what: String) -> void:
 	print(("  ok   " if cond else "  FAIL ") + what)
 	if not cond:
@@ -94,15 +101,60 @@ func _run() -> void:
 	var pul: Array = live.call(hub._shop_grid)
 	_check(pul.size() == gs.all_item_ids().size() - equip_ids.size() and pul.all(func(t): return not gs.is_equipment(t.item_id)),
 		"the Pulpería sells only consumables (%d)" % pul.size())
-	_check(live.call(hub._taller_grid).size() == equip_ids.size() - acc_ids.size(), "the Taller sells all %d weapons and armors, no accessories" % (equip_ids.size() - acc_ids.size()))
+	# P3-05e (owner 2026-11-22): the Taller brings a few weapons and armors each week.
+	var n_w: int = gs.BalanceScript.int_of("taller.stock_weapons")
+	var n_a: int = gs.BalanceScript.int_of("taller.stock_armor")
+	var weap: Array = gs.taller_stock.filter(func(i): return str(gs.get_item(str(i)).get("slot", "")) == "weapon")
+	var arm: Array = gs.taller_stock.filter(func(i): return str(gs.get_item(str(i)).get("slot", "")) == "armor")
+	_check(weap.size() == n_w and arm.size() == n_a and gs.taller_stock.size() == _unique(gs.taller_stock),
+		"the Taller's week: %d weapons and %d armors, one of each" % [weap.size(), arm.size()])
+	var tall: Array = live.call(hub._taller_grid)
+	_check(tall.size() == gs.taller_stock.size() and tall.all(func(t): return gs.taller_stock.has(t.item_id)), "the Taller shows only this week's %d pieces" % tall.size())
 	var counts: Dictionary = {}
 	for f in ["weapon", "armor"]:
 		hub._shop_filter = f
 		hub._build_shop()
 		await process_frame
 		counts[f] = live.call(hub._taller_grid).size()
-	_check(counts["weapon"] + counts["armor"] == equip_ids.size() - acc_ids.size(),
+	_check(counts["weapon"] == n_w and counts["armor"] == n_a,
 		"the Taller's filters split it: %d armas, %d armaduras" % [counts["weapon"], counts["armor"]])
+	hub._shop_filter = "todo"
+	var off_week: String = ""
+	for i in equip_ids:
+		if not gs.is_accessory(str(i)) and not gs.taller_stock.has(i):
+			off_week = str(i)
+			break
+	_check(off_week != "" and gs.buy_item(off_week).begins_with("El taller no tiene"), "a weapon or armor not in this week can't be bought")
+	var in_stock: String = str(gs.taller_stock[0])
+	gs.colones = 9000
+	_check(gs.buy_item(in_stock).begins_with("Compraste") and not gs.taller_stock.has(in_stock), "buying one takes it off the Taller's stock")
+	_check(gs.buy_item(in_stock).begins_with("El taller no tiene"), "…one of each: no second one this week")
+	hub._refresh()
+	await process_frame
+	_check(live.call(hub._taller_grid).size() == gs.taller_stock.size(), "the Taller's tiles follow (%d left)" % gs.taller_stock.size())
+	gs.remove_item(in_stock, 1)
+	var tsave: Dictionary = gs.to_save_dict()
+	var tkept: Array = gs.taller_stock.duplicate()
+	gs.taller_stock = []
+	gs.apply_save_data(tsave)
+	_check(gs.taller_stock == tkept, "the Taller's stock is saved and loaded")
+	tsave.erase("taller_stock")
+	gs.apply_save_data(tsave)
+	_check(gs.taller_stock.size() == n_w + n_a, "an old save (v17) gets a fresh Taller stock")
+	# Early weeks favour the cheap pieces: over many rolls the dear ones show up less in week 1.
+	var dear_w1: int = 0
+	var dear_w9: int = 0
+	var week_before: int = gs.week
+	for r in 200:
+		gs.week = 1
+		gs.refresh_taller()
+		dear_w1 += gs.taller_stock.filter(func(i): return int(gs.get_item(str(i))["price"]) > gs.BalanceScript.int_of("taller.cheap_price")).size()
+		gs.week = 9
+		gs.refresh_taller()
+		dear_w9 += gs.taller_stock.filter(func(i): return int(gs.get_item(str(i))["price"]) > gs.BalanceScript.int_of("taller.cheap_price")).size()
+	gs.week = week_before
+	_check(dear_w1 < dear_w9, "dear pieces are rarer in week 1 (%d) than in week 9 (%d)" % [dear_w1, dear_w9])
+	gs.colones = 5000
 	var stall: Array = live.call(hub._feria_grid)
 	_check(stall.size() == gs.feria_stock.size() and gs.feria_stock.filter(func(i): return not gs.is_cursed(str(i))).size() == gs.BalanceScript.int_of("feria.stock_size"),
 		"the Feria Nocturna shows this week's %d accessories" % stall.size())

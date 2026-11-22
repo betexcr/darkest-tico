@@ -50,7 +50,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 17
+const SAVE_VERSION := 18
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -113,6 +113,8 @@ var party: Array = []
 var recruit_pool: Array = []
 ## Feria Nocturna (P3-05a): this week's accessories on the stall (ids, one of each).
 var feria_stock: Array = []
+## The Taller's weapons and armor this week (P3-05e, owner 2026-11-22): ids, one of each.
+var taller_stock: Array = []
 var _next_uid: int = 1
 var _tex_cache: Dictionary = {}
 ## True while a fight is on: only `equip_turn_hero` may change equipment, and it costs
@@ -601,6 +603,8 @@ func buy_block_reason(item_id: String) -> String:
 		return "%s está cerrad%s esta semana (%s)." % [SHOP_NAMES[shop], "o" if shop == "taller" else "a", ev.get("name", "")]
 	if shop == "feria" and not feria_stock.has(item_id):
 		return "La Feria Nocturna no trae %s esta semana." % get_item(item_id).get("name", item_id)
+	if shop == "taller" and not taller_stock.has(item_id):
+		return "El taller no tiene %s esta semana." % get_item(item_id).get("name", item_id)
 	if TownEventsScript.is_blocked(ev, item_id):
 		return "Esta semana no se vende %s (%s)." % [get_item(item_id).get("name", item_id), ev.get("name", "")]
 	return ""
@@ -622,6 +626,8 @@ func buy_item(item_id: String) -> String:
 	colones -= price
 	if shop_of(item_id) == "feria":
 		feria_stock.erase(item_id)
+	elif shop_of(item_id) == "taller":
+		taller_stock.erase(item_id)
 	if TownEventsScript.first_buy_pct(active_event(), item) != 0:
 		event_flags["first_buy_used"] = true
 	return "Compraste %s (-%d ₡)." % [item.get("name", item_id), price]
@@ -636,6 +642,20 @@ func refresh_feria() -> void:
 	var cursed: Array = _feria_pool(true)
 	if not cursed.is_empty() and rng.randf() < BalanceScript.num("feria.cursed_chance"):
 		feria_stock.append(str(cursed[rng.randi() % cursed.size()]["id"]))
+
+
+## The Taller's weapons and armor for the week (P3-05e, owner 2026-11-22): data/balance.json
+## `taller.stock_weapons` / `stock_armor`, drawn like the Feria's stall (dearer ones rarer early).
+func refresh_taller() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = randi()
+	taller_stock = []
+	for slot in ["weapon", "armor"]:
+		var pool: Array = []
+		for id in all_item_ids():
+			if is_equipment(str(id)) and str(get_item(str(id)).get("slot", "")) == slot:
+				pool.append(get_item(str(id)))
+		taller_stock.append_array(FeriaScript.roll_stock(pool, week, rng, BalanceScript.int_of("taller.stock_" + ("weapons" if slot == "weapon" else "armor")), "taller"))
 
 
 ## How many ordinary accessories the stall brings each week.
@@ -944,6 +964,7 @@ func reset_party_from_catalog(random_classes: bool = false) -> void:
 			party.append(h)
 	refresh_recruits()
 	refresh_feria()
+	refresh_taller()
 	reset_week_counters()
 
 
@@ -1539,10 +1560,11 @@ func end_of_expedition_week(went_out: bool = true) -> void:
 	_log_week(fallen.size(), roster.filter(func(h): return hero_busy(h)).size())
 	refresh_recruits()
 	refresh_feria()
+	refresh_taller()
 	last_week_report = "Semana %d." % week
 	if not fallen.is_empty():
 		last_week_report += " Descansen en paz: %s." % ", ".join(fallen)
-	last_week_report += " Llegaron candidatos nuevos a la terminal y la Feria Nocturna trae otros accesorios."
+	last_week_report += " Llegaron candidatos nuevos a la terminal, la Feria Nocturna trae otros accesorios y el taller otras armas y armaduras."
 	if not quirk_lines.is_empty():
 		last_week_report += "\n" + "\n".join(quirk_lines)
 	if not activity_lines.is_empty():
@@ -2670,6 +2692,11 @@ func apply_save_data(data: Dictionary) -> void:
 		feria_stock = (data["feria_stock"] as Array).map(func(x): return str(x)).filter(func(x): return is_equipment(x) and is_accessory(x))
 	else:
 		refresh_feria()
+	# v18 (P3-05e): the Taller's weekly stock. Older saves: a fresh one for this week.
+	if data.get("taller_stock", null) is Array:
+		taller_stock = (data["taller_stock"] as Array).map(func(x): return str(x)).filter(func(x): return is_equipment(x) and not is_accessory(x))
+	else:
+		refresh_taller()
 	# Never resume mid-expedition in this slice.
 	end_mission_abandon()
 	# v11 (P5-01): the week's money in / out so far (older saves: start counting now).
@@ -2806,6 +2833,7 @@ func to_save_dict() -> Dictionary:
 		"party_uids": party.map(func(h): return int(h["uid"])),
 		"recruit_pool": recruit_pool.duplicate(true),
 		"feria_stock": feria_stock.duplicate(),
+		"taller_stock": taller_stock.duplicate(),
 		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
 		"selected_difficulty_id": selected_difficulty_id,

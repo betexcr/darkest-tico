@@ -254,8 +254,8 @@ func _refresh() -> void:
 	_week.text = "Semana %d" % GameState.week
 	_refresh_equipment()
 	_refresh_skills()
-	if _feria_shown != GameState.feria_stock:
-		_build_feria()
+	if _feria_shown != GameState.feria_stock or _taller_shown != GameState.taller_stock:
+		_build_shop()
 	for g in [_shop_grid, _taller_grid, _feria_grid]:
 		for b in g.get_children():
 			if not b.is_queued_for_deletion() and b.has_method("refresh"):
@@ -305,7 +305,7 @@ func _category(item: Dictionary) -> String:
 
 
 ## One icon tile per item (data/items.json), in file order: consumables at the Pulpería,
-## weapons and armor in the Taller's chosen category. The tile shows the price; name, stats
+## this week's weapons and armor (GameState.taller_stock, P3-05e) in the Taller's chosen category. The tile shows the price; name, stats
 ## and description are in its tooltip card. The Feria Nocturna has its own (_build_feria).
 func _build_shop() -> void:
 	for g in [_shop_grid, _taller_grid]:
@@ -314,7 +314,7 @@ func _build_shop() -> void:
 	for id in GameState.all_item_ids():
 		var item: Dictionary = GameState.get_item(str(id))
 		var shop: String = GameState.shop_of(str(id))
-		if shop == "feria":
+		if shop == "feria" or (shop == "taller" and not GameState.taller_stock.has(str(id))):
 			continue
 		if shop == "taller" and _shop_filter != "todo" and _category(item) != _shop_filter:
 			continue
@@ -323,7 +323,14 @@ func _build_shop() -> void:
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind(shop))
 		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
 		(_taller_grid if shop == "taller" else _shop_grid).add_child(b)
+	_taller_shown = GameState.taller_stock.duplicate()
+	if _taller_grid.get_child_count() == 0 or _taller_grid.get_children().all(func(c): return c.is_queued_for_deletion()):
+		_taller_grid.add_child(CardScript.label("No queda nada de esto en el taller esta semana. La otra semana el herrero trae otras armas y armaduras.", 13, CardScript.HINT, true))
 	_build_feria()
+
+
+## The Taller ids the grid shows now (rebuilt when GameState.taller_stock changes).
+var _taller_shown: Array = []
 
 
 ## The stall ids the Feria grid shows now (rebuilt when GameState.feria_stock changes).
