@@ -68,7 +68,7 @@ Goal: meet roadmap Phase 1 exit criteria. The combat prototype must validate the
 - Battle stage mirrored the same day: party on the right facing left, enemies on the left (AGENTS.md §4).
 
 ### P1-01 · M · Headless test harness
-- Status: `in-progress` · Depends: — · Started: `tests/smoke_expedition.gd` (full expedition runs) and `tests/test_guard.gd` exist; still missing a single runner + resolver/stress unit tests.
+- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-22)` · Depends: — · Started: `tests/smoke_expedition.gd` (full expedition runs) and `tests/test_guard.gd` exist; still missing a single runner + resolver/stress unit tests.
 - Spec: `01` §2–3
 - Files: `tests/run_tests.gd` (new, `extends SceneTree`), `tests/test_*.gd`, `AGENTS.md` (add command)
 - Done when:
@@ -592,7 +592,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner "clicking anywhere besides the modal should close the hero details modals"
 - Done when: [x] the town's "Ficha de X" closes on a click outside it (non-exclusive popup window) and stays open on a click inside; [x] the battle's hero/enemy panel already closed on an outside click (P4-21 era, `expedition_screen.gd` `_input`); [x] test
 ### P3-08 · M · Save v4 + migration tests
-- Status: `todo` · Depends: P3-01
+- Status: `in-progress (Claude Code, betomm/hopeful-hopper-ope58w, 2026-11-22)` · Depends: P3-01
 - Spec: `06` risk register (save corruption)
 - Files: `scripts/autoload/game_state.gd`, `scripts/autoload/save_service.gd`, `tests/`
 - Done when:
