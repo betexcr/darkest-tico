@@ -17,6 +17,21 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-22 (37) — P4-08 follow-up: owner art changes (Segua, Campesina, Murciélago)
+- **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
+- **Status after session:** P4-08 review (owner asked for these three after seeing the sheets).
+- **Changed:**
+  - **Segua** (owner: "ok to be sexualized, with the dead horse head"): look leads with the rotting horse head, then the seductive body (corset dress, stockings, heels); human-face and nudity negatives; `ref_scale` 0.8 (the portrait is that head); seed 5223. Ailment redrawn (hair blob). Corpse = idle tipped by hand: every drawn corpse came with a second, human-faced Segua.
+  - **Campesina** (owner: every pose dressed like her attack): idle/cast/hurt/ailment redrawn with the attack sprite as reference (`redo_reference: attack`, 0.6) and the attack outfit in the look (small straw hat, cropped trousers, sandals); attack byte-identical.
+  - **Murciélago de bodega** (owner: keep the horns, no human body): flying horned bat; `poses.idle` "flying with wings spread"; `ref_scale` 0.2; `single_figure: bottom` (the tall canvas drew two bats stacked; `keep_bottom_figure` keeps the lower); cropped; corpse = tipped idle.
+  - `tools/sd_sprites.py`: per-character `ref_scale` (beasts and sheets), `poses` (pose text per state), `single_figure` (`true` = biggest blob, `"bottom"` = lower of two stacked), `keep_bottom_figure`.
+- **Verified:** looked at every pose of the three; validator 0 errors. No code the game runs changed, so the test suite was not rerun.
+- **Not verified / risks:** the Segua's and the bat's corpses and the bat's crop were done by hand on the PNGs; rerunning `sd_sprites.py --force` for them overwrites that (noted in the manifest `_doc_*`). Faint grey smudge above the bat's head in two poses.
+- **Decisions needed:** none.
+- **Next step:** owner look at the three in a fight; then the plan's remaining todo (P1-15 expedition sim, P4-02 tooltips, P4-01 prep/extraction, P4-04 audio) or P5-03 sign-off.
+
+---
+
 ## 2026-11-22 (36) — P4-08: battle sprites for all 15 enemies; enemies stand as cut-outs in battle
 - **Agent / branch:** Claude Code (cloud) / `betomm/hopeful-hopper-ope58w`
 - **Status after session:** P4-08 review (owner to look at the enemies in a fight).
