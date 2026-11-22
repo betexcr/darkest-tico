@@ -4805,7 +4805,19 @@
         "weapon": "sharp hooves and claws",
         "negative_extra": "human face, pretty face, woman face, lips, makeup, mask, nude, nudity, topless, nipples, whole horse, horse body, two people, duplicate",
         "_doc_look": "owner 2026-11-22: the Segua of the legend, seductive (non-explicit) with the dead horse head of her portrait",
-        "ref_scale": 0.8
+        "ref_scale": 0.8,
+        "redo_states": [
+          "ailment",
+          "dead"
+        ],
+        "redo_modes": {
+          "ailment": "txt",
+          "dead": "txt"
+        },
+        "redo_seeds": {
+          "ailment": 5831,
+          "dead": 5832
+        }
       }
     ]
   }

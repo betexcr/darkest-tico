@@ -1,8 +1,8 @@
 {
   "id": "sprite_segua_boss_ailment",
-  "prompt": "character sheet, tall monster with a horse skull for a head, long black hair, long tattered pale dress to the floor, bony hands, six poses, same clothes and sharp hooves and claws in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "corset, lingerie, stockings, garter, high heels, cleavage, bare legs, horse body, whole horse, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
-  "seed": 5221,
+  "prompt": "character sheet, rotting dead horse head instead of a human head, long horse muzzle, bare skull jaw, glowing orange eyes, seductive female body, long black hair, black corset dress, stockings, high heels, six poses, same clothes and sharp hooves and claws in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "human face, pretty face, woman face, lips, makeup, mask, nude, nudity, topless, nipples, whole horse, horse body, two people, duplicate, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5223,
   "steps": 20,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -17,5 +17,5 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-22T15:48:52+00:00"
+  "timestamp": "2026-11-22T20:27:22+00:00"
 }
