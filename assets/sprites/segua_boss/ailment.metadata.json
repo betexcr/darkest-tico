@@ -17,5 +17,11 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-22T20:27:22+00:00"
+  "timestamp": "2026-11-22T20:49:48+00:00",
+  "redo": {
+    "prompt": "rotting dead horse head instead of a human head, long horse muzzle, bare skull jaw, glowing orange eyes, seductive female body, long black hair, black corset dress, stockings, high heels, hunched over in pain, trembling, sickly and afraid, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "seed": 5831,
+    "mode": "txt2img + openpose + portrait",
+    "strength": 0.75
+  }
 }
