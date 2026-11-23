@@ -2664,10 +2664,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6800,
-      "subject": "steel bricklayer trowel with pointed triangular blade and wooden handle, single object lying diagonally, isolated, close-up, plain black background",
+      "seed": 6900,
+      "subject": "masonry trowel with flat diamond-shaped steel blade and short wooden handle, smeared with grey cement, lying on red bricks, still life, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "person, man, woman, face, hands, bowl, plate, spoon, candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, knife, dagger, sword, blade weapon, spear, bowl, plate, spoon, candle, candles, fire, flame, scenery"
     },
     {
       "id": "item_cuchillo_cebollero",
@@ -2884,10 +2884,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6811,
-      "subject": "tall wooden walking staff with a small wooden cross on top, single object lying diagonally, isolated, close-up, plain black background",
+      "seed": 6920,
+      "subject": "long wooden pilgrim staff with a small cross carved on top, lying flat on a stone floor, top-down view, still life, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "person, man, woman, face, hands, candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, figure, hood, cloak, robe, monk, nun, face, hands, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_garrocha_de_sabanero",
@@ -3444,10 +3444,10 @@
         "brightness": 1.4,
         "contrast": 1.15
       },
-      "seed": 6839,
-      "subject": "man wearing an embroidered short horse rider parade jacket with silver buttons, portrait, plain dark background",
+      "seed": 6910,
+      "subject": "waist-up portrait of a man standing, wearing an embroidered short black bolero jacket with silver buttons, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "horse, animal, candle, candles, fire, flame, table, scenery"
+      "negative_extra": "horse, rider, saddle, reins, animal, riding, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_chaqueta_de_chirripo",
