@@ -153,6 +153,17 @@ func _wait_turn(screen) -> Dictionary:
 	return {}
 
 
+## Answers any event popup (hunger, a room event) with its first option until the map is back.
+func _close_popups(screen) -> void:
+	for i in 600:
+		if int(screen._mode) != 1:
+			return
+		var acts: Array = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion() and not b.disabled)
+		if not acts.is_empty():
+			acts[0].pressed.emit()
+		await process_frame
+
+
 func _combat_bar(gs) -> void:
 	print("Combat bar")
 	gs.reset_party_from_catalog()
@@ -177,6 +188,10 @@ func _combat_bar(gs) -> void:
 	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
 	root.add_child(screen)
 	await process_frame
+	# P1-22: the screen enters the room it opens on, so if the walk ended on a hunger turn
+	# (every `hunger.every_moves` moves) a hunger popup is up and the room click is ignored.
+	await _close_popups(screen)
+	_check(int(screen._mode) == 0, "the map is free to click (mode %d)" % int(screen._mode))
 	screen._on_room_clicked(fight_room)
 	var hero: Dictionary = await _wait_turn(screen)
 	_check(fight_room != "" and not hero.is_empty(), "a hero's turn comes up in a fight (room %s, mode %d)" % [fight_room, int(screen._mode)])

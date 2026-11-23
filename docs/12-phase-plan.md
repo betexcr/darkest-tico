@@ -473,10 +473,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 
 ### P1-22 · S · test_ui "a hero's turn comes up in a fight" is flaky
-- Status: `todo` · Depends: P1-01
+- Status: `done` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-23) · Depends: P1-01
 - Seen 2026-11-22 (Claude Code, `betomm/hopeful-hopper-ope58w`): 2 failures in about 8 runs of `tests/test_ui.gd`, once on a busy machine, once idle (126 s, i.e. the whole 120 s wait). `_combat_bar` walks next to a combat room through `GameState` (`move_to_node` + `mark_node_cleared`), opens the expedition screen and calls `_on_room_clicked(fight_room)`; on a failure the screen is still in map mode (mode 0) when the wait ends, so the click did not start the fight. The next check ("the bar has Guardia") fails as a consequence.
 - Files: `tests/test_ui.gd` (`_combat_bar`, `_wait_turn`), maybe `scripts/expedition/expedition_screen.gd` (`_on_room_clicked`)
-- Done when: [ ] the cause is found (log `fight_room`, the screen mode and any popup each frame on a failing seed; run the test 20× with `run_tests.gd -- --only test_ui`); [ ] 20 runs in a row pass
+- Cause: the expedition screen enters the room it opens on (`_ready` → `_enter_room`). When the test's walk ended on a hunger turn (`moves_since_meal` ≥ `hunger.every_moves`), a hunger popup was up (mode 1), so `_on_room_clicked` returned without moving; `_wait_turn` then answered the popup and waited on the map. Reproduced every time by setting `moves_since_meal = 6` before opening the screen. Fix (test only, the game is right to ask about food first): `_close_popups` answers any popup before the click, and a check that the map is free.
+- Done when: [x] the cause is found; [x] 20 runs in a row pass (20/20)
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
