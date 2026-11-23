@@ -413,6 +413,9 @@ func _event_result(gs) -> void:
 	var tone = screen.get_script()
 	_check(tone._result_tone("Lalo: estrés -6.") == 1 and tone._result_tone("Estrés +5 a la cuadrilla.") == -1 and tone._result_tone("Luz -25.") == -1
 		and tone._result_tone("+40 colones.") == 1 and tone._result_tone("Lalo pierde 4 PV.") == -1, "good and bad results are told apart (stress and Luz read the right way)")
+	_check(tone._result_tone("Kattia: Maldición del altar (-5 precisión, +10 % estrés recibido) por 3 peleas.") == -1
+		and tone._result_tone("Lalo: Bendición (+5 precisión, -10 % estrés recibido) por 3 peleas.") == 1,
+		"an event curse for N fights reads as bad by its mods, a blessing as good")
 	# Six enemies (a boss with summons and the fallen, owner 2026-11-19) stack in two lines,
 	# smaller, positions 1-4 below; they never spill over the party.
 	var six: Array = []

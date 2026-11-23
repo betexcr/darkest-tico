@@ -162,6 +162,20 @@ func _run() -> void:
 	_check(hub._relief_boxes.size() == 2 and hub._relief_boxes.values().all(func(bx): return bx.get_children().filter(func(c): return not c.has_meta("mejoras")).size() == 4) \
 		and hub._relief_boxes.values().all(func(bx): return bx.get_children().any(func(c): return c.has_meta("mejoras"))),
 		"the Iglesia and Cantina windows each list their 3 activities under a header (P4-17), then their Mejoras (P3-18)")
+	# Mejoras fold (owner 2026-11-23): closed by default, a click opens the upgrade rows.
+	var mej: Node = null
+	for n in hub._pages.get_node("taller").get_children():
+		if n.has_meta("mejoras") and not n.is_queued_for_deletion():
+			mej = n
+	var live := func(): return mej.get_children().filter(func(n): return not n.is_queued_for_deletion())
+	_check(mej != null and live.call().size() == 1 and live.call()[0].has_meta("mejoras_bar") and str(live.call()[0].text).begins_with("▸"),
+		"the Taller's Mejoras start closed: only the fold bar shows")
+	live.call()[0].pressed.emit()
+	await process_frame
+	for n in hub._pages.get_node("taller").get_children():
+		if n.has_meta("mejoras") and not n.is_queued_for_deletion():
+			mej = n
+	_check(live.call().size() > 1 and str(live.call()[0].text).begins_with("▾"), "a click on the bar opens the upgrade rows")
 	hub.queue_free()
 
 	print("%d failure(s)" % _fail)

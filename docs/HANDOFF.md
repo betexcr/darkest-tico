@@ -17,17 +17,40 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-23 (40) — P1-22 + P1-15: flaky UI test fixed; mission-success mode in the campaign bot
+## 2026-11-23 (42) — P1-22 + P1-15: flaky UI test fixed; mission-success mode in the campaign bot
 - **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
 - **Status after session:** P1-22 done, P1-15 done. P3-05e gained *Bodega de Hierros* (still review).
 - **Changed:**
   - **P1-22:** the expedition screen enters the room it opens on, so when `test_ui`'s walk ended on a hunger turn a hunger popup ate the room click (reproduced every time with `moves_since_meal = 6`). `tests/test_ui.gd` `_close_popups` answers popups before clicking; 20/20 runs pass. No game change.
   - **P1-15:** `tools/playtest_campaign.gd -- --missions N` plays N fresh week-1 expeditions (real screen, provisions, camp, items, traps, curios, hunger, light) and prints **Mission success** with a 95% Wilson interval against doc 06's 55–70% target, plus how the rest ended. Done in the bot, not `sim_combat.gd`, to avoid a second copy of the expedition rules (doc 10 "Mission success").
   - **P3-05e:** Taller upgrade *Bodega de Hierros* (owner yes): `extra_gear_stock` +1/+2/+3 weapons and armors a week, arrives at once when bought; validator, `test_upgrades`, the bot buys it last.
-- **Verified:** validator 0 errors; `test_upgrades`, `test_hub`, `test_save_migration` pass; `test_ui` 20/20; full suite 22/22 earlier today (before these three changes; they touch only the upgrade, the bot and test_ui).
+- **Verified:** validator 0 errors; `test_upgrades`, `test_hub`, `test_save_migration` pass; `test_ui` 20/20; full suite 22/22 after merging main (P4-33, P4-34).
 - **Results:** `--missions 40`: Aprendiz fresh party **95%** (CI 83–99%), Veterano level 3 / rank 2 / 2 gear **88%** (CI 74–95%). Normal and elite fights almost never lost; the boss is the only real risk.
 - **Decisions needed:** mission success is well above the 55–70% target even allowing for the bot being careful. Make the Sótanos harder (boss, elites, fewer provisions), or accept it because real players play worse than the bot? Nothing was changed.
 - **Next step:** owner answers the decision above; if "harder", a P5-02 balance task: tune `data/balance.json` / the Sótanos boss and rerun `playtest_campaign.gd -- --missions 40` for Aprendiz and Veterano until both land in 55–70%.
+
+---
+
+## 2026-11-23 (41) — P4-34: building Mejoras fold up, closed by default
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-34 review (owner: the Mejoras hid the shops' inventory).
+- **Changed:** `scripts/hacienda/hacienda_hub.gd` `_refresh_upgrades`: the section is a fold bar ("▸/▾ Mejoras del edificio (k/n) — N Reliquias del Abuelo"), closed by default in every building (`_mejoras_open`, per building, not saved); `tests/test_hub_activities.gd` checks closed → click → open.
+- **Verified:** `validate_data.py` 0 errors; Godot 4.7.2 full `tests/run_tests.gd` 22 of 22 passed; 1280×720 screenshot of the Taller (grid fully visible, one bar at the bottom).
+- **Not verified / risks:** the open state resets when the hub scene reloads (after an expedition).
+- **Decisions needed:** none.
+- **Next step:** owner playtest of P4-33/P4-34; otherwise the top `todo` in docs/12-phase-plan.md.
+
+## 2026-11-23 (40) — P4-33: event curses read red; N-fight buffs and curses shown as icons on the heroes
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-33 review (owner screenshot: Altar roto's curse shown as green ▲; "these should be viewable as long as they are in effect").
+- **Changed:**
+  - `scripts/expedition/expedition_screen.gd` `_result_tone`: a line with a mod list in parentheses ("X: Maldición del altar (-5 precisión, +10 % estrés recibido) por 3 peleas.") is judged by those mods through `TooltipCard.is_bad_line`, before the old "+" = good fallback.
+  - `scripts/combat/battle_unit.gd` `_make_buff_icon`: every `camp_buffs` entry gets an icon in the status row above the fighter (exploring and fighting): Salado art + red rim for curses (`CampingSystem.is_debuff`), Chiva art + gold rim for blessings, fights left in the corner (none for whole-expedition ones, ≥ 99), tooltip name / maldición|bendición / origin / fights left / mods.
+  - Tests: `test_ui` (curse red, blessing green), `test_feedback` (2 icons, tooltips).
+- **Verified:** `validate_data.py` 0 errors; Godot 4.7.2 (downloaded to the scratchpad) `tests/run_tests.gd`: 22 of 22 passed.
+- **Not verified / risks:** no screenshot taken; with many statuses + buffs the icon row may get wider than the 160 px fighter (it is an HBox, so it overflows sideways rather than wrapping).
+- **Decisions needed:** dedicated icon art for "bendición"/"maldición" instead of reusing Chiva/Salado?
+- **Next step:** owner playtest of P4-33 (open a curio like Altar roto, check the red ▼ lines and the icons over the party); otherwise continue the top `todo` in docs/12-phase-plan.md.
 
 ---
 

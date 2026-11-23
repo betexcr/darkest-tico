@@ -99,6 +99,8 @@ var _painted: Texture2D = null
 ## Taller (owner 2026-11-19): the equipment section folds away so the shop has room. It
 ## starts closed; clicking a hero opens it for that hero, clicking the same hero closes it.
 var _equip_open: bool = false
+## Building id -> whether its "Mejoras" fold is open (closed by default, owner 2026-11-23).
+var _mejoras_open: Dictionary = {}
 var _equip_bar: Button
 var _painted_rects: Dictionary = {}
 
@@ -540,9 +542,27 @@ func _refresh_upgrades() -> void:
 		holder.move_child(box, -1)
 		for c in box.get_children():
 			c.queue_free()
-		box.add_child(CardScript.section("Mejoras del edificio — %d Reliquia%s del Abuelo" % [GameState.reliquias, "" if GameState.reliquias == 1 else "s"]))
+		# A fold bar, closed by default (owner 2026-11-23: the rows hid the shops' inventory).
+		var open: bool = bool(_mejoras_open.get(bid, false))
+		var lv_sum: int = 0
+		var lv_top: int = 0
 		for t in UpgradesScript.tracks(bid):
-			box.add_child(_upgrade_row(bid, t))
+			lv_sum += GameState.upgrade_level(bid, str(t.get("id", "")))
+			lv_top += UpgradesScript.max_level(t)
+		var bar := Button.new()
+		bar.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		bar.set_meta("mejoras_bar", true)
+		bar.text = "%s Mejoras del edificio (%d/%d) — %d Reliquia%s del Abuelo" % ["▾" if open else "▸", lv_sum, lv_top,
+			GameState.reliquias, "" if GameState.reliquias == 1 else "s"]
+		bar.tooltip_text = "Mejoras del edificio\nClic para %s la lista." % ("cerrar" if open else "abrir")
+		bar.pressed.connect(func():
+			_mejoras_open[bid] = not bool(_mejoras_open.get(bid, false))
+			_refresh_upgrades()
+		)
+		box.add_child(bar)
+		if open:
+			for t in UpgradesScript.tracks(bid):
+				box.add_child(_upgrade_row(bid, t))
 	_fit_taller_page()
 
 

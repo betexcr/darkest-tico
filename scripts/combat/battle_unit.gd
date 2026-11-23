@@ -49,6 +49,7 @@ static var _outline: Shader = null
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
+const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 ## Status icons come from data/statuses.json (name, description, colour, letter); art in
 ## res://assets/status/<id>.png, or a coloured letter badge until it exists.
 ## Some effects share art: id -> icon file id.
@@ -254,6 +255,43 @@ func _refresh_status_icons() -> void:
 		return
 	for e in StatusEffectsScript.entries(data):
 		_status_row.add_child(_make_status_icon(str(e["id"]), int(e["turns"]), int(e["value"]), int(e["stacks"])))
+	# Buffs and curses that last N fights (camp skills, curios, town events) show too, the whole
+	# time they are on the hero, in and out of combat (owner 2026-11-23).
+	for b in data.get("camp_buffs", []):
+		if b is Dictionary:
+			_status_row.add_child(_make_buff_icon(b))
+
+
+## Icon for a buff/curse that lasts N fights: the Chiva art for a blessing, Salado for a curse,
+## the fights left in the corner and name, origin and mods on hover.
+func _make_buff_icon(b: Dictionary) -> Control:
+	var mods: Dictionary = b.get("mods", {})
+	var bad: bool = CampingSystemScript.is_debuff(mods)
+	var n: int = int(b.get("fights", 0))
+	var box: Control = _make_status_icon("salado" if bad else "chiva", 0, 0)
+	var forever: bool = n >= 99  # structural: the camp's "whole expedition" marker
+	box.tooltip_text = "%s — %s\n%s · %s\n%s" % [str(b.get("name", "?")), "maldición" if bad else "bendición",
+		str(b.get("from", "fogata")).capitalize(),
+		"toda la expedición" if forever else "%d pelea%s más" % [n, "" if n == 1 else "s"],
+		CampingSystemScript.mods_text(mods)]
+	if not forever:
+		var l := Label.new()
+		l.text = str(n)
+		l.position = Vector2(ICON_SIZE.x - 10, ICON_SIZE.y - 14)
+		l.add_theme_font_size_override("font_size", 11)
+		l.add_theme_color_override("font_outline_color", Color.BLACK)
+		l.add_theme_constant_override("outline_size", 4)
+		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(l)
+	# A thin coloured border tells these apart from the fight statuses of the same art.
+	var rim := ReferenceRect.new()
+	rim.border_color = Color(0.88, 0.35, 0.3) if bad else Color(1.0, 0.82, 0.48)
+	rim.border_width = 1.5
+	rim.editor_only = false
+	rim.size = ICON_SIZE
+	rim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(rim)
+	return box
 
 
 func _make_status_icon(id: String, turns: int, value: int, stacks: int = 1) -> Control:

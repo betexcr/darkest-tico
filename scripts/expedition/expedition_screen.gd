@@ -866,6 +866,20 @@ func _resolve_event(text: String, lines: PackedStringArray = PackedStringArray()
 ## round from PV: "estrés -6" is good news, "Luz -25" bad.
 static func _result_tone(line: String) -> int:
 	var t: String = line.to_lower()
+	# A buff or curse for N fights lists its mods in parentheses ("Maldición del altar
+	# (-5 precisión, +10 % estrés recibido) por 3 peleas."): judge it by those mods, each
+	# read like a card bullet (is_bad_line), not by the "+" signs in it.
+	var mods_re := RegEx.create_from_string("\\(([^()]*[+-]\\d[^()]*)\\)")
+	var mm := mods_re.search(line)
+	if mm != null:
+		var bad: int = 0
+		var parts: PackedStringArray = mm.get_string(1).split(",")
+		for p in parts:
+			if CardScript.is_bad_line(p):
+				bad += 1
+		if bad == parts.size():
+			return -1
+		return 1 if bad == 0 else 0
 	var re := RegEx.create_from_string("estrés\\s*([+-]\\d+)")
 	var m := re.search(t)
 	if m != null:
