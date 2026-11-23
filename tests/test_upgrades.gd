@@ -138,6 +138,21 @@ func _run() -> void:
 	gs.apply_save_data(old)
 	_check(gs.skill_rank_cap() == 3, "v14 save without high ranks: cap 3")
 
+	# P3-05e: Bodega de Hierros, more weapons and armor in the Taller every week.
+	gs.active_event_id = ""
+	gs.building_levels = {}
+	gs.reliquias = 10
+	gs.colones = 50000
+	var tw: int = BalanceScript.int_of("taller.stock_weapons")
+	var ta: int = BalanceScript.int_of("taller.stock_armor")
+	gs.refresh_taller()
+	_check(gs.taller_stock.size() == tw + ta, "Taller without upgrade: %d weapons + %d armors" % [tw, ta])
+	_check(gs.buy_upgrade("taller", "bodega_hierros").contains("nivel 1") and gs.taller_stock.size() == tw + ta + 2, "Bodega de Hierros 1: one more weapon and one more armor right away")
+	_check(gs.taller_stock.size() == _unique(gs.taller_stock), "…nothing twice")
+	gs.end_of_expedition_week()
+	var weapons: int = gs.taller_stock.filter(func(i): return str(gs.get_item(str(i)).get("slot", "")) == "weapon").size()
+	_check(weapons == tw + 1 and gs.taller_stock.size() == tw + ta + 2, "…and every week after (%d weapons)" % weapons)
+
 	# P3-05b: the Feria Nocturna's two tracks and its cursed trinkets.
 	gs.active_event_id = ""
 	gs.building_levels = {}

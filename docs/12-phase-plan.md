@@ -308,7 +308,7 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: `review` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-22; owner to play the hub over a few weeks and read the new names) · Depends: P3-05a, P3-05d
 - Owner: "make taller equipment randomized per week too, and add much more possible equipments weapons and armour".
 - Files: `data/items.json` (+27 weapons, +26 armors: 37 and 36 in all), `data/balance.json` (`taller.stock_weapons/stock_armor/cheap_price/pricey_min_weight/full_stock_week`), `scripts/domain/feria.gd` (the stall draw takes a balance `section`), `GameState` (`taller_stock`, `refresh_taller`, buy block + removal, save v18), `hacienda_hub.gd` (Taller grid shows only this week's stock), `tools/art_manifest.json` + `assets/items/` (53 icons), validator, `test_hub`, `test_town_events`, `test_save_migration`, `tests/fixtures/save_v17.json`
-- Done when: [x] each week the Taller brings 6 weapons and 6 armors, one of each, dearer pieces rarer early (same draw as the Feria); a bought piece is gone until the next week; selling to the Taller doesn't restock it; [x] 53 new Tico weapons and armors (prices 300–1800, elements, on-hit statuses, element and status resistances); [x] icons; [x] save v18 + v17 fixture; [ ] owner: names / prices / stock size feel right; balance pass with the playtest bot (the dearest new pieces are stronger than the old ones)
+- Done when: [x] each week the Taller brings 6 weapons and 6 armors, one of each, dearer pieces rarer early (same draw as the Feria); a bought piece is gone until the next week; selling to the Taller doesn't restock it; [x] 53 new Tico weapons and armors (prices 300–1800, elements, on-hit statuses, element and status resistances); [x] icons; [x] save v18 + v17 fixture; [x] *Bodega de Hierros* Taller upgrade (owner 2026-11-23): +1/+2/+3 weapons and armors a week, arriving at once when bought (`extra_gear_stock`, `test_upgrades`); [ ] owner: names / prices / stock size feel right; balance pass with the playtest bot (the dearest new pieces are stronger than the old ones)
 
 ### P3-06 · M · Clínica de Espantos + quirks
 - Status: `review` (Claude Code, `claude/p3-03-followup-48gkar`, 2026-11-17): built and tested headless; owner to read the quirk names and try the Clínica · Depends: P3-01
@@ -473,20 +473,26 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 
 ### P1-22 · S · test_ui "a hero's turn comes up in a fight" is flaky
-- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-23) · Depends: P1-01
+- Status: `done` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-23) · Depends: P1-01
 - Seen 2026-11-22 (Claude Code, `betomm/hopeful-hopper-ope58w`): 2 failures in about 8 runs of `tests/test_ui.gd`, once on a busy machine, once idle (126 s, i.e. the whole 120 s wait). `_combat_bar` walks next to a combat room through `GameState` (`move_to_node` + `mark_node_cleared`), opens the expedition screen and calls `_on_room_clicked(fight_room)`; on a failure the screen is still in map mode (mode 0) when the wait ends, so the click did not start the fight. The next check ("the bar has Guardia") fails as a consequence.
 - Files: `tests/test_ui.gd` (`_combat_bar`, `_wait_turn`), maybe `scripts/expedition/expedition_screen.gd` (`_on_room_clicked`)
-- Cause (2026-11-23): a test bug, not a game bug. The walk through `GameState` skips the hunger stops; when it is long enough (about 1 seed in 60), the screen opens on the hunger prompt, `_on_room_clicked` is ignored (mode EVENT), `_wait_turn` eats, and the party stays in the room it was in, waiting 120 s for a fight never entered. Fix: `moves_since_meal = 0` after the walk, and `_wait_turn(screen, room)` clicks the room again if the screen is back on the map elsewhere.
-- Done when: [x] the cause is found (seeded loop of the same setup: 1 failure in 60, seed 13, hunger prompt; 0 in 120 with the fix); [x] 20 runs in a row pass (20/20)
+- Cause: the expedition screen enters the room it opens on (`_ready` → `_enter_room`). When the test's walk ended on a hunger turn (`moves_since_meal` ≥ `hunger.every_moves`), a hunger popup was up (mode 1), so `_on_room_clicked` returned without moving; `_wait_turn` then answered the popup and waited on the map. Reproduced every time by setting `moves_since_meal = 6` before opening the screen. Fix (test only, the game is right to ask about food first): `_close_popups` answers any popup before the click, and a check that the map is free.
+- Done when: [x] the cause is found; [x] 20 runs in a row pass (20/20)
+- Also found on its own on `betomm/blissful-dijkstra-f06pdx` the same day (same cause, a seeded loop: 1 failure in 60 before, 0 in 120 after); that fix was dropped in the merge in favour of this one.
+### P1-23 · S · test_quirks "a hero booked at the Cantina can't be treated" is flaky
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-23) · Depends: P1-01
+- Cause: catalog heroes start with random quirks; when `party[0]` rolled *No le entra el guaro* the Cantina booking was refused and the check failed (2 in 40 runs). Fix (test only): clear that hero's quirks first and check the booking went through.
+- Done when: [x] cause found; [x] 60 runs in a row pass
+
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
-- Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
+- Status: `done` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-23) · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
-- Files: `tools/sim_combat.gd`
+- Files: `tools/playtest_campaign.gd` (`--missions`, `_print_mission_success`), doc 10. Done in the campaign bot, not `sim_combat.gd`: the bot already plays real expeditions through the expedition screen, so copying traps / curios / camp / hunger into the combat sim would have been a second copy of those rules.
 - Why: P1-07's `--chain` covers fights only, with no camp, potions, traps, curios, light or hunger. So it can't measure mission success yet, and P5-02 needs that.
 - Done when:
-  - [ ] Chains follow a generated map path (rooms in order) with the starting provisions
-  - [ ] The policy uses heal and stress items and camps once
-  - [ ] Prints the mission success rate, for comparison with the 55–70% target
+  - [x] Expeditions follow a generated map with the region's provision kit (`--missions N`: fresh week-1 parties, one expedition each)
+  - [x] The policy uses heal and stress items and camps (the campaign bot's expedition policy)
+  - [x] Prints the mission success rate with a 95% interval, against the 55–70% target (doc 10: Aprendiz 95%, Veterano 88%, both above the band)
 
 ### P4-10 · S · Item icons
 - Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.

@@ -17,14 +17,28 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
-## 2026-11-23 (42) — P1-22: flaky test_ui fight check fixed (hunger prompt ate the click); P4-01/P4-02 cut
+## 2026-11-23 (43) — P4-01/P4-02 cut; merge of main (a second P1-22 fix dropped)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
-- **Status after session:** P1-22 done. P4-01 and P4-02 `cut` (owner 2026-11-23: covered by the hub, expedition screen, victory card, tooltip cards and hero sheet).
-- **Changed:** `tests/test_ui.gd`: `_combat_bar` resets `moves_since_meal` after its off-screen walk; `_wait_turn(screen, room)` re-clicks the fight room if a popup left the screen on the map elsewhere. Cause and numbers in the plan entry. No game code changed: showing the hunger stop when the screen opens is correct.
-- **Verified:** `validate_data.py` 0 errors; a seeded loop of the same setup (1/60 failures before, 0/120 after); `run_tests.gd -- --only test_ui` 20/20; full `tests/run_tests.gd` 22 of 22 passed (Godot 4.7.2 in the scratchpad).
+- **Status after session:** P4-01 and P4-02 `cut` (owner 2026-11-23: covered by the hub, expedition screen, victory card, tooltip cards and hero sheet). P1-22 had been fixed on this branch too (same cause, the hunger popup ate the room click; a seeded loop: 1/60 failures before, 0/120 after); main's fix (`_close_popups` before the click) was kept and this branch's test change dropped in the merge.
+- **Changed:** `docs/12-phase-plan.md` (P4-01, P4-02 cut; a note under P1-22; new P1-23 done). `tests/test_quirks.gd`: another flaky check found after the merge (P1-23: a random *No le entra el guaro* quirk refused the Cantina booking, 2 in 40 runs); the test clears that hero's quirks first (0 in 60 after).
+- **Verified:** after the merge: `validate_data.py` 0 errors; full `tests/run_tests.gd` 22 of 22 passed.
 - **Not verified / risks:** none known.
-- **Decisions needed:** none.
-- **Next step:** owner playtest of the `review` tasks (newest: P4-33, P4-34); next agent task P1-15 (`tools/sim_combat.gd` chain mode with camp, items and room events) or P4-04 (audio).
+- **Decisions needed:** the open one in entry (42): mission success is above the 55–70% target.
+- **Next step:** as in entry (42): owner answers the mission-success decision; else P4-04 (audio) or owner playtest of the `review` tasks (newest P4-33, P4-34, P3-05e).
+
+## 2026-11-23 (42) — P1-22 + P1-15: flaky UI test fixed; mission-success mode in the campaign bot
+- **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
+- **Status after session:** P1-22 done, P1-15 done. P3-05e gained *Bodega de Hierros* (still review).
+- **Changed:**
+  - **P1-22:** the expedition screen enters the room it opens on, so when `test_ui`'s walk ended on a hunger turn a hunger popup ate the room click (reproduced every time with `moves_since_meal = 6`). `tests/test_ui.gd` `_close_popups` answers popups before clicking; 20/20 runs pass. No game change.
+  - **P1-15:** `tools/playtest_campaign.gd -- --missions N` plays N fresh week-1 expeditions (real screen, provisions, camp, items, traps, curios, hunger, light) and prints **Mission success** with a 95% Wilson interval against doc 06's 55–70% target, plus how the rest ended. Done in the bot, not `sim_combat.gd`, to avoid a second copy of the expedition rules (doc 10 "Mission success").
+  - **P3-05e:** Taller upgrade *Bodega de Hierros* (owner yes): `extra_gear_stock` +1/+2/+3 weapons and armors a week, arrives at once when bought; validator, `test_upgrades`, the bot buys it last.
+- **Verified:** validator 0 errors; `test_upgrades`, `test_hub`, `test_save_migration` pass; `test_ui` 20/20; full suite 22/22 after merging main (P4-33, P4-34).
+- **Results:** `--missions 40`: Aprendiz fresh party **95%** (CI 83–99%), Veterano level 3 / rank 2 / 2 gear **88%** (CI 74–95%). Normal and elite fights almost never lost; the boss is the only real risk.
+- **Decisions needed:** mission success is well above the 55–70% target even allowing for the bot being careful. Make the Sótanos harder (boss, elites, fewer provisions), or accept it because real players play worse than the bot? Nothing was changed.
+- **Next step:** owner answers the decision above; if "harder", a P5-02 balance task: tune `data/balance.json` / the Sótanos boss and rerun `playtest_campaign.gd -- --missions 40` for Aprendiz and Veterano until both land in 55–70%.
+
+---
 
 ## 2026-11-23 (41) — P4-34: building Mejoras fold up, closed by default
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
@@ -47,6 +61,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 - **Decisions needed:** dedicated icon art for "bendición"/"maldición" instead of reusing Chiva/Salado?
 - **Next step:** owner playtest of P4-33 (open a curio like Altar roto, check the red ▼ lines and the icons over the party); otherwise continue the top `todo` in docs/12-phase-plan.md.
 
+---
+
 ## 2026-11-23 (39) — P3-05e: the Taller's stock changes every week; 53 new weapons and armors
 - **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
 - **Status after session:** P3-05e review (owner request: "make taller equipment randomized per week too, and add much more possible equipments weapons and armour").
@@ -61,7 +77,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Docs: AGENTS.md shop rule, doc 02 §5, plan P3-05e.
 - **Verified:** validator 0 errors; Godot 4.7.2 Linux `run_tests.gd` 22 of 22; `playtest_campaign.gd --campaigns 2 --weeks 6`: 12/12 cleared, 0 deaths, the bot still buys gear (13% of spending).
 - **Not verified / risks:** no long balance run: the dearest new pieces (damage +4, prot 25) are stronger than the old top ones, so later-week runs may get easier; 16 weak icons were re-rolled from 3–4 seed candidates each (the trowel still reads a bit like a blade); nobody has looked at the Taller in the running game.
-- **Decisions needed:** stock size 6 + 6 OK? Should a Taller upgrade add stock like the Feria's *Tamaño de Puestos*? (Not done.)
+- **Later (2026-11-23, owner: yes to a stock upgrade):** Taller track *Bodega de Hierros* (`data/upgrades.json`, effect `extra_gear_stock`: +1/+2/+3 weapons and the same armors, 1/2/3 Reliquias + 500/1000/1600 ₡; tops up at once like *Tamaño de Puestos*; `GameState.taller_stock_size`, `_top_up_taller`; validator; `test_upgrades`; the playtest bot buys it last).
+- **Decisions needed:** base stock size 6 + 6 OK?
 - **Next step:** owner playtest of the Taller over a few weeks; then a P5 balance run (`tools/playtest_campaign.gd --campaigns 6 --weeks 12`) against the latest baseline in `docs/playtests/`. Re-roll any icon with `tools/sd_local.py --only item_<id> --try-seeds 3 --preview-dir <dir>`.
 
 ---

@@ -94,7 +94,10 @@ func _run() -> void:
 	_check(gs.activity_block_reason(h, "cantina", "guaro_conversa").contains("Clínica"), "…nor book the Iglesia/Cantina")
 	var other: Dictionary = gs.party[0]
 	other["stress"] = 50
-	gs.send_to_activity(other, "cantina", "guaro_conversa")
+	# Catalog heroes start with random quirks; one that refuses the Cantina ("No le entra el
+	# guaro") would turn the booking down (flaky about 1 run in 20).
+	other["quirks"] = []
+	_check(gs.send_to_activity(other, "cantina", "guaro_conversa").contains("se va a"), "booked at the Cantina")
 	QuirksScript.add(other, "pachorra")
 	_check(gs.clinic_options(other)[0]["actions"].all(func(a): return not a["enabled"] and str(a["reason"]).contains("Cantina")), "a hero booked at the Cantina can't be treated")
 	gs.cancel_activity(other)

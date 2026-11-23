@@ -172,7 +172,7 @@ def main() -> int:
                   "cantina": {"relief_bonus", "cost_discount", "extra_slots"},
                   "guardabosques": {"camp_extra_class_skills", "lesson_discount"},
                   "feria": {"extra_stock", "cost_discount"},
-                  "taller": {"weapon_rank_cap", "armor_rank_cap", "cost_discount"}}
+                  "taller": {"weapon_rank_cap", "armor_rank_cap", "cost_discount", "extra_gear_stock"}}
     fractions = {"rank_discount", "cost_discount", "lesson_discount", "relief_bonus"}
     max_rank = int(prog.get("skill_ranks", {}).get("max_rank", 5))
     ub = up.get("buildings")

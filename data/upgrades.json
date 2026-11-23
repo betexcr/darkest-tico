@@ -104,6 +104,13 @@
           { "reliquias": 2, "colones": 1000, "value": 4 },
           { "reliquias": 3, "colones": 1600, "value": 5 }
         ] },
+      { "id": "bodega_hierros", "name": "Bodega de Hierros", "effect": "extra_gear_stock", "base": 0,
+        "desc": "Más campo en la bodega: el herrero trae más armas y armaduras cada semana (las nuevas llegan de una vez).",
+        "levels": [
+          { "reliquias": 1, "colones": 500, "value": 1 },
+          { "reliquias": 2, "colones": 1000, "value": 2 },
+          { "reliquias": 3, "colones": 1600, "value": 3 }
+        ] },
       { "id": "horno_eficiente", "name": "Horno Eficiente", "effect": "cost_discount", "base": 0,
         "desc": "Menos leña para el mismo calor: afilar y reforzar sale más barato.",
         "levels": [

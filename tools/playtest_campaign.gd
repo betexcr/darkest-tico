@@ -20,6 +20,10 @@ extends SceneTree
 ##   --start-gear K    Casa Comunal rank R and K pieces of equipment each (0-4: weapon, armor,
 ##   --start-colones C then accessories; the dearest the Pulpería sells), and the hacienda has
 ##                     C colones. Defaults: 0, 1, 0 and hub.start_colones.
+##   --missions N      mission-success mode (P1-15): N fresh week-1 parties, one expedition each
+##                     (= --campaigns N --weeks 1 without the per-campaign journal); with
+##                     --difficulty and --start-* it measures one difficulty at one point. The
+##                     summary's "Mission success" line compares with doc 06's 55–70% target.
 ##   --party a,b,c,d   force the class mix (hero ids from data/heroes.json): every campaign
 ##                     starts with exactly these four, nobody else is hired, and a hero who
 ##                     dies is replaced by one of the same class for its hire cost
@@ -73,7 +77,8 @@ const UPGRADE_ORDER := [["casa_comunal", "maestria_oficio"], ["casa_comunal", "p
 	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["taller", "forja_machetes"], ["taller", "chaperia_armaduras"],
 	["iglesia", "iglesia_alivio"], ["taller", "horno_eficiente"],
 	["cantina", "cantina_alivio"], ["guardabosques", "entrenamiento_patrulla"], ["iglesia", "iglesia_capilla"],
-	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"]]
+	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"],
+	["taller", "bodega_hierros"]]
 const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
 	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires",
 	"upgrades": "Building upgrades"}
@@ -81,7 +86,7 @@ const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", 
 var _gs
 var _loader
 var _scene: PackedScene
-var _opts := {"campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": [],
+var _opts := {"missions": 0, "campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": [],
 	"start-level": 0, "start-ranks": 1, "start-gear": 0, "start-colones": -1}
 var _finished: String = ""
 var _uses: Dictionary = {}
@@ -127,7 +132,8 @@ func _run() -> void:
 			row["campaign"] = c + 1
 			rows.append(row)
 			_all_rows.append(row)
-		_print_campaign(c + 1, rows)
+		if int(_opts["missions"]) <= 0:
+			_print_campaign(c + 1, rows)
 	_print_summary()
 	print("Done in %.1f s." % ((Time.get_ticks_msec() - t0) / 1000.0))
 	quit(0)
@@ -140,6 +146,11 @@ func _parse_args() -> void:
 		var flag: String = a[k]
 		var val: String = a[k + 1] if k + 1 < a.size() else ""
 		match flag:
+			"--missions":
+				_opts["missions"] = int(val)
+				_opts["campaigns"] = int(val)
+				_opts["weeks"] = 1
+				k += 1
 			"--campaigns", "--weeks", "--seed", "--start-level", "--start-ranks", "--start-gear", "--start-colones":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
@@ -993,6 +1004,7 @@ func _print_summary() -> void:
 		moves += int(r.get("moves", 0))
 		camped += 1 if r.get("camped", false) else 0
 	print("### Summary (%d expeditions)\n" % _all_rows.size())
+	_print_mission_success()
 	print("- Results: %s" % ", ".join(PackedStringArray(res.keys().map(func(k): return "%s %d" % [k, res[k]]))))
 	print("- Deaths per expedition: %.2f. Quebrantos/Virtudes per expedition: %.2f. Moves per expedition: %.1f. Camped in %d." % [
 		float(deaths) / n, float(breaks) / n, float(moves) / n, camped])
@@ -1037,6 +1049,29 @@ func _print_summary() -> void:
 			total += int(e[1])
 		print("- %s (%d actions): %s" % [cls, total, ", ".join(PackedStringArray(arr.slice(0, 3).map(func(e): return "%s %d%%" % [e[0], roundi(100.0 * e[1] / maxi(total, 1))])))])
 	print("")
+
+
+## P1-15: the share of expeditions that reach and clear the objective, with a 95% Wilson
+## interval, against doc 06's target (55–70% on standard risk), and how the others ended.
+func _print_mission_success() -> void:
+	var n: int = _all_rows.size()
+	if n == 0:
+		return
+	var won: int = _all_rows.filter(func(r): return str(r.get("result", "")) == "objective").size()
+	var p: float = float(won) / n
+	var z: float = 1.96  # structural: 95% normal quantile
+	var den: float = 1.0 + z * z / n
+	var mid: float = (p + z * z / (2.0 * n)) / den
+	var half: float = z * sqrt(p * (1.0 - p) / n + z * z / (4.0 * n * n)) / den
+	var after_fight: int = _all_rows.filter(func(r): return str(r.get("result", "")) == "flee" and bool(r.get("fled_fight", false))).size()
+	var after_death: int = _all_rows.filter(func(r): return str(r.get("result", "")) == "flee" and not bool(r.get("fled_fight", false)) and int(r.get("deaths", 0)) > 0).size()
+	var on_map: int = _all_rows.filter(func(r): return str(r.get("result", "")) == "flee").size() - after_fight - after_death
+	var other: int = n - won - after_fight - after_death - on_map
+	var verdict: String = "in the band" if p >= 0.55 and p <= 0.70 else ("above the band: too easy?" if p > 0.70 else "below the band: too hard?")
+	print("- **Mission success: %.0f%%** (95%% CI %.0f–%.0f%%) of %d expeditions; doc 06 target 55–70%%, %s" % [
+		100.0 * p, 100.0 * maxf(mid - half, 0.0), 100.0 * minf(mid + half, 1.0), n, verdict])
+	print("- Not cleared: %d went home after a Retirada, %d after a death, %d from the map, %d other (wiped / stuck)." % [
+		after_fight, after_death, on_map, other])
 
 
 ## Clear rate per difficulty (the owner's bands, P5-02) and when each campaign first moved up.

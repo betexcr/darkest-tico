@@ -651,11 +651,31 @@ func refresh_taller() -> void:
 	rng.seed = randi()
 	taller_stock = []
 	for slot in ["weapon", "armor"]:
-		var pool: Array = []
-		for id in all_item_ids():
-			if is_equipment(str(id)) and str(get_item(str(id)).get("slot", "")) == slot:
-				pool.append(get_item(str(id)))
-		taller_stock.append_array(FeriaScript.roll_stock(pool, week, rng, BalanceScript.int_of("taller.stock_" + ("weapons" if slot == "weapon" else "armor")), "taller"))
+		taller_stock.append_array(FeriaScript.roll_stock(_taller_pool(slot), week, rng, taller_stock_size(slot), "taller"))
+
+
+## How many weapons (or armors) the Taller brings each week: the base plus *Bodega de Hierros*.
+func taller_stock_size(slot: String) -> int:
+	return BalanceScript.int_of("taller.stock_" + ("weapons" if slot == "weapon" else "armor")) \
+		+ int(upgrade_effect("taller", "extra_gear_stock"))
+
+
+## The weapons or armors the Taller can bring.
+func _taller_pool(slot: String) -> Array:
+	var pool: Array = []
+	for id in all_item_ids():
+		if is_equipment(str(id)) and str(get_item(str(id)).get("slot", "")) == slot:
+			pool.append(get_item(str(id)))
+	return pool
+
+
+## *Bodega de Hierros* bought mid-week: `n` more weapons and `n` more armors arrive at once.
+func _top_up_taller(n: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = randi()
+	for slot in ["weapon", "armor"]:
+		var rest: Array = _taller_pool(slot).filter(func(it): return not taller_stock.has(str(it["id"])))
+		taller_stock.append_array(FeriaScript.roll_stock(rest, week, rng, n, "taller"))
 
 
 ## How many ordinary accessories the stall brings each week.
@@ -1767,9 +1787,12 @@ func buy_upgrade(building_id: String, track_id: String) -> String:
 		building_levels[building_id] = {}
 	var lv: int = upgrade_level(building_id, track_id) + 1
 	var extra_before: int = int(upgrade_effect(building_id, "extra_stock"))
+	var gear_before: int = int(upgrade_effect(building_id, "extra_gear_stock"))
 	building_levels[building_id][track_id] = lv
 	if building_id == "feria":
 		_top_up_feria(int(upgrade_effect("feria", "extra_stock")) - extra_before)
+	elif building_id == "taller":
+		_top_up_taller(int(upgrade_effect("taller", "extra_gear_stock")) - gear_before)
 	return "%s sube a nivel %d: %s (-%d Reliquias, -%d ₡)." % [t.get("name", track_id), lv,
 		BuildingUpgradesScript.effect_text(str(t.get("effect", "")), BuildingUpgradesScript.value_at(t, lv)),
 		int(c["reliquias"]), int(c["colones"])]
