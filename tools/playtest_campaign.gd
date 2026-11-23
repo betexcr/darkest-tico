@@ -73,7 +73,8 @@ const UPGRADE_ORDER := [["casa_comunal", "maestria_oficio"], ["casa_comunal", "p
 	["iglesia", "iglesia_limosna"], ["cantina", "cantina_fiado"], ["taller", "forja_machetes"], ["taller", "chaperia_armaduras"],
 	["iglesia", "iglesia_alivio"], ["taller", "horno_eficiente"],
 	["cantina", "cantina_alivio"], ["guardabosques", "entrenamiento_patrulla"], ["iglesia", "iglesia_capilla"],
-	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"]]
+	["cantina", "cantina_corredor"], ["guardabosques", "guia_supervivencia"], ["feria", "feria_cadena"], ["feria", "feria_puestos"],
+	["taller", "bodega_hierros"]]
 const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", "stress_items": "Stress items",
 	"ebais": "EBAIS", "iglesia": "Iglesia", "ranks": "Skill ranks", "gear": "Equipment", "hires": "Hires",
 	"upgrades": "Building upgrades"}

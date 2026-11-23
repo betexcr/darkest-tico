@@ -31,7 +31,8 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
   - Docs: AGENTS.md shop rule, doc 02 §5, plan P3-05e.
 - **Verified:** validator 0 errors; Godot 4.7.2 Linux `run_tests.gd` 22 of 22; `playtest_campaign.gd --campaigns 2 --weeks 6`: 12/12 cleared, 0 deaths, the bot still buys gear (13% of spending).
 - **Not verified / risks:** no long balance run: the dearest new pieces (damage +4, prot 25) are stronger than the old top ones, so later-week runs may get easier; 16 weak icons were re-rolled from 3–4 seed candidates each (the trowel still reads a bit like a blade); nobody has looked at the Taller in the running game.
-- **Decisions needed:** stock size 6 + 6 OK? Should a Taller upgrade add stock like the Feria's *Tamaño de Puestos*? (Not done.)
+- **Later (2026-11-23, owner: yes to a stock upgrade):** Taller track *Bodega de Hierros* (`data/upgrades.json`, effect `extra_gear_stock`: +1/+2/+3 weapons and the same armors, 1/2/3 Reliquias + 500/1000/1600 ₡; tops up at once like *Tamaño de Puestos*; `GameState.taller_stock_size`, `_top_up_taller`; validator; `test_upgrades`; the playtest bot buys it last).
+- **Decisions needed:** base stock size 6 + 6 OK?
 - **Next step:** owner playtest of the Taller over a few weeks; then a P5 balance run (`tools/playtest_campaign.gd --campaigns 6 --weeks 12`) against the latest baseline in `docs/playtests/`. Re-roll any icon with `tools/sd_local.py --only item_<id> --try-seeds 3 --preview-dir <dir>`.
 
 ---

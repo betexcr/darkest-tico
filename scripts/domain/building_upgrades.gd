@@ -116,6 +116,8 @@ static func effect_text(effect: String, v: float) -> String:
 			return "armaduras hasta rango %d" % int(v)
 		"extra_stock":
 			return "+%d accesorio%s en el puesto" % [int(v), "" if int(v) == 1 else "s"]
+		"extra_gear_stock":
+			return "+%d arma%s y +%d armadura%s en el taller" % [int(v), "" if int(v) == 1 else "s", int(v), "" if int(v) == 1 else "s"]
 		"camp_extra_class_skills":
 			return "+%d habilidad%s de oficio por fogata" % [int(v), "" if int(v) == 1 else "es"]
 	return str(v)
