@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-23 (40) — P1-22 + P1-15: flaky UI test fixed; mission-success mode in the campaign bot
+- **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
+- **Status after session:** P1-22 done, P1-15 done. P3-05e gained *Bodega de Hierros* (still review).
+- **Changed:**
+  - **P1-22:** the expedition screen enters the room it opens on, so when `test_ui`'s walk ended on a hunger turn a hunger popup ate the room click (reproduced every time with `moves_since_meal = 6`). `tests/test_ui.gd` `_close_popups` answers popups before clicking; 20/20 runs pass. No game change.
+  - **P1-15:** `tools/playtest_campaign.gd -- --missions N` plays N fresh week-1 expeditions (real screen, provisions, camp, items, traps, curios, hunger, light) and prints **Mission success** with a 95% Wilson interval against doc 06's 55–70% target, plus how the rest ended. Done in the bot, not `sim_combat.gd`, to avoid a second copy of the expedition rules (doc 10 "Mission success").
+  - **P3-05e:** Taller upgrade *Bodega de Hierros* (owner yes): `extra_gear_stock` +1/+2/+3 weapons and armors a week, arrives at once when bought; validator, `test_upgrades`, the bot buys it last.
+- **Verified:** validator 0 errors; `test_upgrades`, `test_hub`, `test_save_migration` pass; `test_ui` 20/20; full suite 22/22 earlier today (before these three changes; they touch only the upgrade, the bot and test_ui).
+- **Results:** `--missions 40`: Aprendiz fresh party **95%** (CI 83–99%), Veterano level 3 / rank 2 / 2 gear **88%** (CI 74–95%). Normal and elite fights almost never lost; the boss is the only real risk.
+- **Decisions needed:** mission success is well above the 55–70% target even allowing for the bot being careful. Make the Sótanos harder (boss, elites, fewer provisions), or accept it because real players play worse than the bot? Nothing was changed.
+- **Next step:** owner answers the decision above; if "harder", a P5-02 balance task: tune `data/balance.json` / the Sótanos boss and rerun `playtest_campaign.gd -- --missions 40` for Aprendiz and Veterano until both land in 55–70%.
+
+---
+
 ## 2026-11-23 (39) — P3-05e: the Taller's stock changes every week; 53 new weapons and armors
 - **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
 - **Status after session:** P3-05e review (owner request: "make taller equipment randomized per week too, and add much more possible equipments weapons and armour").

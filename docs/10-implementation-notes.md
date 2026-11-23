@@ -37,6 +37,15 @@ godot --headless --path . -s tools/playtest_campaign.gd -- --missions 40 --diffi
 
 `--missions N` is `--campaigns N --weeks 1` without the per-campaign journal. Each expedition starts from a fresh campaign, and the bot does its normal week-1 hub shopping first. `--route direct`, `--set`, `--party` and `--seed` work as usual. The summary starts with **Mission success** (with a 95% Wilson interval) against doc 06's 55–70% target, then how the other expeditions ended: after a Retirada, after a death, from the map, or wiped / stuck.
 
+Results, Sótanos, route full, seed 1, 40 expeditions each (2026-11-23, after P3-05e):
+
+| Setup | Mission success | Not cleared | Deaths / exp. | Boss won | Time |
+|---|---:|---|---:|---:|---:|
+| Aprendiz, fresh week-1 party | **95%** (CI 83–99%) | 2 after a Retirada | 0.03 | 95% | 450 s |
+| Veterano, level 3, rank 2, 2 gear | **88%** (CI 74–95%) | 5 after a Retirada | 0.07 | 92% | 563 s |
+
+Both are above the 55–70% target. The bot is a careful player (it full-clears, camps every time, uses items and retreats early), so a real player will do worse, but the gap is wide. Regular and elite fights are almost never lost; the risk is all in the boss (7–9 rounds on average, the longest 15–16).
+
 The two hero policies:
 
 - **smart:** heals the worst-hurt ally below 40% PV (or Al Borde) and calms anyone at 50+ stress. In round 1 it opens with a self or party buff. Otherwise it uses the attack with the best expected damage, preferring kills and then the weakest enemy in reach.

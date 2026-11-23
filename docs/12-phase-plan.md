@@ -479,14 +479,14 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Cause: the expedition screen enters the room it opens on (`_ready` → `_enter_room`). When the test's walk ended on a hunger turn (`moves_since_meal` ≥ `hunger.every_moves`), a hunger popup was up (mode 1), so `_on_room_clicked` returned without moving; `_wait_turn` then answered the popup and waited on the map. Reproduced every time by setting `moves_since_meal = 6` before opening the screen. Fix (test only, the game is right to ask about food first): `_close_popups` answers any popup before the click, and a check that the map is free.
 - Done when: [x] the cause is found; [x] 20 runs in a row pass (20/20)
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
-- Status: `in-progress (Claude Code, betomm/upbeat-einstein-xoe2dl, 2026-11-23)`: `--missions N` added to `tools/playtest_campaign.gd`; measuring · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
+- Status: `done` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-23) · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
-- Files: `tools/sim_combat.gd`
+- Files: `tools/playtest_campaign.gd` (`--missions`, `_print_mission_success`), doc 10. Done in the campaign bot, not `sim_combat.gd`: the bot already plays real expeditions through the expedition screen, so copying traps / curios / camp / hunger into the combat sim would have been a second copy of those rules.
 - Why: P1-07's `--chain` covers fights only, with no camp, potions, traps, curios, light or hunger. So it can't measure mission success yet, and P5-02 needs that.
 - Done when:
-  - [ ] Chains follow a generated map path (rooms in order) with the starting provisions
-  - [ ] The policy uses heal and stress items and camps once
-  - [ ] Prints the mission success rate, for comparison with the 55–70% target
+  - [x] Expeditions follow a generated map with the region's provision kit (`--missions N`: fresh week-1 parties, one expedition each)
+  - [x] The policy uses heal and stress items and camps (the campaign bot's expedition policy)
+  - [x] Prints the mission success rate with a 95% interval, against the 55–70% target (doc 10: Aprendiz 95%, Veterano 88%, both above the band)
 
 ### P4-10 · S · Item icons
 - Status: `review` (all 64 generated 2026-11-07: dark painted style, 128×128, opaque dark background, candle-free; gallo pinto and venda redone once) · Depends: P3-09 · Generate one icon per item into `assets/items/<id>.png` via the manifest.
