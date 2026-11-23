@@ -1,8 +1,8 @@
 {
   "id": "item_cuchara_de_albanil",
-  "prompt": "dark fantasy painting, steel bricklayer trowel with pointed triangular blade and wooden handle, single object lying diagonally, isolated, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-  "negative_prompt": "person, man, woman, face, hands, bowl, plate, spoon, candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6800,
+  "prompt": "dark fantasy painting, masonry trowel with flat diamond-shaped steel blade and short wooden handle, smeared with grey cement, lying on red bricks, still life, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "negative_prompt": "person, man, woman, face, hands, knife, dagger, sword, blade weapon, spear, bowl, plate, spoon, candle, candles, fire, flame, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6900,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-23T00:23:31+00:00"
+  "timestamp": "2026-11-23T02:24:42+00:00"
 }

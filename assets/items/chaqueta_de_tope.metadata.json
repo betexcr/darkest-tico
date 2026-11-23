@@ -1,8 +1,8 @@
 {
   "id": "item_chaqueta_de_tope",
-  "prompt": "dark fantasy painting, man wearing an embroidered short horse rider parade jacket with silver buttons, portrait, plain dark background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-  "negative_prompt": "horse, animal, candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 6839,
+  "prompt": "dark fantasy painting, waist-up portrait of a man standing, wearing an embroidered short black bolero jacket with silver buttons, plain dark background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "negative_prompt": "horse, rider, saddle, reins, animal, riding, candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 6913,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-23T01:36:32+00:00"
+  "timestamp": "2026-11-23T02:48:27+00:00"
 }
