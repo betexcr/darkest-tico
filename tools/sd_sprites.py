@@ -73,6 +73,24 @@ def keep_main_figure(im):
     return Image.fromarray(rgba)
 
 
+def keep_bottom_figure(im):
+    """Two creatures stacked on the tall canvas (a flying bat above another): cut at the
+    thinnest opaque row in the middle band and keep what stands below it."""
+    import numpy as np
+    from PIL import Image
+
+    rgba = np.array(im.convert("RGBA"))
+    widths = (rgba[:, :, 3] > 40).sum(axis=1)
+    h = len(widths)
+    lo, hi = int(h * 0.25), int(h * 0.7)
+    rows = np.nonzero(widths)[0]
+    if rows.size == 0 or rows[-1] - rows[0] < h * 0.5:  # one figure: nothing to split
+        return im
+    cut = lo + int(np.argmin(widths[lo:hi]))
+    rgba[:cut, :, 3] = 0
+    return Image.fromarray(rgba)
+
+
 def skeleton_for(cfg: dict, c: dict, sid: str):
     """Pose keypoints for one state: the character's own override, else the shared one."""
     return c.get("skeletons", {}).get(sid) or cfg["skeletons"][sid]
@@ -559,6 +577,9 @@ def main() -> int:
                     print(f"[{k + 1}/{args.redo_tries}] {cid} {'/'.join(args.states)} seeds "
                           f"{sorted(seeds.values())} ({time.time() - t0:.0f}s)", flush=True)
                 continue
+            # A character's own ref_scale steers the sheet harder (or softer) toward its portrait.
+            if ref_img is not None:
+                pipes["txt"].set_ip_adapter_scale(float(c.get("ref_scale", cfg.get("reference", {}).get("scale", 0.6))))
             crops, sheet_img, prompt, raw = generate_sheet(
                 pipes, cfg, manifest, c, neg_c, steps, guidance, control_scale, torch,
                 {"ip_adapter_image": ref_img} if ref_img is not None else None, raw_sheet,
@@ -610,6 +631,8 @@ def main() -> int:
         raw_path = CACHE / cid / "idle_raw.png"
         seed = int(c["seed"]) + state_ids.index(sid)
         pose_text = s.get("beast_pose", s["pose"]) if c.get("body") == "beast" else s["pose"]
+        # A character's own pose text for a state (e.g. a bat that flies instead of standing).
+        pose_text = c.get("poses", {}).get(sid, pose_text)
         pose_text = pose_text.replace("{weapon}", c.get("weapon", "a weapon"))
         prompt = cfg["prompt_template"].format(look=c["look"], pose=pose_text, style=cfg.get("style", manifest["style_suffix"]))
         gen = torch.Generator(device="cpu").manual_seed(seed)
@@ -623,6 +646,9 @@ def main() -> int:
         ref_img = reference_image(cfg, c)
         if ref_img is not None:
             common["ip_adapter_image"] = ref_img
+            # A character's own ref_scale (e.g. a portrait that is off-model, such as a bat-demon
+            # portrait for a plain bat) weakens how much the portrait steers the sprite.
+            pipes["txt"].set_ip_adapter_scale(float(c.get("ref_scale", cfg.get("reference", {}).get("scale", 0.6))))
         # A beast with dead_tipped: its corpse is its own idle picture tipped onto its side (the
         # model draws beasts standing whatever the prompt says; the game tips a missing corpse
         # the same way). No diffusion call.
@@ -638,6 +664,8 @@ def main() -> int:
                 image.paste(tipped, ((w - tipped.width) // 2, h - tipped.height))
                 if remover is not None:
                     image = remover(image)
+                    if c.get("single_figure"):
+                        image = keep_bottom_figure(image) if c.get("single_figure") == "bottom" else keep_main_figure(image)
                 out.parent.mkdir(parents=True, exist_ok=True)
                 image.save(out)
                 out.with_suffix(".metadata.json").write_text(json.dumps({
@@ -684,6 +712,10 @@ def main() -> int:
                 image = pipes["img"](prompt=prompt, image=base, strength=strength, **common).images[0]
         if remover is not None:
             image = remover(image)
+            # single_figure: the tall canvas sometimes gets two creatures (two bats stacked);
+            # keep the biggest one.
+            if c.get("single_figure"):
+                image = keep_bottom_figure(image) if c.get("single_figure") == "bottom" else keep_main_figure(image)
         out.parent.mkdir(parents=True, exist_ok=True)
         image.save(out, format="PNG")
         meta = {

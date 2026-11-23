@@ -5494,7 +5494,7 @@
       },
       {
         "id": "campesino_f",
-        "look": "farm woman, long black braids, small straw hat, dark short-sleeved blouse, dark trousers",
+        "look": "farm woman, long black braids, small round straw hat, dark short-sleeved blouse, dark cropped trousers to mid-calf, leather sandals",
         "seed": 5101,
         "body": "humanoid",
         "weapon": "a long steel machete",
@@ -5512,9 +5512,13 @@
           "hurt": 5804,
           "ailment": 5805
         },
-        "negative_extra": "dancing, calm, extra hat, big hat, basket, shield, disc, high heels, man, beard",
+        "negative_extra": "dancing, calm, extra hat, big hat, wide hat, sombrero, wide brim, long trousers, wide trousers, skirt, long skirt, basket, shield, disc, high heels, boots, man, beard",
         "redo_ref_scale": {
-          "attack": 0.35
+          "attack": 0.35,
+          "idle": 0.6,
+          "cast": 0.6,
+          "hurt": 0.6,
+          "ailment": 0.6
         },
         "redo_states": [
           "idle",
@@ -5528,7 +5532,8 @@
           "hurt": "txt",
           "ailment": "txt"
         },
-        "redo_reference": "portrait"
+        "redo_reference": "attack",
+        "_doc_look": "owner 2026-11-22: every pose dressed as the attack pose (small straw hat, cropped trousers, sandals); idle/cast/hurt/ailment are redrawn with the attack sprite as reference"
       },
       {
         "id": "montador_f",
@@ -5767,12 +5772,20 @@
       },
       {
         "id": "murcielago_bodega",
-        "look": "huge cave bat with tattered leathery wings, glowing eyes, fangs",
-        "seed": 5130,
+        "look": "giant horned bat, demon face, glowing eyes, fangs, furry bat body, huge leathery wings spread, small clawed bat feet, flying",
+        "seed": 5132,
         "body": "beast",
         "weapon": "bared fangs",
         "dead_tipped": true,
-        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side"
+        "_doc_dead_tipped": "P4-08: the model draws these beasts standing even for \"lying dead\"; the corpse is the idle picture tipped onto its side",
+        "negative_extra": "human body, humanoid, person, man, woman, human torso, human arms, human legs, human feet, standing upright, boots, clothes",
+        "ref_scale": 0.2,
+        "_doc_look": "owner 2026-11-22: keep the portrait's horns and demon face, but a bat's body (no human torso, legs or feet); ref_scale 0.35 carries the face, the negatives keep the body a bat",
+        "poses": {
+          "idle": "flying with wings spread wide, hovering in the air, seen from the front, no legs touching the ground"
+        },
+        "single_figure": "bottom",
+        "_doc_single_figure": "the tall canvas draws two bats stacked; keep the lower one (keep_bottom_figure)"
       },
       {
         "id": "monaguillo_porton",
@@ -5848,11 +5861,23 @@
       },
       {
         "id": "segua_boss",
-        "look": "tall monster with a horse skull for a head, long black hair, long tattered pale dress to the floor, bony hands",
-        "seed": 5221,
+        "look": "rotting dead horse head instead of a human head, long horse muzzle, bare skull jaw, glowing orange eyes, seductive female body, long black hair, black corset dress, stockings, high heels",
+        "seed": 5223,
         "body": "humanoid",
         "weapon": "sharp hooves and claws",
-        "negative_extra": "corset, lingerie, stockings, garter, high heels, cleavage, bare legs, horse body, whole horse"
+        "negative_extra": "human face, pretty face, woman face, lips, makeup, mask, nude, nudity, topless, nipples, whole horse, horse body, two people, duplicate",
+        "_doc_look": "owner 2026-11-22: the Segua of the legend, seductive (non-explicit) with the dead horse head of her portrait",
+        "ref_scale": 0.8,
+        "redo_states": [
+          "ailment"
+        ],
+        "redo_modes": {
+          "ailment": "txt"
+        },
+        "redo_seeds": {
+          "ailment": 5831
+        },
+        "_doc_dead": "dead.png is idle.png tipped 90 degrees by hand (P4-08): every drawn corpse came with a second, human-faced Segua; rerunning the sheet overwrites it, so tip the idle again after"
       }
     ]
   }

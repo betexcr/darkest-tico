@@ -1,7 +1,7 @@
 {
   "id": "sprite_campesino_f_hurt",
-  "prompt": "character sheet, farm woman, long black braids, small straw hat, dark short-sleeved blouse, dark trousers, six poses, same clothes and a long steel machete in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
-  "negative_prompt": "dancing, calm, extra hat, big hat, basket, shield, disc, high heels, man, beard, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "prompt": "character sheet, farm woman, long black braids, small round straw hat, dark short-sleeved blouse, dark cropped trousers to mid-calf, leather sandals, six poses, same clothes and a long steel machete in each, full body, plain flat grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "dancing, calm, extra hat, big hat, wide hat, sombrero, wide brim, long trousers, wide trousers, skirt, long skirt, basket, shield, disc, high heels, boots, man, beard, jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
   "seed": 5101,
   "steps": 20,
   "cfg_scale": 7.0,
@@ -17,9 +17,9 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-20T02:37:47+00:00",
+  "timestamp": "2026-11-22T20:00:35+00:00",
   "redo": {
-    "prompt": "farm woman, long black braids, small straw hat, dark short-sleeved blouse, dark trousers, recoiling in pain, flinching backward, wounded, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+    "prompt": "farm woman, long black braids, small round straw hat, dark short-sleeved blouse, dark cropped trousers to mid-calf, leather sandals, recoiling in pain, flinching backward, wounded, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
     "seed": 5804,
     "mode": "txt2img + openpose + portrait",
     "strength": 0.75
