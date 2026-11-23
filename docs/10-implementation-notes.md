@@ -24,7 +24,18 @@ What the sim leaves out:
 - The heroes are the four starting classes at level 0 with starting gear, in formation order.
 - Squads are drawn and scaled the way the map generator and `GameState` do it.
 - Heroes never use items, camp or retreat.
-- Chains skip traps, curios, light and hunger.
+- Chains skip traps, curios, light and hunger. For whole expeditions use the mission mode below.
+
+### Mission success (P1-15)
+
+`--chain` measures fights only. Mission success comes from the campaign bot instead, which plays real expeditions through the expedition screen: the region's provision kit, hunger, light, traps, curios, the camp, healing and stress items, retreats and going home after a death. That way there is no second copy of the expedition rules.
+
+```
+godot --headless --path . -s tools/playtest_campaign.gd -- --missions 40                       # fresh week-1 parties, Aprendiz
+godot --headless --path . -s tools/playtest_campaign.gd -- --missions 40 --difficulty veterano --start-level 3 --start-ranks 2 --start-gear 2
+```
+
+`--missions N` is `--campaigns N --weeks 1` without the per-campaign journal. Each expedition starts from a fresh campaign, and the bot does its normal week-1 hub shopping first. `--route direct`, `--set`, `--party` and `--seed` work as usual. The summary starts with **Mission success** (with a 95% Wilson interval) against doc 06's 55–70% target, then how the other expeditions ended: after a Retirada, after a death, from the map, or wiped / stuck.
 
 The two hero policies:
 
