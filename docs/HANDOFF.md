@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-23 (42) — P1-22: flaky test_ui fight check fixed (hunger prompt ate the click); P4-01/P4-02 cut
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P1-22 done. P4-01 and P4-02 `cut` (owner 2026-11-23: covered by the hub, expedition screen, victory card, tooltip cards and hero sheet).
+- **Changed:** `tests/test_ui.gd`: `_combat_bar` resets `moves_since_meal` after its off-screen walk; `_wait_turn(screen, room)` re-clicks the fight room if a popup left the screen on the map elsewhere. Cause and numbers in the plan entry. No game code changed: showing the hunger stop when the screen opens is correct.
+- **Verified:** `validate_data.py` 0 errors; a seeded loop of the same setup (1/60 failures before, 0/120 after); `run_tests.gd -- --only test_ui` 20/20; full `tests/run_tests.gd` 22 of 22 passed (Godot 4.7.2 in the scratchpad).
+- **Not verified / risks:** none known.
+- **Decisions needed:** none.
+- **Next step:** owner playtest of the `review` tasks (newest: P4-33, P4-34); next agent task P1-15 (`tools/sim_combat.gd` chain mode with camp, items and room events) or P4-04 (audio).
+
 ## 2026-11-23 (41) — P4-34: building Mejoras fold up, closed by default
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-34 review (owner: the Mejoras hid the shops' inventory).

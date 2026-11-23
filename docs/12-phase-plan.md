@@ -473,10 +473,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 
 ### P1-22 · S · test_ui "a hero's turn comes up in a fight" is flaky
-- Status: `todo` · Depends: P1-01
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-23) · Depends: P1-01
 - Seen 2026-11-22 (Claude Code, `betomm/hopeful-hopper-ope58w`): 2 failures in about 8 runs of `tests/test_ui.gd`, once on a busy machine, once idle (126 s, i.e. the whole 120 s wait). `_combat_bar` walks next to a combat room through `GameState` (`move_to_node` + `mark_node_cleared`), opens the expedition screen and calls `_on_room_clicked(fight_room)`; on a failure the screen is still in map mode (mode 0) when the wait ends, so the click did not start the fight. The next check ("the bar has Guardia") fails as a consequence.
 - Files: `tests/test_ui.gd` (`_combat_bar`, `_wait_turn`), maybe `scripts/expedition/expedition_screen.gd` (`_on_room_clicked`)
-- Done when: [ ] the cause is found (log `fight_room`, the screen mode and any popup each frame on a failing seed; run the test 20× with `run_tests.gd -- --only test_ui`); [ ] 20 runs in a row pass
+- Cause (2026-11-23): a test bug, not a game bug. The walk through `GameState` skips the hunger stops; when it is long enough (about 1 seed in 60), the screen opens on the hunger prompt, `_on_room_clicked` is ignored (mode EVENT), `_wait_turn` eats, and the party stays in the room it was in, waiting 120 s for a fight never entered. Fix: `moves_since_meal = 0` after the walk, and `_wait_turn(screen, room)` clicks the room again if the screen is back on the map elsewhere.
+- Done when: [x] the cause is found (seeded loop of the same setup: 1 failure in 60, seed 13, hunger prompt; 0 in 120 with the fix); [x] 20 runs in a row pass (20/20)
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `todo` · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
@@ -640,10 +641,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ### P4-01 · M · Prep and extraction screens
 - Spec: `06` Phase 2 deliverables ("prep, mission select, map traversal, combat, extraction")
-- Status: `todo` · Depends: P1-03, P3-01
+- Status: `cut — covered by the town hub (party, region, difficulty, provisions prompt: P4-17, P5-02e), the expedition screen (P4-09) and the victory card / Abandonar (P4-11, P5-10, P5-04); owner 2026-11-23` · Depends: P1-03, P3-01
 
 ### P4-02 · M · Tooltips (skills, statuses, stress)
-- Status: `todo` · Depends: P1-04
+- Status: `cut — covered by the shared tooltip cards (P4-14, P4-15), status icons with tooltips (P1-13, P4-33) and the hero sheet (P4-23); owner 2026-11-23` · Depends: P1-04
 
 ### P4-03 · M · Slice art pass (split)
 - **P4-03a · S · Local generator that runs anywhere** — Status: `done`. `tools/sd_local.py` + `tools/art_manifest.json` (diffusers, DreamShaper 8, CPU ok). Style unified across the manifest, `sd_export.py`, the SD rule, and doc 11.

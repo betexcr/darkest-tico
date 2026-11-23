@@ -138,13 +138,17 @@ func _bar(screen) -> Array:
 	return screen._skills.get_children().filter(func(c): return not c.is_queued_for_deletion())
 
 
-## Waits (up to 30 s of real time: the fight plays its animations) for a hero's turn.
-func _wait_turn(screen) -> Dictionary:
+## Waits (up to 120 s of real time: the fight plays its animations) for a hero's turn.
+## `room`: the fight room clicked; if a popup put the screen back on the map somewhere
+## else (the click was ignored), click it again.
+func _wait_turn(screen, room: String = "") -> Dictionary:
 	var until: int = Time.get_ticks_msec() + 120000  # wall clock: a busy machine (parallel imports, sims) can be slow
 	while Time.get_ticks_msec() < until:
 		var h: Dictionary = screen._combat.active_hero()
 		if not h.is_empty() and _bar(screen).any(func(b): return not b.disabled):
 			return h
+		if room != "" and int(screen._mode) == 0 and root.get_node("GameState").current_node_id != room:
+			screen._on_room_clicked(room)
 		if int(screen._mode) == 1:  # an event popup (hunger, a room event): take the first option
 			var acts: Array = screen._event_actions.get_children().filter(func(b): return b is Button and not b.is_queued_for_deletion() and not b.disabled)
 			if not acts.is_empty():
@@ -174,11 +178,14 @@ func _combat_bar(gs) -> void:
 				break
 		gs.move_to_node(nxt if nxt != "" else str(gs.mission_neighbors()[0]))
 		gs.mark_node_cleared(gs.current_node_id)
+	# The walk above skips the hunger stops; if it is long enough, the screen would open on
+	# one and ignore the click below, then eat and wait for a fight never entered (P1-22).
+	gs.moves_since_meal = 0
 	var screen = load("res://scenes/expedition/expedition_screen.tscn").instantiate()
 	root.add_child(screen)
 	await process_frame
 	screen._on_room_clicked(fight_room)
-	var hero: Dictionary = await _wait_turn(screen)
+	var hero: Dictionary = await _wait_turn(screen, fight_room)
 	_check(fight_room != "" and not hero.is_empty(), "a hero's turn comes up in a fight (room %s, mode %d)" % [fight_room, int(screen._mode)])
 	# Picking a target lights only what the skill can reach (owner 2026-11-19).
 	if not hero.is_empty():
