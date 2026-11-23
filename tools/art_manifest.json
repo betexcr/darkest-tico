@@ -2665,9 +2665,9 @@
         "contrast": 1.15
       },
       "seed": 6800,
-      "subject": "bricklayer trowel with wooden handle, isolated object, close-up, plain black background",
+      "subject": "steel bricklayer trowel with pointed triangular blade and wooden handle, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, bowl, plate, spoon, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cuchillo_cebollero",
@@ -2785,9 +2785,9 @@
         "contrast": 1.15
       },
       "seed": 6806,
-      "subject": "paper kite with razor blades on its tail, isolated object, close-up, plain black background",
+      "subject": "diamond shaped paper kite with long string tail tied with small razor blades, single object, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, bird, bat, wings, animal, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cutacha_de_monte",
@@ -2885,9 +2885,9 @@
         "contrast": 1.15
       },
       "seed": 6811,
-      "subject": "wooden pilgrim staff with small cross on top, isolated object, close-up, plain black background",
+      "subject": "tall wooden walking staff with a small wooden cross on top, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_garrocha_de_sabanero",
@@ -2945,9 +2945,9 @@
         "contrast": 1.15
       },
       "seed": 6814,
-      "subject": "burning kerosene torch made of cloth and stick, isolated object, close-up, plain black background",
+      "subject": "wooden torch with a burning oily rag wrapped at the top, bright orange flame, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, candle, candles, can, jar, table, scenery"
     },
     {
       "id": "item_hacha_de_lenatero",
@@ -2985,9 +2985,9 @@
         "contrast": 1.15
       },
       "seed": 6816,
-      "subject": "wide heavy sugarcane machete, isolated object, close-up, plain black background",
+      "subject": "wide heavy steel sugarcane machete blade with wooden grip, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_hoz_de_arrozal",
@@ -3085,9 +3085,9 @@
         "contrast": 1.15
       },
       "seed": 6821,
-      "subject": "huge wooden mallet, isolated object, close-up, plain black background",
+      "subject": "huge wooden sledgehammer mallet with long handle, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, chair, furniture, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_pararrayos_de_campanario",
@@ -3165,9 +3165,9 @@
         "contrast": 1.15
       },
       "seed": 6825,
-      "subject": "antique flintlock blunderbuss with wooden stock, isolated object, close-up, plain black background",
+      "subject": "antique flintlock blunderbuss gun with flared barrel and wooden stock, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_cadena_del_cadejo",
@@ -3185,9 +3185,9 @@
         "contrast": 1.15
       },
       "seed": 6826,
-      "subject": "black iron chain with glowing red embers, isolated object, close-up, plain black background",
+      "subject": "heavy black iron chain in a coil, glowing red hot links, single object lying diagonally, isolated, close-up, plain black background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "person, man, woman, face, hands, demon, creature, eyes, skull, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_saco_de_gangoche",
@@ -3285,9 +3285,9 @@
         "contrast": 1.15
       },
       "seed": 6831,
-      "subject": "waxed dark cloak of an ox cart driver, isolated object, close-up, plain black background",
+      "subject": "man wearing a dark waxed hooded rain cloak, portrait, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "ox, cow, horse, animal, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_mantilla_de_la_abuela",
@@ -3345,9 +3345,9 @@
         "contrast": 1.15
       },
       "seed": 6834,
-      "subject": "armor made of flattened tin cans, isolated object, close-up, plain black background",
+      "subject": "man wearing crude armor made of flattened rusty tin cans tied with wire, portrait, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "knight, plate armor, helmet, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_overol_bananero",
@@ -3425,9 +3425,9 @@
         "contrast": 1.15
       },
       "seed": 6838,
-      "subject": "white doctor coat stained, isolated object, close-up, plain black background",
+      "subject": "tired man wearing a long white doctor lab coat with a stethoscope, portrait, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "skull, mirror, frame, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_chaqueta_de_tope",
@@ -3445,9 +3445,9 @@
         "contrast": 1.15
       },
       "seed": 6839,
-      "subject": "embroidered horse rider parade jacket, isolated object, close-up, plain black background",
+      "subject": "man wearing an embroidered short horse rider parade jacket with silver buttons, portrait, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-      "negative_extra": "candle, candles, fire, flame, table, scenery"
+      "negative_extra": "horse, animal, candle, candles, fire, flame, table, scenery"
     },
     {
       "id": "item_chaqueta_de_chirripo",
@@ -3485,7 +3485,7 @@
         "contrast": 1.15
       },
       "seed": 6841,
-      "subject": "electrician work overalls with insulated gloves, isolated object, close-up, plain black background",
+      "subject": "man wearing blue electrician work overalls with a tool belt and thick rubber gloves, portrait, plain dark background",
       "style": "dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
       "negative_extra": "candle, candles, fire, flame, table, scenery"
     },
