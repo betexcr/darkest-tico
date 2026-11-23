@@ -620,6 +620,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner screenshot (Altar roto: "Maldición del altar (-5 precisión, +10 % estrés recibido)" shown green ▲): "if results of an event are negative they should appear with the negative colour and arrow"; "all these should be viewable as long as they are in effect over a character, maybe as status effect symbols, … all the time"
 - Done when: [x] a result line with a mod list in parentheses is judged by its mods (`is_bad_line` each: all bad → red ▼, none bad → green ▲, mixed → neutral); [x] every `camp_buffs` entry (camp skills, curios/traps, town events) shows an icon in the fighter's status row, in and out of combat: Salado art + red rim for a curse, Chiva art + gold rim for a blessing, fights left in the corner, tooltip with name, origin, fights left and mods; [x] tests
 
+### P4-34 · S · Building Mejoras fold, closed by default (owner 2026-11-23)
+- Status: `review` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-23): owner to check the shops · Depends: P3-16, P3-18, P3-21
+- Files: `scripts/hacienda/hacienda_hub.gd` (`_refresh_upgrades`, `_mejoras_open`), `tests/test_hub_activities.gd`
+- Spec: owner "make the mejoras for stores toggleable and default closed bc they are taking too much space and the inventory is not viewable"
+- Done when: [x] every building's Mejoras is one bar "▸ Mejoras del edificio (levels/max) — N Reliquias" until clicked; [x] a click opens/closes the rows (remembered per building while the hub is open); [x] 1280×720 screenshot of the Taller: the stock grid shows in full; [x] test
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `done` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-22; the save is v17 now, so the task grew from "v3→v4" to every version) · Depends: P3-01
 - Spec: `06` risk register (save corruption)

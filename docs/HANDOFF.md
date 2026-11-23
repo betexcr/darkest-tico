@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-23 (41) — P4-34: building Mejoras fold up, closed by default
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-34 review (owner: the Mejoras hid the shops' inventory).
+- **Changed:** `scripts/hacienda/hacienda_hub.gd` `_refresh_upgrades`: the section is a fold bar ("▸/▾ Mejoras del edificio (k/n) — N Reliquias del Abuelo"), closed by default in every building (`_mejoras_open`, per building, not saved); `tests/test_hub_activities.gd` checks closed → click → open.
+- **Verified:** `validate_data.py` 0 errors; Godot 4.7.2 full `tests/run_tests.gd` 21/22 before a test typo fix, then test_hub / test_hub_activities / test_ui pass; 1280×720 screenshot of the Taller (grid fully visible, one bar at the bottom).
+- **Not verified / risks:** the open state resets when the hub scene reloads (after an expedition).
+- **Decisions needed:** none.
+- **Next step:** owner playtest of P4-33/P4-34; otherwise the top `todo` in docs/12-phase-plan.md.
+
 ## 2026-11-23 (40) — P4-33: event curses read red; N-fight buffs and curses shown as icons on the heroes
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-33 review (owner screenshot: Altar roto's curse shown as green ▲; "these should be viewable as long as they are in effect").
