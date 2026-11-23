@@ -17,6 +17,18 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-23 (40) — P4-33: event curses read red; N-fight buffs and curses shown as icons on the heroes
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-33 review (owner screenshot: Altar roto's curse shown as green ▲; "these should be viewable as long as they are in effect").
+- **Changed:**
+  - `scripts/expedition/expedition_screen.gd` `_result_tone`: a line with a mod list in parentheses ("X: Maldición del altar (-5 precisión, +10 % estrés recibido) por 3 peleas.") is judged by those mods through `TooltipCard.is_bad_line`, before the old "+" = good fallback.
+  - `scripts/combat/battle_unit.gd` `_make_buff_icon`: every `camp_buffs` entry gets an icon in the status row above the fighter (exploring and fighting): Salado art + red rim for curses (`CampingSystem.is_debuff`), Chiva art + gold rim for blessings, fights left in the corner (none for whole-expedition ones, ≥ 99), tooltip name / maldición|bendición / origin / fights left / mods.
+  - Tests: `test_ui` (curse red, blessing green), `test_feedback` (2 icons, tooltips).
+- **Verified:** `validate_data.py` 0 errors; Godot 4.7.2 (downloaded to the scratchpad) `tests/run_tests.gd`: 22 of 22 passed.
+- **Not verified / risks:** no screenshot taken; with many statuses + buffs the icon row may get wider than the 160 px fighter (it is an HBox, so it overflows sideways rather than wrapping).
+- **Decisions needed:** dedicated icon art for "bendición"/"maldición" instead of reusing Chiva/Salado?
+- **Next step:** owner playtest of P4-33 (open a curio like Altar roto, check the red ▼ lines and the icons over the party); otherwise continue the top `todo` in docs/12-phase-plan.md.
+
 ## 2026-11-23 (39) — P3-05e: the Taller's stock changes every week; 53 new weapons and armors
 - **Agent / branch:** Claude Code (cloud) / `betomm/upbeat-einstein-xoe2dl`
 - **Status after session:** P3-05e review (owner request: "make taller equipment randomized per week too, and add much more possible equipments weapons and armour").

@@ -614,6 +614,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: owner screenshot (bat in a red square): "make the enemy sprites the same size as the hero sprites, also make the highlight surround the sprite itself not that square"
 - Cause: `*.import` is git-ignored, so on a fresh pull `ResourceLoader.exists` is false for the new enemy PNGs and the unit fell back to the framed square (while `load_texture` still read the PNG from disk). Now the file check counts too.
 - Done when: [x] enemies with sprites are 160×262 like heroes (compact 104×170 unchanged); [x] cut-out + silhouette glow even before Godot imports the PNGs; [x] 1280×720 screenshot: glow hugs the sprite, 4 fit one line
+### P4-33 · S · Event results coloured by meaning; N-fight buffs and curses always visible (owner 2026-11-23)
+- Status: `review` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-23): owner to look at an event curse and the party icons · Depends: P4-07
+- Files: `scripts/expedition/expedition_screen.gd` (`_result_tone`), `scripts/combat/battle_unit.gd` (`_make_buff_icon`), `tests/test_ui.gd`, `tests/test_feedback.gd`
+- Spec: owner screenshot (Altar roto: "Maldición del altar (-5 precisión, +10 % estrés recibido)" shown green ▲): "if results of an event are negative they should appear with the negative colour and arrow"; "all these should be viewable as long as they are in effect over a character, maybe as status effect symbols, … all the time"
+- Done when: [x] a result line with a mod list in parentheses is judged by its mods (`is_bad_line` each: all bad → red ▼, none bad → green ▲, mixed → neutral); [x] every `camp_buffs` entry (camp skills, curios/traps, town events) shows an icon in the fighter's status row, in and out of combat: Salado art + red rim for a curse, Chiva art + gold rim for a blessing, fights left in the corner, tooltip with name, origin, fights left and mods; [x] tests
+
 ### P3-08 · M · Save v4 + migration tests
 - Status: `done` (Claude Code, `betomm/hopeful-hopper-ope58w`, 2026-11-22; the save is v17 now, so the task grew from "v3→v4" to every version) · Depends: P3-01
 - Spec: `06` risk register (save corruption)

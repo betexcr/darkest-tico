@@ -46,6 +46,18 @@ func _run() -> void:
 	u.refresh()
 	await process_frame
 	_check(u._status_row.get_child_count() == 0, "icons cleared when statuses end")
+	# Buffs and curses for N fights show as icons the whole time (owner 2026-11-23).
+	hero["camp_buffs"] = [{"name": "Maldición del altar", "from": "lugar extraño", "mods": {"accuracy": -5, "stress_pct": 10}, "fights": 3},
+		{"name": "Café chorreado", "from": "fogata", "mods": {"speed": 2}, "fights": 999}]
+	u.refresh()
+	await process_frame
+	_check(u._status_row.get_child_count() == 2, "a curse and a blessing show 2 icons (%d)" % u._status_row.get_child_count())
+	var ctip: String = u._status_row.get_child(0).tooltip_text
+	_check(ctip.contains("Maldición del altar") and ctip.contains("maldición") and ctip.contains("3 peleas"), "curse icon tooltip: name, curse, fights left (%s)" % ctip)
+	_check(u._status_row.get_child(1).tooltip_text.contains("toda la expedición"), "a whole-expedition blessing says so")
+	hero["camp_buffs"] = []
+	u.refresh()
+	await process_frame
 
 	u.play_hurt(7, false)
 	await process_frame
