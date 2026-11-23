@@ -1,7 +1,7 @@
 {
   "id": "item_bata_del_san_juan",
-  "prompt": "dark fantasy painting, white doctor coat stained, isolated object, close-up, plain black background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
-  "negative_prompt": "candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "prompt": "dark fantasy painting, tired man wearing a long white doctor lab coat with a stethoscope, portrait, plain dark background, dark gothic oil painting, folk horror, dramatic rim lighting, deep shadows, muted earthy colors, painterly, game item icon",
+  "negative_prompt": "skull, mirror, frame, candle, candles, fire, flame, table, scenery, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
   "seed": 6838,
   "steps": 25,
   "cfg_scale": 7.0,
@@ -14,5 +14,5 @@
   },
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-22T23:11:05+00:00"
+  "timestamp": "2026-11-23T01:29:53+00:00"
 }
