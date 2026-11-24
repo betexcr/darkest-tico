@@ -29,6 +29,8 @@ extends SceneTree
 ##   --ranks R           every skill at Casa Comunal rank R (default 1)
 ##   --gear              every hero wears the dearest weapon and armor the Pulpería sells
 ##   --no-retreat        the smart policy fights to the end (it retreats by default, P5-05)
+##   --bring a,b,...     skill ids (P3-17): each hero learns and brings the listed skills of its
+##                       own class, filling its loadout from the last slot (the basic stays)
 ##
 ## Without --chain, every fight starts from the fresh starting party (full PV, 0 stress, no
 ## items used, no camp buffs), as at the first room of a new game. Squads are drawn the way
@@ -56,7 +58,7 @@ var _light0: int = 0
 var _rng := RandomNumberGenerator.new()
 var _opts := {"runs": 10000, "node": "all", "policy": "smart", "seed": 1, "chain": 0,
 	"region": "res://data/regions/sotanos.json", "difficulty": "aprendiz", "light": -1, "set": [], "log": false, "log-long": 0, "party": [],
-	"level": 0, "ranks": 1, "gear": false, "no-retreat": false}
+	"level": 0, "ranks": 1, "gear": false, "no-retreat": false, "bring": []}
 var _log_on: bool = false
 ## --log-long: the current fight's log, printed once if the fight runs long.
 var _buffer: PackedStringArray = PackedStringArray()
@@ -130,6 +132,17 @@ func _run() -> void:
 			h["uid"] = _gs._take_uid()
 			_gs.roster.append(h)
 			_gs.party.append(h)
+	# P3-17: bring skills learned at the Casa Comunal, from the last slot toward slot 1.
+	if not _opts["bring"].is_empty():
+		var lo = load("res://scripts/domain/skill_loadout.gd")
+		for h in _gs.party:
+			var mine: Array = lo.class_skills(_gs.hero_template(h))
+			var slot: int = (h["skill_ids"] as Array).size() - 1
+			for sid in _opts["bring"]:
+				if mine.has(str(sid)) and not (h["skill_ids"] as Array).has(str(sid)) and slot >= 1:
+					h["skill_known"] = lo.known(h) + [str(sid)]
+					h["skill_ids"][slot] = str(sid)
+					slot -= 1
 	# A seasoned party (P5-02f): level, skill ranks and equipment as a campaign would have them.
 	var rs = load("res://scripts/domain/resolve_system.gd")
 	for h in _gs.party:
@@ -263,6 +276,9 @@ func _parse_args() -> void:
 		match flag:
 			"--party":
 				_opts["party"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
+				k += 1
+			"--bring":
+				_opts["bring"] = Array(val.split(",", false)).map(func(x): return str(x).strip_edges())
 				k += 1
 			"--gear":
 				_opts["gear"] = true

@@ -17,6 +17,23 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-24 (44) — P3-17: 7 skills per class, learn 3 at the Casa Comunal, bring 4
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P3-17 review (owner 2026-11-23: 3 new skills per class; bought once at the Casa Comunal, 1,000 ₡ base scaled like other hub prices; bring 4, swap free in town, basic attack fixed).
+- **Changed:**
+  - Data: 24 new skills (`data/skills.json`), `extra_skill_ids` per class (`data/heroes.json`), `hub.skill_learn_cost` 1000 (`data/balance.json`); doc 03 lists them under each class. Only fields the engine already had, plus `element` on hero attacks (combat now uses the skill's element over the weapon's; Agua Bendita del Tubo and Exorcismo Exprés are sagrado).
+  - Rules: `scripts/domain/skill_loadout.gd` (class skills, known, learnable, benched, learn and swap block reasons, the loadout must still reach enemy position 1). `GameState`: `hero_template`, `skill_learn_cost`, `learn_skill`, `skill_slot_block_reason`, `set_skill_slot`; `skill_known` on new heroes; `SkillRanks` trains any known skill.
+  - Save v19 (`skill_known`); `tests/fixtures/save_v18.json` from 214023d (README). Migration keeps a valid loadout (4 known class skills, basic first), else the class's 4, keeping learned skills and their ranks.
+  - UI: Casa Comunal page: the 4 brought (slot 1 "básico, siempre va"), then "Otras habilidades del oficio" with "Aprender — N ₡" or "Llevar…" (menu of the 3 replaceable skills) and a rank button; hero sheet lists known-at-home and still-to-learn; `skill_icon.gd` glyphs for the new skills; Casa Comunal subtitle in `data/town.json`.
+  - Validator: 4 `skill_ids` + 3 `extra_skill_ids` per class, every skill owned by exactly one class, skill `element` known and only on attacks; balance key.
+  - `tools/sim_combat.gd --bring id,id` (doc 10).
+  - Docs: 01 §6.3, 02 §4, 03, 04 §3.3, 10, AGENTS.md §4 Heroes.
+- **Verified:** `validate_data.py` 0 errors; Godot 4.7.2 full `tests/run_tests.gd` 23 of 23 passed (new `test_skill_loadout`: learning, prices, swaps, expedition lock, ranks at home, saves, v18 fixture; `test_ui`: the page learns and brings a skill); 1280×720 screenshot of the Casa Comunal page.
+- **Sim (1,000 fights per room kind, Aprendiz, smart policy, level 0):** party Campesino/Montador/Abuela/Tecnólogo: starters 100/100/100% (combat/elite/boss), all 3 new skills brought 99.4/99.1/98.5%; party Guachimán/Exorcista/Médica/Curandero: starters 99.9/99.9/100%, new 99.6/99.8/99.6%. No stalls; the new skills alone are a bit weaker than the starters, which fits extras meant to be mixed in.
+- **Not verified / risks:** the campaign bot doesn't learn or swap skills (on purpose, see the plan entry); skill art reuses existing glyphs.
+- **Decisions needed:** the owner reads the 24 names and effects (doc 03). Should a veteran from a town event (Veterano de las Bananeras) arrive knowing all 7? Today they know the class's 4, at high rank.
+- **Next step:** owner playtest of P3-17 at the Casa Comunal; then the open mission-success decision from entry (42), or P4-04 (audio).
+
 ## 2026-11-23 (43) — P4-01/P4-02 cut; merge of main (a second P1-22 fix dropped)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-01 and P4-02 `cut` (owner 2026-11-23: covered by the hub, expedition screen, victory card, tooltip cards and hero sheet). P1-22 had been fixed on this branch too (same cause, the hunger popup ate the room click; a seeded loop: 1/60 failures before, 0/120 after); main's fix (`_close_popups` before the click) was kept and this branch's test change dropped in the merge.

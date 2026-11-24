@@ -109,7 +109,7 @@ Per mission starting loadout target:
 
 ## 3.3 Skill Training
 
-- Unlock new skill: 1,000 base
+- Unlock new skill: 1,000 base (built P3-17: `hub.skill_learn_cost` × resolve-tier price × *Plan de Formación*)
 - Rank 2: 300
 - Rank 3: 900
 - Rank 4: 1,500

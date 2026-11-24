@@ -16,6 +16,7 @@ const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
 const SkillButtonScript := preload("res://scripts/ui/skill_button.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
 const HubActivitiesScript := preload("res://scripts/domain/hub_activities.gd")
@@ -869,9 +870,14 @@ func _refresh_equipment() -> void:
 
 # --- Casa Comunal de Oficios (skill ranks) -------------------------------------------
 
-## The selected hero's 4 skills: icon with rank pips, then "Rango N — X ₡" to train the next rank.
+## The selected hero's 4 skills brought (P3-17: slot 1 is the class's basic attack), each with
+## "Rango N — X ₡" to train the next rank; below, the class's other skills: "Aprender — X ₡"
+## (learned once) or, once known, "Llevar…" to swap it in for free and its own rank button.
 func _refresh_skills() -> void:
 	for c in _skills_row.get_children():
+		c.queue_free()
+	var more: VBoxContainer = _skills_more_box()
+	for c in more.get_children():
 		c.queue_free()
 	if _selected.is_empty():
 		_skills_title.text = "Casa Comunal de Oficios"
@@ -879,57 +885,149 @@ func _refresh_skills() -> void:
 	_skills_title.text = "Casa Comunal de Oficios — habilidades de %s (Resolución %d)" % [
 		_selected.get("name", "—"), int(_selected.get("resolve_level", 0))]
 	var h: Dictionary = _selected
-	for sid in h.get("skill_ids", []):
-		var sk: Dictionary = GameState.hero_skill(h, str(sid))
-		if sk.is_empty():
+	var ids: Array = h.get("skill_ids", [])
+	for k in ids.size():
+		var col: VBoxContainer = _skill_column(h, str(ids[k]), true)
+		if col == null:
 			continue
-		var rank: int = int(sk.get("rank", 1))
-		var col := VBoxContainer.new()
-		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		col.add_theme_constant_override("separation", 3)
-		var top := HBoxContainer.new()
-		top.add_theme_constant_override("separation", 6)
-		var icon = SkillButtonScript.new()
-		icon.setup(str(sid), str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank],
-			SkillButtonScript.body_for(sk), rank, SkillRanksScript.max_rank())
-		top.add_child(icon)
-		var nm := Label.new()
-		nm.text = str(sk.get("name", sid))
-		nm.add_theme_font_size_override("font_size", 12)
-		nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		nm.custom_minimum_size = Vector2(60, 0)
-		top.add_child(nm)
-		col.add_child(top)
-		var buy := Button.new()
-		buy.add_theme_font_size_override("font_size", 12)
-		buy.clip_text = true
-		var why: String = GameState.skill_rank_block_reason(h, str(sid))
-		if rank >= SkillRanksScript.max_rank():
-			buy.text = "Rango máx."
-			buy.disabled = true
-			buy.tooltip_text = "%s ya está en el rango más alto." % sk.get("name", sid)
-		else:
-			var cost: int = GameState.skill_rank_cost(h, str(sid))
-			var need: int = SkillRanksScript.min_resolve_for(rank + 1)
-			# Disabled buttons may not show a tooltip, so the resolve gate is in the label itself.
-			if int(h.get("resolve_level", 0)) < need:
-				buy.text = "Rango %d: Resolución %d" % [rank + 1, need]
-			elif rank >= GameState.skill_rank_cap():
-				buy.text = "Rango %d: Maestría" % (rank + 1)
-			else:
-				buy.text = "Rango %d — %s" % [rank + 1, "gratis" if cost == 0 else "%d ₡" % cost]
-			buy.disabled = why != ""
-			var gain: PackedStringArray = SkillRanksScript.preview_lines(GameState.get_skill(str(sid)), rank)
-			var lines: PackedStringArray = PackedStringArray(["Entrenar %s al rango %d" % [sk.get("name", sid), rank + 1]])
-			if not gain.is_empty():
-				lines.append("Al subir: " + ", ".join(gain))
-			if why != "":
-				lines.append(why)
-			buy.tooltip_text = "\n".join(lines)
-			buy.pressed.connect(func(): _say(GameState.buy_skill_rank(h, str(sid))))
-		col.add_child(buy)
+		col.add_child(_skill_rank_button(h, str(ids[k])))
 		_skills_row.add_child(col)
+	var t: Dictionary = GameState.hero_template(h)
+	var others: Array = SkillLoadoutScript.class_skills(t).filter(func(sid): return not ids.has(sid))
+	if others.is_empty():
+		return
+	more.add_child(CardScript.section("Otras habilidades del oficio — lleva 4; cambiarlas es gratis en el pueblo"))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	more.add_child(row)
+	for sid in others:
+		var known: bool = SkillLoadoutScript.knows(h, str(sid))
+		var col: VBoxContainer = _skill_column(h, str(sid), known)
+		if col == null:
+			continue
+		if known:
+			col.add_child(_skill_bring_button(h, str(sid)))
+			col.add_child(_skill_rank_button(h, str(sid)))
+		else:
+			col.add_child(_skill_learn_button(h, str(sid)))
+		row.add_child(col)
+
+
+## The Casa Comunal box under the 4 brought skills (made once, kept above the Mejoras).
+func _skills_more_box() -> VBoxContainer:
+	var page: Node = _skills_row.get_parent()
+	var box: VBoxContainer = page.get_node_or_null("SkillsMore")
+	if box == null:
+		box = VBoxContainer.new()
+		box.name = "SkillsMore"
+		box.add_theme_constant_override("separation", 4)
+		page.add_child(box)
+		page.move_child(box, _skills_row.get_index() + 1)
+	return box
+
+
+## Icon (rank pips; dimmed while not learned), name, and the slot it is in.
+func _skill_column(h: Dictionary, sid: String, known: bool) -> VBoxContainer:
+	var sk: Dictionary = GameState.hero_skill(h, sid)
+	if sk.is_empty():
+		return null
+	var rank: int = int(sk.get("rank", 1))
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 3)
+	col.set_meta("skill_id", sid)
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 6)
+	var icon = SkillButtonScript.new()
+	icon.setup(sid, str(sk.get("kind", "attack")), "%s (rango %d)" % [sk.get("name", sid), rank],
+		SkillButtonScript.body_for(sk), rank if known else 0, SkillRanksScript.max_rank())
+	if not known:
+		icon.modulate = Color(1, 1, 1, 0.45)
+	top.add_child(icon)
+	var nm := Label.new()
+	var slot: int = (h.get("skill_ids", []) as Array).find(sid)
+	nm.text = str(sk.get("name", sid)) + ("\n(básico, siempre va)" if slot == 0 else "")
+	nm.add_theme_font_size_override("font_size", 12)
+	nm.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	nm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	nm.custom_minimum_size = Vector2(60, 0)
+	if not known:
+		nm.add_theme_color_override("font_color", CardScript.MUTED)
+	top.add_child(nm)
+	col.add_child(top)
+	return col
+
+
+func _skill_rank_button(h: Dictionary, sid: String) -> Button:
+	var sk: Dictionary = GameState.hero_skill(h, sid)
+	var rank: int = int(sk.get("rank", 1))
+	var buy := Button.new()
+	buy.add_theme_font_size_override("font_size", 12)
+	buy.clip_text = true
+	var why: String = GameState.skill_rank_block_reason(h, sid)
+	if rank >= SkillRanksScript.max_rank():
+		buy.text = "Rango máx."
+		buy.disabled = true
+		buy.tooltip_text = "%s ya está en el rango más alto." % sk.get("name", sid)
+		return buy
+	var cost: int = GameState.skill_rank_cost(h, sid)
+	var need: int = SkillRanksScript.min_resolve_for(rank + 1)
+	# Disabled buttons may not show a tooltip, so the resolve gate is in the label itself.
+	if int(h.get("resolve_level", 0)) < need:
+		buy.text = "Rango %d: Resolución %d" % [rank + 1, need]
+	elif rank >= GameState.skill_rank_cap():
+		buy.text = "Rango %d: Maestría" % (rank + 1)
+	else:
+		buy.text = "Rango %d — %s" % [rank + 1, "gratis" if cost == 0 else "%d ₡" % cost]
+	buy.disabled = why != ""
+	var gain: PackedStringArray = SkillRanksScript.preview_lines(GameState.get_skill(sid), rank)
+	var lines: PackedStringArray = PackedStringArray(["Entrenar %s al rango %d" % [sk.get("name", sid), rank + 1]])
+	if not gain.is_empty():
+		lines.append("Al subir: " + ", ".join(gain))
+	if why != "":
+		lines.append(why)
+	buy.tooltip_text = "\n".join(lines)
+	buy.pressed.connect(func(): _say(GameState.buy_skill_rank(h, sid)))
+	return buy
+
+
+## "Aprender — X ₡" for a class skill the hero doesn't know yet (P3-17).
+func _skill_learn_button(h: Dictionary, sid: String) -> Button:
+	var sk: Dictionary = GameState.get_skill(sid)
+	var b := Button.new()
+	b.add_theme_font_size_override("font_size", 12)
+	b.clip_text = true
+	b.set_meta("learn", sid)
+	var cost: int = GameState.skill_learn_cost(h)
+	var why: String = GameState.skill_learn_block_reason(h, sid)
+	b.text = "Aprender — %d ₡" % cost
+	b.disabled = why != ""
+	b.tooltip_text = "Aprender %s\n%s%s" % [sk.get("name", sid), "Una sola vez: después la puede llevar en vez de otra, gratis.",
+		("\n" + why) if why != "" else ""]
+	b.pressed.connect(func(): _say(GameState.learn_skill(h, sid)))
+	return b
+
+
+## "Llevar…": a menu of the 3 skills it could replace (the basic attack stays) (P3-17).
+func _skill_bring_button(h: Dictionary, sid: String) -> Button:
+	var b := MenuButton.new()
+	b.flat = false
+	b.add_theme_font_size_override("font_size", 12)
+	b.text = "Llevar…"
+	b.set_meta("bring", sid)
+	b.tooltip_text = "Llevar %s en vez de otra habilidad (gratis, solo en el pueblo)." % GameState.get_skill(sid).get("name", sid)
+	var menu: PopupMenu = b.get_popup()
+	var ids: Array = h.get("skill_ids", [])
+	for slot in range(1, ids.size()):
+		var why: String = GameState.skill_slot_block_reason(h, slot, sid)
+		menu.add_item("En vez de %s" % GameState.get_skill(str(ids[slot])).get("name", ids[slot]), slot)
+		var idx: int = menu.get_item_count() - 1
+		menu.set_item_disabled(idx, why != "")
+		if why != "":
+			menu.set_item_tooltip(idx, why)
+	b.disabled = range(1, ids.size()).all(func(sl): return GameState.skill_slot_block_reason(h, sl, sid) != "")
+	menu.id_pressed.connect(func(slot): _say(GameState.set_skill_slot(h, int(slot), sid)))
+	return b
 
 
 func _can_drop_sell(_at: Vector2, data: Variant) -> bool:
@@ -1200,6 +1298,14 @@ func _show_hero_sheet(h: Dictionary) -> void:
 			stext.add_child(CardScript.label(line, 12, CardScript.TEXT if line == body[body.size() - 1] else CardScript.MUTED, true, 520.0))
 		srow.add_child(stext)
 		col.add_child(srow)
+	# P3-17: the class's other skills, known (left at home) and still to learn.
+	var tmpl: Dictionary = GameState.hero_template(h)
+	var home: Array = SkillLoadoutScript.benched(h, tmpl).map(func(id): return str(GameState.get_skill(str(id)).get("name", id)))
+	var to_learn: Array = SkillLoadoutScript.learnable(h, tmpl).map(func(id): return str(GameState.get_skill(str(id)).get("name", id)))
+	if not home.is_empty():
+		col.add_child(CardScript.label("También sabe (no la lleva): %s" % ", ".join(home), 12, CardScript.TEXT, true, 560.0))
+	if not to_learn.is_empty():
+		col.add_child(CardScript.label("Se aprende en la Casa Comunal: %s" % ", ".join(to_learn), 12, CardScript.MUTED, true, 560.0))
 	col.add_child(CardScript.rule())
 	# Quirks: badge (tooltip) and the flavour + effect written out.
 	col.add_child(CardScript.section("Rasgos y enfermedades"))

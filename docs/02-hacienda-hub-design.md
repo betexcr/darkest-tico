@@ -85,7 +85,7 @@ The EBAIS stays a button on each roster row. Mejoras de Hacienda has no picture 
 ### Built (P3-04, 2026-11-11)
 
 - Rank purchase is in the hub: a row for the selected hero, with ranks 1–5 gated by resolve level and doc 04 §3.3 prices. Rules are in doc 01 §6.3.
-- Deferred: skill unlocks (P3-17). Every class has exactly 4 skills, all always available.
+- Skill unlocks built (P3-17, 2026-11-24): under the 4 skills the hero brings, the class's other 3 with "Aprender — N ₡" (once per hero) or, once learned, "Llevar…" (a menu of the 3 skills it can replace; free, in town only) and their own rank button. The hero sheet lists what the hero knows but left at home and what is still to learn. Rules in doc 01 §6.3.
 
 ### Upgrades built (P3-16, 2026-11-20)
 

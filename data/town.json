@@ -22,7 +22,7 @@
       "id": "casa_comunal",
       "name": "Casa Comunal de Oficios",
       "art": "res://assets/town/casa_comunal.png",
-      "text": "Aquí se entrenan las habilidades: cada rango cuesta plata y pide resolución.",
+      "text": "Aquí se aprenden y se entrenan las habilidades del oficio: cada rango cuesta plata y pide resolución. Cada héroe lleva 4.",
       "x": 215,
       "bottom": 405,
       "height": 175

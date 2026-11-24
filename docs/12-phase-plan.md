@@ -365,10 +365,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Done when: [x] Upgrades: more relief, lower cost, more slots (per building, all three activities; data in `data/upgrades.json`, not `hub_activities.json`)
 
 ### P3-17 · M · Unlockable skills (owner 2026-11-23: 7 per class, bring 4)
-- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: classes having more than 4 skills (doc 03; owner 2026-11-23: yes)
+- Status: `review` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-24): owner to read the 24 skill names (doc 03) and try learning and swapping at the Casa Comunal · Depends: classes having more than 4 skills (doc 03; owner 2026-11-23: yes)
 - Owner decisions 2026-11-23: 3 new skills per class (7 total); recruits know the class's 4; each new one is bought once per hero at the Casa Comunal (1,000 ₡ base × resolve-tier price × Plan de Formación × town event); the hero brings 4 of what they know, swapped free in town, locked on an expedition; the basic attack stays in slot 1.
 - Spec: `02` §4, `04` §3.3 ("Unlock new skill: 1,000 base")
-- Done when: [ ] Classes have extra skills to unlock at the Casa Comunal and pick 4 to take on an expedition
+- Files: `data/skills.json` (+24), `data/heroes.json` (`extra_skill_ids`), `data/balance.json` (`hub.skill_learn_cost`), `scripts/domain/skill_loadout.gd` (new), `scripts/domain/skill_ranks.gd`, `scripts/autoload/game_state.gd` (`learn_skill`, `set_skill_slot`, save v19), `scripts/combat/combat_controller.gd` (skill element), `scripts/hacienda/hacienda_hub.gd`, `scripts/ui/skill_icon.gd`, `tools/validate_data.py`, `tools/sim_combat.gd` (`--bring`), `tests/test_skill_loadout.gd` (new), `tests/test_ui.gd`, `tests/fixtures/save_v18.json`
+- Done when: [x] 3 extra skills per class, Tico names, doc 03 lists them; [x] learned once per hero at the Casa Comunal (1,000 ₡ × tier × Plan de Formación × event); [x] the hero brings 4 of 7, swapped free in town, locked on an expedition, basic attack fixed; [x] ranks kept on skills left at home; [x] save v19 + v18 fixture; [x] validator (4 + 3 per class, one owner per skill, skill element); [x] tests (`test_skill_loadout`, `test_ui`); [x] sim: all-new loadouts 98.5–99.9% wins, no stalls (handoff 2026-11-24); [x] screenshot of the Casa Comunal page
+- Not done: the campaign bot does not learn or swap skills (it would only spend colones with the same loadout, shifting the economy baselines for nothing); a loadout policy for the bot is future work if wanted.
 
 ### P3-14 · S · Level-tiered hub prices
 - Status: `review` (Claude Code, `betomm/relaxed-darwin-k1c6iz`, 2026-11-20; owner to play; built together with P3-14/16/18/21) · Depends: P3-04

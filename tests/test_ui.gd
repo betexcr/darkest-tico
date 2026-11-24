@@ -326,6 +326,25 @@ func _town(gs) -> void:
 	hub.open_building("casa_comunal")
 	await process_frame
 	_check(hub._who.visible and hub._skills_row.get_child_count() > 0, "the Casa Comunal shows whose skills they are")
+	# P3-17: the 4 brought on top, the class's other 3 below with "Aprender"; once learned, "Llevar…".
+	var live_kids := func(n: Node) -> Array: return n.get_children().filter(func(c): return not c.is_queued_for_deletion())
+	var sh: Dictionary = hub._selected
+	var more: Node = hub._skills_row.get_parent().get_node("SkillsMore")
+	var learn_b: Array = more.find_children("*", "Button", true, false).filter(func(b): return b.has_meta("learn") and not b.is_queued_for_deletion())
+	_check(live_kids.call(hub._skills_row).size() == 4 and learn_b.size() == 3, "4 skills brought and 3 to learn (%d, %d)" % [live_kids.call(hub._skills_row).size(), learn_b.size()])
+	gs.colones = 50000
+	var new_sid: String = str(learn_b[0].get_meta("learn")) if not learn_b.is_empty() else ""
+	if not learn_b.is_empty():
+		learn_b[0].pressed.emit()
+	await process_frame
+	var bring_b: Array = more.find_children("*", "MenuButton", true, false).filter(func(b): return b.has_meta("bring") and not b.is_queued_for_deletion())
+	_check(bring_b.size() == 1 and str(bring_b[0].get_meta("bring")) == new_sid and gs.SkillLoadoutScript.knows(sh, new_sid), "learning it turns the button into \"Llevar…\"")
+	if bring_b.size() == 1:
+		var menu: PopupMenu = bring_b[0].get_popup()
+		_check(menu.get_item_count() == 3, "…a menu of the 3 skills it can replace (the basic attack stays)")
+		menu.id_pressed.emit(menu.get_item_id(2))
+	await process_frame
+	_check(str(sh["skill_ids"][3]) == new_sid and str(live_kids.call(hub._skills_row)[3].get_meta("skill_id")) == new_sid, "…and choosing one brings it")
 	hub.close_building()
 	hub.open_building("guardabosques")
 	await process_frame

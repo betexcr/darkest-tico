@@ -139,7 +139,7 @@ With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Ne
 
 ### Rerun with dragging-fight stress (2026-11-14, P5-02b)
 
-`--party a,b,c,d` plays another class mix; `--log-long N` prints the first fight that passes N rounds, which is how the stall below was found. Chains of 3 fights + elite + boss, 10,000 per row, smart policy, Aprendiz:
+`--party a,b,c,d` plays another class mix; `--bring id,id` (P3-17) has each hero bring the listed skills of its class in place of its last slots; `--log-long N` prints the first fight that passes N rounds, which is how the stall below was found. Chains of 3 fights + elite + boss, 10,000 per row, smart policy, Aprendiz:
 
 | Party | Dragging stress | Boss cleared | Rounds in the boss fight | Top stress after the boss | Chains past 40 rounds |
 |---|---|---:|---:|---:|---:|
