@@ -822,6 +822,12 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Lever: Veterano / Campeón `enemy_hp` / `enemy_dmg` / `enemy_stress` in `data/progression.json`, or the Maestría / tier-price numbers; owner: no reward changes. Same setup as P5-06 (6 seeds × 3 × 24 weeks, full route; scratchpad `run.sh` + `agg.py` were used — rewrite them if the scratchpad is gone).
 - Done when: [x] Veterano 70–80% and Campeón 55–70% cleared with ≥ 30 Campeón expeditions, deaths ≤ 0.3, ≥ 17 of 18 campaigns solvent in week 24 — kept Veterano ×1.18 / ×1.13, Campeón ×1.65 / ×1.44: 77% / 65% (63 exp. on 36 campaigns), deaths 0.15, 34 of 36 solvent (12 seeds; 6 proved too noisy)
 
+
+### P5-12 · M · Sótanos difficulty check against the per-tier bands (owner 2026-11-24)
+- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: P1-15, P5-11, P3-05e, P3-17
+- Why: P1-15's `--missions 40` gave Aprendiz 95% (fresh week-1 parties) and Veterano 88% (synthetic level-3 party) and compared both with doc 06's 55–70%. Owner 2026-11-24: the target is the **per-tier bands** (Aprendiz 85–90%, Veterano 70–80%, Campeón 55–70%), each on the measurement it was tuned with: Aprendiz on fresh 8-week campaigns (P5-08), Veterano/Campeón on 24-week campaigns with 12 seeds (P5-11). Taller weekly stock (P3-05e) and P3-17 came in since.
+- Lever: `data/progression.json` `difficulties[].enemy_hp / enemy_dmg / enemy_stress`, only for tiers out of band; no reward changes.
+- Done when: [ ] baseline on current main (Aprendiz: 8 seeds × 3 × 8 weeks + `--missions`; Veterano/Campeón: 12 seeds × 3 × 24 weeks + tier-start runs); [ ] every tier in band, deaths ≤ 0.3 per expedition, ≥ 34 of 36 campaigns solvent at week 24; [ ] `docs/playtests/2026-11-24-p5-12.md`, doc 09 §8, doc 10 "Mission success" (per-tier bands)
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5
 - Done when: [ ] Roadmap Phase 2 exit criteria checked by owner → Current phase = Alpha (break down roadmap Phase 3 into P6+ tasks then)
