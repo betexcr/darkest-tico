@@ -621,7 +621,8 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 	var crit: bool = CombatResolverScript.roll_crit(int(hero.get("crit", 5)) + StatusEffectsScript.stat(hero, "crit") + int(skill.get("skill_crit", 0)), 0)
 	var dmg: int = CombatResolverScript.resolve_attack_damage(maxi(raw, 1), crit)
 	dmg = _scaled_damage(dmg, hero, enemy, skill)
-	dmg = _elemental(dmg, str(hero.get("element", "")), enemy)
+	# A skill's own element (P3-17, e.g. Agua Bendita del Tubo) beats the weapon's.
+	dmg = _elemental(dmg, str(skill.get("element", hero.get("element", ""))), enemy)
 	var eprot: int = int(enemy.get("prot", 0)) + StatusEffectsScript.stat(enemy, "prot")
 	if eprot > 0:
 		dmg = CombatResolverScript.final_damage(dmg, 0, eprot)

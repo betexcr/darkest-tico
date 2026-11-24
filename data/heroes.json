@@ -1,5 +1,5 @@
 {
-  "_doc": "Hero classes. names: Tico names given to recruits of this class. Recruits at the Terminal de Buses are free (owner 2026-11-15, as in Darkest Dungeon). Every class needs an ally or party skill (AGENTS.md §4). role: warrior (front-liner) | support (back-liner), used to draw the starting party (starter_party). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
+  "_doc": "Hero classes. skill_ids: the 4 skills a recruit knows and brings (basic attack first); extra_skill_ids: 3 more learned at the Casa Comunal (P3-17). names: Tico names given to recruits of this class. Recruits at the Terminal de Buses are free (owner 2026-11-15, as in Darkest Dungeon). Every class needs an ally or party skill (AGENTS.md §4). role: warrior (front-liner) | support (back-liner), used to draw the starting party (starter_party). ranks: the class's preferred battlefield positions (1 = front, doc 03); the hub warns when a hero stands elsewhere.",
   "starter_party": {"_doc": "A new campaign (no save, or the dev reset) starts with this many random classes of each role (owner 2026-11-20); warriors stand in front. -s scripts (tests, sims) use fixed instead.", "warrior": 2, "support": 2, "fixed": ["campesino", "montador", "abuela", "tecnologo"]},
   "heroes": [
     {
@@ -22,6 +22,11 @@
         "trabajo_duro",
         "golpe_de_faena",
         "aguante_de_campo"
+      ],
+      "extra_skill_ids": [
+        "chapea_rapida",
+        "tamal_de_reserva",
+        "grito_de_montana"
       ],
       "camp_skill_ids": [
         "palabras_de_animo",
@@ -110,6 +115,11 @@
         "regano_santo",
         "cataplasma_casero"
       ],
+      "extra_skill_ids": [
+        "chancletazo",
+        "cafe_con_cuentos",
+        "bendicion_de_la_abuela"
+      ],
       "camp_skill_ids": [
         "palabras_de_animo",
         "charla_de_fogon"
@@ -197,6 +207,11 @@
         "exploit_zero_day",
         "firewall_humano"
       ],
+      "extra_skill_ids": [
+        "reinicio_forzado",
+        "wifi_del_vecino",
+        "bateria_de_respaldo"
+      ],
       "camp_skill_ids": [
         "vendaje_de_trapo",
         "charla_de_fogon"
@@ -282,6 +297,11 @@
         "entrada_brava",
         "patada_de_corral",
         "no_me_tumban"
+      ],
+      "extra_skill_ids": [
+        "lazo_al_cuello",
+        "rodeo",
+        "corneta_de_corral"
       ],
       "camp_skill_ids": [
         "palabras_de_animo",
@@ -370,6 +390,11 @@
         "ronda_nocturna",
         "escudo_de_barrio"
       ],
+      "extra_skill_ids": [
+        "linterna_en_la_cara",
+        "libreta_de_reportes",
+        "cafecito_de_turno"
+      ],
       "camp_skill_ids": [
         "vendaje_de_trapo",
         "charla_de_fogon"
@@ -455,6 +480,11 @@
         "triage_urbano",
         "antibiotico_de_guardia",
         "desfibrilar"
+      ],
+      "extra_skill_ids": [
+        "vacuna_de_refuerzo",
+        "suero_oral",
+        "receta_ilegible"
       ],
       "camp_skill_ids": [
         "palabras_de_animo",
@@ -543,6 +573,11 @@
         "humo_de_hierbas",
         "limpia_de_mal_de_ojo"
       ],
+      "extra_skill_ids": [
+        "guaro_de_hierbas",
+        "sobada_de_hueso",
+        "maldicion_del_guacimo"
+      ],
       "camp_skill_ids": [
         "palabras_de_animo",
         "vendaje_de_trapo"
@@ -629,6 +664,11 @@
         "liturgia_de_hierro",
         "sal_de_proteccion",
         "circulo_de_tiza"
+      ],
+      "extra_skill_ids": [
+        "agua_bendita_del_tubo",
+        "rosario_de_chayote",
+        "exorcismo_expres"
       ],
       "camp_skill_ids": [
         "palabras_de_animo",

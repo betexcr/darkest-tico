@@ -9,6 +9,7 @@ extends RefCounted
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
+const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
 
 ## Every key per_rank / rank_bonus may use (the validator checks the same list).
 ## status_mods (+N to each numeric mod of applies/self_applies) is meant for a skill's own
@@ -53,7 +54,8 @@ static func next_cost(hero: Dictionary, sid: String) -> int:
 ## `cap`: the highest rank the Casa Comunal teaches now (Maestría de Oficio, P3-16); -1 = max_rank.
 ## Heroes already above it keep their ranks.
 static func block_reason(hero: Dictionary, sid: String, colones: int, price: int, cap: int = -1) -> String:
-	if not (hero.get("skill_ids", []) as Array).has(sid):
+	# P3-17: any skill the hero knows can be trained, brought or left at home.
+	if not SkillLoadoutScript.knows(hero, sid):
 		return "No conoce esa habilidad."
 	if bool(hero.get("dead", false)):
 		return "Ya no está entre los vivos."

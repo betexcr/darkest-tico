@@ -1,5 +1,5 @@
 {
-  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill. use_ranks: battlefield positions (1 = front) the hero can use it from; target_ranks (enemy-target skills): enemy positions it can reach. Rules: scripts/domain/formation.gd. move_target N (enemy-target skills): moves the enemy hit N positions (negative = toward the front, positive = toward the back); shuffle_target true: to a random position. Resisted with status_resist.movimiento; Amarrado units can't be moved.",
+  "_doc": "kind: attack | heal | buff. target: enemy | self | ally (hero clicked on the stage, default the acting hero) | party. heal_min/heal_max heal; stress_relief lowers stress; cure [status ids]; grant_guard puts the target in guard; attacks may have applies {status, chance, turns, value} and self_stress (cost). rank_bonus (optional) replaces progression.json skill_ranks.per_rank for this skill; it may also use status_mods (+N to every numeric mod of applies/self_applies per rank). Every class needs at least one ally or party skill. use_ranks: battlefield positions (1 = front) the hero can use it from; target_ranks (enemy-target skills): enemy positions it can reach. Rules: scripts/domain/formation.gd. move_target N (enemy-target skills): moves the enemy hit N positions (negative = toward the front, positive = toward the back); shuffle_target true: to a random position. Resisted with status_resist.movimiento; Amarrado units can't be moved. element (optional, hero attacks): the skill's own element, used instead of the weapon's (P3-17). Skills listed in a class's extra_skill_ids are learned at the Casa Comunal (P3-17).",
   "skills": [
     {
       "id": "machetazo",
@@ -687,6 +687,512 @@
       "cure": [
         "susto"
       ]
+    },
+    {
+      "id": "chapea_rapida",
+      "name": "Chapea Rápida",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 1,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3
+      ],
+      "applies": {
+        "status": "sangrado",
+        "chance": 0.6,
+        "turns": 3,
+        "value": 1
+      },
+      "description": "Machete bajito, como chapeando potrero: llega hasta la posición 3 y deja sangrando."
+    },
+    {
+      "id": "tamal_de_reserva",
+      "name": "Tamal de Reserva",
+      "kind": "heal",
+      "target": "self",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "heal_min": 4,
+      "heal_max": 7,
+      "stress_relief": 4,
+      "description": "Saca el tamal que traía guardado en la alforja: se cura y se calma."
+    },
+    {
+      "id": "grito_de_montana",
+      "name": "Grito de Montaña",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 3,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
+      "applies": {
+        "status": "salado",
+        "chance": 0.8,
+        "turns": 2,
+        "mods": {
+          "accuracy": -8,
+          "dmg_pct": -15
+        }
+      },
+      "description": "Un grito de peón que retumba en la loma: poco daño, pero lo deja salado (menos precisión y daño)."
+    },
+    {
+      "id": "lazo_al_cuello",
+      "name": "Lazo al Cuello",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 1,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        3,
+        4
+      ],
+      "move_target": -2,
+      "applies": {
+        "status": "salado",
+        "chance": 0.5,
+        "turns": 2,
+        "mods": {
+          "dodge": -6
+        }
+      },
+      "description": "Enlaza al que se esconde atrás y lo jala dos posiciones hacia adelante. Puede quedar enredado (menos esquiva)."
+    },
+    {
+      "id": "rodeo",
+      "name": "Rodeo",
+      "kind": "buff",
+      "target": "party",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "stress_relief": 1,
+      "applies": {
+        "status": "chiva",
+        "turns": 3,
+        "mods": {
+          "speed": 3
+        }
+      },
+      "description": "Arranca la monta como en las fiestas de Zapote: toda la cuadrilla queda chiva, +3 velocidad por 3 turnos."
+    },
+    {
+      "id": "corneta_de_corral",
+      "name": "Corneta de Corral",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 4,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "applies": {
+        "status": "fichado",
+        "chance": 1.0,
+        "turns": 3
+      },
+      "description": "Toca la corneta y señala al animal más bravo: casi nunca falla y lo deja fichado."
+    },
+    {
+      "id": "linterna_en_la_cara",
+      "name": "Linterna en la Cara",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 3,
+      "target": "enemy",
+      "use_ranks": [
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
+      "applies": {
+        "status": "aturdido",
+        "chance": 0.6,
+        "turns": 1
+      },
+      "description": "¿Y usted quién es? Linternazo directo a los ojos: puede dejarlo atarantado."
+    },
+    {
+      "id": "libreta_de_reportes",
+      "name": "Libreta de Reportes",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 0,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "vs_marked_pct": 75,
+      "description": "Anota placa, hora y apellido, y después cobra: +75% de daño a fichados."
+    },
+    {
+      "id": "cafecito_de_turno",
+      "name": "Cafecito de Turno",
+      "kind": "buff",
+      "target": "self",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "grant_guard": true,
+      "stress_relief": 6,
+      "description": "Un cafecito de termo para aguantar el turno: queda en guardia y se calma."
+    },
+    {
+      "id": "vacuna_de_refuerzo",
+      "name": "Vacuna de Refuerzo",
+      "kind": "buff",
+      "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "heal_min": 1,
+      "heal_max": 2,
+      "applies": {
+        "status": "chiva",
+        "turns": 3,
+        "mods": {
+          "prot": 15
+        }
+      },
+      "rank_bonus": {
+        "status_mods": 3
+      },
+      "description": "Pinchazo y a seguir: el aliado elegido queda chiva, +15 protección por 3 turnos."
+    },
+    {
+      "id": "suero_oral",
+      "name": "Suero Oral",
+      "kind": "heal",
+      "target": "party",
+      "use_ranks": [
+        3,
+        4
+      ],
+      "heal_min": 1,
+      "heal_max": 3,
+      "stress_relief": 1,
+      "description": "Sobrecitos de suero para todos: cura un poco a toda la cuadrilla."
+    },
+    {
+      "id": "receta_ilegible",
+      "name": "Receta Ilegible",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 2,
+      "target": "enemy",
+      "use_ranks": [
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "applies": {
+        "status": "salado",
+        "chance": 0.7,
+        "turns": 3,
+        "mods": {
+          "accuracy": -6,
+          "speed": -2
+        }
+      },
+      "description": "Le receta algo que nadie entiende: lo deja salado (menos precisión y velocidad)."
+    },
+    {
+      "id": "guaro_de_hierbas",
+      "name": "Guaro de Hierbas",
+      "kind": "buff",
+      "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "stress_relief": 9,
+      "description": "Un traguito de guaro curado con hierbas del monte: alivia mucho estrés al aliado elegido."
+    },
+    {
+      "id": "sobada_de_hueso",
+      "name": "Sobada de Hueso",
+      "kind": "heal",
+      "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "heal_min": 2,
+      "heal_max": 3,
+      "applies": {
+        "status": "sobado",
+        "turns": 3,
+        "value": 3
+      },
+      "description": "Una sobada como Dios manda: cura un poco y deja al aliado sobado, +3 PV por turno durante 3 turnos."
+    },
+    {
+      "id": "maldicion_del_guacimo",
+      "name": "Maldición del Guácimo",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 1,
+      "target": "enemy",
+      "use_ranks": [
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "self_stress": 3,
+      "applies": {
+        "status": "veneno",
+        "chance": 0.75,
+        "turns": 3,
+        "value": 3
+      },
+      "description": "Una maldición vieja, de las que se hacen debajo de un guácimo: lo envenena. Al curandero le cuesta estrés."
+    },
+    {
+      "id": "agua_bendita_del_tubo",
+      "name": "Agua Bendita del Tubo",
+      "kind": "attack",
+      "damage_min": 3,
+      "damage_max": 6,
+      "skill_accuracy": 2,
+      "stress_on_hit_target": 2,
+      "target": "enemy",
+      "use_ranks": [
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "element": "sagrado",
+      "description": "Agua del tubo, pero bendecida en la parroquia: daño sagrado a cualquier enemigo."
+    },
+    {
+      "id": "rosario_de_chayote",
+      "name": "Rosario de Chayote",
+      "kind": "buff",
+      "target": "party",
+      "use_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "applies": {
+        "status": "chiva",
+        "turns": 2,
+        "mods": {
+          "prot": 10
+        }
+      },
+      "description": "Reparte rosarios de semilla de chayote: toda la cuadrilla queda chiva, +10 protección por 2 turnos."
+    },
+    {
+      "id": "exorcismo_expres",
+      "name": "Exorcismo Exprés",
+      "kind": "attack",
+      "damage_min": 5,
+      "damage_max": 9,
+      "skill_accuracy": 0,
+      "stress_on_hit_target": 3,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
+      "element": "sagrado",
+      "vs_marked_pct": 50,
+      "description": "Sin misa ni sermón, directo al grano: daño sagrado, +50% a fichados."
+    },
+    {
+      "id": "chancletazo",
+      "name": "Chancletazo",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 4,
+      "target": "enemy",
+      "use_ranks": [
+        1,
+        2,
+        3
+      ],
+      "target_ranks": [
+        1,
+        2
+      ],
+      "applies": {
+        "status": "aturdido",
+        "chance": 0.5,
+        "turns": 1
+      },
+      "description": "La chancleta voladora que todo nieto conoce: poco daño, pero puede dejarlo atarantado."
+    },
+    {
+      "id": "cafe_con_cuentos",
+      "name": "Café con Cuentos",
+      "kind": "buff",
+      "target": "party",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "stress_relief": 5,
+      "description": "Café chorreado y cuentos de cuando ella era chiquita: alivia el estrés de toda la cuadrilla."
+    },
+    {
+      "id": "bendicion_de_la_abuela",
+      "name": "Bendición de la Abuela",
+      "kind": "buff",
+      "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "stress_relief": 2,
+      "applies": {
+        "status": "encarrerado",
+        "turns": 3
+      },
+      "description": "«Dios me lo acompañe»: el aliado elegido queda encarrerado, con más críticos por 3 turnos."
+    },
+    {
+      "id": "reinicio_forzado",
+      "name": "Reinicio Forzado",
+      "kind": "attack",
+      "damage_min": 1,
+      "damage_max": 3,
+      "skill_accuracy": 2,
+      "target": "enemy",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "target_ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "shuffle_target": true,
+      "description": "Lo apaga y lo vuelve a prender: el enemigo queda en una posición al azar."
+    },
+    {
+      "id": "wifi_del_vecino",
+      "name": "Wifi del Vecino",
+      "kind": "buff",
+      "target": "party",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "applies": {
+        "status": "chiva",
+        "turns": 3,
+        "mods": {
+          "accuracy": 6
+        }
+      },
+      "description": "Se pega al wifi del vecino y comparte la señal: toda la cuadrilla queda chiva, +6 precisión por 3 turnos."
+    },
+    {
+      "id": "bateria_de_respaldo",
+      "name": "Batería de Respaldo",
+      "kind": "heal",
+      "target": "ally",
+      "use_ranks": [
+        2,
+        3,
+        4
+      ],
+      "heal_min": 3,
+      "heal_max": 5,
+      "cure": [
+        "aturdido"
+      ],
+      "description": "Un power bank y un cable pelado: cura al aliado elegido y le quita lo atarantado."
     }
   ]
 }

@@ -14,6 +14,7 @@ const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
 const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
+const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
 const LootDropsScript := preload("res://scripts/domain/loot_drops.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
@@ -50,7 +51,7 @@ const PLAYABLE_REGIONS := [
 ]
 
 
-const SAVE_VERSION := 18
+const SAVE_VERSION := 19
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -814,6 +815,58 @@ func buy_skill_rank(hero: Dictionary, skill_id: String) -> String:
 	return "En la Casa Comunal, %s practica %s: ahora es rango %d (-%d ₡)." % [hero.get("name", "?"), sk_name, r, cost]
 
 
+# --- Casa Comunal: learning skills and the 4 brought (P3-17, owner 2026-11-23) ------------
+
+## The class template of a hero (data/heroes.json).
+func hero_template(hero: Dictionary) -> Dictionary:
+	return get_hero_template(str(hero.get("hero_id", "")))
+
+
+## Price of learning one more class skill this week: hub.skill_learn_cost × the hero's
+## resolve-tier price × Plan de Formación × the town event's Casa Comunal price.
+func skill_learn_cost(hero: Dictionary) -> int:
+	var plan: float = 1.0 - upgrade_effect("casa_comunal", "rank_discount")
+	return int(round(BalanceScript.int_of("hub.skill_learn_cost") * tier_price_mult(hero) * plan
+		* TownEventsScript.service_mult(active_event(), "casa_comunal")))
+
+
+func skill_learn_block_reason(hero: Dictionary, skill_id: String) -> String:
+	if TownEventsScript.is_closed(active_event(), "casa_comunal"):
+		return "La Casa Comunal está cerrada esta semana (%s)." % active_event().get("name", "")
+	return SkillLoadoutScript.learn_block_reason(hero, hero_template(hero), skill_id, colones, skill_learn_cost(hero))
+
+
+func learn_skill(hero: Dictionary, skill_id: String) -> String:
+	var why: String = skill_learn_block_reason(hero, skill_id)
+	var sk_name: String = str(get_skill(skill_id).get("name", skill_id))
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), sk_name, why]
+	var cost: int = skill_learn_cost(hero)
+	colones -= cost
+	var k: Array = SkillLoadoutScript.known(hero)
+	k.append(skill_id)
+	hero["skill_known"] = k
+	return "En la Casa Comunal, %s aprende %s (-%d ₡). Puede llevarla en vez de otra." % [hero.get("name", "?"), sk_name, cost]
+
+
+## "" when `skill_id` can go in loadout slot `slot` now (free, in town only).
+func skill_slot_block_reason(hero: Dictionary, slot: int, skill_id: String) -> String:
+	return SkillLoadoutScript.swap_block_reason(hero, hero_template(hero), slot, skill_id, mission_active, get_skill)
+
+
+## Puts a known skill in slot 1–3 of the 4 brought; one already brought swaps places with it.
+func set_skill_slot(hero: Dictionary, slot: int, skill_id: String) -> String:
+	var why: String = skill_slot_block_reason(hero, slot, skill_id)
+	var sk_name: String = str(get_skill(skill_id).get("name", skill_id))
+	if why != "":
+		return "%s — %s: %s" % [hero.get("name", "?"), sk_name, why]
+	var old: String = str(hero["skill_ids"][slot])
+	hero["skill_ids"] = SkillLoadoutScript.swapped(hero, slot, skill_id)
+	if not (hero["skill_ids"] as Array).has(old):
+		return "%s lleva %s en vez de %s." % [hero.get("name", "?"), sk_name, get_skill(old).get("name", old)]
+	return "%s cambia de lugar %s y %s." % [hero.get("name", "?"), sk_name, get_skill(old).get("name", old)]
+
+
 # --- Taller: weapon and armor ranks (P3-05d, doc 04 §3.4) ---------------------------------
 
 ## Highest weapon / armor rank the Taller works now (Forja de Machetes / Chapería de Armaduras).
@@ -1117,6 +1170,8 @@ func _instantiate_hero(template: Dictionary, sex: String = "") -> Dictionary:
 		"resolve_level": int(template.get("resolve_level", 0)),
 		"resolve_xp": ResolveSystemScript.xp_for_level(int(template.get("resolve_level", 0))),
 		"skill_ids": template.get("skill_ids", []).duplicate(),
+		# P3-17: a recruit knows the class's 4; the other 3 are learned at the Casa Comunal.
+		"skill_known": template.get("skill_ids", []).duplicate(),
 		"skill_ranks": {},
 		"camp_skill_ids": template.get("camp_skill_ids", []).duplicate(),
 		# P3-13: 3 of the 6 class camp skills; the Guardabosques teaches the rest.
@@ -2772,11 +2827,32 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	out["gear_ranks"] = gr
 	if not out.has("skill_ids"):
 		out["skill_ids"] = []
-	# v9: the loadout always follows the class (heroes can't change skills). When a class's
-	# skill was replaced (P2-08: Abuela/Tecnólogo/Montador got their own basic attack instead
-	# of Machetazo), the rank bought in the old skill moves to the new one in the same slot.
+	# v9: before P3-17 the loadout always followed the class. When a class's skill was replaced
+	# (P2-08: Abuela/Tecnólogo/Montador got their own basic attack instead of Machetazo), the
+	# rank bought in the old skill moves to the new one in the same slot.
+	# v19 (P3-17): heroes learn more skills and choose 4. A loadout of 4 known class skills with
+	# the basic attack first is kept; anything else falls back to the class's 4 (as before).
 	var class_skills: Array = t.get("skill_ids", [])
-	if not class_skills.is_empty():
+	var all_class: Array = SkillLoadoutScript.class_skills(t)
+	var raw_known = out.get("skill_known", [])
+	var known_ids: Array = []
+	for sid in (raw_known if raw_known is Array else []):
+		if all_class.has(str(sid)) and not known_ids.has(str(sid)):
+			known_ids.append(str(sid))
+	for sid in class_skills:
+		if not known_ids.has(str(sid)):
+			known_ids.append(str(sid))
+	var cur_ids: Array = (out["skill_ids"] as Array).map(func(x): return str(x)) if out["skill_ids"] is Array else []
+	var unique: Dictionary = {}
+	for x in cur_ids:
+		unique[x] = true
+	var keep_loadout: bool = cur_ids.size() == SkillLoadoutScript.LOADOUT_SIZE and unique.size() == cur_ids.size() \
+		and not class_skills.is_empty() and cur_ids[0] == str(class_skills[0]) \
+		and cur_ids.all(func(x): return known_ids.has(x))
+	out["skill_known"] = known_ids
+	if keep_loadout:
+		out["skill_ids"] = cur_ids
+	elif not class_skills.is_empty():
 		var old_ids: Array = out["skill_ids"] if out["skill_ids"] is Array else []
 		var old_ranks = out.get("skill_ranks", {})
 		if old_ranks is Dictionary:
@@ -2787,6 +2863,9 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 				var keep_id: String = nid if old_ranks.has(nid) else oid
 				if old_ranks.has(keep_id):
 					moved[nid] = old_ranks[keep_id]
+			for sid in old_ranks:
+				if known_ids.has(str(sid)) and not moved.has(str(sid)):
+					moved[str(sid)] = old_ranks[sid]
 			out["skill_ranks"] = moved
 		out["skill_ids"] = class_skills.duplicate()
 	if not out.has("affliction_id"):
@@ -2815,7 +2894,7 @@ func _sanitize_runtime_hero(e: Dictionary) -> Dictionary:
 	var ranks: Dictionary = {}
 	if raw_ranks is Dictionary:
 		for sid in raw_ranks:
-			if (out["skill_ids"] as Array).has(str(sid)):
+			if (out["skill_known"] as Array).has(str(sid)):
 				var r: int = clampi(int(raw_ranks[sid]), 1, SkillRanksScript.max_rank())
 				if r > 1:
 					ranks[str(sid)] = r

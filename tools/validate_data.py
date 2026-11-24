@@ -550,10 +550,30 @@ def main() -> int:
     # attack (the first skill, kind attack). No skill id is shared by two classes.
     skill_owner = {}
     for hid, hero in heroes.items():
-        for sid in hero.get("skill_ids", []):
+        # P3-17 (owner 2026-11-23): 4 skills a recruit knows and brings, plus 3 to learn at the
+        # Casa Comunal; every skill belongs to exactly one class.
+        if len(hero.get("skill_ids", [])) != 4:
+            errors.append(f"heroes.json: hero '{hid}' needs 4 skill_ids (has {len(hero.get('skill_ids', []))})")
+        extra = hero.get("extra_skill_ids", [])
+        if len(extra) != 3:
+            errors.append(f"heroes.json: hero '{hid}' needs 3 extra_skill_ids (has {len(extra)})")
+        for sid in extra:
+            if sid not in skills:
+                errors.append(f"heroes.json: hero '{hid}' references unknown extra skill '{sid}'")
+            elif sid in hero.get("skill_ids", []):
+                errors.append(f"heroes.json: hero '{hid}' lists '{sid}' in both skill_ids and extra_skill_ids")
+        for sid in hero.get("skill_ids", []) + extra:
             if sid in skill_owner and skill_owner[sid] != hid:
                 errors.append(f"heroes.json: skill '{sid}' is used by both '{skill_owner[sid]}' and '{hid}'")
             skill_owner.setdefault(sid, hid)
+    for sid in skills:
+        if sid not in skill_owner:
+            errors.append(f"skills.json: '{sid}' belongs to no class (skill_ids or extra_skill_ids)")
+    for sid, sk in skills.items():
+        if sk.get("element") and sk["element"] not in known_el:
+            errors.append(f"skills.json: '{sid}' has unknown element '{sk['element']}'")
+        if sk.get("element") and sk.get("kind") != "attack":
+            errors.append(f"skills.json: '{sid}' element only on attacks")
         first = hero.get("skill_ids", [None])[0] if hero.get("skill_ids") else None
         if skills.get(first, {}).get("kind") != "attack":
             errors.append(f"heroes.json: hero '{hid}' must start with its basic attack (first skill, kind attack)")
@@ -1031,7 +1051,7 @@ BALANCE_KEYS = {
     "afflictions.abnegacion_chance": "chance",
     "enemies.boss_hp_mult": "mult", "enemies.elite_hp_mult": "mult",
     "hub.start_colones": "int>=0", "hub.sell_rate": "chance", "hub.heal_cost_per_hp": "int>=0",
-    "hub.heal_min_cost": "int>=0", "hub.idle_stress_relief": "int>=0",
+    "hub.heal_min_cost": "int>=0", "hub.idle_stress_relief": "int>=0", "hub.skill_learn_cost": "int>=0",
     "upgrades.elite_reliquia_chance": "chance",
     "camp.known_at_hire": "pos", "camp.learn_price": "int>=0", "camp.fix_price": "int>=0",
     "camp.shared_swap_price": "int>=0",
