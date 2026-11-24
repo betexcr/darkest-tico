@@ -364,8 +364,9 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Spec: `02` §7 (upgrade pattern)
 - Done when: [x] Upgrades: more relief, lower cost, more slots (per building, all three activities; data in `data/upgrades.json`, not `hub_activities.json`)
 
-### P3-17 · S · Unlockable skills
-- Status: `todo` · Depends: classes having more than 4 skills (doc 03)
+### P3-17 · M · Unlockable skills (owner 2026-11-23: 7 per class, bring 4)
+- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: classes having more than 4 skills (doc 03; owner 2026-11-23: yes)
+- Owner decisions 2026-11-23: 3 new skills per class (7 total); recruits know the class's 4; each new one is bought once per hero at the Casa Comunal (1,000 ₡ base × resolve-tier price × Plan de Formación × town event); the hero brings 4 of what they know, swapped free in town, locked on an expedition; the basic attack stays in slot 1.
 - Spec: `02` §4, `04` §3.3 ("Unlock new skill: 1,000 base")
 - Done when: [ ] Classes have extra skills to unlock at the Casa Comunal and pick 4 to take on an expedition
 
