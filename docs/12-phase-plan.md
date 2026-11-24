@@ -700,7 +700,19 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
   - [ ] Owner look; known nits: Sombra reads feminine; Susurro's and Segua's attack poses drift to a slit dress (the full-size attack redraw holds the look less); Nuboso's ailment kept a fog box; the rat reads as hound + pup
 
 ### P4-04 · M · Audio mood + narrator lines
-- Status: `todo` · Depends: — · Spec: `08`
+- Status: split into P4-04a–c (owner 2026-11-24: "add sfx and UI sounds, we will add voices and music later") · Spec: `08`
+
+### P4-04a · M · Sound effects and UI sounds (owner 2026-11-24)
+- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: —
+- Owner choices: CC0 packs from OpenGameArt (each file with source and license metadata); a speaker button with an effects-volume slider and mute, kept in `user://settings.cfg`.
+- Files: `scripts/autoload/sfx.gd` (new autoload `Sfx`), `data/sfx.json`, `assets/audio/sfx/**`, `assets/audio/CREDITS.md`, `tools/import_sfx.py`, `scripts/ui/volume_button.gd`, hooks in `battle_unit.gd`, `combat_controller.gd`, `expedition_screen.gd`, `hacienda_hub.gd`, `tools/validate_data.py`, `tests/test_sfx.gd`
+- Done when: [ ] audio buses (Master, SFX, UI, Music, Voice) and `Sfx.play(id)` from data; [ ] every button clicks; [ ] combat, expedition and hub events have sounds; [ ] volume slider + mute remembered; [ ] validator checks files, metadata and ids; [ ] tests
+
+### P4-04b · M · Music (owner: later)
+- Status: `todo` · Depends: P4-04a (the Music bus and the volume card)
+
+### P4-04c · M · Narrator lines and voices (owner: later)
+- Status: `todo` · Depends: P4-04a (the Voice bus) · Spec: `08`
 
 ---
 
