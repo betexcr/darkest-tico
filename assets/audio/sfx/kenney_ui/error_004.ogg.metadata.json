@@ -1,0 +1,9 @@
+{
+  "kind": "sound effect",
+  "pack": "kenney_interfaceSounds",
+  "original_file": "Audio/error_004.ogg",
+  "author": "Kenney (kenney.nl)",
+  "source": "https://opengameart.org/content/interface-sounds",
+  "license": "CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
+  "processing": "ffmpeg: mono 44.1 kHz, leading silence trimmed, peak -1 dBFS, OGG Vorbis q5 (tools/import_sfx.py)"
+}

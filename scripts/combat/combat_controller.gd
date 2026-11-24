@@ -131,6 +131,8 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	for h in party:
 		if h is Dictionary:
 			h.erase("collapsed_this_fight")
+	# P4-04a: a roar for an ambush or a boss; a blade drawn for any other fight.
+	_sfx("ambush" if (ambush or boss) else "attack")
 	var tier := ""
 	if note != "":
 		tier = note + " "
@@ -235,6 +237,7 @@ func guard() -> void:
 		return
 	_awaiting_hero = false
 	hero["guarding"] = true
+	_sfx("guard")
 	_log("%s se pone en guardia (mitad de daño físico hasta su próximo turno)." % hero.get("name", "?"), "88aacc")
 	var u = _unit_for_hero(hero)
 	if u != null:
@@ -262,6 +265,7 @@ func retreat() -> void:
 		_process_turn()
 		return
 	_log("¡Retirada! La cuadrilla sale de la pelea como puede.", "ffd27a")
+	_sfx("retreat")
 	var cost: int = BalanceScript.int_of("combat.retreat_stress")
 	for h in party:
 		if h is Dictionary and not h.get("dead", false) and cost > 0:
@@ -495,6 +499,7 @@ func _check_end() -> bool:
 func _finish(victory: bool) -> void:
 	_close_fight()
 	actor_changed.emit("Victoria" if victory else "Derrota")
+	_sfx("victory" if victory else "defeat")
 	if victory:
 		_log("Victoria. Cae el último enemigo.", "66aa66")
 	else:
@@ -614,6 +619,7 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 		var mu = _unit_for_enemy(enemy)
 		if mu != null:
 			mu.float_text("Falla", COLOR_MISS)
+		_sfx("miss")
 		_log_all(StressSystemScript.add_stress(hero, BalanceScript.int_of("combat.miss_stress")))
 		_enemy_riposte(enemy, hero)
 		return
@@ -805,6 +811,7 @@ func _enemy_turn(enemy: Dictionary) -> void:
 			var du = _unit_for_hero(t)
 			if du != null:
 				du.float_text("Esquiva", COLOR_MISS)
+			_sfx("miss")
 			if single:
 				await _hero_riposte(t, enemy)
 			continue
@@ -946,7 +953,9 @@ func _try_apply(unit: Dictionary, ap: Dictionary, crit: bool, indent: String) ->
 		opts["mods"] = ap["mods"]
 	var msg: String = StatusEffectsScript.apply(unit, str(ap.get("status", "")), int(ap.get("turns", 0)), int(ap.get("value", 0)), opts)
 	if msg != "":
-		_log(indent + msg, "cc9944" if StatusEffectsScript.is_negative(str(ap.get("status", ""))) else "88bbdd")
+		var sid: String = str(ap.get("status", ""))
+		_sfx("stun" if sid == "aturdido" else ("debuff" if StatusEffectsScript.is_negative(sid) else "buff"))
+		_log(indent + msg, "cc9944" if StatusEffectsScript.is_negative(sid) else "88bbdd")
 
 
 ## Respondón (riposte) on an enemy: it hits back the hero that attacked it.
@@ -1295,7 +1304,8 @@ func _refresh_markers() -> void:
 func _party_snapshot() -> Array:
 	var out: Array = []
 	for h in party:
-		out.append({"hp": int(h.get("hp", 0)), "stress": int(h.get("stress", 0)), "dead": bool(h.get("dead", false)), "borde": bool(h.get("al_borde", false))})
+		out.append({"hp": int(h.get("hp", 0)), "stress": int(h.get("stress", 0)), "dead": bool(h.get("dead", false)), "borde": bool(h.get("al_borde", false)),
+			"aff": str(h.get("affliction_id", "")), "vir": str(h.get("virtud_id", ""))})
 	return out
 
 
@@ -1307,6 +1317,14 @@ func _animate_party_changes(before: Array) -> void:
 		var stress_up: int = int(h.get("stress", 0)) - int(b["stress"])
 		if stress_up > 0:
 			hero_units[k].float_text("+%d estrés" % stress_up, hero_units[k].COLOR_STRESS)
+			_sfx("stress")
+		# P4-04a: the resolve test's outcome and Al Borde have their own sounds.
+		if str(h.get("affliction_id", "")) != "" and str(h.get("affliction_id", "")) != str(b.get("aff", "")):
+			_sfx("quebranto")
+		elif str(h.get("virtud_id", "")) != "" and str(h.get("virtud_id", "")) != str(b.get("vir", "")):
+			_sfx("virtud")
+		if bool(h.get("al_borde", false)) and not bool(b["borde"]) and not bool(h.get("dead", false)):
+			_sfx("al_borde")
 		if bool(h.get("dead", false)) and not bool(b["dead"]):
 			await hero_units[k].play_death(maxi(lost, 0))
 		elif lost > 0 or (bool(h.get("al_borde", false)) and not bool(b["borde"])):
@@ -1333,6 +1351,12 @@ func _animate_enemy_changes(before: Array) -> void:
 			await enemy_units[k].play_hurt(lost, crit)
 	_refresh_markers()
 	enemy_changed.emit()
+
+
+## A sound for a fight event (P4-04a); none in `instant` mode (the sims play thousands of fights).
+func _sfx(id: String) -> void:
+	if not instant:
+		Sfx.play(id)
 
 
 func _log(text: String, color: String) -> void:

@@ -168,3 +168,11 @@ With hero accuracy in the dark (owner 2026-11-12: Penumbra −3, Oscuro −6, Ne
 - **Damage alone does little.** Raising enemy damage from ×1.25 to ×1.35 on Aprendiz moved the chain clear rate by under a point, because healing absorbs it. Enemy PV (longer fights, so more stress and more dragging) and smaller heals move it more.
 - **A healer-only party now loses most chains.** It can't kill fast enough, so the dragging stress gets it. That is the stall penalty doing its job.
 
+
+
+## Sound effects (P4-04a, 2026-11-24)
+
+- `Sfx` autoload (`scripts/autoload/sfx.gd`): `Sfx.play(id)` picks one of the id's files at random, pitch 1 ± `pitch_jitter`, on a pool of 10 players. The same id within 45 ms is skipped, so six enemies hit at once sound like one hit. Unknown ids and missing files are silent.
+- Data: `data/sfx.json` (50 ids, 109 files). It is generated: `python3 tools/import_sfx.py <packs_dir>` converts the chosen files of five CC0 OpenGameArt packs (artisticdude, Kenney ×2, rubberduck ×2) to mono OGG with a `.metadata.json` each. Credits: `assets/audio/CREDITS.md`. On a fresh checkout (no `*.import`) the OGGs are read straight from disk.
+- Buses Master > SFX, UI, Music, Voice (Music and Voice are empty until P4-04b/c). The speaker button in the hub banner and the expedition top bar opens the "Sonido" card: one "Efectos" slider for SFX and UI, and "Silenciar". It is kept in `user://settings.cfg` (`[audio] sfx_volume, sfx_muted`), not in the save; `-s` runs never touch it.
+- Where sounds play: every `BaseButton` (click, quiet hover tick, "no" on a disabled one); combat in `battle_unit.gd` (swing or cast, hit or crit, enemy cry, heal or relief, deaths) and `combat_controller.gd` `_sfx` (miss, guard, statuses, stress, Al Borde, Quebranto/Virtud, retreat, victory/defeat, ambush/boss roar; silent with `instant`); expedition (footsteps, door, trap, disarm, curio, camp, eating, candle, loot, items); hub through `_act(sound, call)`, which plays the action's sound only if the hacienda changed, else "no" (buy, sell, equip, upgrades, skills, hires, Clínica, EBAIS), plus building open/close and the new week.

@@ -703,10 +703,10 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Status: split into P4-04a–c (owner 2026-11-24: "add sfx and UI sounds, we will add voices and music later") · Spec: `08`
 
 ### P4-04a · M · Sound effects and UI sounds (owner 2026-11-24)
-- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: —
+- Status: `review` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-24): owner to listen in game and to the sound board, and say which sounds to swap · Depends: —
 - Owner choices: CC0 packs from OpenGameArt (each file with source and license metadata); a speaker button with an effects-volume slider and mute, kept in `user://settings.cfg`.
 - Files: `scripts/autoload/sfx.gd` (new autoload `Sfx`), `data/sfx.json`, `assets/audio/sfx/**`, `assets/audio/CREDITS.md`, `tools/import_sfx.py`, `scripts/ui/volume_button.gd`, hooks in `battle_unit.gd`, `combat_controller.gd`, `expedition_screen.gd`, `hacienda_hub.gd`, `tools/validate_data.py`, `tests/test_sfx.gd`
-- Done when: [ ] audio buses (Master, SFX, UI, Music, Voice) and `Sfx.play(id)` from data; [ ] every button clicks; [ ] combat, expedition and hub events have sounds; [ ] volume slider + mute remembered; [ ] validator checks files, metadata and ids; [ ] tests
+- Done when: [x] audio buses (Master, SFX, UI, Music, Voice) and `Sfx.play(id)` from data (50 ids, 109 files from 5 CC0 packs, `assets/audio/CREDITS.md`); [x] every button clicks (hover tick, "no" when disabled); [x] combat, expedition and hub events have sounds; [x] volume slider + mute remembered in `user://settings.cfg`; [x] validator checks files, metadata and ids; [x] tests (`test_sfx`); [ ] the owner's ear (mix and choices)
 
 ### P4-04b · M · Music (owner: later)
 - Status: `todo` · Depends: P4-04a (the Music bus and the volume card)

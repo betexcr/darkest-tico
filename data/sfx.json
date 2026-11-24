@@ -1,0 +1,466 @@
+{
+  "_doc": "Sound effects (P4-04a). Sfx.play(id) picks one of files at random, on bus (SFX | UI), at volume_db, pitch 1 ± pitch_jitter. Files and metadata come from CC0 packs via tools/import_sfx.py (credits: assets/audio/CREDITS.md). Unknown ids are silent.",
+  "sounds": {
+    "ui_click": {
+      "bus": "UI",
+      "volume_db": -8,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/click_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/click_002.ogg",
+        "res://assets/audio/sfx/kenney_ui/click_003.ogg"
+      ]
+    },
+    "ui_hover": {
+      "bus": "UI",
+      "volume_db": -24,
+      "pitch_jitter": 0.08,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/tick_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/tick_002.ogg"
+      ]
+    },
+    "ui_denied": {
+      "bus": "UI",
+      "volume_db": -10,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/error_004.ogg"
+      ]
+    },
+    "ui_open": {
+      "bus": "UI",
+      "volume_db": -10,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/open_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/open_002.ogg"
+      ]
+    },
+    "ui_close": {
+      "bus": "UI",
+      "volume_db": -10,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/close_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/close_002.ogg"
+      ]
+    },
+    "ui_confirm": {
+      "bus": "UI",
+      "volume_db": -8,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/confirmation_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/confirmation_002.ogg"
+      ]
+    },
+    "ui_toggle": {
+      "bus": "UI",
+      "volume_db": -10,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/toggle_001.ogg",
+        "res://assets/audio/sfx/kenney_ui/toggle_002.ogg"
+      ]
+    },
+    "ui_page": {
+      "bus": "UI",
+      "volume_db": -8,
+      "pitch_jitter": 0.08,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/bookFlip1.ogg",
+        "res://assets/audio/sfx/kenney_rpg/bookFlip2.ogg",
+        "res://assets/audio/sfx/kenney_rpg/bookFlip3.ogg"
+      ]
+    },
+    "buy": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/handleCoins.ogg",
+        "res://assets/audio/sfx/kenney_rpg/handleCoins2.ogg"
+      ]
+    },
+    "sell": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/item_coins_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/item_coins_02.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/item_coins_03.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/item_coins_04.ogg"
+      ]
+    },
+    "equip": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/armor-light.ogg",
+        "res://assets/audio/sfx/artisticdude/chainmail1.ogg",
+        "res://assets/audio/sfx/artisticdude/cloth-heavy.ogg"
+      ]
+    },
+    "unequip": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/cloth.ogg",
+        "res://assets/audio/sfx/kenney_rpg/dropLeather.ogg"
+      ]
+    },
+    "upgrade": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/tools_01.ogg",
+        "res://assets/audio/sfx/rubberduck_100/tools_02.ogg",
+        "res://assets/audio/sfx/rubberduck_100/tools_03.ogg"
+      ]
+    },
+    "skill_learn": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/bookOpen.ogg"
+      ]
+    },
+    "hire": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/doorOpen_1.ogg",
+        "res://assets/audio/sfx/kenney_rpg/doorOpen_2.ogg"
+      ]
+    },
+    "dismiss": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/doorClose_1.ogg",
+        "res://assets/audio/sfx/kenney_rpg/doorClose_2.ogg"
+      ]
+    },
+    "week": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/bell_01.ogg"
+      ]
+    },
+    "heal_town": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/bottle.ogg"
+      ]
+    },
+    "attack": {
+      "bus": "SFX",
+      "volume_db": -5,
+      "pitch_jitter": 0.08,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/swing.ogg",
+        "res://assets/audio/sfx/artisticdude/swing2.ogg",
+        "res://assets/audio/sfx/artisticdude/swing3.ogg"
+      ]
+    },
+    "cast": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/spell.ogg",
+        "res://assets/audio/sfx/artisticdude/magic1.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/spell_01.ogg"
+      ]
+    },
+    "hit": {
+      "bus": "SFX",
+      "volume_db": -4,
+      "pitch_jitter": 0.08,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/hit_01.ogg",
+        "res://assets/audio/sfx/rubberduck_100/hit_02.ogg",
+        "res://assets/audio/sfx/rubberduck_100/hit_03.ogg",
+        "res://assets/audio/sfx/rubberduck_100/hit_04.ogg"
+      ]
+    },
+    "crit": {
+      "bus": "SFX",
+      "volume_db": -3,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/slam_01.ogg",
+        "res://assets/audio/sfx/rubberduck_100/slam_02.ogg"
+      ]
+    },
+    "miss": {
+      "bus": "SFX",
+      "volume_db": -12,
+      "pitch_jitter": 0.1,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/knifeSlice.ogg",
+        "res://assets/audio/sfx/kenney_rpg/knifeSlice2.ogg"
+      ]
+    },
+    "guard": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/metal_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/metal_02.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/metal_03.ogg"
+      ]
+    },
+    "heal": {
+      "bus": "SFX",
+      "volume_db": -7,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/bubble.ogg",
+        "res://assets/audio/sfx/artisticdude/bubble2.ogg",
+        "res://assets/audio/sfx/artisticdude/bubble3.ogg"
+      ]
+    },
+    "buff": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/item_gem_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/item_gem_02.ogg"
+      ]
+    },
+    "debuff": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/creature_slime_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/creature_slime_02.ogg"
+      ]
+    },
+    "stun": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/metal-ringing.ogg"
+      ]
+    },
+    "stress": {
+      "bus": "SFX",
+      "volume_db": -10,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/weird_01.ogg",
+        "res://assets/audio/sfx/rubberduck_100/weird_02.ogg",
+        "res://assets/audio/sfx/rubberduck_100/weird_03.ogg"
+      ]
+    },
+    "stress_relief": {
+      "bus": "SFX",
+      "volume_db": -10,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/bell_02.ogg"
+      ]
+    },
+    "al_borde": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/gong_01.ogg"
+      ]
+    },
+    "hero_death": {
+      "bus": "SFX",
+      "volume_db": -4,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/gong_02.ogg"
+      ]
+    },
+    "enemy_hurt": {
+      "bus": "SFX",
+      "volume_db": -9,
+      "pitch_jitter": 0.08,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/shade1.ogg",
+        "res://assets/audio/sfx/artisticdude/shade3.ogg",
+        "res://assets/audio/sfx/artisticdude/shade5.ogg",
+        "res://assets/audio/sfx/artisticdude/mnstr2.ogg",
+        "res://assets/audio/sfx/artisticdude/mnstr4.ogg"
+      ]
+    },
+    "enemy_death": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.06,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/creature_die_01.ogg",
+        "res://assets/audio/sfx/artisticdude/shade15.ogg",
+        "res://assets/audio/sfx/artisticdude/ogre5.ogg"
+      ]
+    },
+    "quebranto": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/weird_04.ogg",
+        "res://assets/audio/sfx/rubberduck_100/weird_05.ogg"
+      ]
+    },
+    "virtud": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/bell_03.ogg"
+      ]
+    },
+    "victory": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/kenney_ui/confirmation_003.ogg"
+      ]
+    },
+    "defeat": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.0,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/gong_02.ogg"
+      ]
+    },
+    "retreat": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/footstep05.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep06.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep07.ogg"
+      ]
+    },
+    "ambush": {
+      "bus": "SFX",
+      "volume_db": -5,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/creature_roar_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/creature_roar_02.ogg"
+      ]
+    },
+    "footstep": {
+      "bus": "SFX",
+      "volume_db": -12,
+      "pitch_jitter": 0.1,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/footstep00.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep01.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep02.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep03.ogg",
+        "res://assets/audio/sfx/kenney_rpg/footstep04.ogg"
+      ]
+    },
+    "door": {
+      "bus": "SFX",
+      "volume_db": -9,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/kenney_rpg/creak1.ogg",
+        "res://assets/audio/sfx/kenney_rpg/creak2.ogg",
+        "res://assets/audio/sfx/kenney_rpg/creak3.ogg"
+      ]
+    },
+    "trap": {
+      "bus": "SFX",
+      "volume_db": -5,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/spring_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/chain_01.ogg"
+      ]
+    },
+    "disarm": {
+      "bus": "SFX",
+      "volume_db": -7,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/lock_01.ogg",
+        "res://assets/audio/sfx/kenney_rpg/metalClick.ogg"
+      ]
+    },
+    "curio": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/wooded_box_open.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/item_wood_01.ogg"
+      ]
+    },
+    "loot": {
+      "bus": "SFX",
+      "volume_db": -6,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/coin.ogg",
+        "res://assets/audio/sfx/artisticdude/coin2.ogg",
+        "res://assets/audio/sfx/artisticdude/coin3.ogg"
+      ]
+    },
+    "camp": {
+      "bus": "SFX",
+      "volume_db": -7,
+      "pitch_jitter": 0.03,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/spell_fire_01.ogg",
+        "res://assets/audio/sfx/rubberduck_rpg/spell_fire_03.ogg"
+      ]
+    },
+    "eat": {
+      "bus": "SFX",
+      "volume_db": -7,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_100/dishes_01.ogg",
+        "res://assets/audio/sfx/kenney_rpg/metalPot1.ogg"
+      ]
+    },
+    "light": {
+      "bus": "SFX",
+      "volume_db": -10,
+      "pitch_jitter": 0.04,
+      "files": [
+        "res://assets/audio/sfx/rubberduck_rpg/spell_fire_02.ogg"
+      ]
+    },
+    "item_use": {
+      "bus": "SFX",
+      "volume_db": -8,
+      "pitch_jitter": 0.05,
+      "files": [
+        "res://assets/audio/sfx/artisticdude/bottle.ogg",
+        "res://assets/audio/sfx/kenney_rpg/handleSmallLeather.ogg"
+      ]
+    }
+  }
+}

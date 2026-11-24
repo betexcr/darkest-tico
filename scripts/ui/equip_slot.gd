@@ -55,7 +55,11 @@ func _make_custom_tooltip(for_text: String) -> Object:
 func _on_pressed() -> void:
 	if hero.is_empty():
 		return
-	changed.emit(GameState.unequip(hero, slot))
+	var had: bool = str(hero.get("equipment", {}).get(slot, "")) != ""
+	var msg: String = GameState.unequip(hero, slot)
+	if had:
+		Sfx.play("unequip" if str(hero.get("equipment", {}).get(slot, "")) == "" else "ui_denied")
+	changed.emit(msg)
 
 
 ## While a piece of equipment is dragged, the slots it can go into light up (owner
@@ -95,4 +99,6 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
-	changed.emit(GameState.equip(hero, str(data.get("id", "")), slot))
+	var msg: String = GameState.equip(hero, str(data.get("id", "")), slot)
+	Sfx.play("equip" if msg == "" else "ui_denied")
+	changed.emit(msg)

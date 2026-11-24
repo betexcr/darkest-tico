@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-24 (46) — P4-04a: sound effects and UI sounds (music and voices later)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-04a review (owner 2026-11-24: "add sfx and UI sounds, we will add voices and music later"; CC0 packs; speaker button with slider and mute). P4-04 split into a (this), b (music, todo) and c (narrator/voices, todo).
+- **Changed:**
+  - `scripts/autoload/sfx.gd` (new autoload `Sfx`, `project.godot`): buses SFX/UI/Music/Voice, `Sfx.play(id)` from `data/sfx.json`, pool of 10, 45 ms throttle per id, every button clicks/ticks/denies, volume + mute in `user://settings.cfg` (off in `-s` runs), disk fallback for un-imported OGGs.
+  - Sounds: `tools/import_sfx.py` (new) → `assets/audio/sfx/<pack>/*.ogg` + `.metadata.json` (109 files, 1.7 MB) and `data/sfx.json` (50 ids); `assets/audio/CREDITS.md`. Packs (all CC0, license field checked on each OpenGameArt page): artisticdude RPG Sound Pack, Kenney 50 RPG sound effects and Interface Sounds, rubberduck 80 CC0 RPG SFX and 100 CC0 SFX.
+  - Hooks: `battle_unit.gd` (actions, hits, crits, heals, deaths, equipment drops), `combat_controller.gd` `_sfx` (silent in `instant`), `expedition_screen.gd` (moves, rooms, traps, curios, camp, food, candle, loot, items), `hacienda_hub.gd` `_act(sound, call)` around every GameState action (sound if the hacienda changed, else "no"), building open/close, new week; `equip_slot.gd`.
+  - `scripts/ui/volume_button.gd` (new): speaker button in the hub banner and the expedition top bar; "Sonido" card with the Efectos slider and Silenciar.
+  - Validator `check_sfx`; `tests/test_sfx.gd` (new); AGENTS.md §6, doc 10 "Sound effects", plan.
+- **Verified:** `validate_data.py` 0 errors; full `tests/run_tests.gd` 24 of 24; 1280×720 screenshot of the volume card. Not listened to: the container has no speakers. A sound board (all 50 ids in order) was rendered for the owner.
+- **Not verified / risks:** the mix (relative volumes in `tools/import_sfx.py` SOUNDS) is a first guess; enemies share one generic cry; ranged/magic heroes use "cast" for buffs and the swing for every attack.
+- **Decisions needed:** which sounds to swap or rebalance after listening (edit SOUNDS in `tools/import_sfx.py`, rerun it with the packs).
+- **Next step:** owner listens in game; adjust `tools/import_sfx.py` SOUNDS (files, `volume_db`) and rerun with the five packs extracted (download links in `assets/audio/CREDITS.md`). Then P4-04b (music) when the owner wants it.
+
 ## 2026-11-24 (45) — P5-12: Sótanos vs the per-tier bands; Veterano eased after the Taller's weekly stock
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P5-12 done (owner 2026-11-24: per-tier bands Aprendiz 85–90 / Veterano 70–80 / Campeón 55–70, not doc 06's 55–70% for all).

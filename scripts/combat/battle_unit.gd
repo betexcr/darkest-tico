@@ -190,7 +190,9 @@ func _can_drop_data(_at_position: Vector2, d: Variant) -> bool:
 
 
 func _drop_data(_at_position: Vector2, d: Variant) -> void:
-	equipment_dropped.emit(GameState.equip(data, str(d.get("id", ""))))
+	var msg: String = GameState.equip(data, str(d.get("id", "")))
+	Sfx.play("equip" if msg == "" else "ui_denied")
+	equipment_dropped.emit(msg)
 	refresh()
 
 
@@ -517,6 +519,7 @@ func _update_glow() -> void:
 func play_action(state: String) -> void:
 	_stop_idle()
 	_show_state(state)
+	Sfx.play("attack" if state == "attack" else "cast")
 	var t := create_tween()
 	if state == "attack":
 		t.tween_property(_sprite, "position:x", 45.0 * _dir, 0.12).set_trans(Tween.TRANS_QUAD)
@@ -533,6 +536,9 @@ func play_action(state: String) -> void:
 func play_hurt(amount: int = 0, crit: bool = false) -> void:
 	_stop_idle()
 	_show_state("hurt")
+	Sfx.play("crit" if crit else "hit")
+	if not is_hero:
+		Sfx.play("enemy_hurt")
 	if amount > 0:
 		float_text(("¡-%d!" if crit else "-%d") % amount, COLOR_CRIT if crit else COLOR_DAMAGE, crit)
 	# Impact: a white flash, then red, with a shake.
@@ -549,6 +555,7 @@ func play_hurt(amount: int = 0, crit: bool = false) -> void:
 
 
 func play_heal(hp_gain: int = 0, stress_relief: int = 0) -> void:
+	Sfx.play("heal" if hp_gain > 0 else "stress_relief")
 	if hp_gain > 0:
 		float_text("+%d" % hp_gain, COLOR_HEAL)
 	if stress_relief > 0:
@@ -563,6 +570,8 @@ func play_heal(hp_gain: int = 0, stress_relief: int = 0) -> void:
 func play_death(amount: int = 0, crit: bool = false) -> void:
 	_stop_idle()
 	_show_state("hurt")
+	Sfx.play("hit")
+	Sfx.play("hero_death" if is_hero else "enemy_death")
 	if amount > 0:
 		float_text(("¡-%d!" if crit else "-%d") % amount, COLOR_CRIT if crit else COLOR_DAMAGE, crit)
 	_sprite.modulate = Color(1.7, 0.45, 0.45)

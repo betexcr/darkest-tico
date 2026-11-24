@@ -25,6 +25,7 @@ const QuirksScript := preload("res://scripts/domain/quirks.gd")
 const CardScript := preload("res://scripts/ui/tooltip_card.gd")
 const HeroCardScript := preload("res://scripts/ui/hero_card.gd")
 const CardButtonScript := preload("res://scripts/ui/card_button.gd")
+const VolumeButtonScript := preload("res://scripts/ui/volume_button.gd")
 const TownBuildingScript := preload("res://scripts/hacienda/town_building.gd")
 const ItemHoverScript := preload("res://scripts/ui/item_hover.gd")
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
@@ -140,7 +141,11 @@ func _ready() -> void:
 	if not GameState.roster.is_empty():
 		_selected = GameState.roster[0]
 	_hub_status.text = GameState.last_week_report
+	if GameState.last_week_report != "":
+		Sfx.play("week")
 	_build_event_button()
+	# P4-04a: sound volume (speaker button).
+	$Banner/Row.add_child(VolumeButtonScript.new())
 	if OS.is_debug_build():
 		var dev := Button.new()
 		dev.text = "DEV"
@@ -245,6 +250,22 @@ func _try_load_hub_background() -> void:
 	_bg.texture = ImageTexture.create_from_image(img2)
 
 
+## Runs a hub action (a GameState call that returns a message) with its sound (P4-04a):
+## `sound` if the hacienda changed (money, Reliquias, roster, inventory or a hero), else "no".
+func _act(sound: String, action: Callable) -> void:
+	var before: String = _state_sig()
+	var msg: String = str(action.call())
+	Sfx.play(sound if _state_sig() != before else "ui_denied")
+	_say(msg)
+
+
+func _state_sig() -> String:
+	return var_to_str([GameState.colones, GameState.reliquias, GameState.inventory, GameState.roster.map(func(h): return [
+		h.get("uid"), h.get("hp"), h.get("stress"), h.get("busy"), h.get("equipment"), h.get("skill_ids"), h.get("skill_known"),
+		h.get("skill_ranks"), h.get("gear_ranks"), h.get("quirks"), h.get("camp_skill_ids"), h.get("camp_known"), h.get("camp_fixed")]),
+		GameState.building_levels])
+
+
 func _say(msg: String) -> void:
 	_hub_status.text = msg
 	SaveService.save_game()
@@ -324,7 +345,7 @@ func _build_shop() -> void:
 		var b = ShopSlotScript.new()
 		b.setup(str(id))
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind(shop))
-		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
+		b.pressed.connect(func(): _act("buy", func(): return GameState.buy_item(str(id))))
 		(_taller_grid if shop == "taller" else _shop_grid).add_child(b)
 	_taller_shown = GameState.taller_stock.duplicate()
 	if _taller_grid.get_child_count() == 0 or _taller_grid.get_children().all(func(c): return c.is_queued_for_deletion()):
@@ -350,7 +371,7 @@ func _build_feria() -> void:
 		var b = ShopSlotScript.new()
 		b.setup(str(id))
 		b.set_drag_forwarding(Callable(), _can_drop_sell, _drop_sell.bind("feria"))
-		b.pressed.connect(func(): _say(GameState.buy_item(str(id))))
+		b.pressed.connect(func(): _act("buy", func(): return GameState.buy_item(str(id))))
 		_feria_grid.add_child(b)
 	if _feria_shown.is_empty():
 		_feria_grid.add_child(CardScript.label("Ya se vendió todo lo del puesto. La otra semana la Feria trae otros accesorios.", 13, CardScript.HINT, true))
@@ -404,7 +425,7 @@ func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
 			if str(h["busy"].get("building", "")) == bid:
 				var cancel := Button.new()
 				cancel.text = "Cancelar %s (+%d ₡ de vuelta)" % [act.get("name", "?"), int(h["busy"].get("cost", 0))]
-				cancel.pressed.connect(func(): _say(GameState.cancel_activity(h)))
+				cancel.pressed.connect(func(): _act("sell", func(): return GameState.cancel_activity(h)))
 				box.add_child(cancel)
 		else:
 			head.text = "%s sigue en %s una semana más (%s)." % [h.get("name", "?"), bname, act.get("name", "?")]
@@ -436,7 +457,7 @@ func _fill_relief(box: VBoxContainer, b: Dictionary) -> void:
 		btn.tooltip_text = "\n".join(lines)
 		btn.card = _activity_card.bind(b, a, price, rel, used, cap, why)
 		btn.disabled = why != ""
-		btn.pressed.connect(func(): _say(GameState.send_to_activity(h, bid, aid)))
+		btn.pressed.connect(func(): _act("buy", func(): return GameState.send_to_activity(h, bid, aid)))
 		box.add_child(btn)
 
 
@@ -469,17 +490,17 @@ func _refresh_guardabosques() -> void:
 			var why: String = GameState.camp_learn_block_reason(h, sid)
 			b.disabled = why != ""
 			b.tooltip_text = "Aprender %s\n%s" % [sk.get("name", sid), why if why != "" else "Desde ahora puede salirle en las fogatas."]
-			b.pressed.connect(func(): _say(GameState.learn_camp_skill(h, sid)))
+			b.pressed.connect(func(): _act("skill_learn", func(): return GameState.learn_camp_skill(h, sid)))
 		elif sid == fixed:
 			b.text = "Soltar (gratis)"
 			b.tooltip_text = "Soltar %s\nVuelve a salir al azar, como las demás." % sk.get("name", sid)
-			b.pressed.connect(func(): _say(GameState.fix_camp_skill(h, "")))
+			b.pressed.connect(func(): _act("ui_page", func(): return GameState.fix_camp_skill(h, "")))
 		else:
 			b.text = "Fijar — %d ₡" % GameState.camp_price("fix")
 			var why2: String = GameState.camp_fix_block_reason(h, sid)
 			b.disabled = why2 != ""
 			b.tooltip_text = "Fijar %s\n%s" % [sk.get("name", sid), why2 if why2 != "" else "Le sale en cada fogata%s." % (" (en vez de %s)" % CampingSystemScript.skill(fixed).get("name", "") if fixed != "" else "")]
-			b.pressed.connect(func(): _say(GameState.fix_camp_skill(h, sid)))
+			b.pressed.connect(func(): _act("skill_learn", func(): return GameState.fix_camp_skill(h, sid)))
 		var tag: String = "Fija" if sid == fixed else ("La conoce" if known else "No la conoce")
 		var tag_col: Color = CardScript.GOOD if sid == fixed else (CardScript.TEXT if known else CardScript.MUTED)
 		_ranger_box.add_child(_ranger_row(sk, tag, tag_col, [b], known))
@@ -493,7 +514,7 @@ func _refresh_guardabosques() -> void:
 			var why3: String = GameState.camp_swap_block_reason(h, str(sk["id"]), nid)
 			b.disabled = why3 != ""
 			b.tooltip_text = "%s\n%s" % [CampingSystemScript.skill(nid).get("name", nid), why3 if why3 != "" else str(CampingSystemScript.skill(nid).get("desc", ""))]
-			b.pressed.connect(func(): _say(GameState.swap_shared_camp_skill(h, str(sk["id"]), nid)))
+			b.pressed.connect(func(): _act("skill_learn", func(): return GameState.swap_shared_camp_skill(h, str(sk["id"]), nid)))
 			btns.append(b)
 		_ranger_box.add_child(_ranger_row(sk, "La lleva", CardScript.TEXT, btns, true))
 
@@ -608,7 +629,7 @@ func _upgrade_row(bid: String, t: Dictionary) -> Control:
 		var why: String = GameState.upgrade_block_reason(bid, tid)
 		b.disabled = why != ""
 		b.tooltip_text = "%s, nivel %d\n%s" % [t.get("name", tid), lv + 1, why if why != "" else "Pasa a: %s." % UpgradesScript.effect_text(eff, UpgradesScript.value_at(t, lv + 1))]
-		b.pressed.connect(func(): _say(GameState.buy_upgrade(bid, tid)))
+		b.pressed.connect(func(): _act("upgrade", func(): return GameState.buy_upgrade(bid, tid)))
 	row.add_child(b)
 	return panel
 
@@ -739,7 +760,7 @@ func _clinic_row(dlg: AcceptDialog, h: Dictionary, o: Dictionary) -> Control:
 		var act: String = str(a["action"])
 		b.pressed.connect(func():
 			dlg.hide()
-			_say(GameState.clinic_treat(h, qid, act))
+			_act("heal_town", func(): return GameState.clinic_treat(h, qid, act))
 		)
 		acts.add_child(b)
 		if not bool(a["enabled"]):
@@ -856,9 +877,9 @@ func _refresh_equipment() -> void:
 			b.setup(str(GameState.inventory[k]["id"]), int(GameState.inventory[k]["qty"]))
 			b.used.connect(func(id: String):
 				if _selling():
-					_say(GameState.sell_item(id, _sell_shop()))
+					_act("sell", func(): return GameState.sell_item(id, _sell_shop()))
 				elif GameState.is_equipment(id) and not _selected.is_empty():
-					_say(GameState.equip(_selected, id))
+					_act("equip", func(): return GameState.equip(_selected, id))
 			)
 			if _selling():
 				b.modulate = Color(1, 0.85, 0.6)
@@ -987,7 +1008,7 @@ func _skill_rank_button(h: Dictionary, sid: String) -> Button:
 	if why != "":
 		lines.append(why)
 	buy.tooltip_text = "\n".join(lines)
-	buy.pressed.connect(func(): _say(GameState.buy_skill_rank(h, sid)))
+	buy.pressed.connect(func(): _act("skill_learn", func(): return GameState.buy_skill_rank(h, sid)))
 	return buy
 
 
@@ -1004,7 +1025,7 @@ func _skill_learn_button(h: Dictionary, sid: String) -> Button:
 	b.disabled = why != ""
 	b.tooltip_text = "Aprender %s\n%s%s" % [sk.get("name", sid), "Una sola vez: después la puede llevar en vez de otra, gratis.",
 		("\n" + why) if why != "" else ""]
-	b.pressed.connect(func(): _say(GameState.learn_skill(h, sid)))
+	b.pressed.connect(func(): _act("skill_learn", func(): return GameState.learn_skill(h, sid)))
 	return b
 
 
@@ -1026,7 +1047,7 @@ func _skill_bring_button(h: Dictionary, sid: String) -> Button:
 		if why != "":
 			menu.set_item_tooltip(idx, why)
 	b.disabled = range(1, ids.size()).all(func(sl): return GameState.skill_slot_block_reason(h, sl, sid) != "")
-	menu.id_pressed.connect(func(slot): _say(GameState.set_skill_slot(h, int(slot), sid)))
+	menu.id_pressed.connect(func(slot): _act("ui_page", func(): return GameState.set_skill_slot(h, int(slot), sid)))
 	return b
 
 
@@ -1035,7 +1056,7 @@ func _can_drop_sell(_at: Vector2, data: Variant) -> bool:
 
 
 func _drop_sell(_at: Vector2, data: Variant, shop: String = "pulperia") -> void:
-	_say(GameState.sell_item(str(data.get("id", "")), shop))
+	_act("sell", func(): return GameState.sell_item(str(data.get("id", "")), shop))
 
 
 # --- Terminal de Buses ------------------------------------------------------------
@@ -1098,7 +1119,7 @@ func _recruit_row(i: int, h: Dictionary, closed: bool) -> Control:
 	hire.disabled = GameState.colones < price or full or closed
 	hire.tooltip_text = "" if not hire.disabled else ("La terminal está cerrada esta semana." if closed
 		else ("No hay más camas en la hacienda." if full else "No alcanza la plata."))
-	hire.pressed.connect(func(): _say(GameState.hire_recruit(i)))
+	hire.pressed.connect(func(): _act("hire", func(): return GameState.hire_recruit(i)))
 	row.add_child(hire)
 	panel.set_meta("hire", hire)
 	return panel
@@ -1442,7 +1463,7 @@ func _roster_row(h: Dictionary) -> Control:
 		heal.tooltip_text = "Curar todos los PV en el EBAIS del pueblo.%s" % ("" if GameState.tier_price_mult(h) <= 1.0 else
 			"\nPrecio ×%s por la Resolución %d: los héroes curtidos pagan más." % [str(snappedf(GameState.tier_price_mult(h), 0.01)), int(h.get("resolve_level", 0))])
 		heal.disabled = ebais_closed or GameState.colones < cost
-		heal.pressed.connect(func(): _say(GameState.heal_hero(h)))
+		heal.pressed.connect(func(): _act("heal_town", func(): return GameState.heal_hero(h)))
 		btns.add_child(heal)
 	if in_party:
 		var up := Button.new()
@@ -1500,7 +1521,7 @@ func _confirm_dismiss(h: Dictionary) -> void:
 	dlg.confirmed.connect(func():
 		if is_same(_selected, h):
 			_selected = {}
-		_say(GameState.dismiss_hero(h))
+		_act("dismiss", func(): return GameState.dismiss_hero(h))
 	)
 	add_child(dlg)
 	_popup_card(dlg)
@@ -1559,7 +1580,7 @@ func _confirm_provisions() -> void:
 	dlg.confirmed.connect(func(): start_mission_requested.emit())
 	dlg.custom_action.connect(func(action: StringName):
 		dlg.hide()
-		_say(GameState.buy_missing_provisions("", str(action)))
+		_act("buy", func(): return GameState.buy_missing_provisions("", str(action)))
 	)
 	add_child(dlg)
 	_popup_card(dlg)
@@ -1707,6 +1728,7 @@ func open_building(bid: String) -> void:
 	if not _buildings.has(bid) and _pages.get_node_or_null(bid) == null:
 		return
 	_open_building = bid
+	Sfx.play("ui_open")
 	var row: Dictionary = _buildings[bid].get_meta("row") if _buildings.has(bid) else {}
 	$Building/VBox/Head/Texts/Name.text = str(row.get("name", bid))
 	$Building/VBox/Head/Texts/Blurb.text = str(row.get("text", ""))
@@ -1721,6 +1743,8 @@ func open_building(bid: String) -> void:
 
 
 func close_building() -> void:
+	if _window.visible:
+		Sfx.play("ui_close")
 	_open_building = ""
 	_window.visible = false
 
@@ -1798,7 +1822,7 @@ func _refresh_gear_ranks() -> void:
 			b.text = "%s — %d ₡%s" % ["Afilar" if kind == "weapon" else "Reforzar", GameState.gear_rank_cost(h, kind), (" + %d Reliq." % rel) if rel > 0 else ""]
 			b.disabled = why != ""
 			b.tooltip_text = "Rango %d: %s%s" % [r + 1, GearRanksScript.bonus_text(kind, r + 1), ("\n" + why) if why != "" else ""]
-			b.pressed.connect(func(): _say(GameState.buy_gear_rank(h, kind)))
+			b.pressed.connect(func(): _act("upgrade", func(): return GameState.buy_gear_rank(h, kind)))
 		row.add_child(b)
 		_gear_box.add_child(row)
 
@@ -2043,7 +2067,7 @@ func _show_event_card() -> void:
 		b.card = HeroCardScript.build.bind(h, "Vuelve con su resolución, pero sin equipo.")
 		b.pressed.connect(func():
 			dlg.hide()
-			_say(GameState.resurrect(int(h.get("uid", 0))))
+			_act("virtud", func(): return GameState.resurrect(int(h.get("uid", 0))))
 		)
 		col.add_child(b)
 	var offer: Dictionary = GameState.event_offer()

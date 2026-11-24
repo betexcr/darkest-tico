@@ -1014,6 +1014,7 @@ def main() -> int:
 
     check_balance(errors)
     check_domain_magic_numbers(errors)
+    check_sfx(errors)
 
     for w in warnings:
         print(f"WARN  {w}")
@@ -1157,6 +1158,36 @@ def check_balance(errors: list) -> None:
               "quirks.tier_levels", "hub.tier_price_mult", "taller.rank_costs"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
+
+
+# Sound effects (P4-04a): data/sfx.json ids -> files; every file exists with its .metadata.json
+# (source and license), buses are known, and every Sfx.play("id") / _sfx("id") in scripts/ is defined.
+def check_sfx(errors: list) -> None:
+    raw = load(DATA / "sfx.json")
+    if raw is None:
+        return
+    sounds = raw.get("sounds", {})
+    for sid, snd in sounds.items():
+        if snd.get("bus") not in ("SFX", "UI", "Music", "Voice"):
+            errors.append(f"sfx.json: '{sid}' has unknown bus '{snd.get('bus')}'")
+        if not snd.get("files"):
+            errors.append(f"sfx.json: '{sid}' has no files")
+        for f in snd.get("files", []):
+            path = ROOT / f.replace("res://", "")
+            if not path.exists():
+                errors.append(f"sfx.json: '{sid}' file missing: {f}")
+            elif not Path(str(path) + ".metadata.json").exists():
+                errors.append(f"sfx.json: '{sid}' file has no .metadata.json: {f}")
+    used = set()
+    for gd in (ROOT / "scripts").rglob("*.gd"):
+        txt = gd.read_text(encoding="utf-8")
+        for line in txt.splitlines():
+            m = re.search(r'(?:Sfx\.play|_sfx|_act)\((.*)$', line)
+            if m:
+                # The first argument and every "else" branch of a conditional id.
+                used |= set(re.findall(r'(?:^|\belse \(?)"([a-z_]+)"', m.group(1)))
+    for sid in sorted(used - set(sounds)):
+        errors.append(f"sfx.json: scripts play '{sid}' but it isn't defined")
 
 
 # "No magic balance numbers left in scripts/domain/" (P1-06). Flags numeric consts and

@@ -12,6 +12,7 @@ const ACTION_ROW_FULL := 9
 const ACTION_ICON_SMALL := Vector2(44, 44)
 const StatusEffectsScript := preload("res://scripts/domain/status_effects.gd")
 const BattleUnitScript := preload("res://scripts/combat/battle_unit.gd")
+const VolumeButtonScript := preload("res://scripts/ui/volume_button.gd")
 const StressSystemScript := preload("res://scripts/domain/stress_system.gd")
 const ItemEffectsScript := preload("res://scripts/domain/item_effects.gd")
 const ResolveSystemScript := preload("res://scripts/domain/resolve_system.gd")
@@ -100,6 +101,8 @@ var _turn_equipment: Dictionary = {}
 
 func _ready() -> void:
 	_set_background(BG_EXPLORE)
+	# P4-04a: sound volume (speaker button) at the end of the top bar.
+	$Stage/TopBar.add_child(VolumeButtonScript.new())
 	_build_party()
 	_map_view.room_clicked.connect(_on_room_clicked)
 	_btn_map.pressed.connect(_show_page.bind(false))
@@ -694,6 +697,7 @@ func _on_item_pressed(item_id: String) -> void:
 			var target: Dictionary = _viewed_hero
 			if target.is_empty() or target.get("dead", false):
 				target = _first_living_hero()
+			Sfx.play("item_use")
 			for l in GameState.use_item_outside_combat(item_id, target):
 				_log_line(l, "")
 			_refresh_all()
@@ -717,6 +721,7 @@ func _on_room_clicked(node_id: String) -> void:
 		return
 	if not GameState.move_to_node(node_id):
 		return
+	Sfx.play("footstep")
 	_enter_room()
 
 
@@ -750,6 +755,7 @@ func _resolve_room() -> void:
 	if GameState.is_node_cleared(nid):
 		_narrate("%s (despejado)." % nd.get("label", nid))
 		return
+	Sfx.play("door")
 	match str(nd.get("type", "")):
 		"combat", "boss":
 			_start_combat(nid)
@@ -788,6 +794,7 @@ func _on_snuff_pressed() -> void:
 		return
 	var lost: int = GameState.snuff_light()
 	if lost > 0:
+		Sfx.play("light")
 		_narrate("Bajan la mecha de la candela (-%d Luz). Ahora: %s." % [lost, LightSystemScript.tier_name(GameState.mission_light)])
 	_refresh_all()
 	_show_explore_actions()
@@ -814,6 +821,8 @@ func _open_hunger() -> void:
 
 
 func _hunger_meal(fed: int) -> void:
+	if fed > 0:
+		Sfx.play("eat")
 	for l in GameState.travel_meal(fed):
 		_log_line(l, "cc7744" if fed < CampingSystemScript.travel_meal_cost(GameState.party) else "ffd27a")
 	_close_event()
@@ -963,6 +972,7 @@ func _show_battle_result(title: String, pay: int, drops: Dictionary, then: Calla
 		if pay > 0:
 			col.add_child(_tone_label("+%d colones" % pay))
 			any = true
+			Sfx.play("loot")
 		if int(drops.get("reliquias", 0)) > 0:
 			col.add_child(_tone_label("+%d Reliquia del Abuelo" % int(drops["reliquias"])))
 			any = true
@@ -1044,6 +1054,7 @@ func _open_trap() -> void:
 			for l in StressSystemScript.add_stress(spotter, -relief):
 				_log_line(l, "88bb88")
 				got.append(l)
+			Sfx.play("disarm")
 			_resolve_event("%s desarma la trampa. ¡Qué nivel!" % spotter.get("name", "Alguien"), got)
 		else:
 			_spring_trap(trap)
@@ -1058,10 +1069,12 @@ func _open_trap() -> void:
 
 
 func _spring_trap(trap: Dictionary) -> void:
+	Sfx.play("trap")
 	_apply_outcome(str(trap.get("fail_text", "¡La trampa salta!")), trap.get("effects", {}))
 
 
 func _open_curio() -> void:
+	Sfx.play("curio")
 	# P2-10: a choice event out of its moment turns into its fallback curio.
 	var rc: Dictionary = GameState.room_curio()
 	var curio: Dictionary = rc["curio"]
@@ -1114,6 +1127,7 @@ func _apply_outcome(text: String, outcome: Dictionary) -> void:
 
 
 func _open_camp() -> void:
+	Sfx.play("camp")
 	var nid: String = GameState.current_node_id
 	if not GameState.can_camp_at(nid):
 		_open_event("Fogata de trocha", "No queda leña para acampar. Solo pueden calentarse las manos.")
@@ -1160,6 +1174,7 @@ func _camp_meal() -> void:
 				return
 			if cost > 0:
 				GameState.remove_item("gallo_pinto", cost)
+				Sfx.play("eat")
 			# Any camp meal (even a fast) is the party's meal: the hunger count restarts.
 			GameState.moves_since_meal = 0
 			_log_line("%s. %s" % [meal.get("name", ""), meal.get("text", "")], "ffd27a")
