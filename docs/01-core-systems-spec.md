@@ -326,12 +326,12 @@ Implemented (P3-04, XP part). Data: `data/progression.json`; rules: `scripts/dom
 - Heroes have a **resolve level 0–6** (Novato, Aprendiz, Baquiano, Veterano, Maestro, Campeón, Leyenda). Cumulative XP to reach each level: 2 / 10 / 24 / 48 / 84 / 132 (P5-02d, owner 2026-11-14: the Darkest Dungeon curve, where each level costs 2 / 8 / 14 / 24 / 36 / 48 more than the last). At 4 / 8 / 16 XP per expedition a hero outgrows Aprendiz after 6 expeditions and Veterano after 8 more. Save v10 keeps every saved hero at the level they had.
 - **Resolve XP is earned only by completing an expedition** (killing the boss). Fleeing or a wipe gives none, and the fallen get none.
 - Each level adds **+10% resistance** to Atarantado, Veneno, Sangrado and Salado, and **+5%** to Trampas.
-- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy accuracy and ailment resist follow doc 05 §4; PV, damage and stress were set by the P5-02c/f playtests (doc 09 §6) and retuned by P5-07/P5-08/P5-09 (doc 09 §8) for the game without the group misa, to the owner's bands of 85–90 / 70–80 / 55–70% cleared:
+- **Expedition difficulty** is picked in the hub (one global picker, owner 2026-11-08). Enemy accuracy and ailment resist follow doc 05 §4; PV, damage and stress were set by the P5-02c/f playtests (doc 09 §6) and retuned by P5-07/P5-08/P5-09, P5-11 and P5-12 (doc 09 §8) to the owner's per-tier bands of 85–90 / 70–80 / 55–70% cleared (owner 2026-11-24: per tier, not doc 06's 55–70% for all). Aprendiz is measured on fresh 8-week bot campaigns, Veterano and Campeón on 24-week campaigns with 12 seeds:
 
 | Difficulty | Level | Heroes without penalty | XP per survivor | Enemy PV / damage / stress / accuracy / ailment resist | Pay |
 |---|---|---|---|---|---|
 | Aprendiz | 1 | 0–2 | 4 | ×0.8 / ×0.8 / ×0.95 / +0 / +0% | ×1 |
-| Veterano | 3 | 3–4 | 8 | ×1.18 / ×1.13 / ×1.3 / +3 / +10% | ×1.6 |
+| Veterano | 3 | 3–4 | 8 | ×1.1 / ×1.06 / ×1.3 / +3 / +10% | ×1.6 |
 | Campeón | 5 | 5–6 | 16 | ×1.65 / ×1.44 / ×1.65 / +6 / +20% | ×2.5 |
 
 - The stress multiplier applies to the stress an enemy skill causes; the extra stress of an enemy crit is not scaled.

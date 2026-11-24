@@ -44,7 +44,7 @@ Results, Sótanos, route full, seed 1, 40 expeditions each (2026-11-23, after P3
 | Aprendiz, fresh week-1 party | **95%** (CI 83–99%) | 2 after a Retirada | 0.03 | 95% | 450 s |
 | Veterano, level 3, rank 2, 2 gear | **88%** (CI 74–95%) | 5 after a Retirada | 0.07 | 92% | 563 s |
 
-Both are above the 55–70% target. The bot is a careful player (it full-clears, camps every time, uses items and retreats early), so a real player will do worse, but the gap is wide. Regular and elite fights are almost never lost; the risk is all in the boss (7–9 rounds on average, the longest 15–16).
+P5-12 (2026-11-24): the owner's target is per tier (Aprendiz 85–90%, Veterano 70–80%, Campeón 55–70%), each measured as it was tuned (Aprendiz on fresh 8-week campaigns: 89.9%; Veterano and Campeón on 24-week campaigns, 12 seeds), so `--missions` (week-1 parties only: Aprendiz 97.5% on 80) reads high and is not the band's measurement. The summary line still prints doc 06's 55–70%. Earlier note: both are above the 55–70% target. The bot is a careful player (it full-clears, camps every time, uses items and retreats early), so a real player will do worse, but the gap is wide. Regular and elite fights are almost never lost; the risk is all in the boss (7–9 rounds on average, the longest 15–16).
 
 The two hero policies:
 

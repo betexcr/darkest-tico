@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-24 (45) — P5-12: Sótanos vs the per-tier bands; Veterano eased after the Taller's weekly stock
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P5-12 done (owner 2026-11-24: per-tier bands Aprendiz 85–90 / Veterano 70–80 / Campeón 55–70, not doc 06's 55–70% for all).
+- **Changed:** `data/progression.json` Veterano `enemy_hp` 1.18 → 1.1, `enemy_dmg` 1.13 → 1.06 (+ its doc text); doc 01 difficulty table and measurement note; doc 09 §8 paragraph; doc 10 "Mission success" note; `docs/playtests/2026-11-24-p5-12.md` (tables, commands, `run.sh` / `agg.py`, raw output).
+- **Verified:** baseline on main ff1da6d: Aprendiz 89.9% on fresh 8-week campaigns (in band); 24-week, 12 seeds: Veterano 62.5% (below), Campeón 67.9%; `--missions` 97.5% and tier-start 92–96% read high (week-1 / synthetic parties). Kept ×1.1 / ×1.06: Veterano 74.9% (311 expeditions), deaths 0.17, 34 of 36 solvent; ×1.04 / ×1.0 gave 77.1%. `validate_data.py` 0 errors; full `tests/run_tests.gd` 23 of 23.
+- **Not verified / risks:** Campeón swings 49–68% between runs with unchanged data (49–59 expeditions each; pooled 62% on 161); a Campeón-only retune would need more expeditions. Aprendiz expeditions inside 24-week campaigns clear 64–69% (weaker parties staying low): not the band's measurement, flagged only.
+- **Decisions needed:** none new. The summary line of `playtest_campaign.gd` still compares with doc 06's 55–70%; it could print the tier's own band instead (small tools change, not done).
+- **Next step:** owner playtests (P3-17 Casa Comunal, P4-33/P4-34, P3-05e); otherwise P4-04 (audio and narrator lines, placeholder sounds) is the last open coding task in `docs/12-phase-plan.md`.
+
 ## 2026-11-24 (44) — P3-17: 7 skills per class, learn 3 at the Casa Comunal, bring 4
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P3-17 review (owner 2026-11-23: 3 new skills per class; bought once at the Casa Comunal, 1,000 ₡ base scaled like other hub prices; bring 4, swap free in town, basic attack fixed).

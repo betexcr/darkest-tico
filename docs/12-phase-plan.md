@@ -824,10 +824,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 
 ### P5-12 · M · Sótanos difficulty check against the per-tier bands (owner 2026-11-24)
-- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-24)` · Depends: P1-15, P5-11, P3-05e, P3-17
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-24; `docs/playtests/2026-11-24-p5-12.md`) · Depends: P1-15, P5-11, P3-05e, P3-17
 - Why: P1-15's `--missions 40` gave Aprendiz 95% (fresh week-1 parties) and Veterano 88% (synthetic level-3 party) and compared both with doc 06's 55–70%. Owner 2026-11-24: the target is the **per-tier bands** (Aprendiz 85–90%, Veterano 70–80%, Campeón 55–70%), each on the measurement it was tuned with: Aprendiz on fresh 8-week campaigns (P5-08), Veterano/Campeón on 24-week campaigns with 12 seeds (P5-11). Taller weekly stock (P3-05e) and P3-17 came in since.
 - Lever: `data/progression.json` `difficulties[].enemy_hp / enemy_dmg / enemy_stress`, only for tiers out of band; no reward changes.
-- Done when: [ ] baseline on current main (Aprendiz: 8 seeds × 3 × 8 weeks + `--missions`; Veterano/Campeón: 12 seeds × 3 × 24 weeks + tier-start runs); [ ] every tier in band, deaths ≤ 0.3 per expedition, ≥ 34 of 36 campaigns solvent at week 24; [ ] `docs/playtests/2026-11-24-p5-12.md`, doc 09 §8, doc 10 "Mission success" (per-tier bands)
+- Done when: [x] baseline on current main: Aprendiz 89.9% (fresh 8-week, in band), Veterano 62.5% (24-week, below), Campeón 67.9% (in band); `--missions` 97.5% and tier-start 92–96% read high; [x] every tier in band: Veterano enemies ×1.1 / ×1.06 (were ×1.18 / ×1.13) → 74.9% on 311 expeditions, deaths 0.17, 34 of 36 solvent; Campeón 62% pooled over 161 expeditions (49% on 49 in the kept run: noise, data unchanged); Aprendiz unchanged; [x] `docs/playtests/2026-11-24-p5-12.md`, doc 01 table, doc 09 §8, doc 10 "Mission success", `progression.json` doc
+- Result: the Sótanos was not too easy; Veterano had become too hard after the Taller's weekly stock (P3-05e), and got easier.
 ### P5-03 · S · 3-loop new-player playtest + slice sign-off
 - Status: `todo` · Depends: all P2–P5
 - Done when: [ ] Roadmap Phase 2 exit criteria checked by owner → Current phase = Alpha (break down roadmap Phase 3 into P6+ tasks then)
