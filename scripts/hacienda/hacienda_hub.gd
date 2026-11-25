@@ -1491,6 +1491,7 @@ func _roster_row(h: Dictionary) -> Control:
 	btns.add_child(fire)
 	var cb := CheckBox.new()
 	cb.text = "Cuadrilla"
+	cb.set_meta("no_ui_sfx", true)  # owner 2026-11-25: silent
 	cb.button_pressed = in_party
 	cb.disabled = GameState.hero_busy(h) and not in_party
 	cb.toggled.connect(func(on: bool): _say(GameState.set_in_party(h, on)))

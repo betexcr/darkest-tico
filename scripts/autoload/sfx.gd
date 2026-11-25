@@ -5,7 +5,7 @@ extends Node
 ## Sounds are data (data/sfx.json: id -> files, bus, volume_db, pitch_jitter), from CC0 packs
 ## (tools/import_sfx.py, assets/audio/CREDITS.md). An unknown id or missing file is silent.
 ## Buses: Master > SFX, UI, Music, Voice (Music/Voice wait for P4-04b/c). Every button in the
-## game clicks (ui_click) and ticks on hover (ui_hover) unless it has meta "no_ui_sfx".
+## game clicks (ui_click) unless it has meta "no_ui_sfx"; hovering is silent (owner 2026-11-25).
 ## The "Efectos" volume and mute (scripts/ui/volume_button.gd) drive SFX and UI together and
 ## are kept in user://settings.cfg, not in the save. A `-s` script run never reads or writes it.
 
@@ -164,7 +164,6 @@ func _on_node_added(node: Node) -> void:
 		return
 	b.set_meta("sfx_hooked", true)
 	b.pressed.connect(_on_button_pressed.bind(b))
-	b.mouse_entered.connect(_on_button_hover.bind(b))
 	b.gui_input.connect(_on_button_input.bind(b))
 
 
@@ -175,11 +174,6 @@ func _on_button_pressed(b: BaseButton) -> void:
 		play("ui_toggle")
 	else:
 		play("ui_click")
-
-
-func _on_button_hover(b: BaseButton) -> void:
-	if not b.disabled and not b.has_meta("no_ui_sfx"):
-		play("ui_hover")
 
 
 ## A click on a disabled button: "no" (it can't be done now; its tooltip says why).

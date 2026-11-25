@@ -38,7 +38,6 @@ SFX = "SFX"
 SOUNDS = {
     # --- UI (every button, dropdown, window) ---
     "ui_click": (UI, -8, 0.05, [("kenney_interfaceSounds", f"click_00{i}.ogg") for i in (1, 2, 3)]),
-    "ui_hover": (UI, -24, 0.08, [("kenney_interfaceSounds", "tick_001.ogg"), ("kenney_interfaceSounds", "tick_002.ogg")]),
     "ui_denied": (UI, -10, 0.0, [("kenney_interfaceSounds", "error_004.ogg")]),
     # Owner 2026-11-25: a book opening and closing for the town's buildings (was Kenney UI open/close).
     "ui_open": (UI, -10, 0.03, [("RPGsounds_Kenney", "bookOpen.ogg")]),

@@ -11,15 +11,6 @@
         "res://assets/audio/sfx/kenney_ui/click_003.ogg"
       ]
     },
-    "ui_hover": {
-      "bus": "UI",
-      "volume_db": -24,
-      "pitch_jitter": 0.08,
-      "files": [
-        "res://assets/audio/sfx/kenney_ui/tick_001.ogg",
-        "res://assets/audio/sfx/kenney_ui/tick_002.ogg"
-      ]
-    },
     "ui_denied": {
       "bus": "UI",
       "volume_db": -10,

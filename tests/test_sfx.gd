@@ -49,6 +49,9 @@ func _run() -> void:
 	await process_frame
 	b.pressed.emit()
 	_check(heard.has("ui_click"), "every button clicks")
+	heard.clear()
+	b.mouse_entered.emit()
+	_check(heard.is_empty(), "hovering a button is silent (owner 2026-11-25)")
 	var quiet := Button.new()
 	quiet.set_meta("no_ui_sfx", true)
 	root.add_child(quiet)

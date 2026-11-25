@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-25 (48) — P4-04a: silent button hover and "Cuadrilla" checkbox
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-04a still review.
+- **Changed:** owner 2026-11-25: "remove the sound when hovering on clickable buttons" and "when clicking or unclicking in cuadrilla". `scripts/autoload/sfx.gd` no longer hooks `mouse_entered`; `ui_hover` removed from `tools/import_sfx.py` / `data/sfx.json` (49 ids) with its two Kenney tick files; the "Cuadrilla" CheckBox in `hacienda_hub.gd` has meta `no_ui_sfx`. `test_sfx` checks hovering is silent. Doc 10 line, plan note, listening page updated.
+- **Verified:** `validate_data.py` 0 errors; `test_sfx`, `test_ui`, `test_hub` pass.
+- **Not verified / risks:** none.
+- **Decisions needed:** none.
+- **Next step:** as entry (47): owner listens to the rest; otherwise P4-04b (music).
+
 ## 2026-11-25 (47) — P4-04a: book sound for opening and closing town buildings
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-04a still review (owner picked a replacement sound; other sounds not yet judged).
