@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-25 (47) — P4-04a: book sound for opening and closing town buildings
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P4-04a still review (owner picked a replacement sound; other sounds not yet judged).
+- **Changed:** `tools/import_sfx.py` SOUNDS: `ui_open` / `ui_close` → Kenney RPG `bookOpen` / `bookClose` (owner pick, option 6 on the listening page https://claude.ai/artifact/W3yWCSgGmxhytQGmPNJNB3, which plays every option and every game sound); `skill_learn` → `bookPlace1/2` so it no longer shares `bookOpen`. The importer now keeps existing files (`--force` re-encodes) and lists unused ones. `data/sfx.json` regenerated; the four Kenney UI open/close files removed.
+- **Verified:** `validate_data.py` 0 errors; `test_sfx`, `test_ui`, `test_hub` pass. Not listened to here (no speakers); the owner chose by ear on the page.
+- **Not verified / risks:** none.
+- **Decisions needed:** any other sound to swap (the page lists all 50 with their variants).
+- **Next step:** owner listens to the rest; swap ids in `tools/import_sfx.py` SOUNDS and rerun it with the packs (links in `assets/audio/CREDITS.md`). Otherwise P4-04b (music).
+
 ## 2026-11-24 (46) — P4-04a: sound effects and UI sounds (music and voices later)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-04a review (owner 2026-11-24: "add sfx and UI sounds, we will add voices and music later"; CC0 packs; speaker button with slider and mute). P4-04 split into a (this), b (music, todo) and c (narrator/voices, todo).

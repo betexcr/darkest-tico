@@ -1,9 +1,9 @@
 {
   "kind": "sound effect",
-  "pack": "kenney_interfaceSounds",
-  "original_file": "Audio/open_002.ogg",
+  "pack": "RPGsounds_Kenney",
+  "original_file": "OGG/bookPlace1.ogg",
   "author": "Kenney (kenney.nl)",
-  "source": "https://opengameart.org/content/interface-sounds",
+  "source": "https://opengameart.org/content/50-rpg-sound-effects",
   "license": "CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
   "processing": "ffmpeg: mono 44.1 kHz, leading silence trimmed, peak -1 dBFS, OGG Vorbis q5 (tools/import_sfx.py)"
 }

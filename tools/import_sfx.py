@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """P4-04a: build the game's sound effects from CC0 packs downloaded from OpenGameArt.
 
-    python3 tools/import_sfx.py <packs_dir>
+    python3 tools/import_sfx.py <packs_dir> [--force]
 
 <packs_dir> holds each pack's zip extracted into its own folder, named as in PACKS below
 (download: https://opengameart.org/content/<page>; every pack is CC0, checked on its page).
 For every sound id in SOUNDS the chosen files are converted with ffmpeg to mono 44.1 kHz
 OGG Vorbis, leading silence trimmed and peak-normalized to -1 dBFS, written to
 assets/audio/sfx/<pack>/<name>.ogg with a .metadata.json (source, author, license), and
-data/sfx.json is rewritten (id -> files, volume_db, pitch_jitter, bus). Rerunnable.
+data/sfx.json is rewritten (id -> files, volume_db, pitch_jitter, bus). Rerunnable: files that
+already exist are kept as they are (the encoder never writes the same bytes twice), unless
+--force; files no longer used are listed so they can be deleted.
 Only audio files are read from the packs; nothing in them is executed.
 """
 import json
@@ -38,8 +40,9 @@ SOUNDS = {
     "ui_click": (UI, -8, 0.05, [("kenney_interfaceSounds", f"click_00{i}.ogg") for i in (1, 2, 3)]),
     "ui_hover": (UI, -24, 0.08, [("kenney_interfaceSounds", "tick_001.ogg"), ("kenney_interfaceSounds", "tick_002.ogg")]),
     "ui_denied": (UI, -10, 0.0, [("kenney_interfaceSounds", "error_004.ogg")]),
-    "ui_open": (UI, -10, 0.03, [("kenney_interfaceSounds", "open_001.ogg"), ("kenney_interfaceSounds", "open_002.ogg")]),
-    "ui_close": (UI, -10, 0.03, [("kenney_interfaceSounds", "close_001.ogg"), ("kenney_interfaceSounds", "close_002.ogg")]),
+    # Owner 2026-11-25: a book opening and closing for the town's buildings (was Kenney UI open/close).
+    "ui_open": (UI, -10, 0.03, [("RPGsounds_Kenney", "bookOpen.ogg")]),
+    "ui_close": (UI, -10, 0.03, [("RPGsounds_Kenney", "bookClose.ogg")]),
     "ui_confirm": (UI, -8, 0.0, [("kenney_interfaceSounds", "confirmation_001.ogg"), ("kenney_interfaceSounds", "confirmation_002.ogg")]),
     "ui_toggle": (UI, -10, 0.03, [("kenney_interfaceSounds", "toggle_001.ogg"), ("kenney_interfaceSounds", "toggle_002.ogg")]),
     "ui_page": (UI, -8, 0.08, [("RPGsounds_Kenney", "bookFlip1.ogg"), ("RPGsounds_Kenney", "bookFlip2.ogg"), ("RPGsounds_Kenney", "bookFlip3.ogg")]),
@@ -49,7 +52,7 @@ SOUNDS = {
     "equip": (SFX, -6, 0.06, [("rpg_sound_pack", "armor-light.wav"), ("rpg_sound_pack", "chainmail1.wav"), ("rpg_sound_pack", "cloth-heavy.wav")]),
     "unequip": (SFX, -8, 0.06, [("rpg_sound_pack", "cloth.wav"), ("RPGsounds_Kenney", "dropLeather.ogg")]),
     "upgrade": (SFX, -6, 0.04, [("100-CC0-SFX_0", f"tools_0{i}.ogg") for i in (1, 2, 3)]),
-    "skill_learn": (SFX, -6, 0.0, [("RPGsounds_Kenney", "bookOpen.ogg")]),
+    "skill_learn": (SFX, -6, 0.04, [("RPGsounds_Kenney", "bookPlace1.ogg"), ("RPGsounds_Kenney", "bookPlace2.ogg")]),
     "hire": (SFX, -8, 0.03, [("RPGsounds_Kenney", "doorOpen_1.ogg"), ("RPGsounds_Kenney", "doorOpen_2.ogg")]),
     "dismiss": (SFX, -8, 0.03, [("RPGsounds_Kenney", "doorClose_1.ogg"), ("RPGsounds_Kenney", "doorClose_2.ogg")]),
     "week": (SFX, -8, 0.0, [("100-CC0-SFX_0", "bell_01.ogg")]),
@@ -114,9 +117,11 @@ def convert(src: pathlib.Path, dst: pathlib.Path) -> None:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if a != "--force"]
+    force = "--force" in sys.argv[1:]
+    if len(args) != 1:
         sys.exit(__doc__)
-    packs = pathlib.Path(sys.argv[1])
+    packs = pathlib.Path(args[0])
     table = {}
     done = {}
     for sid, (bus, vol, jitter, files) in SOUNDS.items():
@@ -127,7 +132,8 @@ def main() -> None:
             if rel not in done:
                 src = find(packs, folder, name)
                 dst = OUT / rel
-                convert(src, dst)
+                if force or not dst.exists():
+                    convert(src, dst)
                 meta = {"kind": "sound effect", "pack": folder, "original_file": str(src.relative_to(packs / folder)),
                         "author": author, "source": f"https://opengameart.org/content/{page}",
                         "license": "CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)",
@@ -140,6 +146,9 @@ def main() -> None:
            "sounds": table}
     (ROOT / "data" / "sfx.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n")
     print(f"{len(table)} sounds, {len(done)} files")
+    unused = sorted(str(p.relative_to(ROOT)) for p in OUT.rglob("*.ogg") if p.relative_to(OUT).as_posix() not in done)
+    if unused:
+        print("No longer used (delete with their .metadata.json):\n  " + "\n  ".join(unused))
 
 
 if __name__ == "__main__":

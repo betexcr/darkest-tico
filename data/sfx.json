@@ -33,8 +33,7 @@
       "volume_db": -10,
       "pitch_jitter": 0.03,
       "files": [
-        "res://assets/audio/sfx/kenney_ui/open_001.ogg",
-        "res://assets/audio/sfx/kenney_ui/open_002.ogg"
+        "res://assets/audio/sfx/kenney_rpg/bookOpen.ogg"
       ]
     },
     "ui_close": {
@@ -42,8 +41,7 @@
       "volume_db": -10,
       "pitch_jitter": 0.03,
       "files": [
-        "res://assets/audio/sfx/kenney_ui/close_001.ogg",
-        "res://assets/audio/sfx/kenney_ui/close_002.ogg"
+        "res://assets/audio/sfx/kenney_rpg/bookClose.ogg"
       ]
     },
     "ui_confirm": {
@@ -126,9 +124,10 @@
     "skill_learn": {
       "bus": "SFX",
       "volume_db": -6,
-      "pitch_jitter": 0.0,
+      "pitch_jitter": 0.04,
       "files": [
-        "res://assets/audio/sfx/kenney_rpg/bookOpen.ogg"
+        "res://assets/audio/sfx/kenney_rpg/bookPlace1.ogg",
+        "res://assets/audio/sfx/kenney_rpg/bookPlace2.ogg"
       ]
     },
     "hire": {
