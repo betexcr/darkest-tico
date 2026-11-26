@@ -1,8 +1,8 @@
 {
   "id": "enemy_brujo_de_la_montana",
-  "prompt": "dark fantasy painting, old mountain sorcerer in a hooded dark poncho, rag doll and dried herbs hanging from his belt, black copal smoke curling from a clay censer, guarumo staff, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2136,
+  "prompt": "dark fantasy painting, old mountain sorcerer in a hooded dark poncho, holding a rag doll, black smoke curling from a clay censer, long wooden staff, cloud forest at night behind him, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2145,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,5 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:18:17+00:00"
+  "timestamp": "2026-11-26T18:40:19+00:00"
 }
