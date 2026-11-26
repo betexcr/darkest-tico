@@ -1,8 +1,8 @@
 {
   "id": "enemy_viejo_del_monte",
-  "prompt": "dark fantasy painting, wild old man of the forest, long white beard full of leaves and moss, bark-like skin, ragged clothes, gnarled guava wood staff, vines wrapping his arms, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2135,
+  "prompt": "dark fantasy painting, wild old man of the forest, bark-like wrinkled skin, long white beard tangled with leaves and moss, ragged clothes, gnarled guava wood staff, vines wrapping his arms, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2144,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,5 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:16:14+00:00"
+  "timestamp": "2026-11-26T18:38:15+00:00"
 }
