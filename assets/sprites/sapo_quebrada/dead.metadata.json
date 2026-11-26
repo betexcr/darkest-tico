@@ -1,0 +1,7 @@
+{
+  "id": "sapo_quebrada_dead",
+  "derived_from": "tools/.sprite_cache/sapo_quebrada/idle_raw.png (seed 5233)",
+  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+  "generator": "tools/sd_sprites.py",
+  "timestamp": "2026-11-26T20:12:39+00:00"
+}
