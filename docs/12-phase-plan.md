@@ -890,7 +890,7 @@ Order: P6-01 → P6-02/03/04/06 → P6-10 and P6-20 (in parallel) → P6-05, P6-
 Every region task includes: the generator and pools; 8–10 enemies following doc 05 §2.7 (one basic attack + 1–3 specials, Tico names, elements, 3 drops) with families (P6-03); an apex boss with its Veterano/Campeón variants (P6-06); an elite pool; ≥ 20 region curios/traps; provisions kits; a region background, room art and enemy portraits/sprites (CPU); sim and bot balance to the tier bands (Aprendiz 85–90, Veterano 70–80, Campeón 55–70). Every class task includes: 4 starting + 3 learnable skills with Tico names (P3-17 rules), 6 class camp skills, names_m/f ≥ 15, class_names, ranks, portraits and battle sprites for both sexes (CPU), and a sim showing the class is viable next to the existing 8.
 
 ### P6-01 · L · Region framework
-- Status: `todo` · Depends: — · Spec: `05` §1, §4; `01` (regions)
+- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-26)` · Depends: — · Spec: `05` §1, §4; `01` (regions)
 - Region progression (doc 05 §4: Sótanos → Bosque or Cañaverales → Pueblo Fantasma → Ruinas Volcánicas → Portal), unlocked by apex clears; the hub's region picker shows locked regions and why.
 - One region template for every region file: generator, enemy/elite pools, boss, roaming, provisions kits, light, background, and a per-region event pool (curios/traps tagged with `regions`).
 - `data/regions/bosque.json` rebuilt on the generator (placeholder pools until P6-10).
