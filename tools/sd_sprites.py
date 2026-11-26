@@ -627,6 +627,8 @@ def main() -> int:
             print(f"[{i}/{len(todo)}] {cid}: sheet of {len(crops)} poses ({time.time() - t0:.0f}s)", flush=True)
             continue
         cid, sid = c["id"], s["id"]
+        # A character's own canvas (e.g. a large enemy, size 2 on the stage, drawn wide).
+        w, h = c.get("size", cfg["size"])
         out = ROOT / cfg["out_dir"] / cid / f"{sid}.png"
         raw_path = CACHE / cid / "idle_raw.png"
         seed = int(c["seed"]) + state_ids.index(sid)
@@ -658,7 +660,8 @@ def main() -> int:
                 base = Image.open(raw_path).convert("RGB")
             if base is not None:
                 bg = base.getpixel((2, 2))
-                tipped = base.rotate(90 if c.get("faces", "left") == "left" else -90, expand=True, fillcolor=bg)
+                angle = int(c.get("dead_rotate", 90 if c.get("faces", "left") == "left" else -90))  # structural: degrees
+                tipped = base.rotate(angle, expand=True, fillcolor=bg)
                 image = Image.new("RGB", (w, h), bg)
                 tipped.thumbnail((w, h))
                 image.paste(tipped, ((w - tipped.width) // 2, h - tipped.height))

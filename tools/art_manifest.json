@@ -6011,11 +6011,17 @@
       },
       {
         "id": "danta_embrujada",
-        "look": "huge cursed tapir on all fours, side view, long snout, muddy mossy dark hide, glowing green eyes",
+        "look": "huge cursed tapir, side view, drooping snout, black hide with glowing green cracks, glowing eyes",
         "seed": 5231,
         "body": "beast",
         "weapon": "its long snout and heavy body",
-        "dead_tipped": true
+        "dead_tipped": true,
+        "size": [
+          768,
+          512
+        ],
+        "dead_rotate": 180,
+        "_doc_size": "large enemy (size 2): wide canvas so the whole body fits; dead is idle turned over (legs up)"
       },
       {
         "id": "mono_congo_poseido",
