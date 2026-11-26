@@ -1,0 +1,7 @@
+{
+  "id": "mono_congo_poseido_dead",
+  "derived_from": "tools/.sprite_cache/mono_congo_poseido/idle_raw.png (seed 5232)",
+  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+  "generator": "tools/sd_sprites.py",
+  "timestamp": "2026-11-26T20:03:41+00:00"
+}
