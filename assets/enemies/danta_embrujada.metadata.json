@@ -1,8 +1,8 @@
 {
   "id": "enemy_danta_embrujada",
-  "prompt": "dark fantasy painting, huge cursed tapir, beast, side view, long trunk-like snout, dark hide covered in mud and moss, glowing green eyes, vines tangled on its back, cloud forest, dark background, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2131,
+  "prompt": "dark fantasy painting, single huge cursed Baird's tapir, beast, side view, long drooping prehensile snout, small eyes glowing green, muddy dark hide with moss and vines on its back, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2141,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
@@ -11,5 +11,5 @@
   "post": null,
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:08:07+00:00"
+  "timestamp": "2026-11-26T18:32:07+00:00"
 }
