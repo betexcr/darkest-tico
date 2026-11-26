@@ -4766,8 +4766,10 @@
         512,
         512
       ],
-      "seed": 2130,
-      "subject": "lean spotted wild cat crouching on a mossy branch, beast, no clothes, glowing pale eyes, wisps of fog through its fur, giant ferns, cloud forest night, dark background"
+      "seed": 2140,
+      "subject": "ocelot-like wild cat with bold black rosettes on golden fur, crouching on a mossy branch, beast, glowing pale eyes, fog curling through its fur, giant ferns, cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_danta_embrujada",
@@ -4776,8 +4778,10 @@
         512,
         512
       ],
-      "seed": 2131,
-      "subject": "huge cursed tapir, beast, side view, long trunk-like snout, dark hide covered in mud and moss, glowing green eyes, vines tangled on its back, cloud forest, dark background"
+      "seed": 2141,
+      "subject": "single huge cursed Baird's tapir, beast, side view, long drooping prehensile snout, small eyes glowing green, muddy dark hide with moss and vines on its back, cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_mono_congo_poseido",
@@ -4786,8 +4790,10 @@
         512,
         512
       ],
-      "seed": 2132,
-      "subject": "possessed howler monkey hanging from a branch, beast, black fur, mouth open howling, glowing red eyes, holding a rotten guava, misty treetops, dark background"
+      "seed": 2142,
+      "subject": "slender possessed black howler monkey hanging by its tail from a branch, beast, mouth wide open howling, glowing red eyes, holding a rotten guava, misty treetops at night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_sapo_quebrada",
@@ -4806,8 +4812,10 @@
         512,
         512
       ],
-      "seed": 2134,
-      "subject": "weeping ghost woman standing in a river, long wet black hair over her face, soaked white dress, pale reaching hands, mist on the water, ghost, dark background"
+      "seed": 2143,
+      "subject": "weeping ghost woman standing in a river, face hidden behind long wet black hair, soaked torn white dress, pale clawed hands reaching out, mist on the water, ghost, night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_viejo_del_monte",
@@ -4816,8 +4824,10 @@
         512,
         512
       ],
-      "seed": 2135,
-      "subject": "wild old man of the forest, long white beard full of leaves and moss, bark-like skin, ragged clothes, gnarled guava wood staff, vines wrapping his arms, dark background"
+      "seed": 2144,
+      "subject": "wild old man of the forest, bark-like wrinkled skin, long white beard tangled with leaves and moss, ragged clothes, gnarled guava wood staff, vines wrapping his arms, cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_brujo_de_la_montana",
@@ -4826,8 +4836,10 @@
         512,
         512
       ],
-      "seed": 2136,
-      "subject": "old mountain sorcerer in a hooded dark poncho, rag doll and dried herbs hanging from his belt, black copal smoke curling from a clay censer, guarumo staff, dark background"
+      "seed": 2145,
+      "subject": "old mountain sorcerer in a hooded dark poncho, holding a rag doll, black smoke curling from a clay censer, long wooden staff, cloud forest at night behind him",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_lenador_penado",
@@ -4836,8 +4848,10 @@
         512,
         512
       ],
-      "seed": 2137,
-      "subject": "ghost lumberjack, gaunt grey skin, torn checked shirt and suspenders, rope burns, huge rusty axe, felled tree stumps around him, cloud forest, dark background"
+      "seed": 2146,
+      "subject": "pale grey ghost lumberjack, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe held over his shoulder, tree stumps, foggy cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
       "id": "bg_bosque_explore",
