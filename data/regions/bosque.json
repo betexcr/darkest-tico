@@ -2,6 +2,8 @@
   "region_id": "bosque",
   "name": "Bosque Nuboso Maldito",
   "boss_name": "La Segua de Niebla",
+  "background": "res://assets/ui_bg/bosque_bg.png",
+  "combat_background": "res://assets/ui_bg/bosque_combat_bg.png",
   "initial_light": 95,
   "provisions": {
     "short": {

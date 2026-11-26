@@ -4758,6 +4758,114 @@
       "subject": "wildfire burning a grassland with a volcano behind, a ranger fighting flames, smoke",
       "style": "dark gothic oil painting, folk horror, candlelight, deep shadows, rich warm colors, painterly, game art",
       "negative_extra": "monochrome, sepia, grayscale"
+    },
+    {
+      "id": "enemy_tigrillo_bruma",
+      "out": "assets/enemies/tigrillo_bruma.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2130,
+      "subject": "lean spotted wild cat crouching on a mossy branch, beast, no clothes, glowing pale eyes, wisps of fog through its fur, giant ferns, cloud forest night, dark background"
+    },
+    {
+      "id": "enemy_danta_embrujada",
+      "out": "assets/enemies/danta_embrujada.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2131,
+      "subject": "huge cursed tapir, beast, side view, long trunk-like snout, dark hide covered in mud and moss, glowing green eyes, vines tangled on its back, cloud forest, dark background"
+    },
+    {
+      "id": "enemy_mono_congo_poseido",
+      "out": "assets/enemies/mono_congo_poseido.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2132,
+      "subject": "possessed howler monkey hanging from a branch, beast, black fur, mouth open howling, glowing red eyes, holding a rotten guava, misty treetops, dark background"
+    },
+    {
+      "id": "enemy_sapo_quebrada",
+      "out": "assets/enemies/sapo_quebrada.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2133,
+      "subject": "two giant warty toads on wet stream rocks, beasts, bulging yellow eyes, milky poison dripping from their skin, creek in the cloud forest at night, dark background"
+    },
+    {
+      "id": "enemy_llorona_del_rio",
+      "out": "assets/enemies/llorona_del_rio.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2134,
+      "subject": "weeping ghost woman standing in a river, long wet black hair over her face, soaked white dress, pale reaching hands, mist on the water, ghost, dark background"
+    },
+    {
+      "id": "enemy_viejo_del_monte",
+      "out": "assets/enemies/viejo_del_monte.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2135,
+      "subject": "wild old man of the forest, long white beard full of leaves and moss, bark-like skin, ragged clothes, gnarled guava wood staff, vines wrapping his arms, dark background"
+    },
+    {
+      "id": "enemy_brujo_de_la_montana",
+      "out": "assets/enemies/brujo_de_la_montana.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2136,
+      "subject": "old mountain sorcerer in a hooded dark poncho, rag doll and dried herbs hanging from his belt, black copal smoke curling from a clay censer, guarumo staff, dark background"
+    },
+    {
+      "id": "enemy_lenador_penado",
+      "out": "assets/enemies/lenador_penado.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2137,
+      "subject": "ghost lumberjack, gaunt grey skin, torn checked shirt and suspenders, rope burns, huge rusty axe, felled tree stumps around him, cloud forest, dark background"
+    },
+    {
+      "id": "bg_bosque_explore",
+      "out": "assets/ui_bg/bosque_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4110,
+      "subject": "wide view of a dark cloud forest trail at night, giant ferns, moss-covered oaks, hanging vines, thick fog, distant lantern light, environment, no people"
+    },
+    {
+      "id": "bg_bosque_combat",
+      "out": "assets/ui_bg/bosque_combat_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4111,
+      "subject": "wide view of a misty clearing in a cloud forest at night, empty muddy ground, moss-covered roots, giant ferns, fog, faint moonlight, environment, no people"
     }
   ],
   "sprites": {
@@ -5878,6 +5986,90 @@
           "ailment": 5831
         },
         "_doc_dead": "dead.png is idle.png tipped 90 degrees by hand (P4-08): every drawn corpse came with a second, human-faced Segua; rerunning the sheet overwrites it, so tip the idle again after"
+      },
+      {
+        "id": "tigrillo_bruma",
+        "look": "lean spotted wild cat on all fours, glowing pale eyes, wisps of fog in its fur",
+        "seed": 5230,
+        "body": "beast",
+        "weapon": "claws and fangs",
+        "dead_tipped": true
+      },
+      {
+        "id": "danta_embrujada",
+        "look": "huge cursed tapir on all fours, side view, long snout, muddy mossy dark hide, glowing green eyes",
+        "seed": 5231,
+        "body": "beast",
+        "weapon": "its long snout and heavy body",
+        "dead_tipped": true
+      },
+      {
+        "id": "mono_congo_poseido",
+        "look": "possessed black howler monkey, crouching, glowing red eyes, mouth open",
+        "seed": 5232,
+        "body": "beast",
+        "weapon": "clawed hands and a rotten guava",
+        "dead_tipped": true
+      },
+      {
+        "id": "sapo_quebrada",
+        "look": "two giant warty toads, bulging yellow eyes, milky poison on their skin",
+        "seed": 5233,
+        "body": "beast",
+        "weapon": "long sticky tongues",
+        "dead_tipped": true
+      },
+      {
+        "id": "llorona_del_rio",
+        "look": "weeping ghost woman, long wet black hair over her face, soaked white dress, pale hands",
+        "seed": 5234,
+        "body": "humanoid",
+        "weapon": "icy clawed hands",
+        "weapon_shape": {
+          "kind": "none"
+        }
+      },
+      {
+        "id": "viejo_del_monte",
+        "look": "wild old man of the forest, long white beard with leaves and moss, bark-like skin, ragged clothes",
+        "seed": 5235,
+        "body": "humanoid",
+        "weapon": "a gnarled wooden staff",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 120,
+          "length": 0.35,
+          "width": 0.025,
+          "hand": "right"
+        }
+      },
+      {
+        "id": "brujo_de_la_montana",
+        "look": "old sorcerer in a hooded dark poncho, rag doll and herbs on his belt, clay censer",
+        "seed": 5236,
+        "body": "humanoid",
+        "weapon": "a long wooden staff",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 120,
+          "length": 0.35,
+          "width": 0.025,
+          "hand": "right"
+        }
+      },
+      {
+        "id": "lenador_penado",
+        "look": "ghost lumberjack, gaunt grey skin, torn checked shirt and suspenders",
+        "seed": 5237,
+        "body": "humanoid",
+        "weapon": "a huge rusty axe",
+        "weapon_shape": {
+          "kind": "line",
+          "angle": 135,
+          "length": 0.25,
+          "width": 0.04,
+          "hand": "right"
+        }
       }
     ]
   }

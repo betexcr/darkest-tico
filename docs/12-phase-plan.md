@@ -941,7 +941,7 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Sim, boss fights in the Bosque, 2000 each, party at the region's level: Aprendiz (level 1, rank 2) 99.4%, Veterano (level 4, rank 3, gear) 88.0%, Campeón (level 6, rank 4, gear) 45.5% → P6-10c. Regular and elite fights 99.6–100%. Bot `--missions 8 --start-level 1 --start-ranks 2`: 7 of 8 cleared.
 
 ### P6-10b · M · Bosque art (CPU)
-- Status: `todo` · Depends: P6-10a
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-26)` · Depends: P6-10a
 - Portraits and the 6 battle poses for the 8 new Bosque enemies (`tigrillo_bruma`, `danta_embrujada` (large: wider), `mono_congo_poseido`, `sapo_quebrada`, `llorona_del_rio`, `viejo_del_monte`, `brujo_de_la_montana`, `lenador_penado`), region exploration and combat backgrounds; `tools/art_manifest.json`, `tools/sd_local.py`, `tools/sd_sprites.py` (CPU: `pip install` torch + diffusers, model download), every PNG with metadata. Dungeon curios have no pictures (only town events do).
 - Done when: [ ] enemy portraits + sprites; [ ] backgrounds set in `bosque.json`; [ ] owner look
 
