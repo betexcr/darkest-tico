@@ -17,5 +17,6 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-26T20:26:23+00:00"
+  "timestamp": "2026-11-26T20:26:23+00:00",
+  "post": "faint alpha (<60) cleared, then only the main figure kept (sheet neighbour leftovers)"
 }
