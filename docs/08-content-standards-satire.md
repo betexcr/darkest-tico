@@ -16,7 +16,7 @@ The game uses **satire** and **Costa Rican tropes** for humor and identity. This
 ## 3) Satire guardrails
 
 - **Punch up or sideways**: institutions, traffic, bureaucracy, coffee snobbery, overwork — fair game.
-- **Avoid**: slurs, caricature of Indigenous peoples or Afro-Costa Rican communities, disability as punchline, sexual violence played for laughs.
+- **Avoid**: slurs, caricature of Afro-Costa Rican communities, disability as punchline, sexual violence played for laughs.
 - **Folklore**: treat legendary figures as **story antagonists** with motive and rules, not as disposable ethnic jokes.
 
 ## 4) Stereotype usage

@@ -873,4 +873,141 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 
 ## Later (not broken down yet)
 
-Roadmap Phase 3 (Alpha: 4–5 regions, 16 classes, 120+ events, difficulty tiers), Phase 4 (Beta/polish), Phase 5 (Launch). Break these into tasks only once P5-03 is done. Don't plan that far ahead in detail.
+Roadmap Phase 3 (Alpha) is broken down below as P6 (owner 2026-11-26). Phase 4 (Beta/polish) and Phase 5 (Launch) are not broken down yet: do that near the end of P6.
+
+---
+
+## P6 — Alpha (roadmap Phase 3)
+
+Owner 2026-11-26: plan Alpha now; P5-03 (the owner's slice playtest) and the `review` tasks stay open, and P6 can start alongside. Scope (doc 06 §3): 4–5 regions, 16 classes, the complete enemy family matrix, a regional boss ladder and portal preconditions, 120+ curios/events, full meta progression, difficulty tiers, narrative chapters through the portal reveal, balance pass #1. Exit: all core systems feature-complete; the campaign playable from start to the final arc (placeholder polish is fine); crash-free > 98% in internal sessions.
+
+Starting point (2026-11-26): 1 generated region (Sótanos; `data/regions/bosque.json` is an early 8-room hand map with no enemy pool); 8 of 16 classes (doc 03 nos. 1–6, 9, 10); 15 enemies (*La Segua* boss and *Nuboso spectre* exist, unused); 37 dungeon events (27 curios + 10 traps; the 58 town events are separate); one material (Reliquias); difficulty tiers as multipliers; no region unlocks, story chapters or final arc.
+
+Owner decisions 2026-11-26: **Bosque Nuboso is the first new region**, then Cañaverales. **Class 7 stays the Shaman Bribri as doc 03 has it** (doc 08's "caricature of Indigenous peoples" clause removed by the owner); write and draw it respectfully. **Art is generated in the cloud on CPU** (as P4-08 / P3-05e), every PNG with its `.metadata.json`; the owner may redo favourites on their GPU.
+
+Order: P6-01 → P6-02/03/04/06 → P6-10 and P6-20 (in parallel) → P6-05, P6-11, P6-21, P6-22 → P6-12, P6-23, P6-24, P6-14 → P6-13, P6-30, P6-40, P6-41 → P6-42, P6-50 → P6-51 → P6-52, P6-53 → P6-60.
+
+Every region task includes: the generator and pools; 8–10 enemies following doc 05 §2.7 (one basic attack + 1–3 specials, Tico names, elements, 3 drops) with families (P6-03); an apex boss with its Veterano/Campeón variants (P6-06); an elite pool; ≥ 20 region curios/traps; provisions kits; a region background, room art and enemy portraits/sprites (CPU); sim and bot balance to the tier bands (Aprendiz 85–90, Veterano 70–80, Campeón 55–70). Every class task includes: 4 starting + 3 learnable skills with Tico names (P3-17 rules), 6 class camp skills, names_m/f ≥ 15, class_names, ranks, portraits and battle sprites for both sexes (CPU), and a sim showing the class is viable next to the existing 8.
+
+### P6-01 · L · Region framework
+- Status: `todo` · Depends: — · Spec: `05` §1, §4; `01` (regions)
+- Region progression (doc 05 §4: Sótanos → Bosque or Cañaverales → Pueblo Fantasma → Ruinas Volcánicas → Portal), unlocked by apex clears; the hub's region picker shows locked regions and why.
+- One region template for every region file: generator, enemy/elite pools, boss, roaming, provisions kits, light, background, and a per-region event pool (curios/traps tagged with `regions`).
+- `data/regions/bosque.json` rebuilt on the generator (placeholder pools until P6-10).
+- Done when: [ ] unlock rules in `scripts/domain/` + `GameState`; [ ] picker UI; [ ] region-tagged events; [ ] save fields (`regions_cleared` per tier), `SAVE_VERSION` bump with the outgoing fixture; [ ] validator checks every region file; [ ] tests
+
+### P6-02 · M · Region hazards
+- Status: `todo` · Depends: P6-01 · Spec: `05` §1
+- A small data vocabulary for region-wide rules: poison flora on moves, a low-light ambush spike, fire-spread rooms, forced-movement terrain, cult totems that buff enemies, heat-stress pulses, eruption telegraphs, false exits, party-split events. Rules in `scripts/domain/region_hazards.gd`; outcomes through `GameState.apply_event_outcome`.
+- Done when: [ ] each hazard kind in data + rules + validator; [ ] shown to the player (map marks, log lines); [ ] tests
+
+### P6-03 · M · Enemy engine for the new rosters
+- Status: `todo` · Depends: — · Spec: `05` §2, §3
+- Enemy families (`family`: espantos, culto, bestias, penados, infernales) with hero bonuses against a family; size-2 enemies (take two positions); illusion clones; armor phases; stealthy enemies (Agazapado).
+- Done when: [ ] each mechanic in the combat controller + data + validator; [ ] every existing enemy gets a family; [ ] sim runs clean; [ ] tests
+
+### P6-04 · M · Hero engine for the new classes
+- Status: `todo` · Depends: — · Spec: `03` nos. 7, 8, 11–16
+- Self-moving attacks (lunge forward, strike while stepping back), multi-target hero skills, bonuses after moving, trap-disarm and post-fight loot bonuses from skills, a trinket-boost buff, scouting (reveal rooms on the map).
+- Done when: [ ] each mechanic in data + rules + validator; [ ] combat bar and tooltips show them; [ ] the sim policy can use them; [ ] tests
+
+### P6-05 · M · Materials: Fragmentos Infernales
+- Status: `todo` · Depends: P6-10 · Spec: `04` §1.3, `02` §11
+- Sources: roaming kills, bosses, the Ruinas, Campeón expeditions. Sinks: gear rank 5 and late upgrades, where the docs ask for them instead of Reliquias. A hub counter beside colones and Reliquias.
+- Done when: [ ] sources and sinks in data; [ ] counter in the hub; [ ] save + fixture; [ ] bot spends them; [ ] tests
+
+### P6-06 · M · Boss ladder
+- Status: `todo` · Depends: P6-03 · Spec: `05` §3
+- Every region boss gets a Veterano and a Campeón variant that adds a mechanic (not only bigger numbers); a boss-tier data shape; the Mayordomo gets his variants first.
+- Done when: [ ] data shape + validator; [ ] Mayordomo variants; [ ] sims per tier; [ ] tests
+
+### P6-10 · L · Bosque Nuboso Maldito
+- Status: `todo` · Depends: P6-01, P6-02, P6-03, P6-06 · Spec: `05` §1.2, §3.1
+- Region level 1. Boss *La Segua de Niebla* (stress charm, mirror-image phases). Stealthy, dodgy enemies and stress pressure; fog routes, poison flora, low-light ambushes. Rewards: quirk and ritual components, scouting value. Reuse the existing *La Segua* and *Nuboso spectre* data where they fit.
+- Done when: [ ] the region checklist at the top of P6
+
+### P6-11 · L · Cañaverales Profanados
+- Status: `todo` · Depends: P6-10, P6-02 · Spec: `05` §1.3, §3.1
+- Region level 1. Boss *Capataz de Ceniza* (field hazards, forced movement). Swarms, bleed, midline disruption; fire spread, forced-movement terrain, cult totems. Rewards: colones, upgrade materials.
+- Done when: [ ] the region checklist
+
+### P6-12 · L · Pueblo Fantasma de Cartago Viejo
+- Status: `todo` · Depends: P6-11 · Spec: `05` §1.5, §3.1
+- Region level 2. Boss *La Campanera Sin Rostro* (sound-based fear stacks, illusion punish). Fear, illusion clones, stress-to-damage; false exits, possessed relics, party split. Rewards: rare trinkets, archive fragments.
+- Done when: [ ] the region checklist
+
+### P6-13 · L · Ruinas Volcánicas
+- Status: `todo` · Depends: P6-12, P6-05 · Spec: `05` §1.4, §3.1
+- Region level 3. Boss *El Herrero del Cráter* (armor phases, overheat detonations). Armored enemies, burn, high burst; heat-stress pulses, eruptions, falling-rock stuns. Rewards: Fragmentos Infernales, late crafting resources.
+- Done when: [ ] the region checklist
+
+### P6-14 · M · Two more roaming mini-bosses
+- Status: `todo` · Depends: P6-11 · Spec: `05` §3.2
+- *Monje del Filo* and *Recolector de Diezmos*, placed across the new regions the way the Cadejo is in the Sótanos (roaming, flee timer, bounty).
+- Done when: [ ] both in data with art; [ ] placed per region; [ ] sims; [ ] tests
+
+### P6-20 · M · Classes: Shaman Bribri + Maestra de Escuela Rural
+- Status: `todo` · Depends: — (uses P6-03 families if done) · Spec: `03` nos. 7, 8; `08`
+- Done when: [ ] the class checklist at the top of P6 for both
+
+### P6-21 · M · Classes: Pistero de Motocross + Cazadora de Cerro
+- Status: `todo` · Depends: P6-04 · Spec: `03` nos. 11, 12
+- Done when: [ ] the class checklist for both
+
+### P6-22 · M · Classes: Artesano de Sarchí + Cafetalera
+- Status: `todo` · Depends: P6-04 · Spec: `03` nos. 13, 14
+- Done when: [ ] the class checklist for both
+
+### P6-23 · M · Classes: Pescador del Pacífico + Sabanero de Guanacaste
+- Status: `todo` · Depends: P6-03, P6-04 · Spec: `03` nos. 15, 16
+- Done when: [ ] the class checklist for both
+
+### P6-24 · S · Class unlocks
+- Status: `todo` · Depends: P6-20–P6-23, P6-01 · Spec: `03` "Unlock and Progression Notes"
+- 8 classes at the start; the rest unlock from region quests, building milestones and story beats; the Terminal de Buses offers only unlocked classes; the starter party stays as today.
+- Done when: [ ] unlock rules in data; [ ] Terminal respects them and says what unlocks the rest; [ ] save + fixture; [ ] tests
+
+### P6-30 · M · Events to 120+
+- Status: `todo` · Depends: P6-10–P6-13 · Spec: `07`, `05` §5
+- Dungeon events (curios + traps) total ≥ 120 across all regions, plus one new hacienda (town) event type per boss defeat. The validator counts events per region.
+- Done when: [ ] ≥ 120 dungeon events; [ ] boss-unlocked town events; [ ] validator counts; [ ] event pictures (CPU)
+
+### P6-40 · M · Narrative chapters
+- Status: `todo` · Depends: P6-10 · Spec: `05` §5, `08`
+- A grandfather memory fragment per boss defeat, kept in a hub journal; story flags; chapter structure through the portal reveal; an enemy mutation set in regions already cleared.
+- Done when: [ ] journal UI; [ ] fragments per boss; [ ] mutations; [ ] save + fixture; [ ] tests
+
+### P6-41 · M · Portal preconditions
+- Status: `todo` · Depends: P6-40, P6-12 · Spec: `05` §5
+- 4 apex clears plus a Portal key assembled from 3 ritual components (region drops) unlock the final mission chain.
+- Done when: [ ] components drop and show in the hub; [ ] the key and the unlock; [ ] save + fixture; [ ] tests
+
+### P6-42 · L · Final arc
+- Status: `todo` · Depends: P6-41 · Spec: `05` §3.3
+- *Los Tres Notarios del Pacto* (multi-phase council fight), *Corazón del Portón* (arena-transforming objective boss), *Pacto del Abuelo* (final confrontation with a branching finale), and an ending screen.
+- Done when: [ ] the three fights with art; [ ] branching finale + ending; [ ] sims; [ ] tests
+
+### P6-50 · M · Full meta progression
+- Status: `todo` · Depends: P6-05 · Spec: `02`, `04`
+- Upgrade trees for every hub building (the buildings without tracks, and late tiers paid with Fragmentos), late gear tiers.
+- Done when: [ ] tracks in `data/upgrades.json`; [ ] late gear; [ ] bot buys them; [ ] tests
+
+### P6-51 · M · Campaign bot for the whole campaign
+- Status: `todo` · Depends: P6-11, P6-41 · Spec: `09`
+- The bot picks regions, learns class skills and swaps loadouts, chases portal components and plays to the final arc; telemetry records crashes and SCRIPT ERRORs per session.
+- Done when: [ ] bot plays a full campaign to the finale; [ ] crash telemetry; [ ] doc 09/10 updated
+
+### P6-52 · L · Balance pass #1
+- Status: `todo` · Depends: P6-51 · Spec: `04`, `06` §3
+- Economy, stress, attrition and class viability across 16 classes; every region and tier inside its band; reports in `docs/playtests/`.
+- Done when: [ ] every region/tier in band; [ ] no class far behind (sim); [ ] economy solvent; [ ] reports
+
+### P6-53 · S · Stability
+- Status: `todo` · Depends: P6-51
+- Long soak runs (bot campaigns to the finale over every region and tier); crash-free rate > 98% from telemetry; a save fixture for every save bump in P6.
+- Done when: [ ] soak report; [ ] crash-free > 98%; [ ] fixtures complete
+
+### P6-60 · S · Alpha sign-off (owner)
+- Status: `todo` · Depends: all P6
+- Done when: [ ] the owner plays from the start to the final arc and checks doc 06 §3's exit criteria → current phase = Beta (break roadmap Phase 4 into P7 tasks then)
+

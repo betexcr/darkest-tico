@@ -17,6 +17,16 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (49) — P6: Alpha planned (roadmap Phase 3 broken into tasks)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6 section added to `docs/12-phase-plan.md`, 24 tasks, all `todo`. No code.
+- **Changed:** `docs/12-phase-plan.md` (P6 — Alpha: foundations P6-01–06, regions P6-10–14, classes P6-20–24, events P6-30, story and finale P6-40–42, meta/balance/stability P6-50–53, sign-off P6-60; the "Later" note now points to P6); `docs/08-content-standards-satire.md` (owner 2026-11-26: the "caricature of Indigenous peoples" clause removed; class 7 stays the Shaman Bribri as in doc 03, still to be written and drawn respectfully).
+- **Owner decisions 2026-11-26:** Bosque Nuboso is the first new region, then Cañaverales; art generated in the cloud on CPU; P5-03 and the `review` tasks stay open while P6 starts.
+- **Verified:** `validate_data.py` 0 errors (docs only).
+- **Not verified / risks:** task sizes are estimates; the region and class checklists at the top of P6 apply to every region/class task.
+- **Decisions needed:** none for P6-01.
+- **Next step:** P6-01 (region framework): claim it, read doc 05 §1 and §4, start with the unlock rules in a new `scripts/domain/region_progress.gd` and the region picker in `hacienda_hub.gd` (`_region_option`), then rebuild `data/regions/bosque.json` on the generator with placeholder pools.
+
 ## 2026-11-25 (48) — P4-04a: silent button hover and "Cuadrilla" checkbox
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P4-04a still review.
