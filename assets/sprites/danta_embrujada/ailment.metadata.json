@@ -19,5 +19,6 @@
   "cutout": "isnet-general-use",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_sprites.py (diffusers)",
-  "timestamp": "2026-11-26T19:54:24+00:00"
+  "timestamp": "2026-11-26T19:54:24+00:00",
+  "post": "mirrored horizontally (manifest mirror: true; drawn facing right)"
 }
