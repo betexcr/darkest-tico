@@ -1,15 +1,20 @@
 {
   "id": "enemy_danta_embrujada",
-  "prompt": "dark fantasy painting, single huge cursed Baird's tapir, beast, side view, long drooping prehensile snout, small eyes glowing green, muddy dark hide with moss and vines on its back, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2141,
-  "steps": 25,
+  "prompt": "dark fantasy painting, cursed undead Baird's tapir, side view, drooping snout, glowing green eyes, rotting patches of hide, ribs showing, moss and pale fungus growing on its back, roots and vines wrapped around its legs, eerie green mist, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, horse, cow, bull, rhinoceros, boar, horns, long tail, mane, elephant, tusks, big ears, trunk, mammoth, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2200,
+  "steps": 30,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "512x512",
   "post": null,
   "model": "Lykon/dreamshaper-8",
-  "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:32:07+00:00"
+  "generator": "scratch script (diffusers StableDiffusionControlNetImg2ImgPipeline)",
+  "timestamp": "2026-11-26T19:28:12+00:00",
+  "mode": "img2img + ControlNet canny from an owner-supplied tapir reference photo (owner pick of 4)",
+  "img2img_strength": 0.85,
+  "controlnet": "lllyasviel/sd-controlnet-canny",
+  "controlnet_conditioning_scale": 0.8,
+  "reference": "owner-supplied Baird's tapir photo, 2026-11-26 (outline and pose only)"
 }

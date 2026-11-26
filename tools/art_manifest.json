@@ -4778,10 +4778,11 @@
         512,
         512
       ],
-      "seed": 2190,
+      "seed": 2200,
       "subject": "cursed undead Baird's tapir, side view, drooping snout, glowing green eyes, rotting patches of hide, ribs showing, moss and pale fungus growing on its back, roots and vines wrapped around its legs, eerie green mist, cloud forest night",
       "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, horse, cow, bull, rhinoceros, boar, horns, long tail, mane, elephant, tusks, big ears, trunk, mammoth",
-      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "_doc": "owner pick 2026-11-26: made from an owner-supplied Baird's tapir photo (not in the repo): crop 780x780 from x=260, darkened, img2img strength 0.85 + ControlNet canny (lllyasviel/sd-controlnet-canny, scale 0.8). Text-only prompts kept drawing a pig, horse or elephant."
     },
     {
       "id": "enemy_mono_congo_poseido",
