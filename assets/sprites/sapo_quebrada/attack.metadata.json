@@ -1,0 +1,23 @@
+{
+  "id": "sprite_sapo_quebrada_attack",
+  "prompt": "two giant warty toads, bulging yellow eyes, milky poison on their skin, lunging forward to attack with long sticky tongues, dynamic attack, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5234,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x768",
+  "mode": "img2img",
+  "strength": 0.7,
+  "pose_control": null,
+  "init_image": "idle (same character, before cutout)",
+  "reference": {
+    "image": "assets/enemies/sapo_quebrada.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-26T20:07:57+00:00"
+}
