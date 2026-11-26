@@ -16,6 +16,7 @@ const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
 const RegionProgressScript := preload("res://scripts/domain/region_progress.gd")
+const BossTiersScript := preload("res://scripts/domain/boss_tiers.gd")
 const LootDropsScript := preload("res://scripts/domain/loot_drops.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
@@ -2538,7 +2539,8 @@ func make_enemy(enemy_id: String, squad_size: int, hp_mult: float = 1.0) -> Dict
 	var raw_en = _enemies_by_id.get(enemy_id, {})
 	if not raw_en is Dictionary or (raw_en as Dictionary).is_empty():
 		return {}
-	var en: Dictionary = (raw_en as Dictionary).duplicate(true)
+	# P6-06: a boss's Veterano / Campeón variant (doc 05 §3), before the difficulty numbers.
+	var en: Dictionary = BossTiersScript.apply(raw_en as Dictionary, str(mission_difficulty.get("id", selected_difficulty_id)))
 	var hp: float = float(en.get("hp_max", 40)) * hp_mult
 	if squad_size > 0:
 		var scales: Array = BalanceScript.arr("enemies.squad_hp_scale")

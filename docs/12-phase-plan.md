@@ -924,9 +924,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Done when: [ ] sources and sinks in data; [ ] counter in the hub; [ ] save + fixture; [ ] bot spends them; [ ] tests
 
 ### P6-06 · M · Boss ladder
-- Status: `todo` · Depends: P6-03 · Spec: `05` §3
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26) · Depends: P6-03 · Spec: `05` §3
 - Every region boss gets a Veterano and a Campeón variant that adds a mechanic (not only bigger numbers); a boss-tier data shape; the Mayordomo gets his variants first.
-- Done when: [ ] data shape + validator; [ ] Mayordomo variants; [ ] sims per tier; [ ] tests
+- Built: `tiers` on enemies (`scripts/domain/boss_tiers.gd`, `GameState.make_enemy`), fight-start log line, enemy panel "variante …", validator checks every tier's merged skills; the Mayordomo's Veterano (50% phase) and Campeón (*Agua de la bodega*, darkness every 3, 3 servants) variants.
+- Done when: [x] data shape + validator; [x] Mayordomo variants; [x] sims per tier (Aprendiz 100 → 100, Veterano 100 → 99.8, Campeón 99.5 → 98.5%; 2000 boss fights each); [x] tests (`test_boss_tiers`)
 
 ### P6-10 · L · Bosque Nuboso Maldito
 - Status: `todo` · Depends: P6-01, P6-02, P6-03, P6-06 · Spec: `05` §1.2, §3.1

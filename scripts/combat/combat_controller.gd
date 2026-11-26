@@ -146,6 +146,10 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	for e in enemies:
 		names.append(str(e.get("name", "?")))
 	_log("%s%s bloquean el paso." % [tier, ", ".join(names)] if enemies.size() > 1 else "%s%s bloquea el paso." % [tier, names[0]], "dd8866")
+	# P6-06: a boss's Veterano / Campeón variant says how it changed.
+	for e in enemies:
+		if str(e.get("tier_text", "")) != "":
+			_log("%s (%s): %s" % [e.get("name", "?"), e.get("tier_label", ""), e["tier_text"]], "dd8844")
 	# Accessories that start every fight with an effect (items.json "start_status").
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):

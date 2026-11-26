@@ -308,6 +308,8 @@ func _show_enemy_info(e: Dictionary) -> void:
 		kind.append("grande: ocupa dos posiciones")
 	if bool(e.get("illusion", false)):
 		kind.append("reflejo: si lo golpean, asusta")
+	if str(e.get("tier_label", "")) != "":
+		kind.append("variante %s" % e["tier_label"])
 	if not kind.is_empty():
 		lines.append("[color=#c9b98f]%s[/color]" % " · ".join(kind))
 	if bool(e.get("dead", false)):

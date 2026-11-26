@@ -502,8 +502,43 @@ def main() -> int:
         errors.append("heroes.json: starter_party.fixed must be 4 different class ids")
 
     # Owner rule (2026-11-07): one basic attack + 1-3 specials; one special magical or ailment.
+    # P6-06: a boss's Veterano / Campeón variant must follow the same rules once merged.
+    def merged_skills(en: dict, upto: str) -> list:
+        out = [dict(x) for x in en.get("skills", [])]
+        for tier in ("veterano", "campeon")[: ("veterano", "campeon").index(upto) + 1]:
+            b = (en.get("tiers") or {}).get(tier) or {}
+            out += [dict(x) for x in b.get("add_skills", [])]
+            rep = b.get("replace_skills") or {}
+            out = [dict(rep[x.get("id")]) if x.get("id") in rep else x for x in out]
+        return out
+
+    tier_views = []
     for eid, en in enemies.items():
-        eskills = en.get("skills", [])
+        tier_views.append((eid, en, en.get("skills", [])))
+        tiers = en.get("tiers")
+        if tiers is None:
+            continue
+        if not isinstance(tiers, dict) or set(tiers) - {"veterano", "campeon"}:
+            errors.append(f"enemies.json: '{eid}' tiers keys must be veterano / campeon")
+            continue
+        for tier, b in tiers.items():
+            if not isinstance(b, dict) or set(b) - {"text", "add_skills", "replace_skills", "phases", "summon", "cycle", "status_resist", "prot"}:
+                errors.append(f"enemies.json: '{eid}' tiers.{tier} has unknown keys")
+                continue
+            before = merged_skills(en, "veterano") if tier == "campeon" else en.get("skills", [])
+            for old_id in (b.get("replace_skills") or {}):
+                if old_id not in {x.get("id") for x in before}:
+                    errors.append(f"enemies.json: '{eid}' tiers.{tier} replaces unknown skill '{old_id}'")
+            cy_skill = (b.get("cycle") or {}).get("skill", (en.get("cycle") or {}).get("skill"))
+            if cy_skill and cy_skill not in {x.get("id") for x in merged_skills(en, tier)}:
+                errors.append(f"enemies.json: '{eid}' tiers.{tier} cycle skill is not one of its skills")
+            for ph in b.get("phases", []):
+                if not isinstance(ph, dict) or not isinstance(ph.get("at_hp_pct"), int) or not 1 <= ph["at_hp_pct"] <= 99:
+                    errors.append(f"enemies.json: '{eid}' tiers.{tier} phases need at_hp_pct 1-99")
+                else:
+                    check_applies(f"enemies.json: '{eid}' tiers.{tier} phase", ph.get("self_applies"))
+            tier_views.append((f"{eid} ({tier})", en, merged_skills(en, tier)))
+    for eid, en, eskills in tier_views:
         basics = [x for x in eskills if x.get("basic")]
         specials = [x for x in eskills if not x.get("basic")]
         if len(basics) != 1:

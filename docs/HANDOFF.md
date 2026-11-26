@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (52) — P6-06: boss ladder (Veterano / Campeón variants; the Mayordomo's)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-06 done; P6-03 merged into main before it.
+- **Changed:** `scripts/domain/boss_tiers.gd` (new); `GameState.make_enemy` applies it; `combat_controller.gd` logs the variant text at the start of the fight; `expedition_screen.gd` enemy panel "variante …"; `data/enemies.json` (`_doc`, Mayordomo `tiers`); validator (tier keys, replaced skills, cycle skill, phases, and every tier's merged skills against the 1 basic + 1–3 specials rule); `tests/test_boss_tiers.gd` (new); doc 05 §3 "Built", AGENTS.md §4 Enemies.
+- **Verified:** `validate_data.py` 0 errors (and a deliberately broken Campeón block is caught); full `tests/run_tests.gd` 27 of 27; sim 2000 boss fights per tier before/after: Aprendiz 100/100, Veterano 100/99.8, Campeón 99.5/98.5% (Campeón party stress +85 → +122, Al Borde 0.20 → 0.35).
+- **Not verified / risks:** the new phase and skill were not seen on the real stage (headless only); the campaign bands (P5-12) were not re-measured with 24-week campaigns; the sim says the change is small.
+- **Decisions needed:** none.
+- **Next step:** P6-02 (region hazards): read doc 05 §1, design the hazard vocabulary in a region file (`hazards`), rules in a new `scripts/domain/region_hazards.gd`, hooked into `expedition_screen.gd` moves/rooms. Then P6-10 (Bosque).
+
 ## 2026-11-26 (51) — P6-03: enemy engine (families, large enemies, phases, mirror images)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-03 done. Pushed to the branch only (not merged into main).

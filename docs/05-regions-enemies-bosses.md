@@ -166,6 +166,8 @@ Each region includes:
 - 1 veteran boss variant
 - 1 champion boss variant
 
+**Built (P6-06, 2026-11-26):** a boss may list `tiers` (`veterano`, `campeon`; Campeón also takes the Veterano block): `text` (logged when the fight starts), `add_skills` / `replace_skills` (the merged boss still has 1 basic + 1–3 specials), `phases`, `summon` / `cycle` overrides, `status_resist` and `prot` additions. Rules `scripts/domain/boss_tiers.gd`, applied in `GameState.make_enemy` before the difficulty numbers; the enemy panel shows "variante Veterano / Campeón". The Mayordomo has both: at Veterano he hardens at 50% PV (+15% protección, Chiva +15% daño); at Campeón *Agua de la bodega* (agua, the whole party, may slow) replaces *La cuenta, por favor*, the darkness pulse comes every 3 rounds and up to 3 servants come. Sim (2000 boss fights, seasoned parties): Veterano 100 → 99.8%, Campeón 99.5 → 98.5% with more stress (party +85 → +122).
+
 ## 3.1 Regional Apex Bosses (Launch)
 
 1. `El Mayordomo Hundido` (Sotanos)
