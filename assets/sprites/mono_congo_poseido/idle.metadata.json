@@ -1,0 +1,23 @@
+{
+  "id": "sprite_mono_congo_poseido_idle",
+  "prompt": "possessed black howler monkey, crouching, glowing red eyes, mouth open, standing in a ready fighting stance, full body, plain grey background, dark gothic oil painting, folk horror, rim lighting, muted earthy colors, painterly",
+  "negative_prompt": "jungle, plants, foliage, trees, building, scenery, room, multiple characters, duplicate, candle, fire, cropped, close-up, sketch, signature, text, watermark, photo, 3d render, anime, blurry, lowres, deformed face, extra limbs, extra fingers",
+  "seed": 5232,
+  "steps": 20,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x768",
+  "mode": "txt2img",
+  "strength": null,
+  "pose_control": null,
+  "init_image": null,
+  "reference": {
+    "image": "assets/enemies/mono_congo_poseido.png",
+    "ip_adapter": "h94/IP-Adapter/models/ip-adapter-plus_sd15.safetensors",
+    "scale": 0.6
+  },
+  "cutout": "isnet-general-use",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_sprites.py (diffusers)",
+  "timestamp": "2026-11-26T19:57:07+00:00"
+}
