@@ -204,6 +204,8 @@ Rules:
 
 ## 4) Difficulty Ramp Targets
 
+**Built (P6-01, 2026-11-26):** the region order and unlocks are data (`data/regions.json`): the Sótanos are open from the start; the Bosque opens once the Mayordomo is beaten (Cañaverales will too); later regions use `cleared_any` / `cleared_count`. Beating a region's boss at any difficulty counts (`GameState.regions_cleared`). The hub lists locked regions greyed out with the reason; a region still being built (`wip`) shows only in debug builds.
+
 - Region order target:
   1. Sotanos
   2. Canaverales / Bosque (player choice)

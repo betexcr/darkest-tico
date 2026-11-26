@@ -1,0 +1,20 @@
+{
+  "_doc": "Campaign regions in doc 05 §4 order (P6-01). unlock: {} (open from the start) | {\"cleared\": [ids]} (all of them cleared) | {\"cleared_any\": [ids]} | {\"cleared_count\": N} (any N regions). A clear = the region's boss beaten at any difficulty (GameState.regions_cleared). wip: still being built; listed only in debug builds as \"(en construcción)\". Rules: scripts/domain/region_progress.gd.",
+  "regions": [
+    {
+      "id": "sotanos",
+      "path": "res://data/regions/sotanos.json",
+      "unlock": {}
+    },
+    {
+      "id": "bosque",
+      "path": "res://data/regions/bosque.json",
+      "unlock": {
+        "cleared": [
+          "sotanos"
+        ]
+      },
+      "wip": true
+    }
+  ]
+}

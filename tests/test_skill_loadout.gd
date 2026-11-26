@@ -105,7 +105,7 @@ func _run() -> void:
 	var loadout: Array = campe["skill_ids"].duplicate()
 	var known: Array = LoadoutScript.known(campe)
 	var d: Dictionary = gs.to_save_dict()
-	_check(int(d.get("version", 0)) == 19, "save version 19")
+	_check(int(d.get("version", 0)) >= 19, "save version 19 or later")
 	gs.reset_party_from_catalog()
 	gs.apply_save_data(JSON.parse_string(JSON.stringify(d)))
 	var back: Dictionary = {}

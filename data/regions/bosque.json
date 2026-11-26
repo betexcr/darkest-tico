@@ -1,34 +1,150 @@
 {
   "region_id": "bosque",
   "name": "Bosque Nuboso Maldito",
-  "start_node": "b0",
-  "objective_node": "b6",
+  "boss_name": "La Segua de Niebla",
   "initial_light": 95,
   "provisions": {
-    "short": { "gallo_pinto": 9, "candela_sebo": 3 },
-    "full": { "gallo_pinto": 14, "candela_sebo": 4 }
+    "short": {
+      "gallo_pinto": 11,
+      "candela_sebo": 3
+    },
+    "full": {
+      "gallo_pinto": 17,
+      "candela_sebo": 5
+    }
   },
-  "light_decay_per_move": 8,
+  "light_decay_per_move": 9,
   "objective_reward_colones": 1100,
   "region_level": 1,
-  "nodes": [
-    { "id": "b0", "type": "safe", "label": "Sendero de musgo" },
-    { "id": "b1", "type": "trap", "label": "Raíces traicioneras", "trap_id": "raices_traicioneras" },
-    { "id": "b2", "type": "combat", "label": "Claro brumoso", "enemy_id": "nuboso_spectre", "reward_colones": 380, "is_elite": false },
-    { "id": "b3", "type": "curio", "label": "Piedra con petroglifo" },
-    { "id": "b4", "type": "combat", "label": "Barranco oculto", "enemy_id": "cadejo_negro", "reward_colones": 520, "is_elite": true },
-    { "id": "b5", "type": "camp", "label": "Fogata bajo ceiba" },
-    { "id": "b6", "type": "objective", "label": "Salida del sendero (niebla se abre)" },
-    { "id": "b7", "type": "combat", "label": "La Segua acecha", "enemy_id": "segua_boss", "reward_colones": 600, "is_boss": true }
-  ],
-  "edges": [
-    { "from": "b0", "to": "b1" },
-    { "from": "b1", "to": "b2" },
-    { "from": "b1", "to": "b3" },
-    { "from": "b2", "to": "b4" },
-    { "from": "b3", "to": "b4" },
-    { "from": "b4", "to": "b5" },
-    { "from": "b5", "to": "b7" },
-    { "from": "b7", "to": "b6" }
-  ]
+  "generator": {
+    "_doc": "Bosque Nuboso Maldito (P6-01 frame; placeholder pools until P6-10: the Nuboso spectre with Sótanos ghosts, La Segua as boss, Sótanos curios/traps). Same generator as the Sótanos (scripts/domain/map_generator.gd).",
+    "rooms": [
+      10,
+      13
+    ],
+    "min_boss_distance": 5,
+    "extra_links": 1,
+    "branch_newest_chance": 0.6,
+    "max_exits": 3,
+    "camps": 1,
+    "elites": 1,
+    "min_combat": 3,
+    "weights": {
+      "combat": 40,
+      "trap": 15,
+      "curio": 25,
+      "empty": 20
+    },
+    "enemy_pool": [
+      "nuboso_spectre",
+      "espanto",
+      "susurro_aljibe",
+      "murcielago_bodega",
+      "duende_sotano"
+    ],
+    "elite_pool": [
+      "nuboso_spectre",
+      "sombra_cuadrilla"
+    ],
+    "boss_enemy_id": "segua_boss",
+    "reward_colones": [
+      380,
+      520
+    ],
+    "elite_reward_colones": [
+      600,
+      780
+    ],
+    "boss_reward_colones": 1100,
+    "labels": {
+      "safe": [
+        "Sendero de musgo"
+      ],
+      "combat": [
+        "Claro brumoso",
+        "Quebrada de helechos",
+        "Puente de bejucos",
+        "Ladera de robles",
+        "Cañada fría",
+        "Musgal oscuro"
+      ],
+      "elite": [
+        "Barranco oculto",
+        "Hondonada de la niebla"
+      ],
+      "trap": [
+        "Raíces traicioneras",
+        "Barro hondo",
+        "Rama podrida",
+        "Hoyo cubierto"
+      ],
+      "curio": [
+        "Piedra con petroglifo",
+        "Ceiba hueca",
+        "Ojo de agua",
+        "Cruz de camino",
+        "Nido abandonado"
+      ],
+      "camp": [
+        "Fogata bajo ceiba"
+      ],
+      "empty": [
+        "Sendero perdido",
+        "Niebla cerrada",
+        "Claro silencioso"
+      ],
+      "boss": [
+        "Laguna de la Segua"
+      ]
+    },
+    "curios": [
+      "altar_roto",
+      "caja_abuelo",
+      "pozo_seco",
+      "arbol_amarillo",
+      "radio_vieja",
+      "sacos_de_cafe",
+      "trapiche_viejo",
+      "tinajas_de_guaro",
+      "nicho_de_santos",
+      "ropero_de_la_abuela",
+      "libreta_de_deudas",
+      "carreta_pintada",
+      "pila_de_lavar",
+      "horno_de_lena",
+      "retrato_del_abuelo",
+      "campana_de_capilla",
+      "hongos_de_luz",
+      "grieta_que_susurra",
+      "tumba_del_perro",
+      "estante_de_botica",
+      "caminante_perdido",
+      "mercado_clandestino",
+      "vision_del_abuelo",
+      "mesa_de_domino",
+      "llanto_en_el_pasillo",
+      "duendes_juguetones",
+      "procesion_de_animas"
+    ],
+    "traps": [
+      "vigas_inestables",
+      "alambre_de_pua",
+      "escalera_resbalosa",
+      "piso_hundido",
+      "pared_de_bahareque",
+      "corriente_negra",
+      "cepo_oxidado",
+      "barriles_sueltos",
+      "vapor_de_cava"
+    ],
+    "squad_template_pct": 0,
+    "squads": [],
+    "squad_size": [
+      1,
+      3
+    ],
+    "boss_escort": [
+      "nuboso_spectre"
+    ]
+  }
 }

@@ -103,16 +103,15 @@ var _painted: Texture2D = null
 var _equip_open: bool = false
 ## Building id -> whether its "Mejoras" fold is open (closed by default, owner 2026-11-23).
 var _mejoras_open: Dictionary = {}
+## The region picker's rows (GameState.region_rows()), in its item order (P6-01).
+var _region_rows: Array = []
 var _equip_bar: Button
 var _painted_rects: Dictionary = {}
 
 
 func _ready() -> void:
 	_try_optional_hub_ambient()
-	_region_option.clear()
-	for r in GameState.PLAYABLE_REGIONS:
-		var rl: int = GameState.region_level(str(r["path"]))
-		_region_option.add_item("%s%s" % [r["name"], " (+%d de nivel)" % rl if rl > 0 else ""])
+	_build_region_picker()
 	_region_option.item_selected.connect(_on_region_selected)
 	_build_difficulty_picker()
 	_btn_start.pressed.connect(_on_start_pressed)
@@ -158,18 +157,35 @@ func _ready() -> void:
 		_show_event_card.call_deferred()
 
 
+## P6-01: every region in campaign order; a closed one is greyed out and says why on hover.
+func _build_region_picker() -> void:
+	_region_rows = GameState.region_rows()
+	# The list may hold long names: the button keeps its width (the popup shows them whole).
+	_region_option.fit_to_longest_item = false
+	_region_option.clear()
+	for i in _region_rows.size():
+		var r: Dictionary = _region_rows[i]
+		var rl: int = int(r["level"])
+		var tag: String = " · en construcción" if bool(r["wip"]) else ""
+		_region_option.add_item("%s%s%s%s" % [r["name"], " (+%d)" % rl if rl > 0 else "", tag,
+			"" if bool(r["unlocked"]) else " · bloqueada"])
+		_region_option.set_item_disabled(i, not bool(r["unlocked"]))
+		_region_option.set_item_tooltip(i, str(r["name"]) + "\n" + (str(r["reason"]) if not bool(r["unlocked"]) else
+			"Abierta. Nivel de región +%d sobre la dificultad elegida." % rl))
+
+
 func _sync_region_option_from_state() -> void:
 	var p: String = GameState.selected_mission_region_path
-	for i in GameState.PLAYABLE_REGIONS.size():
-		if str(GameState.PLAYABLE_REGIONS[i]["path"]) == p:
+	for i in _region_rows.size():
+		if str(_region_rows[i]["path"]) == p:
 			_region_option.select(i)
 			return
 	_region_option.select(0)
 
 
 func _on_region_selected(idx: int) -> void:
-	if idx >= 0 and idx < GameState.PLAYABLE_REGIONS.size():
-		GameState.selected_mission_region_path = str(GameState.PLAYABLE_REGIONS[idx]["path"])
+	if idx >= 0 and idx < _region_rows.size() and bool(_region_rows[idx]["unlocked"]):
+		GameState.selected_mission_region_path = str(_region_rows[idx]["path"])
 	else:
 		GameState.selected_mission_region_path = GameState.DEFAULT_REGION_PATH
 	_refresh_difficulty_labels()

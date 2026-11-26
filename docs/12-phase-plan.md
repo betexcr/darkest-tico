@@ -487,6 +487,11 @@ Goal: roadmap Phase 2 scope. 1 region, 8 classes, 1 apex boss + 1 mini-boss, 30�
 - Cause: catalog heroes start with random quirks; when `party[0]` rolled *No le entra el guaro* the Cantina booking was refused and the check failed (2 in 40 runs). Fix (test only): clear that hero's quirks first and check the booking went through.
 - Done when: [x] cause found; [x] 60 runs in a row pass
 
+### P1-24 · S · run_tests.gd: a time limit per test
+- Status: `todo` · Depends: P1-01
+- Seen 2026-11-26 (P6-01): a parse error in `expedition_screen.gd` made `smoke_expedition` fail to load its scene and then wait forever; `tests/run_tests.gd` hung with it for 10+ minutes instead of reporting the failure.
+- Done when: [ ] each test process is killed after a limit (e.g. 300 s, `-- --timeout N`) and reported as failed with its last output; [ ] a test that hangs on purpose proves it
+
 ### P1-15 · M · Expedition sim: camp, items and room events in the chain mode
 - Status: `done` (Claude Code, `betomm/upbeat-einstein-xoe2dl`, 2026-11-23) · Depends: P1-07, P2-01 (data-driven traps/curios/camp)
 - Spec: doc 10 "Combat sim (P1-07)", `06` (55–70% mission success)
@@ -890,11 +895,12 @@ Order: P6-01 → P6-02/03/04/06 → P6-10 and P6-20 (in parallel) → P6-05, P6-
 Every region task includes: the generator and pools; 8–10 enemies following doc 05 §2.7 (one basic attack + 1–3 specials, Tico names, elements, 3 drops) with families (P6-03); an apex boss with its Veterano/Campeón variants (P6-06); an elite pool; ≥ 20 region curios/traps; provisions kits; a region background, room art and enemy portraits/sprites (CPU); sim and bot balance to the tier bands (Aprendiz 85–90, Veterano 70–80, Campeón 55–70). Every class task includes: 4 starting + 3 learnable skills with Tico names (P3-17 rules), 6 class camp skills, names_m/f ≥ 15, class_names, ranks, portraits and battle sprites for both sexes (CPU), and a sim showing the class is viable next to the existing 8.
 
 ### P6-01 · L · Region framework
-- Status: `in-progress (Claude Code, betomm/blissful-dijkstra-f06pdx, 2026-11-26)` · Depends: — · Spec: `05` §1, §4; `01` (regions)
+- Status: `review` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26): owner to look at the region picker · Depends: — · Spec: `05` §1, §4; `01` (regions)
 - Region progression (doc 05 §4: Sótanos → Bosque or Cañaverales → Pueblo Fantasma → Ruinas Volcánicas → Portal), unlocked by apex clears; the hub's region picker shows locked regions and why.
 - One region template for every region file: generator, enemy/elite pools, boss, roaming, provisions kits, light, background, and a per-region event pool (curios/traps tagged with `regions`).
 - `data/regions/bosque.json` rebuilt on the generator (placeholder pools until P6-10).
-- Done when: [ ] unlock rules in `scripts/domain/` + `GameState`; [ ] picker UI; [ ] region-tagged events; [ ] save fields (`regions_cleared` per tier), `SAVE_VERSION` bump with the outgoing fixture; [ ] validator checks every region file; [ ] tests
+- Built: `data/regions.json` (order, `unlock` cleared / cleared_any / cleared_count, `wip`), `scripts/domain/region_progress.gd`, `GameState` (`regions_cleared`, `region_rows`, `region_unlocked`, `region_lock_reason`, `record_region_clear` in `complete_mission`), hub picker with locked regions and their reason, "Se abre una región nueva" on the victory screen, region `background` / `combat_background` / `boss_name`, `bosque.json` on the generator (placeholder pools, `wip`). Per-region events already were `generator.curios` / `traps`, so no tags were needed.
+- Done when: [x] unlock rules in `scripts/domain/` + `GameState`; [x] picker UI; [x] region events (generator lists); [x] save v20 (`regions_cleared`) with the v19 fixture; [x] validator checks the region list and every region file; [x] tests (`test_regions`)
 
 ### P6-02 · M · Region hazards
 - Status: `todo` · Depends: P6-01 · Spec: `05` §1

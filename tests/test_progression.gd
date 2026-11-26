@@ -202,7 +202,7 @@ func _run() -> void:
 	_check(int(bosque["level"]) == 2 and int(bosque["min_level"]) == 1 and int(bosque["max_level"]) == 3, "Aprendiz in a level-1 region: level 2, heroes 1-3")
 	_check(float(bosque["enemy_hp"]) > float(rs.expedition("aprendiz", 0)["enemy_hp"]) and int(bosque["xp"]) == 5, "level-1 region: tougher enemies, +1 XP")
 	_check(int(rs.expedition("campeon", 1)["max_level"]) == 6, "levels cap at 6")
-	_check(gs.region_level(gs.DEFAULT_REGION_PATH) == 0 and gs.region_level(gs.BOSQUE_REGION_PATH) == 1, "Sótanos is region level 0, Bosque 1")
+	_check(gs.region_level(gs.DEFAULT_REGION_PATH) == 0 and gs.region_level("res://data/regions/bosque.json") == 1, "Sótanos is region level 0, Bosque 1")
 	gs.selected_difficulty_id = "aprendiz"
 	hero["resolve_level"] = 3
 	_check(gs.party_refusals().size() == 1, "Resolución 3 refuses an Aprendiz expedition")

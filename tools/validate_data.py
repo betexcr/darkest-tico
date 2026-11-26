@@ -1015,6 +1015,7 @@ def main() -> int:
     check_balance(errors)
     check_domain_magic_numbers(errors)
     check_sfx(errors)
+    check_region_list(errors)
 
     for w in warnings:
         print(f"WARN  {w}")
@@ -1158,6 +1159,56 @@ def check_balance(errors: list) -> None:
               "quirks.tier_levels", "hub.tier_price_mult", "taller.rank_costs"}
     for path in sorted(used - set(BALANCE_KEYS) - arrays):
         errors.append(f"balance.json: scripts read '{path}' but the validator doesn't check it (add it to BALANCE_KEYS)")
+
+
+# Region list and unlocks (P6-01): data/regions.json lists every region file once, in
+# campaign order; unlocks name known regions; the first region is open; every region is
+# generated, names its boss, and its optional backgrounds exist.
+def check_region_list(errors: list) -> None:
+    raw = load(DATA / "regions.json")
+    if raw is None:
+        return
+    rows = raw.get("regions", [])
+    ids = [r.get("id") for r in rows]
+    if len(set(ids)) != len(ids):
+        errors.append("regions.json: duplicate region id")
+    files = {rp.stem for rp in (DATA / "regions").glob("*.json")}
+    for rp in sorted(files - set(ids)):
+        errors.append(f"regions.json: data/regions/{rp}.json is not listed")
+    if rows and rows[0].get("unlock"):
+        errors.append("regions.json: the first region must be open from the start (unlock {})")
+    for r in rows:
+        rid = r.get("id")
+        path = ROOT / str(r.get("path", "")).replace("res://", "")
+        if not path.exists():
+            errors.append(f"regions.json: '{rid}' path {r.get('path')} does not exist")
+            continue
+        reg = load(path) or {}
+        if reg.get("region_id") != rid:
+            errors.append(f"regions.json: '{rid}' file has region_id '{reg.get('region_id')}'")
+        u = r.get("unlock", {})
+        if not isinstance(u, dict) or set(u) - {"cleared", "cleared_any", "cleared_count"}:
+            errors.append(f"regions.json: '{rid}' unlock must use cleared / cleared_any / cleared_count")
+        else:
+            for other in list(u.get("cleared", [])) + list(u.get("cleared_any", [])):
+                if other not in ids or other == rid:
+                    errors.append(f"regions.json: '{rid}' unlock names unknown region '{other}'")
+            if not isinstance(u.get("cleared_count", 0), int) or u.get("cleared_count", 0) < 0:
+                errors.append(f"regions.json: '{rid}' cleared_count must be a whole number >= 0")
+        if "wip" in r and not isinstance(r["wip"], bool):
+            errors.append(f"regions.json: '{rid}' wip must be true/false")
+        if not reg.get("name") or not reg.get("boss_name"):
+            errors.append(f"regions/{path.name}: needs name and boss_name")
+        gen = reg.get("generator")
+        if not isinstance(gen, dict):
+            errors.append(f"regions/{path.name}: must be generated (a generator block), not a hand map")
+        else:
+            for key in ("enemy_pool", "elite_pool", "curios", "traps", "labels", "boss_enemy_id"):
+                if not gen.get(key):
+                    errors.append(f"regions/{path.name}: generator.{key} is missing or empty")
+        for key in ("background", "combat_background"):
+            if key in reg and not (ROOT / str(reg[key]).replace("res://", "")).exists():
+                errors.append(f"regions/{path.name}: {key} {reg[key]} does not exist")
 
 
 # Sound effects (P4-04a): data/sfx.json ids -> files; every file exists with its .metadata.json

@@ -15,6 +15,7 @@ const CampingSystemScript := preload("res://scripts/domain/camping_system.gd")
 const TownEventsScript := preload("res://scripts/domain/town_events.gd")
 const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
+const RegionProgressScript := preload("res://scripts/domain/region_progress.gd")
 const LootDropsScript := preload("res://scripts/domain/loot_drops.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
@@ -42,16 +43,11 @@ const ELEMENT_NAMES := {
 }
 
 const DEFAULT_REGION_PATH := "res://data/regions/sotanos.json"
-const BOSQUE_REGION_PATH := "res://data/regions/bosque.json"
-
-## Regions offered in the hub picker. Bosque is built but deferred to the Alpha phase (owner decision 2026-11-06).
-## To re-enable it, add {"path": BOSQUE_REGION_PATH, "name": "Bosque nuboso maldito"}.
-const PLAYABLE_REGIONS := [
-	{"path": DEFAULT_REGION_PATH, "name": "Sótanos de la Hacienda"},
-]
+## Regions, their order and unlocks are data (P6-01): data/regions.json, rules in
+## scripts/domain/region_progress.gd. regions_cleared records each boss beaten.
 
 
-const SAVE_VERSION := 19
+const SAVE_VERSION := 20
 const PARTY_SIZE := 4
 ## EBAIS (hub clinic): colones per missing HP, with a minimum per visit.
 ## Items sell for half their buying price (owner, 2026-11-07).
@@ -171,6 +167,8 @@ var combat_return_node_id: String = ""
 
 ## Hub prep (applied on next start_mission).
 var selected_mission_region_path: String = DEFAULT_REGION_PATH
+## P6-01: region id -> {difficulty id: times its boss was beaten}. Opens the next regions.
+var regions_cleared: Dictionary = {}
 
 ## Carried items, one entry per inventory slot: {"id": String, "qty": int} (P3-09).
 var inventory: Array = []
@@ -2619,6 +2617,8 @@ func apply_objective_rewards() -> void:
 ## Call before end_mission_abandon(); returns last_expedition_summary.
 func complete_mission() -> Dictionary:
 	apply_objective_rewards()
+	# P6-01: the boss is beaten; record it and open the next regions.
+	var opened: PackedStringArray = record_region_clear(current_region_id, str(mission_difficulty.get("id", selected_difficulty_id)))
 	# Rumor de botija: the treasure is dug up at the end.
 	var tr = mission_event.get("treasure", null)
 	if tr is Array and tr.size() >= 2:
@@ -2661,6 +2661,7 @@ func complete_mission() -> Dictionary:
 		"xp": xp,
 		"ledger": mission_ledger.duplicate(true),
 		"heroes": heroes,
+		"regions_opened": opened,
 	}
 	return last_expedition_summary
 
@@ -2689,11 +2690,64 @@ func build_ambush_context(node_id: String, count: Array = []) -> void:
 	combat_context["surprise"] = ""
 
 
+# --- Regions (P6-01) ----------------------------------------------------------------------
+
+## The regions the hub lists, in campaign order: [{id, path, name, level, unlocked, reason, wip}].
+## Regions still being built (wip) are listed only in debug builds.
+func region_rows() -> Array:
+	var out: Array = []
+	for e in RegionProgressScript.entries():
+		if not RegionProgressScript.visible(e, OS.is_debug_build()):
+			continue
+		var path: String = str(e.get("path", ""))
+		out.append({"id": str(e.get("id", "")), "path": path, "name": region_name(str(e.get("id", ""))),
+			"level": region_level(path), "unlocked": region_unlocked(path), "reason": region_lock_reason(path),
+			"wip": bool(e.get("wip", false))})
+	return out
+
+
+func region_name(id: String) -> String:
+	var e: Dictionary = RegionProgressScript.entry_by_id(id)
+	return str(ExpeditionLoaderScript.load_region(str(e.get("path", ""))).get("name", id)) if not e.is_empty() else id
+
+
+func region_boss_name(id: String) -> String:
+	var e: Dictionary = RegionProgressScript.entry_by_id(id)
+	return str(ExpeditionLoaderScript.load_region(str(e.get("path", ""))).get("boss_name", "su jefe")) if not e.is_empty() else "su jefe"
+
+
+func region_unlocked(path: String) -> bool:
+	var e: Dictionary = RegionProgressScript.entry_by_path(path)
+	return not e.is_empty() and RegionProgressScript.is_unlocked(e, regions_cleared)
+
+
+## Why a region is still closed ("" when open).
+func region_lock_reason(path: String) -> String:
+	var e: Dictionary = RegionProgressScript.entry_by_path(path)
+	if e.is_empty():
+		return "Esa región no existe."
+	return RegionProgressScript.lock_reason(e, regions_cleared, region_name, region_boss_name)
+
+
+## A region the player may start an expedition in: listed, visible here and unlocked.
 func is_region_playable(path: String) -> bool:
-	for r in PLAYABLE_REGIONS:
-		if str(r["path"]) == path:
-			return true
-	return false
+	var e: Dictionary = RegionProgressScript.entry_by_path(path)
+	return not e.is_empty() and RegionProgressScript.visible(e, OS.is_debug_build()) \
+		and RegionProgressScript.is_unlocked(e, regions_cleared)
+
+
+## Records a boss beaten in `region_id` at `difficulty_id`; returns the names of regions it opened.
+func record_region_clear(region_id: String, difficulty_id: String) -> PackedStringArray:
+	var before: Array = RegionProgressScript.entries().filter(func(e): return RegionProgressScript.is_unlocked(e, regions_cleared))
+	var c: Dictionary = regions_cleared.get(region_id, {}) if regions_cleared.get(region_id, null) is Dictionary else {}
+	c[difficulty_id] = int(c.get(difficulty_id, 0)) + 1
+	regions_cleared[region_id] = c
+	var opened: PackedStringArray = PackedStringArray()
+	for e in RegionProgressScript.entries():
+		if not before.has(e) and RegionProgressScript.is_unlocked(e, regions_cleared) \
+				and RegionProgressScript.visible(e, OS.is_debug_build()):
+			opened.append(region_name(str(e.get("id", ""))))
+	return opened
 
 
 func apply_save_data(data: Dictionary) -> void:
@@ -2712,6 +2766,16 @@ func apply_save_data(data: Dictionary) -> void:
 	events_done_once = (data.get("events_done_once", []) as Array).map(func(x): return str(x)) if data.get("events_done_once", null) is Array else []
 	event_flags = data.get("event_flags", {}) if data.get("event_flags", null) is Dictionary else {}
 	stolen_items = (data.get("stolen_items", []) as Array).map(func(x): return str(x)) if data.get("stolen_items", null) is Array else []
+	# v20 (P6-01): bosses beaten per region and difficulty (older saves: none recorded).
+	regions_cleared = {}
+	var rc = data.get("regions_cleared", {})
+	if rc is Dictionary:
+		for rid in rc:
+			if rc[rid] is Dictionary:
+				var c: Dictionary = {}
+				for d in rc[rid]:
+					c[str(d)] = maxi(int(rc[rid][d]), 0)
+				regions_cleared[str(rid)] = c
 	if not is_region_playable(selected_mission_region_path):
 		selected_mission_region_path = DEFAULT_REGION_PATH
 	# v4: inventory. Older saves keep the starter pack and convert hub purchases to items.
@@ -2938,6 +3002,7 @@ func to_save_dict() -> Dictionary:
 		"taller_stock": taller_stock.duplicate(),
 		"next_uid": _next_uid,
 		"selected_mission_region_path": selected_mission_region_path,
+		"regions_cleared": regions_cleared.duplicate(true),
 		"selected_difficulty_id": selected_difficulty_id,
 		"radiant_mode": radiant_mode,
 		"active_event_id": active_event_id,

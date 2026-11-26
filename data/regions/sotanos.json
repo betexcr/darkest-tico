@@ -1,6 +1,7 @@
 {
   "region_id": "sotanos",
   "name": "Sótanos de la Hacienda",
+  "boss_name": "El Mayordomo Hundido",
   "initial_light": 100,
   "provisions": {
     "short": { "gallo_pinto": 10, "candela_sebo": 3 },

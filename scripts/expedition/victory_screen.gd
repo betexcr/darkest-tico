@@ -54,6 +54,9 @@ func _ready() -> void:
 	margin.add_child(col)
 	col.add_child(_label("¡Victoria!", 32, GOLD, true))
 	col.add_child(_label("%s — %s" % [summary.get("region_name", ""), summary.get("difficulty_name", "")], 15, DIM, true))
+	# P6-01: beating this boss opened new regions.
+	for rname in summary.get("regions_opened", []):
+		col.add_child(_label("Se abre una región nueva: %s." % rname, 16, GOLD, true))
 	_body = VBoxContainer.new()
 	_body.add_theme_constant_override("separation", 8)
 	col.add_child(_body)

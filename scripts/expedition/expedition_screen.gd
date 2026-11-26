@@ -100,7 +100,7 @@ var _turn_equipment: Dictionary = {}
 
 
 func _ready() -> void:
-	_set_background(BG_EXPLORE)
+	_set_background(_region_bg("background", BG_EXPLORE))
 	# P4-04a: sound volume (speaker button) at the end of the top bar.
 	$Stage/TopBar.add_child(VolumeButtonScript.new())
 	_build_party()
@@ -229,6 +229,12 @@ func _select_enemy(e: Dictionary) -> void:
 		return
 	_selected_enemy = e
 	_combat.set_target(e)
+
+
+## The region's own background (P6-01: `background` / `combat_background` in its file), else `fallback`.
+func _region_bg(key: String, fallback: String) -> String:
+	var p: String = str(GameState.mission_region_data.get(key, ""))
+	return p if p != "" and ResourceLoader.exists(p) else fallback
 
 
 func _set_background(path: String) -> void:
@@ -726,7 +732,7 @@ func _on_room_clicked(node_id: String) -> void:
 
 
 func _enter_room() -> void:
-	_set_background(BG_EXPLORE)
+	_set_background(_region_bg("background", BG_EXPLORE))
 	_close_event()
 	_clear_skills()
 	_actor_label.text = ""
@@ -1293,7 +1299,7 @@ func _start_combat_from_context(node_id: String) -> void:
 	for h in GameState.party:
 		_battle_start[int(h.get("uid", 0))] = {"hp": int(h.get("hp", 0)), "stress": int(h.get("stress", 0)), "dead": bool(h.get("dead", false)),
 			"aff": str(h.get("affliction_id", "")), "vir": str(h.get("virtud_id", ""))}
-	_set_background(BG_COMBAT)
+	_set_background(_region_bg("combat_background", BG_COMBAT))
 	_clear_skills()
 	_turn_label.text = ""
 	_spawn_enemies(squad)
@@ -1576,7 +1582,7 @@ func _on_combat_fled() -> void:
 	_clear_enemies()
 	for u in _hero_units:
 		u.set_active(false)
-	_set_background(BG_EXPLORE)
+	_set_background(_region_bg("background", BG_EXPLORE))
 	_mode = Mode.EXPLORE
 	_actor_label.text = ""
 	var nd: Dictionary = GameState.current_node()
@@ -1643,7 +1649,7 @@ func _on_combat_over(victory: bool) -> void:
 	_clear_enemies()
 	for u in _hero_units:
 		u.set_active(false)
-	_set_background(BG_EXPLORE)
+	_set_background(_region_bg("background", BG_EXPLORE))
 	_mode = Mode.EXPLORE
 	_actor_label.text = ""
 	_show_explore_actions()

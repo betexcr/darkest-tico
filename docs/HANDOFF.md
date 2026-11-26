@@ -17,6 +17,20 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (50) — P6-01: region framework (order, unlocks, clears, Bosque on the generator)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-01 review (owner: look at the region picker). New todo P1-24 (test runner time limit).
+- **Changed:**
+  - `data/regions.json` (new): Sótanos (open), Bosque (`cleared: [sotanos]`, `wip`). `scripts/domain/region_progress.gd` (new): unlock rules (cleared / cleared_any / cleared_count), `wip` visibility, Spanish lock reasons.
+  - `GameState`: `PLAYABLE_REGIONS` / `BOSQUE_REGION_PATH` gone; `regions_cleared` recorded in `complete_mission` (summary `regions_opened`); `region_rows`, `region_unlocked`, `region_lock_reason`, `is_region_playable` from the data; save v20 + `tests/fixtures/save_v19.json` (from e3b5cc4).
+  - `data/regions/bosque.json` rebuilt on the generator (level 1, placeholder pools: Nuboso spectre + Sótanos ghosts, La Segua boss, Sótanos curios/traps; fog labels). Sótanos gets `boss_name`.
+  - Hub picker: every listed region, locked ones greyed out with the reason as tooltip; fixed width so long names don't push the bar. Victory screen: "Se abre una región nueva: …". Expedition screen: region `background` / `combat_background` (fallback: today's art).
+  - Validator `check_region_list`; `tests/test_regions.gd` (new); `test_progression`, `test_skill_loadout` adjusted; doc 05 §4 "Built", AGENTS.md §6, plan.
+- **Verified:** `validate_data.py` 0 errors; full `tests/run_tests.gd` 25 of 25; combat sim on the placeholder Bosque (300 fights per room kind, all won); 1280×720 screenshot of the picker.
+- **Not verified / risks:** old saves start with no clears (nothing tracked them), so the Bosque stays locked until the Mayordomo is beaten again; it is `wip` anyway. `OS.is_debug_build()` is true in the editor, so the owner sees the Bosque (locked) while playing from the editor.
+- **Decisions needed:** none.
+- **Next step:** P6-02 (region hazards) or P6-03 (enemy engine), both unblocked; P6-03 first is better for P6-10. Open `docs/05-regions-enemies-bosses.md` §2 and `scripts/combat/combat_controller.gd`.
+
 ## 2026-11-26 (49) — P6: Alpha planned (roadmap Phase 3 broken into tasks)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6 section added to `docs/12-phase-plan.md`, 25 tasks, all `todo`. No code.
