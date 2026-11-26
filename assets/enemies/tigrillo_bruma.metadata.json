@@ -1,15 +1,15 @@
 {
   "id": "enemy_tigrillo_bruma",
-  "prompt": "dark fantasy painting, ocelot-like wild cat with bold black rosettes on golden fur, crouching on a mossy branch, beast, glowing pale eyes, fog curling through its fur, giant ferns, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2140,
+  "prompt": "dark fantasy painting, feral gaunt ocelot, bold black rosettes on tawny fur, snarling with bared bloody fangs, ears flat, scarred muzzle, crouched to pounce on a mossy branch, beast, fog, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, cute, kitten, house cat, pet, fluffy, big eyes, sitting calmly, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2153,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "512x512",
-  "post": null,
+  "post": "owner pick of 4 seeds (2150-2153); signature mark in the bottom-left corner removed (OpenCV inpaint)",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:30:08+00:00"
+  "timestamp": "2026-11-26T18:56:20+00:00"
 }
