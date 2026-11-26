@@ -1,0 +1,15 @@
+{
+  "id": "bg_bosque_combat",
+  "prompt": "dark fantasy painting, wide view of a misty clearing in a cloud forest at night, empty muddy ground, moss-covered roots, giant ferns, fog, faint moonlight, environment, no people, dark gothic oil painting, folk horror, dramatic candlelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 4111,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "904x512",
+  "output_resolution": "1280x720",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-26T18:27:45+00:00"
+}
