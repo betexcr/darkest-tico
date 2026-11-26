@@ -1,0 +1,7 @@
+{
+  "id": "danta_embrujada_dead",
+  "derived_from": "tools/.sprite_cache/danta_embrujada/idle_raw.png (seed 5231)",
+  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+  "generator": "tools/sd_sprites.py",
+  "timestamp": "2026-11-26T19:54:26+00:00"
+}
