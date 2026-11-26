@@ -65,6 +65,8 @@ This content spec defines launch biomes, enemy factions, and boss escalation tow
   - Rare trinkets
   - Story-critical archive fragments
 
+**Built (P6-02, 2026-11-26): region hazards.** A region file lists `hazards`, each `{id, name, text, trigger, chance_pct, min_light?, max_light?, …}`: `trigger: "move"` rolls on every room move and applies an event `outcome` (poison flora, heat pulses, falling rocks, eruptions, fire…); `"fight_start"` rolls when a fight starts, with an `outcome` on the party and/or `enemy_applies` on every enemy (cult totems, shifting ground); `"camp"` adds `ambush_pct` to the night ambush. New outcomes: `shuffle_party` (forced-movement terrain) and `send_back` (a false exit returns the party to the room before). The hub's region tooltip and the start of an expedition list the region's dangers; a hit shows as a result card. Rules `scripts/domain/region_hazards.gd`. The Sótanos have none (their dangers are traps and curios); the Bosque has placeholder poison flora (8% per move) and *Niebla cerrada* (+15% night ambush below Luz 50) until P6-10. Party split (Pueblo Fantasma) still needs its own design (P6-12).
+
 ## 2) Enemy Family Framework
 
 ## 2.1 Espantos Folcloricos

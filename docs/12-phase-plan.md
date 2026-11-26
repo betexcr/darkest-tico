@@ -903,9 +903,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Done when: [x] unlock rules in `scripts/domain/` + `GameState`; [x] picker UI; [x] region events (generator lists); [x] save v20 (`regions_cleared`) with the v19 fixture; [x] validator checks the region list and every region file; [x] tests (`test_regions`)
 
 ### P6-02 · M · Region hazards
-- Status: `todo` · Depends: P6-01 · Spec: `05` §1
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26) · Depends: P6-01 · Spec: `05` §1
 - A small data vocabulary for region-wide rules: poison flora on moves, a low-light ambush spike, fire-spread rooms, forced-movement terrain, cult totems that buff enemies, heat-stress pulses, eruption telegraphs, false exits, party-split events. Rules in `scripts/domain/region_hazards.gd`; outcomes through `GameState.apply_event_outcome`.
-- Done when: [ ] each hazard kind in data + rules + validator; [ ] shown to the player (map marks, log lines); [ ] tests
+- Built: `hazards` in region files (triggers move / fight_start / camp, light bounds), `scripts/domain/region_hazards.gd`, `GameState._roll_move_hazards` / `roll_fight_hazards` / `region_ambush_bonus`, outcomes `shuffle_party` and `send_back`, combat start applies fight hazards (stage units kept with their heroes after a shuffle), result card on entering a room, region tooltip and expedition-start lines, Bosque placeholders, `playtest_campaign.gd --region`. Party split is left to P6-12.
+- Done when: [x] each hazard kind in data + rules + validator (poison flora / heat / rocks / eruption / fire as move outcomes; totems and shifting ground at fight start; low-light ambush at camp; false exits); [x] shown to the player (result card, log lines, region tooltip, expedition start); [x] tests (`test_region_hazards`); 6 bot expeditions in the Bosque ran clean
 
 ### P6-03 · M · Enemy engine for the new rosters
 - Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26) · Depends: — · Spec: `05` §2, §3

@@ -17,6 +17,7 @@ const SkillRanksScript := preload("res://scripts/domain/skill_ranks.gd")
 const SkillLoadoutScript := preload("res://scripts/domain/skill_loadout.gd")
 const RegionProgressScript := preload("res://scripts/domain/region_progress.gd")
 const BossTiersScript := preload("res://scripts/domain/boss_tiers.gd")
+const RegionHazardsScript := preload("res://scripts/domain/region_hazards.gd")
 const LootDropsScript := preload("res://scripts/domain/loot_drops.gd")
 const BalanceScript := preload("res://scripts/domain/balance.gd")
 const FormationScript := preload("res://scripts/domain/formation.gd")
@@ -170,6 +171,9 @@ var combat_return_node_id: String = ""
 var selected_mission_region_path: String = DEFAULT_REGION_PATH
 ## P6-01: region id -> {difficulty id: times its boss was beaten}. Opens the next regions.
 var regions_cleared: Dictionary = {}
+## P6-02: what region hazards did on the last room move, for the expedition screen
+## ([{name, text, lines}]); the screen shows and clears it.
+var pending_hazards: Array = []
 ## Enemy family id -> Spanish name (data/enemies.json "families", P6-03).
 var _family_names: Dictionary = {}
 
@@ -489,6 +493,15 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 				if not scouted_node_ids.has(str(m)):
 					scouted_node_ids.append(str(m))
 		logs.append("Se revelan las salas cercanas.")
+	# P6-02: forced-movement terrain shuffles the formation; a false exit leads back.
+	if bool(outcome.get("shuffle_party", false)) and party.size() > 1:
+		party.shuffle()
+		logs.append("La cuadrilla queda revuelta: cambian de posición.")
+	if bool(outcome.get("send_back", false)) and previous_node_id != "" and mission_active:
+		var back: String = previous_node_id
+		previous_node_id = current_node_id
+		current_node_id = back
+		logs.append("Era una salida falsa: vuelven al cuarto de antes.")
 	if bool(outcome.get("reveal_map", false)):
 		for nid in mission_nodes_index.keys():
 			if not scouted_node_ids.has(str(nid)):
@@ -2259,7 +2272,29 @@ func move_to_node(target_id: String) -> bool:
 		visited_node_ids.append(target_id)
 	_apply_low_light_stress_on_travel()
 	roaming_tick()
+	_roll_move_hazards()
 	return true
+
+
+# --- Region hazards (P6-02, doc 05 §1) ----------------------------------------------------
+
+## Rolls the region's "move" hazards after a room move; what fired goes to pending_hazards.
+func _roll_move_hazards() -> void:
+	for h in RegionHazardsScript.for_trigger(mission_region_data, "move", mission_light):
+		if RegionHazardsScript.fires(h, randf()):
+			pending_hazards.append({"name": str(h.get("name", "")), "text": str(h.get("text", "")),
+				"lines": apply_event_outcome(h.get("outcome", {}))})
+
+
+## The region's "fight_start" hazards that fire now (the combat controller applies them).
+func roll_fight_hazards() -> Array:
+	return RegionHazardsScript.for_trigger(mission_region_data, "fight_start", mission_light).filter(
+		func(h): return RegionHazardsScript.fires(h, randf()))
+
+
+## Extra night-ambush chance from the region's camp hazards at the current Luz.
+func region_ambush_bonus() -> int:
+	return RegionHazardsScript.ambush_bonus(mission_region_data, mission_light)
 
 
 # --- Roaming mini-boss (P2-05, doc 05 §3.2; region "roaming") ----------------------------

@@ -16,6 +16,32 @@
   "light_decay_per_move": 9,
   "objective_reward_colones": 1100,
   "region_level": 1,
+  "hazards": [
+    {
+      "id": "flora_venenosa",
+      "name": "Flora venenosa",
+      "text": "Una mata de chichicaste y hongos de colores roza a alguien del grupo.",
+      "trigger": "move",
+      "chance_pct": 8,
+      "outcome": {
+        "applies": {
+          "status": "veneno",
+          "chance": 1.0,
+          "turns": 3,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "niebla_cerrada",
+      "name": "Niebla cerrada",
+      "text": "Con poca luz, la niebla tapa todo: a la fogata le llegan más visitas de noche.",
+      "trigger": "camp",
+      "chance_pct": 100,
+      "max_light": 50,
+      "ambush_pct": 15
+    }
+  ],
   "generator": {
     "_doc": "Bosque Nuboso Maldito (P6-01 frame; placeholder pools until P6-10: the Nuboso spectre with Sótanos ghosts, La Segua as boss, Sótanos curios/traps). Same generator as the Sótanos (scripts/domain/map_generator.gd).",
     "rooms": [

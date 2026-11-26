@@ -124,6 +124,9 @@ func _ready() -> void:
 	_view_hero(_first_living_hero())
 	_log_line("La cuadrilla entra a %s (%s)." % [GameState.mission_region_data.get("name", "la oscuridad"),
 		GameState.mission_difficulty.get("name", "")], "dddddd")
+	# P6-02: the region's own dangers.
+	for l in GameState.RegionHazardsScript.describe(GameState.mission_region_data):
+		_log_line("Peligro de la región — " + l, "cc9966")
 	for l in GameState.mission_start_logs:
 		_log_line(l, "cc7744")
 	GameState.mission_start_logs = PackedStringArray()
@@ -754,6 +757,28 @@ func _enter_room() -> void:
 	_mode = Mode.EXPLORE
 	_refresh_all()
 	_show_explore_actions()
+	# P6-02: a region hazard hit on the way in (poison flora, falling rocks, a false exit…).
+	if not GameState.pending_hazards.is_empty():
+		var hzs: Array = GameState.pending_hazards.duplicate()
+		GameState.pending_hazards.clear()
+		var lines: PackedStringArray = PackedStringArray()
+		for hz in hzs:
+			_log_line("%s: %s" % [hz["name"], hz["text"]], "cc7744")
+			for l in hz["lines"]:
+				_log_line(l, "cc7744")
+				lines.append(l)
+		Sfx.play("trap")
+		var first: Dictionary = hzs[0]
+		_show_result(str(first["name"]), str(first["text"]), lines, func():
+			_refresh_all()
+			if not _check_wipe():
+				_after_room_entry())
+		return
+	_after_room_entry()
+
+
+## Hunger stop, then what the room holds.
+func _after_room_entry() -> void:
 	if GameState.hunger_due():
 		_open_hunger()
 		return
@@ -1272,7 +1297,7 @@ func _camp_use(user: Dictionary, sk: Dictionary, ally: Dictionary) -> void:
 
 
 func _camp_sleep() -> void:
-	var chance: int = CampingSystemScript.ambush_chance(GameState.mission_light, _camp_watch, GameState.party)
+	var chance: int = CampingSystemScript.ambush_chance(GameState.mission_light, _camp_watch, GameState.party, GameState.region_ambush_bonus())
 	GameState.mission_light = GameState.light_max()
 	GameState.mark_node_cleared(GameState.current_node_id)
 	if randi() % 100 < chance:

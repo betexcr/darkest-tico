@@ -308,7 +308,8 @@ static func mods_text(mods: Dictionary) -> String:
 ## Chance in % (doc 07 §6): base, + low_light_pct in low light (Luz tier Penumbra or
 ## darker), + exhausted_pct when the living party's average stress reaches exhausted_stress;
 ## 0 if a camp skill keeps watch.
-static func ambush_chance(light: int, prevented: bool, party: Array = []) -> int:
+## `region_bonus`: extra points from the region's camp hazards (P6-02).
+static func ambush_chance(light: int, prevented: bool, party: Array = [], region_bonus: int = 0) -> int:
 	if prevented:
 		return 0
 	var a: Dictionary = data().get("ambush", {})
@@ -322,4 +323,4 @@ static func ambush_chance(light: int, prevented: bool, party: Array = []) -> int
 			total += int(h.get("stress", 0))
 		if total >= int(BalanceScript.req(a, "exhausted_stress", "camp_skills.json ambush")) * alive.size():
 			c += int(BalanceScript.req(a, "exhausted_pct", "camp_skills.json ambush"))
-	return c
+	return c + region_bonus

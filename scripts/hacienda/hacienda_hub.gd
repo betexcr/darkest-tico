@@ -170,8 +170,10 @@ func _build_region_picker() -> void:
 		_region_option.add_item("%s%s%s%s" % [r["name"], " (+%d)" % rl if rl > 0 else "", tag,
 			"" if bool(r["unlocked"]) else " · bloqueada"])
 		_region_option.set_item_disabled(i, not bool(r["unlocked"]))
+		var danger: PackedStringArray = GameState.RegionHazardsScript.describe(GameState.ExpeditionLoaderScript.load_region(str(r["path"])))
 		_region_option.set_item_tooltip(i, str(r["name"]) + "\n" + (str(r["reason"]) if not bool(r["unlocked"]) else
-			"Abierta. Nivel de región +%d sobre la dificultad elegida." % rl))
+			"Abierta. Nivel de región +%d sobre la dificultad elegida." % rl)
+			+ ("\nPeligros: " + " ".join(danger) if not danger.is_empty() else ""))
 
 
 func _sync_region_option_from_state() -> void:

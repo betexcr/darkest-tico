@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (53) — P6-02: region hazards
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-02 done; P6-06 merged into main before it.
+- **Changed:** `scripts/domain/region_hazards.gd` (new); `GameState` (`pending_hazards`, `_roll_move_hazards` in `move_to_node`, `roll_fight_hazards`, `region_ambush_bonus`, outcomes `shuffle_party` / `send_back`); `camping_system.gd` (`ambush_chance` region bonus); `combat_controller.gd` (fight-start hazards, hero units re-aligned in place after a shuffle); `expedition_screen.gd` (hazard result card on room entry → `_after_room_entry`, region dangers at the start, camp bonus); `hacienda_hub.gd` (region tooltip "Peligros"); `data/regions/bosque.json` (placeholder flora venenosa + niebla cerrada); `tools/playtest_campaign.gd --region`; validator (hazards, new outcome keys); `tests/test_region_hazards.gd` (new); doc 05 §1 "Built", AGENTS.md §6 Regions.
+- **Verified:** `validate_data.py` 0 errors; full `tests/run_tests.gd` 28 of 28; `playtest_campaign.gd -- --missions 6 --region res://data/regions/bosque.json`: 6 of 6 cleared, no script errors. The Sótanos have no hazards, so their balance is unchanged.
+- **Not verified / risks:** the hazard result card was not seen on screen (headless only). Party split is not built (P6-12).
+- **Decisions needed:** none.
+- **Next step:** P6-10 (Bosque Nuboso Maldito): claim it; design 8–10 Bosque enemies (doc 05 §1.2, §2.7: stealth, dodge, stress; families from P6-03), La Segua de Niebla with mirror phases (P6-03 `phases`/`clones`) and tier variants (P6-06), real hazards (P6-02), ≥ 20 Bosque curios/traps, art on CPU; start from `data/enemies.json` `segua_boss` / `nuboso_spectre`.
+
 ## 2026-11-26 (52) — P6-06: boss ladder (Veterano / Campeón variants; the Mayordomo's)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-06 done; P6-03 merged into main before it.

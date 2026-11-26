@@ -150,6 +150,24 @@ func start(p_party: Array, p_enemies: Array, p_hero_units: Array, p_enemy_units:
 	for e in enemies:
 		if str(e.get("tier_text", "")) != "":
 			_log("%s (%s): %s" % [e.get("name", "?"), e.get("tier_label", ""), e["tier_text"]], "dd8844")
+	# P6-02: the region's fight-start hazards (cult totems, shifting ground…).
+	for hz in GameState.roll_fight_hazards():
+		_log("%s: %s" % [hz.get("name", "?"), hz.get("text", "")], "dd8844")
+		if hz.get("outcome", null) is Dictionary:
+			_log_all(GameState.apply_event_outcome(hz["outcome"]))
+			# A shuffle reorders the party: keep each stage unit next to its hero.
+			var by_hero: Array = []
+			for h in party:
+				for u in hero_units:
+					if u != null and is_same(u.data, h):
+						by_hero.append(u)
+			if by_hero.size() == hero_units.size():
+				for k in by_hero.size():
+					hero_units[k] = by_hero[k]  # in place: the expedition screen shares this array
+			_sync_rows()
+		for e in enemies:
+			for ap in _applies_list(hz.get("enemy_applies", null)):
+				_try_apply(e, ap, false, "  ")
 	# Accessories that start every fight with an effect (items.json "start_status").
 	for h in party:
 		if h is Dictionary and not h.get("dead", false):

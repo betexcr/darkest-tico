@@ -24,6 +24,8 @@ extends SceneTree
 ##                     (= --campaigns N --weeks 1 without the per-campaign journal); with
 ##                     --difficulty and --start-* it measures one difficulty at one point. The
 ##                     summary's "Mission success" line compares with doc 06's 55–70% target.
+##   --region PATH     play every expedition in this region (P6-02; e.g. res://data/regions/bosque.json),
+##                     unlocked for the run as if its unlock were met
 ##   --party a,b,c,d   force the class mix (hero ids from data/heroes.json): every campaign
 ##                     starts with exactly these four, nobody else is hired, and a hero who
 ##                     dies is replaced by one of the same class for its hire cost
@@ -86,7 +88,7 @@ const SINK_NAMES := {"provisions": "Provisions", "heal_items": "Healing items", 
 var _gs
 var _loader
 var _scene: PackedScene
-var _opts := {"missions": 0, "campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": [],
+var _opts := {"missions": 0, "campaigns": 3, "weeks": 8, "seed": 1, "route": "full", "difficulty": "aprendiz", "set": [], "party": [], "region": "",
 	"start-level": 0, "start-ranks": 1, "start-gear": 0, "start-colones": -1}
 var _finished: String = ""
 var _uses: Dictionary = {}
@@ -154,7 +156,7 @@ func _parse_args() -> void:
 			"--campaigns", "--weeks", "--seed", "--start-level", "--start-ranks", "--start-gear", "--start-colones":
 				_opts[flag.trim_prefix("--")] = int(val)
 				k += 1
-			"--route", "--difficulty":
+			"--route", "--difficulty", "--region":
 				_opts[flag.trim_prefix("--")] = val
 				k += 1
 			"--telemetry":
@@ -664,6 +666,8 @@ func _expedition(row: Dictionary) -> void:
 	var snap: Dictionary = {}
 	for h in _gs.party:
 		snap[int(h["uid"])] = str(h.get("affliction_id", "")) + "|" + str(h.get("virtud_id", ""))
+	if str(_opts["region"]) != "":
+		_gs.selected_mission_region_path = str(_opts["region"])
 	if not _gs.start_mission():
 		row["result"] = "no start"
 		return

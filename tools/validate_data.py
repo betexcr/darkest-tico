@@ -881,7 +881,8 @@ def main() -> int:
     # (GameState.apply_event_outcome); every key, status, stat and item must exist.
     outcome_keys = {"heal_party", "stress_party", "colones", "damage_random", "damage_party", "add_item",
                     "reveal_neighbors", "reveal_map", "random_equipment", "applies", "buff", "debuff",
-                    "ambush", "weight", "text", "light", "stress_random", "reliquias"}
+                    "ambush", "weight", "text", "light", "stress_random", "reliquias",
+                    "shuffle_party", "send_back"}
 
     def check_outcome(where: str, o) -> None:
         if not isinstance(o, dict):
@@ -909,6 +910,39 @@ def main() -> int:
         add = o.get("add_item")
         if add is not None and add.get("id") not in items:
             errors.append(f"{where}: add_item references unknown item '{add.get('id')}'")
+
+    # P6-02 region hazards (doc 05 §1): see scripts/domain/region_hazards.gd.
+    for rp in sorted((DATA / "regions").glob("*.json")):
+        hz_ids = set()
+        for h in (load(rp) or {}).get("hazards", []):
+            where = f"regions/{rp.name}: hazard '{h.get('id')}'"
+            if not h.get("id") or h.get("id") in hz_ids:
+                errors.append(f"{where}: needs a unique id")
+            hz_ids.add(h.get("id"))
+            if set(h) - {"id", "name", "text", "trigger", "chance_pct", "min_light", "max_light", "outcome", "enemy_applies", "ambush_pct"}:
+                errors.append(f"{where}: unknown keys")
+            if not h.get("name") or not h.get("text"):
+                errors.append(f"{where}: needs name and text")
+            trig = h.get("trigger")
+            if trig not in ("move", "fight_start", "camp"):
+                errors.append(f"{where}: trigger must be move / fight_start / camp")
+            if not isinstance(h.get("chance_pct"), int) or not 1 <= h["chance_pct"] <= 100:
+                errors.append(f"{where}: chance_pct must be 1-100")
+            for lk in ("min_light", "max_light"):
+                if lk in h and not (isinstance(h[lk], int) and 0 <= h[lk] <= 100):
+                    errors.append(f"{where}: {lk} must be 0-100")
+            if "outcome" in h:
+                if trig == "camp":
+                    errors.append(f"{where}: camp hazards use ambush_pct, not outcome")
+                check_outcome(where, h["outcome"])
+            if "enemy_applies" in h:
+                if trig != "fight_start":
+                    errors.append(f"{where}: enemy_applies only on fight_start hazards")
+                check_applies(where, h["enemy_applies"])
+            if trig == "camp" and not (isinstance(h.get("ambush_pct"), int) and h["ambush_pct"] > 0):
+                errors.append(f"{where}: camp hazards need ambush_pct > 0")
+            if trig in ("move", "fight_start") and not h.get("outcome") and not h.get("enemy_applies"):
+                errors.append(f"{where}: does nothing (no outcome / enemy_applies)")
 
     curios_raw = load(DATA / "curios.json") or {}
     curio_ids = set()
