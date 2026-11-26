@@ -6021,7 +6021,8 @@
           512
         ],
         "dead_rotate": 180,
-        "_doc_size": "large enemy (size 2): wide canvas so the whole body fits; dead is idle turned over (legs up)"
+        "_doc_size": "large enemy (size 2): wide canvas so the whole body fits; dead is idle turned over (legs up)",
+        "mirror": true
       },
       {
         "id": "mono_congo_poseido",

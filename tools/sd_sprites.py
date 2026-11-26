@@ -719,6 +719,10 @@ def main() -> int:
             # keep the biggest one.
             if c.get("single_figure"):
                 image = keep_bottom_figure(image) if c.get("single_figure") == "bottom" else keep_main_figure(image)
+        # mirror: the model drew this character facing right; the stage wants enemies drawn facing left.
+        if c.get("mirror"):
+            from PIL import ImageOps
+            image = ImageOps.mirror(image)
         out.parent.mkdir(parents=True, exist_ok=True)
         image.save(out, format="PNG")
         meta = {
