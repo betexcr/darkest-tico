@@ -4812,9 +4812,9 @@
         512,
         512
       ],
-      "seed": 2143,
-      "subject": "weeping ghost woman standing in a river, face hidden behind long wet black hair, soaked torn white dress, pale clawed hands reaching out, mist on the water, ghost, night",
-      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "seed": 2210,
+      "subject": "weeping ghost woman knee-deep in a dark river, face completely hidden behind long wet black hair, ghostly pale bluish skin, long torn white dress, thin clawed hands reaching out, mist on the water, cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup",
       "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
@@ -4848,9 +4848,9 @@
         512,
         512
       ],
-      "seed": 2146,
-      "subject": "pale grey ghost lumberjack, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe held over his shoulder, tree stumps, foggy cloud forest night",
-      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals",
+      "seed": 2220,
+      "subject": "pale grey ghost lumberjack, translucent skin, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe resting on his shoulder in full view, rope around his neck, felled stumps, foggy cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, living man, healthy skin, axe cut off",
       "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
     },
     {
