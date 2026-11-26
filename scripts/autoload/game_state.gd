@@ -169,6 +169,8 @@ var combat_return_node_id: String = ""
 var selected_mission_region_path: String = DEFAULT_REGION_PATH
 ## P6-01: region id -> {difficulty id: times its boss was beaten}. Opens the next regions.
 var regions_cleared: Dictionary = {}
+## Enemy family id -> Spanish name (data/enemies.json "families", P6-03).
+var _family_names: Dictionary = {}
 
 ## Carried items, one entry per inventory slot: {"id": String, "qty": int} (P3-09).
 var inventory: Array = []
@@ -282,6 +284,7 @@ func _load_registries() -> void:
 		_skills_by_id = DataLoaderScript.skills_catalog(s_data)
 	if e_data is Dictionary and e_data.get("enemies") is Dictionary:
 		_enemies_by_id = e_data["enemies"] as Dictionary
+		_family_names = e_data.get("families", {}) if e_data.get("families", null) is Dictionary else {}
 	var i_data = DataLoaderScript.load_json(ITEMS_PATH)
 	if i_data is Dictionary:
 		for it in i_data.get("items", []):
@@ -2186,7 +2189,8 @@ func roll_drops(enemies: Array) -> Dictionary:
 	var lost: Array = []
 	var mult: float = LootDropsScript.difficulty_mult(selected_difficulty_id) * loot_mult()
 	for e in enemies:
-		if not (e is Dictionary) or not bool(e.get("dead", false)) or bool(e.get("fled", false)):
+		# P6-03: mirror images (illusion) drop nothing.
+		if not (e is Dictionary) or not bool(e.get("dead", false)) or bool(e.get("fled", false)) or bool(e.get("illusion", false)):
 			continue
 		var drops: Array = _enemies_by_id.get(str(e.get("id", "")), {}).get("drops", [])
 		var id: String = LootDropsScript.roll(drops, mult, randf())
@@ -2557,12 +2561,31 @@ func make_enemy(enemy_id: String, squad_size: int, hp_mult: float = 1.0) -> Dict
 ## Enemies with "pack" N come in groups (Ratas de troje, P2-04): each one in the squad pulls
 ## in more of its kind, up to N, while the squad has room (4).
 func expand_packs(ids: Array) -> Array:
-	var out: Array = ids.duplicate()
+	# P6-03: a squad fills at most 4 positions; a large enemy (size 2) takes two.
+	var out: Array = []
+	var used: int = 0
+	for id in ids:
+		var sz: int = enemy_size(str(id))
+		if used + sz > 4:
+			continue
+		out.append(id)
+		used += sz
 	for id in ids:
 		var pack: int = int((_enemies_by_id.get(str(id), {}) as Dictionary).get("pack", 0))
-		while pack > 1 and out.count(id) < pack and out.size() < 4:
+		while pack > 1 and out.count(id) < pack and used + enemy_size(str(id)) <= 4:
 			out.append(id)
+			used += enemy_size(str(id))
 	return out
+
+
+## The Spanish name of an enemy family ("" if unknown).
+func family_name(family: String) -> String:
+	return str(_family_names.get(family, ""))
+
+
+## Positions an enemy takes up (1, or 2 for a large one; P6-03).
+func enemy_size(enemy_id: String) -> int:
+	return clampi(int((_enemies_by_id.get(enemy_id, {}) as Dictionary).get("size", 1)), 1, 2)
 
 
 func _build_single_context(node_id: String) -> void:

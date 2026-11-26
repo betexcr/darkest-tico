@@ -487,6 +487,7 @@ func _pause(seconds: float) -> void:
 func _check_end() -> bool:
 	if _ended:
 		return true
+	_dispel_lone_illusions()
 	if current_target().is_empty():
 		_finish(true)
 		return true
@@ -649,6 +650,10 @@ func _resolve_hero_attack(hero: Dictionary, skill: Dictionary, enemy: Dictionary
 			_try_apply(enemy, ap, crit, "")
 		_queue_move(enemy, skill)
 	_enemy_riposte(enemy, hero)
+	# P6-03: striking a mirror image unsettles the hero (illusion punish).
+	if bool(enemy.get("illusion", false)) and int(enemy.get("illusion_stress", 0)) > 0:
+		_log("  ¡Era un reflejo! %s se asusta." % hero.get("name", "?"), "aa88cc")
+		_log_all(StressSystemScript.add_stress(hero, int(enemy["illusion_stress"])))
 	var cost: int = int(skill.get("self_stress", 0))
 	if cost > 0:
 		_log_all(StressSystemScript.add_stress(hero, cost))
@@ -673,6 +678,66 @@ func _apply_damage_to_enemy(enemy: Dictionary, dmg: int) -> void:
 			_log("%s suelta los %d colones que se había robado." % [enemy.get("name", "?"), stolen], "ddbb55")
 	elif int(enemy["hp"]) <= 0:
 		enemy["hp"] = 0
+	if not bool(enemy.get("dead", false)):
+		_check_phases(enemy)
+
+
+# --- Phases and mirror images (P6-03, doc 05 §2-3) ------------------------------------
+
+## Each phase triggers once, the first time the enemy's PV fall to `at_hp_pct` % or less:
+## a log line, statuses on itself, extra protection, and mirror images.
+func _check_phases(enemy: Dictionary) -> void:
+	var phases = enemy.get("phases", null)
+	if not phases is Array or bool(enemy.get("illusion", false)):
+		return
+	var done: Array = enemy.get("_phases_done", [])
+	var pct: float = 100.0 * int(enemy.get("hp", 0)) / maxf(1.0, float(enemy.get("hp_max", 1)))
+	for k in phases.size():
+		var ph: Dictionary = phases[k]
+		if done.has(k) or pct > float(ph.get("at_hp_pct", 0)):
+			continue
+		done.append(k)
+		enemy["_phases_done"] = done
+		if str(ph.get("text", "")) != "":
+			_log(str(ph["text"]), "dd8844")
+		for ap in _applies_list(ph.get("self_applies", null)):
+			_try_apply(enemy, ap, false, "  ")
+		if int(ph.get("prot", 0)) != 0:
+			enemy["prot"] = int(enemy.get("prot", 0)) + int(ph["prot"])
+			_log("  %s se endurece: +%d%% protección." % [enemy.get("name", "?"), int(ph["prot"])], "dd8844")
+		if ph.get("clones", null) is Dictionary:
+			_spawn_clones(enemy, ph["clones"])
+
+
+## Mirror images of `enemy`: same skills, `hp_pct` % of its PV; no drops, no phases; a hero who
+## hits one takes `stress_on_hit` stress (illusion punish). They vanish once no real enemy is left.
+func _spawn_clones(enemy: Dictionary, spec: Dictionary) -> void:
+	for _k in int(spec.get("count", 1)):
+		if not enemy_spawner.is_valid() or FormationScript.slots_used(enemies) + FormationScript.size_of(enemy) > 4:
+			break
+		var c: Dictionary = enemy.duplicate(true)
+		for key in ["phases", "_phases_done", "summon", "cycle", "reinforce", "flee_after", "statuses", "grudge_uid", "grudge_stacks"]:
+			c.erase(key)
+		c["illusion"] = true
+		c["illusion_stress"] = int(spec.get("stress_on_hit", 0))
+		c["hp_max"] = maxi(1, int(round(int(enemy.get("hp_max", 1)) * float(spec.get("hp_pct", 20)) / 100.0)))
+		c["hp"] = c["hp_max"]
+		c["name"] = "%s (reflejo)" % str(enemy.get("name", "?")).split(" (")[0]
+		c["uid"] = -1 - enemies.size()
+		_add_enemy(c)
+		_log("  Aparece %s." % c["name"], "aa88cc")
+
+
+## Mirror images with no real enemy left fade away (the fight is won).
+func _dispel_lone_illusions() -> void:
+	var alive: Array = FormationScript.living(enemies)
+	if alive.is_empty() or alive.any(func(e): return not bool(e.get("illusion", false))):
+		return
+	for e in alive:
+		e["dead"] = true
+		e["hp"] = 0
+	_log("Los reflejos se deshacen en la niebla.", "aa88cc")
+	_refresh_units()
 
 
 ## Elemental multiplier from the target's "elements" (enemies) or "resist" (heroes).
@@ -910,6 +975,10 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 	var pct: int = StatusEffectsScript.stat(attacker, "dmg_pct")
 	if StatusEffectsScript.has(target, "fichado"):
 		pct += int(skill.get("vs_marked_pct", 0))
+	# P6-03: some hero skills hit one enemy family harder (e.g. the Sabanero against bestias).
+	var vf = skill.get("vs_family", null)
+	if vf is Dictionary:
+		pct += int(vf.get(str(target.get("family", "")), 0))
 	# Anti-guard (P2-05): extra damage against a hero who is guarding.
 	if bool(target.get("guarding", false)):
 		pct += int(skill.get("vs_guard_pct", 0))
@@ -1091,7 +1160,7 @@ func _boss_round_start() -> void:
 ## Adds an enemy mid-fight at the back of the living ones (P2-04: reinforcements; P2-05 will
 ## use it for the Mayordomo's summons). {} if the side is full or nobody can make its unit.
 func spawn_enemy(enemy_id: String) -> Dictionary:
-	if not enemy_spawner.is_valid() or FormationScript.living(enemies).size() >= 4:
+	if not enemy_spawner.is_valid() or FormationScript.slots_used(enemies) + GameState.enemy_size(enemy_id) > 4:
 		return {}
 	var e: Dictionary = GameState.make_enemy(enemy_id, FormationScript.living(enemies).size() + 1)
 	if e.is_empty():
@@ -1099,6 +1168,11 @@ func spawn_enemy(enemy_id: String) -> Dictionary:
 	var same: int = enemies.filter(func(x): return str(x.get("id", "")) == enemy_id).size()
 	if same > 0:
 		e["name"] = "%s %s" % [e.get("name", "?"), "ABCDEFGH"[mini(same, 7)]]
+	return _add_enemy(e)
+
+
+## Puts a new enemy on the stage (summons, reinforcements, mirror images).
+func _add_enemy(e: Dictionary) -> Dictionary:
 	var u = enemy_spawner.call(e)
 	if u == null:
 		return {}

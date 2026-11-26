@@ -100,7 +100,7 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	# imports it (load_texture reads it straight from disk then) and the enemy must still be a cut-out.
 	var idle_path := "res://assets/sprites/%s/idle.png" % str(unit_data.get("id", ""))
 	_cutout = hero or ResourceLoader.exists(idle_path) or FileAccess.file_exists(idle_path)
-	_size = HERO_SIZE if hero else (ENEMY_SPRITE_SIZE if _cutout else ENEMY_SIZE)
+	_size = HERO_SIZE if hero else _large((ENEMY_SPRITE_SIZE if _cutout else ENEMY_SIZE))
 	alignment = BoxContainer.ALIGNMENT_END
 	custom_minimum_size = Vector2(_size.x, 0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -445,10 +445,15 @@ func _stop_idle() -> void:
 
 
 ## Enemy portraits shrink while more than 4 share the stage (they stack in two lines).
+## A large enemy (size 2, P6-03) stands on two positions: a wider, somewhat taller box.
+func _large(box: Vector2) -> Vector2:
+	return Vector2(box.x * 1.7, box.y * 1.15) if not is_hero and int(data.get("size", 1)) == 2 else box
+
+
 func set_compact(on: bool) -> void:
 	if is_hero:
 		return
-	var want: Vector2 = (ENEMY_SPRITE_COMPACT if on else ENEMY_SPRITE_SIZE) if _cutout else (ENEMY_COMPACT if on else ENEMY_SIZE)
+	var want: Vector2 = _large((ENEMY_SPRITE_COMPACT if on else ENEMY_SPRITE_SIZE) if _cutout else (ENEMY_COMPACT if on else ENEMY_SIZE))
 	if want == _size:
 		return
 	_size = want

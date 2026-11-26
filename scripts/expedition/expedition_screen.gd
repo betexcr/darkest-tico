@@ -300,6 +300,16 @@ func _show_enemy_info(e: Dictionary) -> void:
 	_enemy_info_health.max_value = 100
 	_enemy_info_health.value = pct
 	var lines: PackedStringArray = PackedStringArray()
+	# P6-03: family, size and mirror images are visible without the Lentes.
+	var kind: PackedStringArray = PackedStringArray()
+	if GameState.family_name(str(e.get("family", ""))) != "":
+		kind.append(GameState.family_name(str(e["family"])))
+	if int(e.get("size", 1)) == 2:
+		kind.append("grande: ocupa dos posiciones")
+	if bool(e.get("illusion", false)):
+		kind.append("reflejo: si lo golpean, asusta")
+	if not kind.is_empty():
+		lines.append("[color=#c9b98f]%s[/color]" % " · ".join(kind))
 	if bool(e.get("dead", false)):
 		lines.append("Derrotado.")
 	elif not GameState.party_can_scout():

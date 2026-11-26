@@ -22,16 +22,38 @@ static func living(side: Array) -> Array:
 	return side.filter(func(u): return is_alive(u))
 
 
-## 1..4 for a living unit, 0 for a dead or missing one.
+## Positions a unit takes up: 1, or 2 for a large enemy (P6-03, `size` in enemies.json).
+static func size_of(u) -> int:
+	return clampi(int(u.get("size", 1)), 1, 2) if u is Dictionary else 1  # structural: 1 or 2 positions
+
+
+## Positions the living units of a side take up (at most 4 fit).
+static func slots_used(side: Array) -> int:
+	var n: int = 0
+	for u in living(side):
+		n += size_of(u)
+	return n
+
+
+## Every position a living unit stands on (two for a large one), front first; [] if dead.
+static func positions_of(unit: Dictionary, side: Array) -> Array:
+	var p: int = position_of(unit, side)
+	if p == 0:
+		return []
+	return range(p, p + size_of(unit))
+
+
+## 1..4 for a living unit (its front position; a large enemy also stands on the next one),
+## 0 for a dead or missing one.
 static func position_of(unit: Dictionary, side: Array) -> int:
 	if not is_alive(unit):
 		return 0
 	var pos: int = 0
 	for u in side:
 		if is_alive(u):
-			pos += 1
 			if is_same(u, unit):
-				return pos
+				return pos + 1
+			pos += size_of(u)
 	return 0
 
 
@@ -42,9 +64,11 @@ static func at_positions(side: Array, ranks: Array) -> Array:
 	var pos: int = 0
 	for u in side:
 		if is_alive(u):
-			pos += 1
-			if want.has(pos):
-				out.append(u)
+			for k in size_of(u):
+				if want.has(pos + 1 + k):
+					out.append(u)
+					break
+			pos += size_of(u)
 	return out
 
 
@@ -74,10 +98,11 @@ static func valid_targets(skill: Dictionary, other_side: Array) -> Array:
 ## The last one standing on a side ignores use_ranks (P1-21): with nobody beside them they
 ## can't Moverse, and positions mean nothing, so a lone hero is never stuck.
 static func can_use(skill: Dictionary, user: Dictionary, own_side: Array, other_side: Array, hits_other_side: bool) -> bool:
-	var pos: int = position_of(user, own_side)
-	if pos == 0:
+	var at: Array = positions_of(user, own_side)
+	if at.is_empty():
 		return false
-	if not use_ranks(skill).has(pos) and living(own_side).size() > 1:
+	var uses: Array = use_ranks(skill)
+	if not at.any(func(p): return uses.has(p)) and living(own_side).size() > 1:
 		return false
 	return not hits_other_side or not valid_targets(skill, other_side).is_empty()
 

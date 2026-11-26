@@ -542,6 +542,11 @@ def main() -> int:
         for c in sk.get("cure", []):
             if c not in status_defs:
                 errors.append(f"skills.json: '{sid}' cures unknown status '{c}'")
+        vf = sk.get("vs_family")
+        if vf is not None and not (isinstance(vf, dict) and vf and all(f in ENEMY_FAMILIES and isinstance(v, int) and v > 0 for f, v in vf.items())):
+            errors.append(f"skills.json: '{sid}' vs_family must be {{family: pct > 0}} with known families")
+        if vf is not None and sk.get("kind") != "attack":
+            errors.append(f"skills.json: '{sid}' vs_family only on attacks")
         for k in sk.get("rank_bonus", {}):
             if k not in rank_keys:
                 errors.append(f"skills.json: '{sid}' rank_bonus unknown key '{k}'")
@@ -632,6 +637,26 @@ def main() -> int:
         g = en.get("grudge")
         if g is not None and not (isinstance(g.get("dmg_pct"), int) and g["dmg_pct"] > 0 and isinstance(g.get("max"), int) and g["max"] >= 1):
             errors.append(f"{where} grudge needs dmg_pct > 0 and max >= 1")
+        # P6-03 (doc 05 §2): every enemy belongs to a family; large ones take two positions;
+        # phases trigger once at a PV threshold and may bring mirror images.
+        if en.get("family") not in ENEMY_FAMILIES:
+            errors.append(f"{where} family must be one of {sorted(ENEMY_FAMILIES)}")
+        if "size" in en and en["size"] not in (1, 2):
+            errors.append(f"{where} size must be 1 or 2")
+        if "illusion" in en:
+            errors.append(f"{where} illusion is set by mirror images at run time, not in data")
+        for ph in en.get("phases", []) if isinstance(en.get("phases", []), list) else [None]:
+            if not isinstance(ph, dict) or not isinstance(ph.get("at_hp_pct"), int) or not 1 <= ph["at_hp_pct"] <= 99:
+                errors.append(f"{where} phases need at_hp_pct 1-99")
+                continue
+            if set(ph) - {"at_hp_pct", "text", "self_applies", "prot", "clones"}:
+                errors.append(f"{where} phase has unknown keys {sorted(set(ph) - {'at_hp_pct', 'text', 'self_applies', 'prot', 'clones'})}")
+            check_applies(f"{where} phase", ph.get("self_applies"))
+            cl = ph.get("clones")
+            if cl is not None and not (isinstance(cl, dict) and isinstance(cl.get("count"), int) and 1 <= cl["count"] <= 3
+                                       and isinstance(cl.get("hp_pct"), int) and 1 <= cl["hp_pct"] <= 100
+                                       and isinstance(cl.get("stress_on_hit", 0), int) and cl.get("stress_on_hit", 0) >= 0):
+                errors.append(f"{where} phase clones need count 1-3, hp_pct 1-100, stress_on_hit >= 0")
         if "pack" in en and not (isinstance(en["pack"], int) and 2 <= en["pack"] <= 4):
             errors.append(f"{where} pack must be 2-4")
         if "on_hit_light" in en and not (isinstance(en["on_hit_light"], int) and en["on_hit_light"] < 0):
@@ -1016,6 +1041,9 @@ def main() -> int:
     check_domain_magic_numbers(errors)
     check_sfx(errors)
     check_region_list(errors)
+    fams = (load(DATA / "enemies.json") or {}).get("families", {})
+    if set(fams) != ENEMY_FAMILIES or not all(isinstance(v, str) and v for v in fams.values()):
+        errors.append(f"enemies.json: families must name exactly {sorted(ENEMY_FAMILIES)} in Spanish")
 
     for w in warnings:
         print(f"WARN  {w}")
@@ -1032,6 +1060,9 @@ def main() -> int:
 # --- P1-06: data/balance.json ------------------------------------------------------------
 # Every key the code reads (scripts/domain/balance.gd paths) and what it may hold:
 # "chance" 0-1, "pct" 0-100 points, "pos" > 0 number, "int>=0" whole number, "mult" > 0.
+# Enemy families (doc 05 §2, P6-03).
+ENEMY_FAMILIES = {"espantos", "culto", "bestias", "penados", "infernales"}
+
 BALANCE_KEYS = {
     "combat.hit_base": "chance", "combat.hit_per_point": "chance", "combat.hit_min": "chance",
     "combat.hit_max": "chance", "combat.initiative_jitter": "int>=0", "combat.crit_cap": "chance",

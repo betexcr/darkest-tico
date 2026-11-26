@@ -908,9 +908,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Done when: [ ] each hazard kind in data + rules + validator; [ ] shown to the player (map marks, log lines); [ ] tests
 
 ### P6-03 · M · Enemy engine for the new rosters
-- Status: `todo` · Depends: — · Spec: `05` §2, §3
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26) · Depends: — · Spec: `05` §2, §3
 - Enemy families (`family`: espantos, culto, bestias, penados, infernales) with hero bonuses against a family; size-2 enemies (take two positions); illusion clones; armor phases; stealthy enemies (Agazapado).
-- Done when: [ ] each mechanic in the combat controller + data + validator; [ ] every existing enemy gets a family; [ ] sim runs clean; [ ] tests
+- Built: `family` on all 15 enemies + `families` names; hero `vs_family`; `size: 2` in `formation.gd` (`size_of`, `slots_used`, `positions_of`), `GameState.expand_packs` / `enemy_size`, summons; wider stage box (`battle_unit._large`); `phases` (`_check_phases`) with mirror images (`_spawn_clones`, illusion punish, `_dispel_lone_illusions`, no drops); enemy panel shows family / large / reflection; skill tooltips show `vs_family`. Stealth was already there (Agazapado). No enemy uses size, phases or clones yet: the region tasks will.
+- Done when: [x] each mechanic in the combat controller + data + validator; [x] every existing enemy gets a family; [x] sim runs clean (Sótanos 2000 fights per room kind: 100 / 100 / 99.9%, as before); [x] tests (`test_enemy_engine`)
 
 ### P6-04 · M · Hero engine for the new classes
 - Status: `todo` · Depends: — · Spec: `03` nos. 7, 8, 11–16

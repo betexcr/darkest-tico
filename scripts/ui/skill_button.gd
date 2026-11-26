@@ -119,6 +119,11 @@ static func body_for(sk: Dictionary) -> String:
 		parts.append("Lo empuja %d posición%s hacia atrás" % [mt, "" if mt == 1 else "es"])
 	if bool(sk.get("shuffle_target", false)):
 		parts.append("Lo revuelve a otra posición")
+	# P6-03: more damage against one enemy family.
+	var vf = sk.get("vs_family", null)
+	if vf is Dictionary:
+		for f in vf:
+			parts.append("+%d%% de daño a: %s" % [int(vf[f]), GameState.family_name(str(f)).to_lower()])
 	# Battlefield positions (P1-03a): where it is used from and which enemy positions it reaches.
 	if sk.has("use_ranks"):
 		var where: String = "Desde posición %s" % FormationScript.ranks_text(FormationScript.use_ranks(sk))

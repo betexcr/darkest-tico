@@ -1,9 +1,17 @@
 {
-  "_doc": "Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento. P2-04 gimmicks: riposte_when_marked (Respondón while Fichado), grudge {dmg_pct, max} (stacks against the hero who heals; prefers that hero), pack N (comes in groups of N), on_hit_light (Luz change per hit), reinforce {after_round, ids, count} (calls help at the start of the round after `after_round` if alive and there's room; once). Skill target 'allies' + ally_ranks: applies its `applies` to living allies in those positions (no damage). Stolen colones come back if the thief dies. P2-05 bosses: summon {id, every, max_alive, max_total, text} (from round every+1, every `every` rounds, rings for one more while fewer than max_alive are standing; at most max_total per fight, so the fight can end), cycle {skill, every} (that skill on every Nth round), flee_after N (alive when round N+1 starts: escapes; no bounty). Skill vs_guard_pct: extra damage against a guarding hero, who it prefers. P5-10 drops: exactly 3 {item, chance}; when the enemy dies (not when it flees) at most one of them drops (one roll), chances × balance drops.chance_mult[difficulty] × the Luz/event loot multiplier, capped at drops.max_total_chance. Stronger enemies: bigger chances and better items (bosses ~70%, vermin ~15%).",
+  "_doc": "family (P6-03, doc 05 §2): espantos | culto | bestias | penados | infernales; hero skills may do more damage to a family (vs_family). size (optional, P6-03): 2 = a large enemy that takes two positions. phases (optional): [{at_hp_pct, text, self_applies, prot, clones}] that trigger once when its PV falls to at_hp_pct. clones (optional, on a phase or a skill): {count, hp_pct, stress_on_hit} mirror images with few PV that pay nothing and vanish when the real ones are gone. Enemy skills: exactly one basic attack (basic: true) plus 1-3 specials; every enemy has at least one magical or ailment special; Tico names fitting the monster (AGENTS.md content rules). type: physical (Guard halves it) | magical (ignores Guard). target: single | party. applies: {status: sangrado|veneno|aturdido, chance, turns, value}. Extras: light, steal_colones, ignores_guard. weight: AI pick weight. elements: {element: damage multiplier} (>1 weak, <1 resists, 0 immune); element on a skill makes its damage that element (hero armour resists apply). ranks: preferred battlefield positions (1 = front, doc 05 §2.6); squads are sorted by them and an enemy with nothing in reach steps toward them. Skill target_ranks (single-target skills): hero positions it can reach; optional use_ranks limits where it can be used from (default: anywhere). Optional crit (default 5, CombatResolver.ENEMY_BASE_CRIT: x1.5 damage and +10 stress on the hero hit) and prot (protection %, default 0). Single-target skills may move the hero hit: move_target N (negative = toward the front, positive = toward the back) or shuffle_target true (random position); resisted with status_resist.movimiento. P2-04 gimmicks: riposte_when_marked (Respondón while Fichado), grudge {dmg_pct, max} (stacks against the hero who heals; prefers that hero), pack N (comes in groups of N), on_hit_light (Luz change per hit), reinforce {after_round, ids, count} (calls help at the start of the round after `after_round` if alive and there's room; once). Skill target 'allies' + ally_ranks: applies its `applies` to living allies in those positions (no damage). Stolen colones come back if the thief dies. P2-05 bosses: summon {id, every, max_alive, max_total, text} (from round every+1, every `every` rounds, rings for one more while fewer than max_alive are standing; at most max_total per fight, so the fight can end), cycle {skill, every} (that skill on every Nth round), flee_after N (alive when round N+1 starts: escapes; no bounty). Skill vs_guard_pct: extra damage against a guarding hero, who it prefers. P5-10 drops: exactly 3 {item, chance}; when the enemy dies (not when it flees) at most one of them drops (one roll), chances × balance drops.chance_mult[difficulty] × the Luz/event loot multiplier, capped at drops.max_total_chance. Stronger enemies: bigger chances and better items (bosses ~70%, vermin ~15%).",
+  "families": {
+    "espantos": "Espanto folclórico",
+    "culto": "Culto del Portón",
+    "bestias": "Bestia maldita",
+    "penados": "Penado de la hacienda",
+    "infernales": "Ente infernal"
+  },
   "enemies": {
     "espanto": {
       "id": "espanto",
       "name": "Espanto del Sótano",
+      "family": "espantos",
       "ranks": [
         1,
         2
@@ -100,6 +108,7 @@
     "sombra_cuadrilla": {
       "id": "sombra_cuadrilla",
       "name": "Sombra de cuadrilla",
+      "family": "penados",
       "ranks": [
         1,
         2
@@ -213,6 +222,7 @@
     "mayordomo_hundido": {
       "id": "mayordomo_hundido",
       "name": "El Mayordomo Hundido",
+      "family": "penados",
       "ranks": [
         1,
         2
@@ -347,6 +357,7 @@
     "nuboso_spectre": {
       "id": "nuboso_spectre",
       "name": "Espectro de niebla",
+      "family": "espantos",
       "ranks": [
         1,
         2
@@ -434,6 +445,7 @@
     "cadejo_negro": {
       "id": "cadejo_negro",
       "name": "Cadejo negro",
+      "family": "bestias",
       "ranks": [
         1,
         2
@@ -533,6 +545,7 @@
     "segua_boss": {
       "id": "segua_boss",
       "name": "La Segua de Niebla",
+      "family": "espantos",
       "ranks": [
         1,
         2
@@ -633,6 +646,7 @@
     "peon_penado": {
       "id": "peon_penado",
       "name": "Peón penado",
+      "family": "penados",
       "ranks": [
         1,
         2
@@ -718,6 +732,7 @@
     "mandador_en_pena": {
       "id": "mandador_en_pena",
       "name": "Mandador en pena",
+      "family": "penados",
       "ranks": [
         2,
         3
@@ -842,6 +857,7 @@
     "rata_de_troje": {
       "id": "rata_de_troje",
       "name": "Ratas de troje",
+      "family": "bestias",
       "ranks": [
         1,
         2,
@@ -917,6 +933,7 @@
     "murcielago_bodega": {
       "id": "murcielago_bodega",
       "name": "Murciélago de bodega",
+      "family": "bestias",
       "ranks": [
         3,
         4
@@ -1016,6 +1033,7 @@
     "monaguillo_porton": {
       "id": "monaguillo_porton",
       "name": "Monaguillo del Portón",
+      "family": "culto",
       "ranks": [
         3,
         4
@@ -1134,6 +1152,7 @@
     "vigia_porton": {
       "id": "vigia_porton",
       "name": "Vigía del Portón",
+      "family": "culto",
       "ranks": [
         2,
         3
@@ -1244,6 +1263,7 @@
     "susurro_aljibe": {
       "id": "susurro_aljibe",
       "name": "Susurro del aljibe",
+      "family": "espantos",
       "ranks": [
         3,
         4
@@ -1349,6 +1369,7 @@
     "duende_sotano": {
       "id": "duende_sotano",
       "name": "Duende del sótano",
+      "family": "espantos",
       "ranks": [
         2,
         3,
@@ -1459,6 +1480,7 @@
     "sirviente_ahogado": {
       "id": "sirviente_ahogado",
       "name": "Sirviente ahogado",
+      "family": "penados",
       "ranks": [
         1,
         2

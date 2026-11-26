@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (51) — P6-03: enemy engine (families, large enemies, phases, mirror images)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-03 done. Pushed to the branch only (not merged into main).
+- **Changed:** `data/enemies.json` (`family` on all 15 enemies, `families` names, `_doc`); `scripts/domain/formation.gd` (size-2 positions); `GameState` (`expand_packs` by positions, `enemy_size`, `family_name`, mirror images drop nothing); `combat_controller.gd` (`vs_family` in `_scaled_damage`, `_check_phases`, `_spawn_clones`, `_add_enemy`, illusion punish, `_dispel_lone_illusions` in `_check_end`, summons fit by positions); `battle_unit.gd` (`_large` box); `expedition_screen.gd` (enemy panel: family, large, reflection); `skill_button.gd` (`vs_family` line); validator (families, size, phases, clones, `vs_family`); `tests/test_enemy_engine.gd` (new); doc 05 §2 "Built", AGENTS.md §4 Enemies.
+- **Verified:** `validate_data.py` 0 errors; full `tests/run_tests.gd` 26 of 26; Sótanos sim 2000 fights per room kind unchanged (100 / 100 / 99.9%).
+- **Not verified / risks:** size-2 enemies, phases and mirror images are not used by any enemy yet, so they were never seen on the real stage; the first region that uses them (P6-10, La Segua's mirror phases) should take a screenshot of a fight with them. Forced moves (`move_by`, `swap`) still count units, not positions, around a large enemy.
+- **Decisions needed:** none.
+- **Next step:** P6-02 (region hazards) or P6-06 (boss ladder: Mayordomo variants per tier); then P6-10 (Bosque). Start P6-06 by reading doc 05 §3 and `data/enemies.json` `mayordomo_hundido`.
+
 ## 2026-11-26 (50) — P6-01: region framework (order, unlocks, clears, Bosque on the generator)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-01 review (owner: look at the region picker). New todo P1-24 (test runner time limit).

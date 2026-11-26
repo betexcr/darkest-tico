@@ -146,6 +146,13 @@ Example squad: `peon_penado` + `sombra_cuadrilla` + `monaguillo_porton` + `vigia
 
 Authored squads (`generator.squads`, used for 50% of regular fights): Portón (Peón, Vigía, Monaguillo), Hacienda (Peón, Mandador, Susurro; punishes healing), Bestias (2 Ratas, Murciélago), Espantos (Espanto, Duende, Susurro). Mid-fight spawning (`CombatController.spawn_enemy`, `GameState.make_enemy`) is ready for the Mayordomo's summons (P2-05).
 
+**Built (P6-03, 2026-11-26): the engine for the Alpha rosters** (`data/enemies.json`, `scripts/combat/combat_controller.gd`, `scripts/domain/formation.gd`):
+- Every enemy has a `family` (espantos, culto, bestias, penados, infernales; Spanish names in `families`), shown in the enemy panel. Hero attacks may have `vs_family` ({family: +%}).
+- `size: 2` is a large enemy: it stands on two positions, is hit by a skill reaching either, and counts as two when squads, summons and reinforcements are fitted into the four positions. On stage it is wider.
+- `phases`: [{at_hp_pct, text, self_applies, prot, clones}] trigger once when its PV fall to that %: statuses on itself, extra protection, mirror images.
+- Mirror images (`clones` {count, hp_pct, stress_on_hit}): copies with few PV, named "(reflejo)", no phases or drops; a hero who hits one gains stress (illusion punish); once no real enemy is left they fade and the fight is won.
+- Stealth enemies were already built (Agazapado, the Duende): single-target attacks skip a hidden unit while another is in reach.
+
 ## 2.7 Enemy Ability Rules (owner, 2026-11-07)
 
 - Every enemy: one **basic attack** + **1–3 specials**. At least one special is **magical** (ignores Guard) or **inflicts an ailment** (`sangrado` bleed, `veneno` poison, `aturdido` stun).
