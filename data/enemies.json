@@ -600,11 +600,71 @@
       "id": "segua_boss",
       "name": "La Segua de Niebla",
       "family": "espantos",
+      "phases": [
+          {
+            "at_hp_pct": 60,
+            "text": "La Segua se ríe y se desdobla en la niebla: ¿cuál de todas es la de verdad?",
+            "clones": {
+              "count": 2,
+              "hp_pct": 15,
+              "stress_on_hit": 3
+            }
+          }
+        ],
+        "tiers": {
+          "veterano": {
+            "text": "En la niebla más espesa, la Segua se desdobla dos veces.",
+            "phases": [
+              {
+                "at_hp_pct": 30,
+                "text": "La Segua chilla y aparece otra más; la de verdad se pone brava.",
+                "clones": {
+                  "count": 1,
+                  "hp_pct": 15,
+                  "stress_on_hit": 4
+                },
+                "self_applies": {
+                  "status": "chiva",
+                  "turns": 3,
+                  "mods": {
+                    "dmg_pct": 10
+                  }
+                }
+              }
+            ]
+          },
+          "campeon": {
+            "text": "La Segua ya no anda sola: su relincho llama a toda la montaña.",
+            "replace_skills": {
+              "relincho": {
+                "id": "galope_de_niebla",
+                "name": "Galope de niebla",
+                "type": "magical",
+                "damage": [
+                  3,
+                  6
+                ],
+                "accuracy": 0,
+                "stress": 5,
+                "target": "party",
+                "weight": 25,
+                "element": "viento",
+                "applies": {
+                  "status": "susto",
+                  "chance": 0.25,
+                  "turns": 3,
+                  "value": 3
+                },
+                "description": "Pasa galopando entre la niebla por encima de todos: a varios se les mete el susto."
+              }
+            }
+          }
+        },
       "ranks": [
         1,
         2
       ],
-      "hp_max": 85,
+      "hp_max": 70,
       "speed": 6,
       "dodge": 8,
       "accuracy": 10,
@@ -644,7 +704,7 @@
             3
           ],
           "accuracy": 0,
-          "stress": 15,
+          "stress": 11,
           "target": "single",
           "target_ranks": [
             1,
@@ -1606,6 +1666,807 @@
         { "item": "agua_dulce", "chance": 0.06 },
         { "item": "mecate", "chance": 0.04 },
         { "item": "sal_gruesa", "chance": 0.04 }
+      ]
+    },
+    "tigrillo_bruma": {
+      "id": "tigrillo_bruma",
+      "name": "Tigrillo de la bruma",
+      "family": "bestias",
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 32,
+      "speed": 9,
+      "dodge": 14,
+      "accuracy": 9,
+      "crit": 8,
+      "skills": [
+        {
+          "id": "zarpazo",
+          "name": "Zarpazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.3,
+            "turns": 2,
+            "value": 2
+          },
+          "description": "Un manotazo rápido desde la niebla."
+        },
+        {
+          "id": "salto_entre_helechos",
+          "name": "Salto entre helechos",
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.7,
+            "turns": 3,
+            "value": 2
+          },
+          "self_applies": {
+            "status": "agazapado",
+            "turns": 2
+          },
+          "description": "Cae encima de quien menos lo espera y vuelve a esconderse entre los helechos."
+        }
+      ],
+      "elements": {
+        "fuego": 1.25,
+        "viento": 0.75
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 30,
+        "sangrado": 20,
+        "salado": 30,
+        "movimiento": 40
+      },
+      "drops": [
+        {
+          "item": "venda_manta",
+          "chance": 0.08
+        },
+        {
+          "item": "ojo_de_venado",
+          "chance": 0.05
+        },
+        {
+          "item": "colmillo_de_cadejo",
+          "chance": 0.04
+        }
+      ]
+    },
+    "danta_embrujada": {
+      "id": "danta_embrujada",
+      "name": "Danta embrujada",
+      "family": "bestias",
+      "size": 2,
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 78,
+      "speed": 3,
+      "dodge": 2,
+      "accuracy": 7,
+      "prot": 15,
+      "skills": [
+        {
+          "id": "trompazo",
+          "name": "Trompazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "description": "Un golpe de trompa que tumba a cualquiera."
+        },
+        {
+          "id": "embestida_de_monte",
+          "name": "Embestida de monte",
+          "type": "physical",
+          "damage": [
+            6,
+            11
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "target_ranks": [
+            1
+          ],
+          "weight": 25,
+          "move_target": 2,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.3,
+            "turns": 1
+          },
+          "description": "Arranca como un camión sin frenos: empuja al de adelante hacia atrás."
+        },
+        {
+          "id": "revolcon_en_el_barro",
+          "name": "Revolcón en el barro",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "party",
+          "weight": 15,
+          "element": "tierra",
+          "applies": {
+            "status": "salado",
+            "chance": 0.5,
+            "turns": 2,
+            "mods": {
+              "dodge": -5
+            }
+          },
+          "description": "Se revuelca y salpica barro embrujado a todos: los deja salados (menos esquiva)."
+        }
+      ],
+      "elements": {
+        "fuego": 1.25,
+        "rayo": 1.25,
+        "tierra": 0.5,
+        "agua": 0.75
+      },
+      "status_resist": {
+        "aturdido": 60,
+        "veneno": 40,
+        "sangrado": 30,
+        "salado": 30,
+        "movimiento": 80
+      },
+      "drops": [
+        {
+          "item": "chicharron_de_olla",
+          "chance": 0.15
+        },
+        {
+          "item": "cuera_de_sabanero",
+          "chance": 0.1
+        },
+        {
+          "item": "botas_de_hule",
+          "chance": 0.1
+        }
+      ]
+    },
+    "mono_congo_poseido": {
+      "id": "mono_congo_poseido",
+      "name": "Mono congo poseído",
+      "family": "bestias",
+      "ranks": [
+        3,
+        4
+      ],
+      "hp_max": 30,
+      "speed": 7,
+      "dodge": 10,
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "pelotazo_de_guayaba",
+          "name": "Pelotazo de guayaba",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 50,
+          "description": "Una guayaba podrida, tirada con muy buena puntería."
+        },
+        {
+          "id": "aullido_del_congo",
+          "name": "Aullido del congo",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 9,
+          "target": "party",
+          "weight": 25,
+          "element": "viento",
+          "description": "El aullido retumba en todo el bosque y no deja pensar."
+        }
+      ],
+      "elements": {
+        "fuego": 1.25,
+        "hielo": 1.25,
+        "viento": 0.5
+      },
+      "status_resist": {
+        "aturdido": 20,
+        "veneno": 30,
+        "sangrado": 30,
+        "salado": 30,
+        "movimiento": 30
+      },
+      "drops": [
+        {
+          "item": "tapa_de_dulce",
+          "chance": 0.08
+        },
+        {
+          "item": "agua_dulce",
+          "chance": 0.07
+        },
+        {
+          "item": "pita_de_cabuya",
+          "chance": 0.04
+        }
+      ]
+    },
+    "sapo_quebrada": {
+      "id": "sapo_quebrada",
+      "name": "Sapo de la quebrada",
+      "family": "bestias",
+      "ranks": [
+        2,
+        3
+      ],
+      "pack": 2,
+      "hp_max": 20,
+      "speed": 5,
+      "dodge": 6,
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "lenguetazo",
+          "name": "Lengüetazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            2,
+            5
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 50,
+          "description": "Una lengua larga y pegajosa."
+        },
+        {
+          "id": "escupitajo_de_leche",
+          "name": "Escupitajo de leche",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "element": "agua",
+          "applies": {
+            "status": "veneno",
+            "chance": 0.8,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Le escupe la leche venenosa de la espalda."
+        }
+      ],
+      "elements": {
+        "fuego": 1.5,
+        "hielo": 1.25,
+        "agua": 0.5
+      },
+      "status_resist": {
+        "aturdido": 10,
+        "veneno": 90,
+        "sangrado": 20,
+        "salado": 20,
+        "movimiento": 10
+      },
+      "drops": [
+        {
+          "item": "agua_de_sapo",
+          "chance": 0.08
+        },
+        {
+          "item": "agua_pipa",
+          "chance": 0.05
+        },
+        {
+          "item": "sal_gruesa",
+          "chance": 0.02
+        }
+      ]
+    },
+    "llorona_del_rio": {
+      "id": "llorona_del_rio",
+      "name": "La Llorona del río",
+      "family": "espantos",
+      "ranks": [
+        3,
+        4
+      ],
+      "hp_max": 46,
+      "speed": 5,
+      "dodge": 9,
+      "accuracy": 9,
+      "crit": 6,
+      "skills": [
+        {
+          "id": "mano_helada",
+          "name": "Mano helada",
+          "basic": true,
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 50,
+          "element": "hielo",
+          "description": "Una mano mojada y fría en la nuca."
+        },
+        {
+          "id": "ay_mis_hijos",
+          "name": "¡Ay, mis hijos!",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 10,
+          "target": "party",
+          "weight": 25,
+          "element": "agua",
+          "applies": {
+            "status": "susto",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "El llanto llena la quebrada: a todos se les mete el susto."
+        },
+        {
+          "id": "busca_al_mas_chiquito",
+          "name": "Busca al más chiquito",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 20,
+          "element": "oscuridad",
+          "applies": {
+            "status": "fichado",
+            "chance": 1.0,
+            "turns": 3
+          },
+          "description": "Se queda viendo al más débil del grupo: lo deja fichado."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.5,
+        "fuego": 1.25,
+        "agua": 0.25,
+        "hielo": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 80,
+        "sangrado": 80,
+        "salado": 40,
+        "movimiento": 40
+      },
+      "drops": [
+        {
+          "item": "agua_florida",
+          "chance": 0.15
+        },
+        {
+          "item": "corbata_de_luto",
+          "chance": 0.1
+        },
+        {
+          "item": "mantilla_de_la_abuela",
+          "chance": 0.1
+        }
+      ]
+    },
+    "viejo_del_monte": {
+      "id": "viejo_del_monte",
+      "name": "Viejo del Monte",
+      "family": "espantos",
+      "ranks": [
+        2,
+        3
+      ],
+      "hp_max": 40,
+      "speed": 4,
+      "dodge": 7,
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "bastonazo_de_guayabo",
+          "name": "Bastonazo de guayabo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            4,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "description": "Un bastón torcido, duro como piedra."
+        },
+        {
+          "id": "bejucos_que_amarran",
+          "name": "Bejucos que amarran",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "element": "tierra",
+          "applies": {
+            "status": "amarrado",
+            "chance": 0.7,
+            "turns": 2
+          },
+          "description": "Los bejucos del monte se enrollan en las piernas: queda amarrado."
+        },
+        {
+          "id": "por_aqui_es",
+          "name": "«Por aquí es»",
+          "type": "magical",
+          "damage": [
+            0,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 20,
+          "element": "viento",
+          "applies": {
+            "status": "salado",
+            "chance": 0.7,
+            "turns": 3,
+            "mods": {
+              "accuracy": -8
+            }
+          },
+          "description": "Señala un camino que no existe: pierde la puntería."
+        }
+      ],
+      "elements": {
+        "fuego": 1.5,
+        "sagrado": 1.25,
+        "tierra": 0.5
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 40,
+        "salado": 50,
+        "movimiento": 50
+      },
+      "drops": [
+        {
+          "item": "ramo_ruda",
+          "chance": 0.1
+        },
+        {
+          "item": "bolsita_de_ruda",
+          "chance": 0.06
+        },
+        {
+          "item": "garrote_de_guayabo",
+          "chance": 0.04
+        }
+      ]
+    },
+    "brujo_de_la_montana": {
+      "id": "brujo_de_la_montana",
+      "name": "Brujo de la montaña",
+      "family": "culto",
+      "ranks": [
+        3,
+        4
+      ],
+      "hp_max": 34,
+      "speed": 5,
+      "dodge": 7,
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "vara_de_guarumo",
+          "name": "Vara de guarumo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "description": "Un varazo con la vara del brujo."
+        },
+        {
+          "id": "muneco_de_trapo",
+          "name": "Muñeco de trapo",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "element": "oscuridad",
+          "applies": {
+            "status": "veneno",
+            "chance": 0.75,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "Le clava una espina al muñeco: el héroe queda envenenado."
+        },
+        {
+          "id": "humo_de_copal_negro",
+          "name": "Humo de copal negro",
+          "type": "magical",
+          "target": "allies",
+          "ally_ranks": [
+            1,
+            2
+          ],
+          "weight": 25,
+          "applies": {
+            "status": "chiva",
+            "chance": 1.0,
+            "turns": 3,
+            "mods": {
+              "dmg_pct": 15,
+              "dodge": 5
+            }
+          },
+          "description": "Sopla humo negro sobre los de adelante: pegan más y se escurren mejor."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.5,
+        "rayo": 1.25,
+        "oscuridad": 0.5
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 30,
+        "salado": 50,
+        "movimiento": 20
+      },
+      "drops": [
+        {
+          "item": "tierra_de_camposanto",
+          "chance": 0.08
+        },
+        {
+          "item": "vela_de_la_negrita",
+          "chance": 0.07
+        },
+        {
+          "item": "pulsera_de_azabache",
+          "chance": 0.05
+        }
+      ]
+    },
+    "lenador_penado": {
+      "id": "lenador_penado",
+      "name": "Leñador penado",
+      "family": "penados",
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 52,
+      "speed": 3,
+      "dodge": 3,
+      "accuracy": 8,
+      "prot": 10,
+      "grudge": {
+        "dmg_pct": 15,
+        "max": 3
+      },
+      "skills": [
+        {
+          "id": "hachazo",
+          "name": "Hachazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Un hachazo de leñador que no ha parado en cien años."
+        },
+        {
+          "id": "arbol_que_cae",
+          "name": "¡Árbol que cae!",
+          "type": "physical",
+          "damage": [
+            4,
+            8
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 20,
+          "applies": {
+            "status": "aturdido",
+            "chance": 0.35,
+            "turns": 1
+          },
+          "description": "Tumba un árbol encima de la cuadrilla: queda atarantado."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.25,
+        "fuego": 1.25,
+        "tierra": 0.75
+      },
+      "status_resist": {
+        "aturdido": 50,
+        "veneno": 40,
+        "sangrado": 40,
+        "salado": 30,
+        "movimiento": 60
+      },
+      "drops": [
+        {
+          "item": "hacha_de_lenatero",
+          "chance": 0.06
+        },
+        {
+          "item": "cafe_cargado",
+          "chance": 0.1
+        },
+        {
+          "item": "camisa_de_manta",
+          "chance": 0.05
+        }
       ]
     }
   }

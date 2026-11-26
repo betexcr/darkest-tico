@@ -472,6 +472,567 @@
         { "label": "Esconderse hasta que pase", "outcomes": [
           { "weight": 70, "text": "Esperan en lo oscuro, sin respirar, hasta que se apaga la última candela.", "stress_party": 5 },
           { "weight": 30, "text": "Mientras esperan, una ánima se detiene frente a ellos y les deja una candela antes de seguir.", "stress_party": 5, "add_item": { "id": "candela_sebo", "qty": 1 } } ] }
-      ] }
+      ] },
+    {
+      "id": "nido_de_quetzal",
+      "name": "Nido de quetzal",
+      "text": "En un hueco del aguacatillo, un quetzal macho cuida el nido. La cola le cuelga como una cinta verde.",
+      "choices": [
+        {
+          "label": "Mirarlo en silencio",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Nadie dice nada. Por un rato se les olvida dónde están.",
+              "stress_party": -10
+            },
+            {
+              "weight": 30,
+              "text": "El quetzal sale volando hacia un claro: por ahí sigue el camino.",
+              "stress_party": -4,
+              "reveal_neighbors": true
+            }
+          ]
+        },
+        {
+          "label": "Buscar plumas para vender",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "Encuentran un par de plumas en el suelo. Las venden caras, pero nadie está orgulloso.",
+              "colones": [
+                90,
+                180
+              ],
+              "stress_party": 5
+            },
+            {
+              "weight": 50,
+              "text": "Se acercan demasiado: el pájaro se va y algo grande se mueve entre los helechos.",
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ceiba_hueca",
+      "name": "Ceiba hueca",
+      "text": "Una ceiba enorme, hueca por dentro. Adentro se oye algo que gotea.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Adentro alguien escondió provisiones hace tiempo.",
+          "add_item": {
+            "id": "gallo_pinto",
+            "qty": 3
+          }
+        },
+        {
+          "weight": 30,
+          "text": "Una caja de lata con unos colones viejos.",
+          "colones": [
+            60,
+            140
+          ]
+        },
+        {
+          "weight": 30,
+          "text": "Del hueco salen bichos y algo con dientes.",
+          "ambush": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ojo_de_agua",
+      "name": "Ojo de agua",
+      "text": "Un ojo de agua cristalino entre las piedras. Dicen que el agua de la montaña cura.",
+      "choices": [
+        {
+          "label": "Tomar agua",
+          "outcomes": [
+            {
+              "weight": 65,
+              "text": "Fría y dulce. Les vuelve el alma al cuerpo.",
+              "heal_party": 6,
+              "stress_party": -4
+            },
+            {
+              "weight": 35,
+              "text": "Sabía raro. Al rato a alguien le duele la panza.",
+              "applies": {
+                "status": "veneno",
+                "chance": 1.0,
+                "turns": 3,
+                "value": 2
+              }
+            }
+          ]
+        },
+        {
+          "label": "Llenar las botellas",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Llenan las botellas para después.",
+              "add_item": {
+                "id": "agua_pipa",
+                "qty": 2
+              }
+            },
+            {
+              "weight": 30,
+              "text": "El agua se enturbia apenas la tocan. Mejor dejarla.",
+              "stress_party": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cruz_de_camino",
+      "name": "Cruz de camino",
+      "text": "Una cruz de madera al borde del sendero, con flores secas y una vela apagada.",
+      "key_item": "vela_de_la_negrita",
+      "key_text": "Prenden una vela y rezan un ratito.",
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "La llama no se mueve aunque sopla el viento. Se sienten acompañados.",
+          "stress_party": -15,
+          "buff": {
+            "name": "Bendición del camino",
+            "mods": {
+              "stress_pct": -10
+            },
+            "fights": 3,
+            "party": true
+          }
+        },
+        {
+          "weight": 25,
+          "text": "La vela se apaga sola. Alguien jura que vio a un señor de sombrero al lado de la cruz.",
+          "stress_party": 6
+        }
+      ],
+      "blind": [
+        {
+          "weight": 50,
+          "text": "Se persignan y siguen. No pasa nada, que ya es bastante.",
+          "stress_party": -3
+        },
+        {
+          "weight": 50,
+          "text": "Al pie de la cruz hay unos colones de ofrenda. Agarrarlos no se siente bien.",
+          "colones": [
+            40,
+            90
+          ],
+          "stress_party": 5
+        }
+      ]
+    },
+    {
+      "id": "rancho_de_montanero",
+      "name": "Rancho de montañero",
+      "text": "Un rancho de tablas con el techo de zinc oxidado. La puerta está abierta y hay café frío en la mesa.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Quedaba comida en la alacena.",
+          "add_item": {
+            "id": "tamal_de_cerdo",
+            "qty": 2
+          }
+        },
+        {
+          "weight": 30,
+          "text": "En la pared, un mapa hecho a mano del bosque.",
+          "reveal_map": true
+        },
+        {
+          "weight": 30,
+          "text": "El montañero sigue ahí. Ya no es montañero.",
+          "ambush": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "orquideas_raras",
+      "name": "Orquídeas raras",
+      "text": "Un árbol cubierto de orquídeas que nadie ha visto en ningún libro.",
+      "choices": [
+        {
+          "label": "Arrancar unas para vender",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "Un coleccionista en el pueblo pagaría bien por ellas.",
+              "colones": [
+                120,
+                220
+              ],
+              "stress_party": 6
+            },
+            {
+              "weight": 50,
+              "text": "Al arrancarlas, el árbol suelta un polvo que pica en los ojos.",
+              "applies": {
+                "status": "salado",
+                "chance": 1.0,
+                "turns": 3,
+                "mods": {
+                  "accuracy": -6
+                },
+                "party": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "Dejarlas en paz",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Las dejan ahí. Se siente como hacer lo correcto.",
+              "stress_party": -6
+            },
+            {
+              "weight": 30,
+              "text": "Detrás del árbol, una trocha que no se veía.",
+              "reveal_neighbors": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "piedra_del_sapo",
+      "name": "Piedra del sapo",
+      "text": "Una piedra grande con forma de sapo, lisa de tanto que la han sobado.",
+      "blind": [
+        {
+          "weight": 45,
+          "text": "Sobarle la cabeza da suerte, dicen. Esta vez parece que sí.",
+          "buff": {
+            "name": "Suerte del sapo",
+            "mods": {
+              "crit": 5
+            },
+            "fights": 2,
+            "party": true
+          }
+        },
+        {
+          "weight": 30,
+          "text": "La piedra está fría como hielo. A todos se les eriza la piel.",
+          "stress_party": 6
+        },
+        {
+          "weight": 25,
+          "text": "Debajo de la piedra, un frasco de agua de sapo.",
+          "add_item": {
+            "id": "agua_de_sapo",
+            "qty": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "laguna_de_la_segua",
+      "name": "Orilla de la laguna",
+      "text": "Una laguna quieta, con la niebla pegada al agua. En la orilla, huellas de caballo que llegan y no se van.",
+      "key_item": "agua_bendita",
+      "key_text": "Echan agua bendita en la orilla.",
+      "key_outcomes": [
+        {
+          "weight": 70,
+          "text": "La niebla se abre un momento y ven todo el camino hasta el otro lado.",
+          "reveal_map": true,
+          "stress_party": -5
+        },
+        {
+          "weight": 30,
+          "text": "El agua de la laguna hierve un segundo. Algo se enojó.",
+          "stress_party": 8
+        }
+      ],
+      "blind": [
+        {
+          "weight": 50,
+          "text": "Siguen las huellas un rato. No llevan a ningún lado, pero vuelven con los nervios de punta.",
+          "stress_party": 7
+        },
+        {
+          "weight": 50,
+          "text": "Entre los juncos, una bolsa de cuero mojada con monedas.",
+          "colones": [
+            80,
+            160
+          ]
+        }
+      ]
+    },
+    {
+      "id": "campamento_de_cazadores",
+      "name": "Campamento de cazadores",
+      "text": "Un campamento abandonado: una hamaca rota, latas vacías y una escopeta sin tiros.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Dejaron algo de equipo bueno.",
+          "random_equipment": true
+        },
+        {
+          "weight": 35,
+          "text": "Quedaban vendas y fósforos.",
+          "add_item": {
+            "id": "venda_manta",
+            "qty": 2
+          }
+        },
+        {
+          "weight": 25,
+          "text": "Una trampa de los cazadores, todavía armada, se dispara.",
+          "damage_random": 6,
+          "stress_party": 3
+        }
+      ]
+    },
+    {
+      "id": "ofrenda_del_viejo",
+      "name": "Ofrenda al Viejo del Monte",
+      "text": "Una piedra plana con un poquito de tabaco, una tapa de dulce y una moneda vieja. Es para que el Viejo del Monte no los pierda.",
+      "choices": [
+        {
+          "label": "Dejar algo propio",
+          "item": "tapa_de_dulce",
+          "outcomes": [
+            {
+              "weight": 75,
+              "text": "Una brisa les pasa por la espalda, como una palmadita. El camino se ve más claro.",
+              "buff": {
+                "name": "Permiso del monte",
+                "mods": {
+                  "dodge": 5
+                },
+                "fights": 3,
+                "party": true
+              }
+            },
+            {
+              "weight": 25,
+              "text": "El dulce desaparece apenas lo sueltan. Nadie vio quién se lo llevó.",
+              "stress_party": 4
+            }
+          ]
+        },
+        {
+          "label": "Llevarse la moneda",
+          "outcomes": [
+            {
+              "weight": 40,
+              "text": "Es una moneda de plata de las de antes.",
+              "colones": [
+                100,
+                200
+              ]
+            },
+            {
+              "weight": 60,
+              "text": "Apenas la agarran, el bosque se cierra alrededor. Se pierden un buen rato.",
+              "debuff": {
+                "name": "Perdidos en el monte",
+                "mods": {
+                  "accuracy": -5,
+                  "speed": -1
+                },
+                "fights": 2,
+                "party": true
+              },
+              "light": -10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "colmena_de_jicotes",
+      "name": "Colmena de jicotes",
+      "text": "Un panal colgando de una rama, zumbando. Huele a miel.",
+      "choices": [
+        {
+          "label": "Sacar miel con humo",
+          "item": "caja_de_fosforos",
+          "outcomes": [
+            {
+              "weight": 75,
+              "text": "Con el humo, los jicotes se atontan. Salen con miel para todos.",
+              "add_item": {
+                "id": "agua_dulce",
+                "qty": 3
+              },
+              "stress_party": -4
+            },
+            {
+              "weight": 25,
+              "text": "El humo no alcanza. Salen corriendo, todos picados.",
+              "damage_party": 2,
+              "stress_party": 5
+            }
+          ]
+        },
+        {
+          "label": "Dejarla en paz",
+          "outcomes": [
+            {
+              "weight": 80,
+              "text": "Pasan despacito. Los jicotes ni se dan cuenta.",
+              "stress_party": -2
+            },
+            {
+              "weight": 20,
+              "text": "Un jicote se les mete en la camisa a alguien. Gritos.",
+              "damage_random": 2,
+              "stress_random": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rebozo_en_la_quebrada",
+      "name": "Rebozo en la quebrada",
+      "text": "Un rebozo negro, empapado, enredado en una piedra de la quebrada. Se oye un llanto río arriba.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Sacan el rebozo del agua y el llanto para. Algo les agradece.",
+          "stress_party": -8,
+          "reveal_neighbors": true
+        },
+        {
+          "weight": 35,
+          "text": "El rebozo pesa como si tuviera a alguien adentro. Lo sueltan del susto.",
+          "stress_party": 9
+        },
+        {
+          "weight": 25,
+          "text": "Siguen el llanto y se topan con lo que llora.",
+          "ambush": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "caseta_del_guardaparques",
+      "name": "Caseta del guardaparques",
+      "text": "Una caseta del MINAE con la pintura caída. Adentro, un radio, un botiquín y una libreta de bitácora.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "El botiquín todavía sirve.",
+          "heal_party": 5,
+          "add_item": {
+            "id": "unguento_de_la_abuela",
+            "qty": 1
+          }
+        },
+        {
+          "weight": 35,
+          "text": "La bitácora marca los senderos y por dónde no ir.",
+          "reveal_map": true
+        },
+        {
+          "weight": 25,
+          "text": "La última entrada de la bitácora dice «ya vienen». Nada más.",
+          "stress_party": 8
+        }
+      ]
+    },
+    {
+      "id": "fogon_de_lena",
+      "name": "Fogón apagado",
+      "text": "Un fogón de piedra con brasas todavía tibias. Alguien estuvo aquí hace poco.",
+      "choices": [
+        {
+          "label": "Avivar el fuego",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Las brasas prenden. Un ratito de calor y de luz.",
+              "light": 20,
+              "stress_party": -5
+            },
+            {
+              "weight": 30,
+              "text": "El humo sube y algo en el bosque lo ve.",
+              "light": 15,
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Apagarlo del todo y seguir",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "Echan tierra encima. Nadie los va a seguir por el humo.",
+              "stress_party": -2
+            },
+            {
+              "weight": 40,
+              "text": "Entre la ceniza había unos colones medio quemados.",
+              "colones": [
+                30,
+                80
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "arbol_de_los_zapatos",
+      "name": "Árbol de los zapatos",
+      "text": "Un árbol con zapatos viejos colgando de las ramas, cientos, de todos los tamaños. Nadie sabe quién los cuelga.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Uno de los zapatos tiene unas monedas escondidas en la punta.",
+          "colones": [
+            50,
+            120
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "Mientras los cuentan, un zapato nuevo aparece en una rama. Nadie lo colgó.",
+          "stress_party": 7
+        },
+        {
+          "weight": 25,
+          "text": "Unas botas en buen estado, casi de su talla.",
+          "add_item": {
+            "id": "botas_de_hule",
+            "qty": 1
+          }
+        }
+      ]
+    }
   ]
 }

@@ -29,6 +29,23 @@ This content spec defines launch biomes, enemy factions, and boss escalation tow
   - Trait and ritual components
   - High scouting value rewards
 
+**Built (P6-10a, 2026-11-26): the Bosque roster** (`data/enemies.json`, `data/regions/bosque.json`; art in P6-10b, balance in P6-10c):
+
+| id | Name | Family | Ranks | Role and gimmick |
+|---|---|---|---|---|
+| `tigrillo_bruma` | Tigrillo de la bruma | Bestias | 1–2 | Fast, dodgy; pounce that bleeds and hides it (Agazapado) |
+| `danta_embrujada` | Danta embrujada | Bestias | 1–2, **large** | Tank (prot 15); charge pushes a hero back 2; mud slows dodge (elite) |
+| `mono_congo_poseido` | Mono congo poseído | Bestias | 3–4 | Thrown guavas anywhere; howl that stresses the whole party |
+| `sapo_quebrada` | Sapo de la quebrada | Bestias | 2–3 | Vermin in pairs; poison spit |
+| `llorona_del_rio` | La Llorona del río | Espantos | 3–4 | Party stress + Susto; marks the weakest (elite) |
+| `viejo_del_monte` | Viejo del Monte | Espantos | 2–3 | Vines that root (Amarrado); false directions (−8 precisión) (elite) |
+| `brujo_de_la_montana` | Brujo de la montaña | Culto | 3–4 | Poison curse; black copal smoke buffs the two in front |
+| `lenador_penado` | Leñador penado | Penados | 1–2 | Tank; bleeding axe; falling tree stuns; grudge against healers |
+| `nuboso_spectre` | Espectro de niebla | Espantos | 1–2 | (slice) dodgy ghost; boss escort |
+| `segua_boss` | **La Segua de Niebla** | Espantos | 1–2 | Apex boss (70 PV): at 60% she splits into 2 mirror images; Veterano adds a 30% phase (one more image, Chiva); Campeón: *Galope de niebla* (party, may Susto) replaces *Relincho* |
+
+Squads: fog ghosts (Espectro, Viejo, Llorona), beasts (Tigrillo, Sapos, Mono), the woodcutter's camp (Leñador, Brujo, Mono), Danta + Brujo. Hazards: *Flora venenosa* (8%/move, veneno), *Sendero que confunde* (5%/move, back to the room before), *Niebla cerrada* (+15% night ambush below Luz 50). Events: 15 new curios (quetzal nest, hollow ceiba, spring, roadside cross, highlander's shack, orchids, toad stone, lagoon, hunters' camp, offering to the Viejo del Monte, wasp nest, shawl in the creek, ranger station, warm hearth, shoe tree) + 4 outdoor Sótanos ones; 6 new traps + Raíces traicioneras.
+
 ## 1.3 Canaverales Profanados
 
 - Theme: sugarcane fields converted into cult ritual grids.
@@ -152,7 +169,7 @@ Authored squads (`generator.squads`, used for 50% of regular fights): Portón (P
 - Every enemy has a `family` (espantos, culto, bestias, penados, infernales; Spanish names in `families`), shown in the enemy panel. Hero attacks may have `vs_family` ({family: +%}).
 - `size: 2` is a large enemy: it stands on two positions, is hit by a skill reaching either, and counts as two when squads, summons and reinforcements are fitted into the four positions. On stage it is wider.
 - `phases`: [{at_hp_pct, text, self_applies, prot, clones}] trigger once when its PV fall to that %: statuses on itself, extra protection, mirror images.
-- Mirror images (`clones` {count, hp_pct, stress_on_hit}): copies with few PV, named "(reflejo)", no phases or drops; a hero who hits one gains stress (illusion punish); once no real enemy is left they fade and the fight is won.
+- Mirror images (`clones` {count, hp_pct, stress_on_hit}): copies with few PV and only the basic attack, named "(reflejo)", no phases or drops; a hero who hits one gains stress (illusion punish); once no real enemy is left they fade and the fight is won.
 - Stealth enemies were already built (Agazapado, the Duende): single-target attacks skip a hidden unit while another is in reach.
 
 ## 2.7 Enemy Ability Rules (owner, 2026-11-07)

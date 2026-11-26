@@ -70,6 +70,94 @@
       "text": "La cava huele a guaro podrido. Mucho rato aquí, y la cabeza da vueltas.",
       "difficulty": 15,
       "fail_text": "Se marean con el vapor de la cava.",
-      "effects": { "damage_party": 1, "debuff": { "name": "Mareo de cava", "mods": { "accuracy": -5 }, "fights": 2, "party": true } } }
+      "effects": { "damage_party": 1, "debuff": { "name": "Mareo de cava", "mods": { "accuracy": -5 }, "fights": 2, "party": true } } },
+    {
+      "id": "puente_de_bejucos",
+      "name": "Puente de bejucos",
+      "text": "Un puente de bejucos sobre un barranco. Algunas tablas faltan y otras están verdes de musgo.",
+      "difficulty": 20,
+      "fail_text": "Una tabla se quiebra. Alguien queda colgando de un bejuco antes de que lo suban.",
+      "effects": {
+        "damage_random": 7,
+        "stress_party": 4
+      }
+    },
+    {
+      "id": "barro_hondo",
+      "name": "Barro hondo",
+      "text": "El sendero se vuelve un barrial que se traga las botas hasta la rodilla.",
+      "difficulty": 10,
+      "fail_text": "Se hunden hasta la cintura. Salir les cuesta tiempo, luz y paciencia.",
+      "effects": {
+        "light": -12,
+        "stress_party": 4
+      }
+    },
+    {
+      "id": "rama_podrida",
+      "name": "Rama podrida",
+      "text": "Una rama enorme, podrida, colgando justo encima del paso.",
+      "difficulty": 15,
+      "fail_text": "¡Crac! La rama les cae encima.",
+      "effects": {
+        "damage_random": 6,
+        "applies": {
+          "status": "aturdido",
+          "chance": 0.5,
+          "turns": 1
+        }
+      }
+    },
+    {
+      "id": "hoyo_de_cazador",
+      "name": "Hoyo de cazador",
+      "text": "Hojas puestas con demasiado cuidado sobre el sendero. Huele a trampa vieja.",
+      "difficulty": 25,
+      "fail_text": "El suelo se abre: un hoyo con estacas al fondo.",
+      "effects": {
+        "damage_random": 9,
+        "applies": {
+          "status": "sangrado",
+          "chance": 0.7,
+          "turns": 3,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "nube_de_esporas",
+      "name": "Nube de esporas",
+      "text": "Hongos amarillos por todo el tronco caído. Con cualquier roce sueltan polvo.",
+      "difficulty": 15,
+      "fail_text": "Una nube amarilla los envuelve a todos. Tos y ojos llorosos.",
+      "effects": {
+        "applies": {
+          "status": "veneno",
+          "chance": 0.6,
+          "turns": 3,
+          "value": 2,
+          "party": true
+        },
+        "stress_party": 3
+      }
+    },
+    {
+      "id": "lazo_escondido",
+      "name": "Lazo escondido",
+      "text": "Un lazo de cabuya escondido entre las raíces, de los que ponen para agarrar tepezcuintles.",
+      "difficulty": 20,
+      "fail_text": "El lazo se cierra en un tobillo y alguien queda colgado de cabeza.",
+      "effects": {
+        "damage_random": 4,
+        "debuff": {
+          "name": "Tobillo torcido",
+          "mods": {
+            "speed": -2,
+            "dodge": -4
+          },
+          "fights": 2
+        }
+      }
+    }
   ]
 }

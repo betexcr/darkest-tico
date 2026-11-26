@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-26 (54) — P6-10a: Bosque content (8 enemies, La Segua's phases and variants, hazards, 21 events)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-10 split into a (done), b (art, todo), c (balance + open, todo). P6-02 merged into main before it.
+- **Changed:** `data/enemies.json` (8 Bosque enemies; La Segua: PV 70, phases with mirror images, Veterano/Campeón `tiers`); `data/curios.json` (+15), `data/traps.json` (+6); `data/regions/bosque.json` (pools, elites, escort, 4 squads, 19 curios + 7 traps listed, 3 hazards); `combat_controller.gd` (mirror images keep only the basic attack; `_animate_enemy_changes` no longer crashes when enemies appear mid-action); `tests/test_regions.gd` (Bosque checks); doc 05 §1.2 roster table and §2 note; plan.
+- **Verified:** `validate_data.py` 0 errors; full `tests/run_tests.gd` 28 of 28; sims and bot without script errors (numbers in the plan's P6-10a entry).
+- **Not verified / risks:** new enemies have no art yet (P6-10b): on stage they fall back to the default look. La Segua at Campeón is far too hard (45.5% in the sim) and Veterano is on the hard side (88%): P6-10c. The Bosque stays `wip` (debug builds only).
+- **Decisions needed:** none.
+- **Next step:** P6-10b (Bosque art on CPU): `pip install --index-url https://download.pytorch.org/whl/cpu torch` + `pip install diffusers transformers accelerate`, add entries for the 8 enemies (portrait + `look`) to `tools/art_manifest.json` (copy the `enemy_segua_boss` entry's shape), run `tools/sd_local.py` then `tools/sd_sprites.py` in the background; or P6-10c first with the sim (`--region res://data/regions/bosque.json`).
+
 ## 2026-11-26 (53) — P6-02: region hazards
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-02 done; P6-06 merged into main before it.

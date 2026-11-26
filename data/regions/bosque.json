@@ -33,6 +33,17 @@
       }
     },
     {
+      "id": "sendero_que_confunde",
+      "name": "Sendero que confunde",
+      "text": "La niebla borra el sendero: caminan un buen rato y terminan donde estaban.",
+      "trigger": "move",
+      "chance_pct": 5,
+      "outcome": {
+        "send_back": true,
+        "stress_party": 3
+      }
+    },
+    {
       "id": "niebla_cerrada",
       "name": "Niebla cerrada",
       "text": "Con poca luz, la niebla tapa todo: a la fogata le llegan más visitas de noche.",
@@ -43,7 +54,7 @@
     }
   ],
   "generator": {
-    "_doc": "Bosque Nuboso Maldito (P6-01 frame; placeholder pools until P6-10: the Nuboso spectre with Sótanos ghosts, La Segua as boss, Sótanos curios/traps). Same generator as the Sótanos (scripts/domain/map_generator.gd).",
+    "_doc": "Bosque Nuboso Maldito (P6-10a, doc 05 §1.2): fog, stealth, dodge and stress. Same generator as the Sótanos (scripts/domain/map_generator.gd). squads: authored mixed squads for squad_template_pct of the regular fights. The Danta embrujada is large (two positions).",
     "rooms": [
       10,
       13
@@ -62,15 +73,19 @@
       "empty": 20
     },
     "enemy_pool": [
+      "tigrillo_bruma",
+      "mono_congo_poseido",
+      "sapo_quebrada",
+      "viejo_del_monte",
+      "brujo_de_la_montana",
+      "lenador_penado",
       "nuboso_spectre",
-      "espanto",
-      "susurro_aljibe",
-      "murcielago_bodega",
-      "duende_sotano"
+      "llorona_del_rio"
     ],
     "elite_pool": [
-      "nuboso_spectre",
-      "sombra_cuadrilla"
+      "danta_embrujada",
+      "llorona_del_rio",
+      "viejo_del_monte"
     ],
     "boss_enemy_id": "segua_boss",
     "reward_colones": [
@@ -124,47 +139,57 @@
       ]
     },
     "curios": [
-      "altar_roto",
-      "caja_abuelo",
-      "pozo_seco",
+      "nido_de_quetzal",
+      "ceiba_hueca",
+      "ojo_de_agua",
+      "cruz_de_camino",
+      "rancho_de_montanero",
+      "orquideas_raras",
+      "piedra_del_sapo",
+      "laguna_de_la_segua",
+      "campamento_de_cazadores",
+      "ofrenda_del_viejo",
+      "colmena_de_jicotes",
+      "rebozo_en_la_quebrada",
+      "caseta_del_guardaparques",
+      "fogon_de_lena",
+      "arbol_de_los_zapatos",
       "arbol_amarillo",
-      "radio_vieja",
-      "sacos_de_cafe",
-      "trapiche_viejo",
-      "tinajas_de_guaro",
-      "nicho_de_santos",
-      "ropero_de_la_abuela",
-      "libreta_de_deudas",
-      "carreta_pintada",
-      "pila_de_lavar",
-      "horno_de_lena",
-      "retrato_del_abuelo",
-      "campana_de_capilla",
-      "hongos_de_luz",
-      "grieta_que_susurra",
-      "tumba_del_perro",
-      "estante_de_botica",
       "caminante_perdido",
-      "mercado_clandestino",
-      "vision_del_abuelo",
-      "mesa_de_domino",
-      "llanto_en_el_pasillo",
-      "duendes_juguetones",
-      "procesion_de_animas"
+      "hongos_de_luz",
+      "duendes_juguetones"
     ],
     "traps": [
-      "vigas_inestables",
-      "alambre_de_pua",
-      "escalera_resbalosa",
-      "piso_hundido",
-      "pared_de_bahareque",
-      "corriente_negra",
-      "cepo_oxidado",
-      "barriles_sueltos",
-      "vapor_de_cava"
+      "puente_de_bejucos",
+      "barro_hondo",
+      "rama_podrida",
+      "hoyo_de_cazador",
+      "nube_de_esporas",
+      "lazo_escondido",
+      "raices_traicioneras"
     ],
-    "squad_template_pct": 0,
-    "squads": [],
+    "squad_template_pct": 50,
+    "squads": [
+      [
+        "nuboso_spectre",
+        "viejo_del_monte",
+        "llorona_del_rio"
+      ],
+      [
+        "tigrillo_bruma",
+        "sapo_quebrada",
+        "mono_congo_poseido"
+      ],
+      [
+        "lenador_penado",
+        "brujo_de_la_montana",
+        "mono_congo_poseido"
+      ],
+      [
+        "danta_embrujada",
+        "brujo_de_la_montana"
+      ]
+    ],
     "squad_size": [
       1,
       3

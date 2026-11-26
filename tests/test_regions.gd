@@ -66,6 +66,24 @@ func _run() -> void:
 	_check(boss_ok and gs.mission_nodes_index.size() >= 10, "its map has La Segua in the boss room (%d rooms)" % gs.mission_nodes_index.size())
 	_check(int(gs.mission_difficulty.get("level", 0)) == 2, "region level 1 adds to the difficulty (expedition level 2)")
 	gs.end_mission_abandon()
+	# P6-10a: Bosque maps use only Bosque enemies and events.
+	var bgen: Dictionary = gs.ExpeditionLoaderScript.load_region(BOSQUE)["generator"]
+	var allowed: Array = bgen["enemy_pool"] + bgen["elite_pool"] + [bgen["boss_enemy_id"]]
+	for sq in bgen["squads"]:
+		allowed += sq
+	var only_bosque: bool = true
+	for seed in 20:
+		var m: Dictionary = gs.MapGeneratorScript.generate(gs.ExpeditionLoaderScript.load_region(BOSQUE), seed)
+		for nd in m["nodes"]:
+			for id in nd.get("enemy_ids", [nd.get("enemy_id", "")] if nd.has("enemy_id") else []):
+				only_bosque = only_bosque and allowed.has(id)
+			if nd.has("curio_id"):
+				only_bosque = only_bosque and (bgen["curios"] as Array).has(nd["curio_id"])
+			if nd.has("trap_id"):
+				only_bosque = only_bosque and (bgen["traps"] as Array).has(nd["trap_id"])
+	_check(only_bosque, "20 Bosque maps hold only Bosque enemies, curios and traps")
+	_check((bgen["curios"] as Array).size() + (bgen["traps"] as Array).size() >= 20 and (bgen["enemy_pool"] as Array).size() >= 8, "the Bosque has >= 20 events and >= 8 regular enemies")
+	_check(gs.expand_packs(["danta_embrujada", "brujo_de_la_montana", "mono_congo_poseido"]) == ["danta_embrujada", "brujo_de_la_montana", "mono_congo_poseido"] and gs.enemy_size("danta_embrujada") == 2, "the large Danta plus two more fill the four positions")
 
 	print("Saves")
 	var d: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))

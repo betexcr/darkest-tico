@@ -731,7 +731,7 @@ func _check_phases(enemy: Dictionary) -> void:
 			_spawn_clones(enemy, ph["clones"])
 
 
-## Mirror images of `enemy`: same skills, `hp_pct` % of its PV; no drops, no phases; a hero who
+## Mirror images of `enemy`: its basic attack only, `hp_pct` % of its PV; no drops, no phases; a hero who
 ## hits one takes `stress_on_hit` stress (illusion punish). They vanish once no real enemy is left.
 func _spawn_clones(enemy: Dictionary, spec: Dictionary) -> void:
 	for _k in int(spec.get("count", 1)):
@@ -740,6 +740,8 @@ func _spawn_clones(enemy: Dictionary, spec: Dictionary) -> void:
 		var c: Dictionary = enemy.duplicate(true)
 		for key in ["phases", "_phases_done", "summon", "cycle", "reinforce", "flee_after", "statuses", "grudge_uid", "grudge_stacks"]:
 			c.erase(key)
+		# An image only copies the basic attack: the real one keeps its special tricks.
+		c["skills"] = (c.get("skills", []) as Array).filter(func(sk): return bool(sk.get("basic", false)))
 		c["illusion"] = true
 		c["illusion_stress"] = int(spec.get("stress_on_hit", 0))
 		c["hp_max"] = maxi(1, int(round(int(enemy.get("hp_max", 1)) * float(spec.get("hp_pct", 20)) / 100.0)))
@@ -1438,10 +1440,12 @@ func _enemy_snapshot() -> Array:
 func _animate_enemy_changes(before: Array) -> void:
 	for k in mini(enemies.size(), enemy_units.size()):
 		var e: Dictionary = enemies[k]
-		var lost: int = int(before[k]) - int(e.get("hp", 0))
+		# Enemies that appeared during the action (mirror images, summons) have no "before".
+		var was: int = int(before[k]) if k < before.size() else int(e.get("hp", 0))
+		var lost: int = was - int(e.get("hp", 0))
 		var crit: bool = bool(e.get("_crit_hit", false))
 		e.erase("_crit_hit")
-		if bool(e.get("dead", false)) and int(before[k]) > 0:
+		if bool(e.get("dead", false)) and was > 0:
 			await enemy_units[k].play_death(lost, crit)
 		elif lost > 0:
 			await enemy_units[k].play_hurt(lost, crit)

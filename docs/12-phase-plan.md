@@ -931,9 +931,24 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Done when: [x] data shape + validator; [x] Mayordomo variants; [x] sims per tier (Aprendiz 100 → 100, Veterano 100 → 99.8, Campeón 99.5 → 98.5%; 2000 boss fights each); [x] tests (`test_boss_tiers`)
 
 ### P6-10 · L · Bosque Nuboso Maldito
-- Status: `todo` · Depends: P6-01, P6-02, P6-03, P6-06 · Spec: `05` §1.2, §3.1
-- Region level 1. Boss *La Segua de Niebla* (stress charm, mirror-image phases). Stealthy, dodgy enemies and stress pressure; fog routes, poison flora, low-light ambushes. Rewards: quirk and ritual components, scouting value. Reuse the existing *La Segua* and *Nuboso spectre* data where they fit.
-- Done when: [ ] the region checklist at the top of P6
+- Status: split into P6-10a–c (2026-11-26: content, art, balance) · Depends: P6-01, P6-02, P6-03, P6-06 · Spec: `05` §1.2, §3.1
+- Region level 1. Boss *La Segua de Niebla* (stress charm, mirror-image phases). Stealthy, dodgy enemies and stress pressure; fog routes, poison flora, low-light ambushes. Rewards: quirk and ritual components, scouting value.
+
+### P6-10a · L · Bosque content
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-26) · Depends: P6-01, P6-02, P6-03, P6-06
+- 8 new enemies + the Espectro de niebla and La Segua (phases with mirror images, Veterano/Campeón variants), pools and squads, region hazards, ≥ 20 Bosque curios/traps, drops, provisions.
+- Done when: [x] roster in `data/enemies.json` (8 new; doc 05 §1.2 table); [x] La Segua phases + tiers (PV 85 → 70; mirror images copy only her basic attack); [x] pools, squads, hazards in `bosque.json`; [x] ≥ 20 Bosque events (15 curios + 6 traps new, 23 + 7 in the region lists); [x] sim and bot run clean (fixed a crash when mirror images appear mid-attack); [x] tests (`test_regions` Bosque checks)
+- Sim, boss fights in the Bosque, 2000 each, party at the region's level: Aprendiz (level 1, rank 2) 99.4%, Veterano (level 4, rank 3, gear) 88.0%, Campeón (level 6, rank 4, gear) 45.5% → P6-10c. Regular and elite fights 99.6–100%. Bot `--missions 8 --start-level 1 --start-ranks 2`: 7 of 8 cleared.
+
+### P6-10b · M · Bosque art (CPU)
+- Status: `todo` · Depends: P6-10a
+- Portraits and the 6 battle poses for the 8 new Bosque enemies (`tigrillo_bruma`, `danta_embrujada` (large: wider), `mono_congo_poseido`, `sapo_quebrada`, `llorona_del_rio`, `viejo_del_monte`, `brujo_de_la_montana`, `lenador_penado`), region exploration and combat backgrounds; `tools/art_manifest.json`, `tools/sd_local.py`, `tools/sd_sprites.py` (CPU: `pip install` torch + diffusers, model download), every PNG with metadata. Dungeon curios have no pictures (only town events do).
+- Done when: [ ] enemy portraits + sprites; [ ] backgrounds set in `bosque.json`; [ ] owner look
+
+### P6-10c · M · Bosque balance and opening
+- Status: `todo` · Depends: P6-10a, P6-10b
+- Sim and bot runs for parties arriving from the Sótanos (level 1–2 on Aprendiz; Veterano/Campeón tier starts at the region's level: 4 / 6), each tier inside its band; then remove `wip` from `data/regions.json` so the Bosque opens after the Mayordomo. Start point (P6-10a): La Segua's Campeón variant is far too hard (45.5% boss wins vs the Mayordomo's 98%); Veterano 88%.
+- Done when: [ ] bands met (report in `docs/playtests/`); [ ] `wip` removed; [ ] owner playtest
 
 ### P6-11 · L · Cañaverales Profanados
 - Status: `todo` · Depends: P6-10, P6-02 · Spec: `05` §1.3, §3.1
