@@ -1,0 +1,7 @@
+{
+  "id": "tigrillo_bruma_dead",
+  "derived_from": "tools/.sprite_cache/tigrillo_bruma/idle_raw.png (seed 5230)",
+  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+  "generator": "tools/sd_sprites.py",
+  "timestamp": "2026-11-26T19:41:23+00:00"
+}
