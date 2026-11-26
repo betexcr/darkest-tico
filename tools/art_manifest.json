@@ -4790,10 +4790,9 @@
         512,
         512
       ],
-      "seed": 2170,
-      "subject": "small skinny mantled howler monkey on all fours on a branch, long prehensile tail curled around the branch, shaggy black fur, bearded face with swollen throat, howling with mouth wide open, glowing red eyes, possessed, misty treetops at night",
-      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, gorilla, chimpanzee, ape, muscular, human body, abs, standing upright, sitting like a man",
-      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
+      "seed": 2132,
+      "subject": "possessed howler monkey hanging from a branch, beast, black fur, mouth open howling, glowing red eyes, holding a rotten guava, misty treetops, dark background",
+      "_doc": "owner pick 2026-11-26: the first draft (seed 2132)"
     },
     {
       "id": "enemy_sapo_quebrada",
