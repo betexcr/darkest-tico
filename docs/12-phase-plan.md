@@ -947,7 +947,7 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Result (2026-11-27): 8 portraits (each the owner's pick of 4; the Danta repainted from an owner-supplied tapir photo with a canny outline guide; the Leñador's axe painted in and his face paled by hand), 48 battle sprites (Danta on a wide 768×512 canvas, mirrored; humanoid sheets cleaned of neighbour-cell leftovers), exploration + combat backgrounds set in `bosque.json`. `sd_sprites.py` gained per-character `size`, `dead_rotate` and `mirror`. `tools/screens/bosque_screenshot.gd` shows the map and three fights. Open: the four beasts' idle/attack/cast/hurt/ailment barely differ (img2img from idle); redo attack/hurt/ailment with stronger prompts if the owner wants (about 25 min on CPU).
 
 ### P6-10c · M · Bosque balance and opening
-- Status: `todo` · Depends: P6-10a, P6-10b
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-27)` · Depends: P6-10a, P6-10b
 - Sim and bot runs for parties arriving from the Sótanos (level 1–2 on Aprendiz; Veterano/Campeón tier starts at the region's level: 4 / 6), each tier inside its band; then remove `wip` from `data/regions.json` so the Bosque opens after the Mayordomo. Start point (P6-10a): La Segua's Campeón variant is far too hard (45.5% boss wins vs the Mayordomo's 98%); Veterano 88%.
 - Done when: [ ] bands met (report in `docs/playtests/`); [ ] `wip` removed; [ ] owner playtest
 
