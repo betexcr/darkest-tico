@@ -1,15 +1,15 @@
 {
   "id": "enemy_llorona_del_rio",
-  "prompt": "dark fantasy painting, weeping ghost woman standing in a river, face hidden behind long wet black hair, soaked torn white dress, pale clawed hands reaching out, mist on the water, ghost, night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2143,
+  "prompt": "dark fantasy painting, weeping ghost woman knee-deep in a dark river, face completely hidden behind long wet black hair, ghostly pale bluish skin, long torn white dress, thin clawed hands reaching out, mist on the water, cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2213,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "512x512",
-  "post": null,
+  "post": "owner pick of 4 seeds (2210-2213)",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:36:17+00:00"
+  "timestamp": "2026-11-27T00:25:06+00:00"
 }

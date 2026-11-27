@@ -4812,7 +4812,7 @@
         512,
         512
       ],
-      "seed": 2210,
+      "seed": 2213,
       "subject": "weeping ghost woman knee-deep in a dark river, face completely hidden behind long wet black hair, ghostly pale bluish skin, long torn white dress, thin clawed hands reaching out, mist on the water, cloud forest night",
       "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup",
       "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
@@ -4848,7 +4848,7 @@
         512,
         512
       ],
-      "seed": 2220,
+      "seed": 2221,
       "subject": "pale grey ghost lumberjack, translucent skin, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe resting on his shoulder in full view, rope around his neck, felled stumps, foggy cloud forest night",
       "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, living man, healthy skin, axe cut off",
       "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
@@ -6042,7 +6042,7 @@
       },
       {
         "id": "llorona_del_rio",
-        "look": "weeping ghost woman, long wet black hair over her face, soaked white dress, pale hands",
+        "look": "weeping pale ghost woman, very long wet black hair, soaked black ruffled dress with bare shoulders, pale hands",
         "seed": 5234,
         "body": "humanoid",
         "weapon": "icy clawed hands",
@@ -6080,7 +6080,7 @@
       },
       {
         "id": "lenador_penado",
-        "look": "ghost lumberjack, gaunt grey skin, torn checked shirt and suspenders",
+        "look": "old ghost lumberjack, grey hair and beard, hollow eyes, checked shirt and suspenders, coiled rope over his shoulder",
         "seed": 5237,
         "body": "humanoid",
         "weapon": "a huge rusty axe",

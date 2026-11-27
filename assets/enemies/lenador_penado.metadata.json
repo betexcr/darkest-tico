@@ -1,15 +1,15 @@
 {
   "id": "enemy_lenador_penado",
-  "prompt": "dark fantasy painting, pale grey ghost lumberjack, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe held over his shoulder, tree stumps, foggy cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
-  "seed": 2146,
+  "prompt": "dark fantasy painting, pale grey ghost lumberjack, translucent skin, hollow glowing eyes, torn checked shirt and suspenders, huge rusty axe resting on his shoulder in full view, rope around his neck, felled stumps, foggy cloud forest night, dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, living man, healthy skin, axe cut off, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2221,
   "steps": 25,
   "cfg_scale": 7.0,
   "sampler": "DPM++ 2M Karras",
   "resolution": "512x512",
   "output_resolution": "512x512",
-  "post": null,
+  "post": "owner pick of 4 seeds (2220-2223)",
   "model": "Lykon/dreamshaper-8",
   "generator": "tools/sd_local.py (diffusers)",
-  "timestamp": "2026-11-26T18:42:21+00:00"
+  "timestamp": "2026-11-27T00:25:06+00:00"
 }
