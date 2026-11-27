@@ -947,9 +947,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Result (2026-11-27): 8 portraits (each the owner's pick of 4; the Danta repainted from an owner-supplied tapir photo with a canny outline guide; the Leñador's axe painted in and his face paled by hand), 48 battle sprites (Danta on a wide 768×512 canvas, mirrored; humanoid sheets cleaned of neighbour-cell leftovers), exploration + combat backgrounds set in `bosque.json`. `sd_sprites.py` gained per-character `size`, `dead_rotate` and `mirror`. `tools/screens/bosque_screenshot.gd` shows the map and three fights. Open: the four beasts' idle/attack/cast/hurt/ailment barely differ (img2img from idle); redo attack/hurt/ailment with stronger prompts if the owner wants (about 25 min on CPU).
 
 ### P6-10c · M · Bosque balance and opening
-- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-27)` · Depends: P6-10a, P6-10b
+- Status: `review` (owner playtest) · Depends: P6-10a, P6-10b
 - Sim and bot runs for parties arriving from the Sótanos (level 1–2 on Aprendiz; Veterano/Campeón tier starts at the region's level: 4 / 6), each tier inside its band; then remove `wip` from `data/regions.json` so the Bosque opens after the Mayordomo. Start point (P6-10a): La Segua's Campeón variant is far too hard (45.5% boss wins vs the Mayordomo's 98%); Veterano 88%.
-- Done when: [ ] bands met (report in `docs/playtests/`); [ ] `wip` removed; [ ] owner playtest
+- Done when: [x] bands met (report in `docs/playtests/`); [x] `wip` removed; [ ] owner playtest
+- Result (2026-11-27): La Segua splits into one mirror image at 60% PV (was two); boss sim Aprendiz 99.9% / Veterano 97.2% / Campeón 83.7% (was 99.4 / 88.0 / 45.5). Same bot runs on both regions (3 × 8 weeks, seeds 1–4): Bosque Veterano 93.8% (Sótanos 100%), Campeón 74.0% (71.9%), Aprendiz with parties at the level the Sótanos leave them 100% (95.8%); fresh level-0 parties 69.8% (87.5%), but they can't reach the Bosque. Bosque opened. Report: `docs/playtests/2026-11-27-p6-10c.md`.
 
 ### P6-11 · L · Cañaverales Profanados
 - Status: `todo` · Depends: P6-10, P6-02 · Spec: `05` §1.3, §3.1

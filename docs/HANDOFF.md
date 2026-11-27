@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-27 (56) — P6-10c: Bosque balance; the Bosque opens after the Mayordomo
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-10c review (owner playtest). P6-10b merged into main before it.
+- **Changed:** `data/enemies.json` (`segua_boss` phase at 60%: one mirror image, was two; her line now "¿cuál de las dos…?"); `data/regions.json` (Bosque no longer `wip`); `tests/test_regions.gd` (the Bosque shows in release builds); `docs/playtests/2026-11-27-p6-10c.md` (new); doc 09 paragraph; plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; full `tests/run_tests.gd` 28 of 28; boss sims (2000 each) and 40 bot runs (3 campaigns × 8 weeks, seeds 1–4, both regions), no script errors — numbers in the report.
+- **Not verified / risks:** measured against the Sótanos with the same bot runs, not with P5-12's long 24-week campaigns (hours on CPU). Fresh level-0 parties spiral on stress in the Bosque (69.8%), but they can't get there. Aprendiz parties coming from the Sótanos clear 100%: maybe a little easy. Not played by hand.
+- **Decisions needed:** none (the owner's playtest decides whether the Bosque's Aprendiz needs to be harder). Still open from P6-10b: redo the beasts' attack/hurt/ailment poses?
+- **Next step:** P6-10 is done but for the owner's playtest. Next region work: P6-11 (Cañaverales Profanados): claim it in `docs/12-phase-plan.md`, read doc 05 §1.3 and §3.1, copy the Bosque's shape (`data/regions/bosque.json`, its enemies in `data/enemies.json`, a row in `data/regions.json` with `wip: true`) and follow P6-10a's checklist.
+
 ## 2026-11-27 (55) — P6-10b: Bosque art (portraits, sprites, backgrounds; CPU)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-10b review (owner look in game). P6-10a merged into main before it.
