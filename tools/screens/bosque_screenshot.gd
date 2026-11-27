@@ -3,10 +3,11 @@ extends SceneTree
 ## Bosque art check (P6-10b): the exploration background and two fights with the new enemies.
 ##   xvfb-run -a godot --path . --rendering-driver opengl3 -s tools/screens/bosque_screenshot.gd -- <out_dir>
 ## Saves <out_dir>/bosque_map.png, bosque_fight_1.png (Danta, Mono, Tigrillo) and
-## bosque_fight_2.png (Sapos, Viejo, Brujo).
+## bosque_fight_2.png (Sapos, Viejo, Brujo) and bosque_fight_3.png (Llorona, Leñador, Sapos).
 
 const BOSQUE := "res://data/regions/bosque.json"
-const FIGHTS := [["danta_embrujada", "mono_congo_poseido", "tigrillo_bruma"], ["sapo_quebrada", "viejo_del_monte", "brujo_de_la_montana"]]
+const FIGHTS := [["danta_embrujada", "mono_congo_poseido", "tigrillo_bruma"], ["sapo_quebrada", "viejo_del_monte", "brujo_de_la_montana"],
+	["llorona_del_rio", "lenador_penado", "sapo_quebrada"]]
 
 
 func _initialize() -> void:

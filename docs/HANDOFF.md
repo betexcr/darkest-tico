@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-27 (55) — P6-10b: Bosque art (portraits, sprites, backgrounds; CPU)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-10b review (owner look in game). P6-10a merged into main before it.
+- **Changed:** `assets/enemies/` (8 Bosque portraits), `assets/sprites/<8 ids>/` (6 poses each), `assets/ui_bg/bosque_bg.png` + `bosque_combat_bg.png` (all with metadata); `data/regions/bosque.json` (`background`, `combat_background`); `tools/art_manifest.json` (portrait, sprite and background entries; notes on the hand-made steps); `tools/sd_sprites.py` (per-character `size`, `dead_rotate`, `mirror`); `tools/screens/bosque_screenshot.gd` (new); plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; `godot --import`; full `tests/run_tests.gd` 28 of 28; screenshots of the Bosque map and three fights with every new enemy (Danta two positions wide, Sapo pairs, humanoids at hero height).
+- **Not verified / risks:** two portraits can't be regenerated from the manifest alone: the Danta (img2img + canny from an owner-supplied tapir photo, not in the repo) and the Leñador (axe painted in, face paled by hand, two img2img passes); their metadata lists the steps. The four beasts' battle poses barely differ from idle (the game's motion effects carry them). CPU art was set up in a scratchpad venv (torch CPU + diffusers + rembg + controlnet_aux + opencv); not in the repo.
+- **Decisions needed:** redo the beasts' attack/hurt/ailment poses with stronger changes (Tigrillo, Danta, Mono, Sapo; ~25 min on CPU)?
+- **Next step:** P6-10c (Bosque balance + opening): `godot --headless --path . -s tools/sim_combat.gd -- --runs 2000 --node boss --region res://data/regions/bosque.json --difficulty campeon --level 6 --ranks 3 --gear` (45.5% at P6-10a; band 55–70); tune La Segua's `tiers.campeon` in `data/enemies.json`, then Veterano (88%, band 70–80) at `--level 4`; bot check, then remove `wip` from `data/regions.json`.
+
 ## 2026-11-26 (54) — P6-10a: Bosque content (8 enemies, La Segua's phases and variants, hazards, 21 events)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-10 split into a (done), b (art, todo), c (balance + open, todo). P6-02 merged into main before it.
