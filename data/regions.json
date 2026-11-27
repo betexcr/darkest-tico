@@ -14,6 +14,16 @@
           "sotanos"
         ]
       }
+    },
+    {
+      "id": "canaverales",
+      "path": "res://data/regions/canaverales.json",
+      "unlock": {
+        "cleared": [
+          "sotanos"
+        ]
+      },
+      "wip": true
     }
   ]
 }

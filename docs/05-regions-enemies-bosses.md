@@ -58,6 +58,24 @@ Squads: fog ghosts (Espectro, Viejo, Llorona), beasts (Tigrillo, Sapos, Mono), t
   - Good soft currency yields
   - Upgrade materials for smith and guild equivalents
 
+**Built (P6-11a, 2026-11-27): the Cañaverales roster** (`data/enemies.json`, `data/regions/canaverales.json`; art in P6-11b, balance in P6-11c; the region is still `wip`):
+
+| id | Name | Family | Ranks | Role and gimmick |
+|---|---|---|---|---|
+| `machetero_de_zafra` | Machetero de la zafra | Penados | 1–2 | Bleed bruiser; low cut that bleeds hard |
+| `quemador_de_cana` | Quemador de caña | Culto | 2–3 | Sets the cane on fire: party damage, smoke (−precisión); boss escort and summon |
+| `rata_canera` | Ratas cañeras | Bestias | 2–3 | Swarm in pairs; gnaws ankles: bleed and pulls a hero forward |
+| `zompopas_de_mayo` | Zompopas de mayo | Bestias | 1–2 | Swarm in pairs; the ground crawls: party −esquiva |
+| `boyero_maldito` | Boyero maldito | Penados | 2–3 | Midline disruption: pushes back, shuffles a hero, marks |
+| `espantapajaros_del_canal` | Espantapájaros del cañal | Espantos | 1–2 | Tank (prot 10, fuego ×2); straw roots a hero; party stress |
+| `buey_de_ceniza` | Buey de ceniza | Bestias | 1–2, **large** | Tank (prot 15); burning cart drags a hero to the back (elite) |
+| `rezadora_del_porton` | Rezadora del Portón | Culto | 3–4 | Party stress + Susto; ash blessing buffs the front three (elite) |
+| `tulevieja` | La Tulevieja | Espantos | 3–4 | Dodgy flyer: bleeding talons, pulls a hero 2 forward, bell that stresses everyone (elite) |
+| `monaguillo_porton`, `vigia_porton` | (Sótanos cultists) | Culto | 3–4, 2–3 | The cult runs these fields too |
+| `capataz_de_ceniza` | **El Capataz de Ceniza** | Penados | 1–2 | Apex boss (65 PV, prot 10): *¡A la fila!* pulls a back hero 2 forward; *Arreo de peones* shuffles one; *Quema del cañal* every 4th round (fire, party, bleed); whistles up a Quemador (max 2 a fight). Veterano: Chiva at 50% PV, burns every 3 rounds. Campeón: *Humo de trapiche* (party, −precisión/esquiva) replaces *Arreo* |
+
+Squads: the zafra crew (Machetero, Boyero, Quemador), the swarm (Zompopas + Ratas: four bodies), the cult rite (Espantapájaros, Vigía, Monaguillo), Buey + Quemador. Hazards: *Fuego en el cañal* (8%/move, party damage + stress), *Zanjas y surcos* (15% of fights start with the party shuffled), *Tótems del Portón* (20% of fights: enemies start with Chiva). Rewards: richer colones than the Bosque (440–600 a fight, objective 1300) and Reliquias from two curios (Trapiche de bueyes, Cruz de ceniza) until the Fragmentos (P6-05). Events: 15 new curios (oxcart, ox mill, sugar pan, ritual spiral, harvesters' graves, workers' barracks, molasses tank, ash cross, estate store, abandoned yoke, cult flag, irrigation ditch, hawk's nest, foreman's house, half-done burn) + 4 Sótanos ones; 6 new traps + 2 Sótanos ones.
+
 ## 1.4 Ruinas Volcanicas
 
 - Theme: lava-scarred ruins and obsidian ritual sites.

@@ -7,6 +7,7 @@ extends SceneTree
 const RegionProgressScript := preload("res://scripts/domain/region_progress.gd")
 const SOTANOS := "res://data/regions/sotanos.json"
 const BOSQUE := "res://data/regions/bosque.json"
+const CANAVERALES := "res://data/regions/canaverales.json"
 
 var _fail: int = 0
 
@@ -85,6 +86,32 @@ func _run() -> void:
 	_check(only_bosque, "20 Bosque maps hold only Bosque enemies, curios and traps")
 	_check((bgen["curios"] as Array).size() + (bgen["traps"] as Array).size() >= 20 and (bgen["enemy_pool"] as Array).size() >= 8, "the Bosque has >= 20 events and >= 8 regular enemies")
 	_check(gs.expand_packs(["danta_embrujada", "brujo_de_la_montana", "mono_congo_poseido"]) == ["danta_embrujada", "brujo_de_la_montana", "mono_congo_poseido"] and gs.enemy_size("danta_embrujada") == 2, "the large Danta plus two more fill the four positions")
+
+	print("Cañaverales on the generator (P6-11a)")
+	var cana_row: Dictionary = RegionProgressScript.entry_by_id("canaverales")
+	_check(not cana_row.is_empty() and RegionProgressScript.is_unlocked(cana_row, {"sotanos": {"aprendiz": 1}}), "the Cañaverales open once the Sótanos boss is beaten")
+	var cgen: Dictionary = gs.ExpeditionLoaderScript.load_region(CANAVERALES)["generator"]
+	var callowed: Array = cgen["enemy_pool"] + cgen["elite_pool"] + [cgen["boss_enemy_id"]] + cgen.get("boss_escort", [])
+	for sq in cgen["squads"]:
+		callowed += sq
+	var only_cana: bool = true
+	var boss_cana: bool = true
+	for seed in 20:
+		var m: Dictionary = gs.MapGeneratorScript.generate(gs.ExpeditionLoaderScript.load_region(CANAVERALES), seed)
+		for nd in m["nodes"]:
+			for id in nd.get("enemy_ids", [nd.get("enemy_id", "")] if nd.has("enemy_id") else []):
+				only_cana = only_cana and callowed.has(id)
+			if bool(nd.get("is_boss", false)):
+				boss_cana = boss_cana and str(nd.get("enemy_id", "")) == "capataz_de_ceniza"
+			if nd.has("curio_id"):
+				only_cana = only_cana and (cgen["curios"] as Array).has(nd["curio_id"])
+			if nd.has("trap_id"):
+				only_cana = only_cana and (cgen["traps"] as Array).has(nd["trap_id"])
+	_check(only_cana and boss_cana, "20 Cañaverales maps hold only Cañaverales enemies and events, with the Capataz in the boss room")
+	_check((cgen["curios"] as Array).size() + (cgen["traps"] as Array).size() >= 20 and (cgen["enemy_pool"] as Array).size() >= 8, "the Cañaverales have >= 20 events and >= 8 regular enemies")
+	_check(gs.expand_packs(["zompopas_de_mayo", "rata_canera"]).size() == 4, "a swarm squad (two packs) fills the four positions")
+	_check(gs.start_mission(CANAVERALES) and int(gs.mission_difficulty.get("level", 0)) == 2, "a Cañaverales expedition starts at region level 1")
+	gs.end_mission_abandon()
 
 	print("Saves")
 	var d: Dictionary = JSON.parse_string(JSON.stringify(gs.to_save_dict()))

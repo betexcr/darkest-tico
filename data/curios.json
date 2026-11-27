@@ -1033,6 +1033,593 @@
           }
         }
       ]
+    },
+    {
+      "id": "carreta_de_cana",
+      "name": "Carreta de caña volcada",
+      "text": "Una carreta de bueyes volcada en el surco, con la caña regada. Los bueyes no están; las coyundas siguen amarradas.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Debajo de la caña, la alforja del carretero.",
+          "colones": [
+            90,
+            170
+          ]
+        },
+        {
+          "weight": 35,
+          "text": "Hay tapas de dulce en el cajón de la carreta.",
+          "add_item": {
+            "id": "tapa_de_dulce",
+            "qty": 2
+          }
+        },
+        {
+          "weight": 25,
+          "text": "Al mover la caña sale un enjambre de zompopas.",
+          "ambush": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trapiche_de_bueyes",
+      "name": "Trapiche de bueyes",
+      "text": "Un trapiche de madera con el palo de la yunta todavía dando vueltas solo, despacito.",
+      "choices": [
+        {
+          "label": "Frenar el palo",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "El palo se detiene y el cañal se queda callado. Algo se rompió para bien.",
+              "stress_party": -8,
+              "reliquias": 1
+            },
+            {
+              "weight": 40,
+              "text": "El palo no para: les da un golpe en las costillas a dos.",
+              "damage_party": 2,
+              "stress_party": 4
+            }
+          ]
+        },
+        {
+          "label": "Exprimir unas cañas",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Sale guarapo fresco, dulce y frío.",
+              "add_item": {
+                "id": "guarapo",
+                "qty": 2
+              },
+              "stress_party": -3
+            },
+            {
+              "weight": 30,
+              "text": "El jugo sale negro y huele a quemado. Nadie lo prueba.",
+              "stress_party": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paila_de_dulce",
+      "name": "Paila de dulce",
+      "text": "Una paila de cobre sobre un fogón apagado, con miel de caña cuajada en el fondo.",
+      "choices": [
+        {
+          "label": "Raspar el dulce",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Raspan tapas de dulce para el camino.",
+              "add_item": {
+                "id": "tapa_de_dulce",
+                "qty": 2
+              },
+              "stress_party": -2
+            },
+            {
+              "weight": 30,
+              "text": "Debajo del dulce hay huesitos pequeños. Mejor no preguntar.",
+              "stress_party": 8
+            }
+          ]
+        },
+        {
+          "label": "Vender la paila de cobre",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "Un chatarrero del pueblo la compra sin preguntar.",
+              "colones": [
+                140,
+                240
+              ]
+            },
+            {
+              "weight": 40,
+              "text": "Pesa como un muerto y huele a ceniza. La dejan a medio camino.",
+              "stress_party": 3,
+              "light": -8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surco_ritual",
+      "name": "Surco en espiral",
+      "text": "La caña está cortada en una espiral perfecta, hasta el centro. En el centro hay una vela de sebo encendida.",
+      "key_item": "agua_bendita",
+      "key_text": "Echan agua bendita sobre la vela.",
+      "key_outcomes": [
+        {
+          "weight": 75,
+          "text": "La vela se apaga y la espiral se deshace: era un mapa del cañal.",
+          "reveal_map": true,
+          "stress_party": -6
+        },
+        {
+          "weight": 25,
+          "text": "La vela sigue prendida bajo el agua. Les tiemblan las manos un buen rato.",
+          "stress_party": 7
+        }
+      ],
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Caminan la espiral hasta el centro. Salen mareados pero con la vela.",
+          "add_item": {
+            "id": "candela_sebo",
+            "qty": 1
+          },
+          "stress_party": 4
+        },
+        {
+          "weight": 35,
+          "text": "Se marean: cuando salen, nadie está donde estaba.",
+          "shuffle_party": true,
+          "stress_party": 3
+        },
+        {
+          "weight": 25,
+          "text": "Desde el centro de la espiral se ven todos los caminos.",
+          "reveal_neighbors": true
+        }
+      ]
+    },
+    {
+      "id": "tumbas_de_cosecha",
+      "name": "Tumbas de los cosecheros",
+      "text": "Cruces de caña amarradas con mecate, una por surco. Algunas tienen nombre; la mayoría, solo un número.",
+      "choices": [
+        {
+          "label": "Rezar por ellos",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Rezan un padrenuestro por cada número. El viento se calma.",
+              "stress_party": -10
+            },
+            {
+              "weight": 30,
+              "text": "Una de las cruces tiene el nombre de alguien de la cuadrilla.",
+              "stress_random": 12
+            }
+          ]
+        },
+        {
+          "label": "Buscar en las tumbas",
+          "outcomes": [
+            {
+              "weight": 45,
+              "text": "Un frasco enterrado con el pago de una zafra que nadie cobró.",
+              "colones": [
+                120,
+                220
+              ],
+              "stress_party": 6
+            },
+            {
+              "weight": 55,
+              "text": "La tierra está floja. Algo abajo también está buscando.",
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "galera_de_peones",
+      "name": "Galera de peones",
+      "text": "Una galera larga con hamacas viejas y nombres escritos en la pared con carbón.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "En una tabla suelta, comida guardada.",
+          "add_item": {
+            "id": "gallo_pinto",
+            "qty": 3
+          }
+        },
+        {
+          "weight": 35,
+          "text": "Un botiquín de la finca, todavía útil.",
+          "heal_party": 5,
+          "add_item": {
+            "id": "venda_manta",
+            "qty": 1
+          }
+        },
+        {
+          "weight": 25,
+          "text": "Las hamacas se mecen solas. Nadie se queda a ver quién está acostado.",
+          "stress_party": 7
+        }
+      ]
+    },
+    {
+      "id": "tanque_de_melaza",
+      "name": "Tanque de melaza",
+      "text": "Un tanque oxidado lleno de melaza negra. Huele dulce y podrido a la vez.",
+      "choices": [
+        {
+          "label": "Llenar un balde para vender",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "En el pueblo la compran para el ganado.",
+              "colones": [
+                100,
+                180
+              ]
+            },
+            {
+              "weight": 40,
+              "text": "Alguien se resbala en la melaza y se cae de cabeza.",
+              "damage_random": 5,
+              "stress_random": 5
+            }
+          ]
+        },
+        {
+          "label": "Echarle un fósforo",
+          "item": "caja_de_fosforos",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "El tanque arde con una llama azul. Lo que vivía adentro no sale.",
+              "light": 20,
+              "stress_party": -6
+            },
+            {
+              "weight": 30,
+              "text": "La explosión los tira al suelo a todos.",
+              "damage_party": 3,
+              "light": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cruz_de_ceniza",
+      "name": "Cruz de ceniza",
+      "text": "Una cruz pintada con ceniza en el tronco de un guanacaste. Debajo, alguien dejó una ofrenda envuelta en hoja de plátano.",
+      "choices": [
+        {
+          "label": "Abrir la ofrenda",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "Adentro hay monedas de plata y un papel con un nombre tachado.",
+              "colones": [
+                80,
+                160
+              ],
+              "stress_party": 4
+            },
+            {
+              "weight": 50,
+              "text": "Adentro hay un corazón de gallina todavía tibio. Se les revuelve el estómago.",
+              "stress_party": 9
+            }
+          ]
+        },
+        {
+          "label": "Borrar la cruz",
+          "outcomes": [
+            {
+              "weight": 65,
+              "text": "La ceniza sale con agua. Algo se suelta del cañal.",
+              "stress_party": -6,
+              "reliquias": 1
+            },
+            {
+              "weight": 35,
+              "text": "La ceniza se les pega en las manos y no sale.",
+              "debuff": {
+                "name": "Manos de ceniza",
+                "mods": {
+                  "accuracy": -5
+                },
+                "fights": 2,
+                "party": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pulperia_del_ingenio",
+      "name": "Pulpería del ingenio",
+      "text": "La pulpería de la finca, con el rótulo caído. El libro de fiados sigue abierto en el mostrador.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Quedaban botellas de agua y unas tapas de dulce.",
+          "add_item": {
+            "id": "agua_pipa",
+            "qty": 2
+          }
+        },
+        {
+          "weight": 35,
+          "text": "En la gaveta, la plata de la última venta.",
+          "colones": [
+            70,
+            150
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "En el libro de fiados aparecen los nombres de la cuadrilla, con deudas que nunca hicieron.",
+          "stress_party": 8
+        }
+      ]
+    },
+    {
+      "id": "yunta_abandonada",
+      "name": "Yunta abandonada",
+      "text": "Dos bueyes bajo el yugo, quietos como estatuas en medio del surco. Respiran, pero no parpadean.",
+      "choices": [
+        {
+          "label": "Soltarles el yugo",
+          "outcomes": [
+            {
+              "weight": 55,
+              "text": "Los bueyes se echan a caminar despacio hacia el monte. Les dejan el camino abierto.",
+              "reveal_neighbors": true,
+              "stress_party": -5
+            },
+            {
+              "weight": 45,
+              "text": "Al soltarlos, voltean los ojos rojos hacia la cuadrilla.",
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Pasar despacito por el lado",
+          "outcomes": [
+            {
+              "weight": 80,
+              "text": "Pasan sin hacer ruido. Los bueyes no se mueven.",
+              "stress_party": -2
+            },
+            {
+              "weight": 20,
+              "text": "Uno de los bueyes los sigue con la mirada todo el rato.",
+              "stress_party": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bandera_del_culto",
+      "name": "Bandera del Portón",
+      "text": "Un palo de bambú clavado en el surco con un trapo negro amarrado. El trapo tiene bordado un portón.",
+      "choices": [
+        {
+          "label": "Quemar la bandera",
+          "item": "caja_de_fosforos",
+          "outcomes": [
+            {
+              "weight": 75,
+              "text": "El trapo arde rápido. Por un rato el cañal parece más pequeño.",
+              "stress_party": -8,
+              "buff": {
+                "name": "Bandera quemada",
+                "mods": {
+                  "dmg_pct": 10
+                },
+                "fights": 2,
+                "party": true
+              }
+            },
+            {
+              "weight": 25,
+              "text": "El humo dibuja un portón en el aire antes de deshacerse.",
+              "stress_party": 6
+            }
+          ]
+        },
+        {
+          "label": "Arrancarla y guardarla",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "Alguien en el pueblo pagará por saber quién la puso.",
+              "colones": [
+                90,
+                160
+              ]
+            },
+            {
+              "weight": 50,
+              "text": "La bandera se calienta en la mochila toda la noche.",
+              "stress_party": 5,
+              "light": -8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zanja_de_riego",
+      "name": "Zanja de riego",
+      "text": "Una zanja de riego con el agua quieta y negra. Algo brilla en el fondo.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Sacan una herramienta buena, perdida hace tiempo.",
+          "random_equipment": true
+        },
+        {
+          "weight": 35,
+          "text": "El agua está limpia más abajo. Se lavan la ceniza de la cara.",
+          "heal_party": 4,
+          "stress_party": -4
+        },
+        {
+          "weight": 25,
+          "text": "Al meter la mano, algo la agarra y jala.",
+          "damage_random": 5,
+          "stress_random": 6
+        }
+      ]
+    },
+    {
+      "id": "nido_de_gavilan",
+      "name": "Nido de gavilán",
+      "text": "Un gavilán grita desde un poste de cerca. A sus pies, un nido lleno de cosas brillantes.",
+      "choices": [
+        {
+          "label": "Espantarlo y revisar el nido",
+          "outcomes": [
+            {
+              "weight": 55,
+              "text": "Entre las ramitas hay anillos y monedas.",
+              "colones": [
+                80,
+                170
+              ]
+            },
+            {
+              "weight": 45,
+              "text": "El gavilán vuelve con otros. Picotazos para todos.",
+              "damage_party": 2,
+              "stress_party": 4
+            }
+          ]
+        },
+        {
+          "label": "Seguir su vuelo",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "El gavilán vuela directo hacia un claro: por ahí sigue el camino.",
+              "reveal_neighbors": true
+            },
+            {
+              "weight": 30,
+              "text": "Vuela en círculos sobre ellos, como marcando a la presa.",
+              "debuff": {
+                "name": "Marcados por el gavilán",
+                "mods": {
+                  "dodge": -4
+                },
+                "fights": 2,
+                "party": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "casa_del_mandador",
+      "name": "Casa del mandador",
+      "text": "Una casa de madera en alto, con corredor y mecedora. Desde aquí se ve todo el cañal.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "En el escritorio, el mapa de la finca con los lotes marcados.",
+          "reveal_map": true
+        },
+        {
+          "weight": 35,
+          "text": "Una caja fuerte vieja, abierta. Quedaba algo.",
+          "colones": [
+            100,
+            200
+          ]
+        },
+        {
+          "weight": 25,
+          "text": "La mecedora se mueve sola, y desde el corredor alguien chifla para llamar a la cuadrilla.",
+          "stress_party": 6,
+          "ambush": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quema_controlada",
+      "name": "Quema a medio hacer",
+      "text": "Un lote de caña a medio quemar. Las brasas todavía humean entre las cenizas.",
+      "choices": [
+        {
+          "label": "Cruzar rápido por la ceniza",
+          "outcomes": [
+            {
+              "weight": 55,
+              "text": "Pasan quemándose un poco los pies, pero ganan camino.",
+              "damage_party": 1,
+              "reveal_neighbors": true
+            },
+            {
+              "weight": 45,
+              "text": "Una ráfaga levanta las brasas otra vez.",
+              "damage_party": 3,
+              "stress_party": 4
+            }
+          ]
+        },
+        {
+          "label": "Dar la vuelta por el surco",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Cuesta más, pero llegan sin quemarse.",
+              "light": -10
+            },
+            {
+              "weight": 30,
+              "text": "El surco da vueltas y vueltas. Salen donde empezaron, cansados.",
+              "light": -15,
+              "stress_party": 4
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,201 @@
+{
+  "region_id": "canaverales",
+  "name": "Cañaverales Profanados",
+  "boss_name": "El Capataz de Ceniza",
+  "initial_light": 95,
+  "provisions": {
+    "short": {
+      "gallo_pinto": 11,
+      "candela_sebo": 3
+    },
+    "full": {
+      "gallo_pinto": 17,
+      "candela_sebo": 5
+    }
+  },
+  "light_decay_per_move": 9,
+  "objective_reward_colones": 1300,
+  "region_level": 1,
+  "hazards": [
+    {
+      "id": "fuego_en_el_canal",
+      "name": "Fuego en el cañal",
+      "text": "El viento cambia y el fuego de una quema salta al surco: pasan entre las llamas.",
+      "trigger": "move",
+      "chance_pct": 8,
+      "outcome": {
+        "damage_party": 2,
+        "stress_party": 2
+      }
+    },
+    {
+      "id": "zanjas_y_surcos",
+      "name": "Zanjas y surcos",
+      "text": "El terreno está lleno de zanjas: al empezar la pelea, nadie queda donde quería.",
+      "trigger": "fight_start",
+      "chance_pct": 15,
+      "outcome": {
+        "shuffle_party": true
+      }
+    },
+    {
+      "id": "totems_del_porton",
+      "name": "Tótems del Portón",
+      "text": "Un tótem de caña y huesos clavado en el surco: los del culto pelean con más ganas cerca de él.",
+      "trigger": "fight_start",
+      "chance_pct": 20,
+      "enemy_applies": {
+        "status": "chiva",
+        "turns": 3,
+        "mods": {
+          "dmg_pct": 10
+        }
+      }
+    }
+  ],
+  "generator": {
+    "_doc": "Cañaverales Profanados (P6-11a, doc 05 §1.3): sugarcane fields turned into the cult's ritual grids. Swarms (two packs), bleed, midline disruption (push / pull / shuffle), fire. Same generator as the Sótanos (scripts/domain/map_generator.gd). The Buey de ceniza is large (two positions).",
+    "rooms": [
+      10,
+      13
+    ],
+    "min_boss_distance": 5,
+    "extra_links": 1,
+    "branch_newest_chance": 0.6,
+    "max_exits": 3,
+    "camps": 1,
+    "elites": 1,
+    "min_combat": 3,
+    "weights": {
+      "combat": 40,
+      "trap": 15,
+      "curio": 25,
+      "empty": 20
+    },
+    "enemy_pool": [
+      "machetero_de_zafra",
+      "quemador_de_cana",
+      "rata_canera",
+      "zompopas_de_mayo",
+      "boyero_maldito",
+      "espantapajaros_del_canal",
+      "monaguillo_porton",
+      "vigia_porton"
+    ],
+    "elite_pool": [
+      "buey_de_ceniza",
+      "rezadora_del_porton",
+      "tulevieja"
+    ],
+    "boss_enemy_id": "capataz_de_ceniza",
+    "reward_colones": [
+      440,
+      600
+    ],
+    "elite_reward_colones": [
+      700,
+      880
+    ],
+    "boss_reward_colones": 1300,
+    "labels": {
+      "safe": [
+        "Camino de carretas"
+      ],
+      "combat": [
+        "Surco quemado",
+        "Lote de caña brava",
+        "Callejón de caña",
+        "Zanja de riego",
+        "Patio del trapiche",
+        "Cerca de alambre"
+      ],
+      "elite": [
+        "Ruedo de la yunta",
+        "Altar del cañal"
+      ],
+      "trap": [
+        "Ceniza caliente",
+        "Acequia",
+        "Caña en punta",
+        "Barranco"
+      ],
+      "curio": [
+        "Carreta volcada",
+        "Trapiche",
+        "Paila",
+        "Espiral en la caña",
+        "Galera"
+      ],
+      "camp": [
+        "Fogata del ingenio"
+      ],
+      "empty": [
+        "Surco vacío",
+        "Humo de quema",
+        "Cañal callado"
+      ],
+      "boss": [
+        "Casa de máquinas del ingenio"
+      ]
+    },
+    "curios": [
+      "carreta_de_cana",
+      "trapiche_de_bueyes",
+      "paila_de_dulce",
+      "surco_ritual",
+      "tumbas_de_cosecha",
+      "galera_de_peones",
+      "tanque_de_melaza",
+      "cruz_de_ceniza",
+      "pulperia_del_ingenio",
+      "yunta_abandonada",
+      "bandera_del_culto",
+      "zanja_de_riego",
+      "nido_de_gavilan",
+      "casa_del_mandador",
+      "quema_controlada",
+      "trapiche_viejo",
+      "carreta_pintada",
+      "caminante_perdido",
+      "procesion_de_animas"
+    ],
+    "traps": [
+      "brasas_ocultas",
+      "cana_cortada_en_punta",
+      "acequia_desbordada",
+      "trampa_del_culto",
+      "nido_de_avispas",
+      "rueda_de_carreta",
+      "alambre_de_pua",
+      "cepo_oxidado"
+    ],
+    "squad_template_pct": 50,
+    "squads": [
+      [
+        "machetero_de_zafra",
+        "boyero_maldito",
+        "quemador_de_cana"
+      ],
+      [
+        "zompopas_de_mayo",
+        "rata_canera"
+      ],
+      [
+        "espantapajaros_del_canal",
+        "vigia_porton",
+        "monaguillo_porton"
+      ],
+      [
+        "buey_de_ceniza",
+        "quemador_de_cana"
+      ]
+    ],
+    "squad_size": [
+      1,
+      3
+    ],
+    "boss_escort": [
+      "quemador_de_cana"
+    ]
+  }
+}

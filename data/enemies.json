@@ -2468,6 +2468,1104 @@
           "chance": 0.05
         }
       ]
+    },
+    "machetero_de_zafra": {
+      "id": "machetero_de_zafra",
+      "name": "Machetero de la zafra",
+      "family": "penados",
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 40,
+      "speed": 5,
+      "dodge": 4,
+      "accuracy": 8,
+      "prot": 5,
+      "skills": [
+        {
+          "id": "machetazo_de_zafra",
+          "name": "Machetazo de zafra",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            4,
+            8
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Corta como si la caña no se acabara nunca."
+        },
+        {
+          "id": "corte_al_ras",
+          "name": "Corte al ras",
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 25,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.8,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "Un corte bajo, a los tobillos: sangra y cuesta moverse."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.25,
+        "fuego": 1.25,
+        "tierra": 0.75
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 40,
+        "sangrado": 30,
+        "salado": 30,
+        "movimiento": 50
+      },
+      "drops": [
+        {
+          "item": "machete_de_zafra",
+          "chance": 0.05
+        },
+        {
+          "item": "venda_manta",
+          "chance": 0.1
+        },
+        {
+          "item": "guarapo",
+          "chance": 0.07
+        }
+      ]
+    },
+    "quemador_de_cana": {
+      "id": "quemador_de_cana",
+      "name": "Quemador de caña",
+      "family": "culto",
+      "ranks": [
+        2,
+        3
+      ],
+      "hp_max": 30,
+      "speed": 6,
+      "dodge": 6,
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "tizonazo",
+          "name": "Tizonazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 50,
+          "description": "Un tizón encendido en la cara."
+        },
+        {
+          "id": "prende_el_canal",
+          "name": "Prende el cañal",
+          "type": "magical",
+          "damage": [
+            2,
+            5
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 25,
+          "element": "fuego",
+          "applies": {
+            "status": "salado",
+            "chance": 0.35,
+            "turns": 2,
+            "mods": {
+              "accuracy": -5
+            }
+          },
+          "description": "Le mete fuego a la caña seca: el humo y las brasas les caen a todos."
+        }
+      ],
+      "elements": {
+        "agua": 1.5,
+        "hielo": 1.25,
+        "fuego": 0.25
+      },
+      "status_resist": {
+        "aturdido": 20,
+        "veneno": 40,
+        "sangrado": 30,
+        "salado": 40,
+        "movimiento": 30
+      },
+      "drops": [
+        {
+          "item": "caja_de_fosforos",
+          "chance": 0.08
+        },
+        {
+          "item": "antorcha_de_canfin",
+          "chance": 0.05
+        },
+        {
+          "item": "tizon_de_fogon",
+          "chance": 0.05
+        }
+      ]
+    },
+    "rata_canera": {
+      "id": "rata_canera",
+      "name": "Ratas cañeras",
+      "family": "bestias",
+      "ranks": [
+        2,
+        3
+      ],
+      "pack": 2,
+      "hp_max": 16,
+      "speed": 7,
+      "dodge": 9,
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "mordisco_de_canal",
+          "name": "Mordisco de cañal",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.3,
+            "turns": 2,
+            "value": 1
+          },
+          "description": "Salen de entre la caña y muerden donde pueden."
+        },
+        {
+          "id": "roer_el_tobillo",
+          "name": "Roer el tobillo",
+          "type": "physical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "move_target": -1,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.6,
+            "turns": 2,
+            "value": 2
+          },
+          "description": "Se meten por los pies de la cuadrilla: el que estaba atrás termina adelante."
+        }
+      ],
+      "elements": {
+        "fuego": 1.5,
+        "sagrado": 1.0,
+        "tierra": 0.75
+      },
+      "status_resist": {
+        "aturdido": 10,
+        "veneno": 50,
+        "sangrado": 20,
+        "salado": 20,
+        "movimiento": 10
+      },
+      "drops": [
+        {
+          "item": "tapa_de_dulce",
+          "chance": 0.08
+        },
+        {
+          "item": "sal_gruesa",
+          "chance": 0.04
+        },
+        {
+          "item": "venda_manta",
+          "chance": 0.03
+        }
+      ]
+    },
+    "zompopas_de_mayo": {
+      "id": "zompopas_de_mayo",
+      "name": "Zompopas de mayo",
+      "family": "bestias",
+      "ranks": [
+        1,
+        2
+      ],
+      "pack": 2,
+      "hp_max": 14,
+      "speed": 6,
+      "dodge": 10,
+      "accuracy": 7,
+      "skills": [
+        {
+          "id": "piquete_de_zompopa",
+          "name": "Piquete de zompopa",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 2,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.3,
+            "turns": 2,
+            "value": 1
+          },
+          "description": "Miles de patitas y unas tenazas que no sueltan."
+        },
+        {
+          "id": "hormiguero_vivo",
+          "name": "Hormiguero vivo",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 20,
+          "element": "tierra",
+          "applies": {
+            "status": "salado",
+            "chance": 0.4,
+            "turns": 2,
+            "mods": {
+              "dodge": -5
+            }
+          },
+          "description": "El suelo entero se mueve: las zompopas se meten en la ropa de todos."
+        }
+      ],
+      "elements": {
+        "fuego": 1.5,
+        "agua": 1.25,
+        "tierra": 0.5
+      },
+      "status_resist": {
+        "aturdido": 30,
+        "veneno": 60,
+        "sangrado": 60,
+        "salado": 20,
+        "movimiento": 20
+      },
+      "drops": [
+        {
+          "item": "chile_panameno",
+          "chance": 0.07
+        },
+        {
+          "item": "agua_dulce",
+          "chance": 0.05
+        },
+        {
+          "item": "sal_de_puntarenas",
+          "chance": 0.03
+        }
+      ]
+    },
+    "boyero_maldito": {
+      "id": "boyero_maldito",
+      "name": "Boyero maldito",
+      "family": "penados",
+      "ranks": [
+        2,
+        3
+      ],
+      "hp_max": 38,
+      "speed": 5,
+      "dodge": 5,
+      "accuracy": 8,
+      "skills": [
+        {
+          "id": "chuzazo",
+          "name": "Chuzazo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 50,
+          "move_target": 1,
+          "description": "La punta del chuzo, como a los bueyes que no avanzan."
+        },
+        {
+          "id": "arre_buey",
+          "name": "¡Arre, buey!",
+          "type": "physical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "shuffle_target": true,
+          "description": "Un grito y un chuzazo: la cuadrilla se desordena como una yunta suelta."
+        },
+        {
+          "id": "la_yunta_no_espera",
+          "name": "La yunta no espera",
+          "type": "magical",
+          "damage": [
+            0,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 15,
+          "element": "oscuridad",
+          "applies": {
+            "status": "fichado",
+            "chance": 0.9,
+            "turns": 3
+          },
+          "description": "Le cuenta todo lo que falta por jalar: queda fichado."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.5,
+        "fuego": 1.25,
+        "oscuridad": 0.75
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 40,
+        "sangrado": 40,
+        "salado": 30,
+        "movimiento": 60
+      },
+      "drops": [
+        {
+          "item": "chuzo_de_boyero",
+          "chance": 0.05
+        },
+        {
+          "item": "capote_de_boyero",
+          "chance": 0.05
+        },
+        {
+          "item": "cafe_chorreado",
+          "chance": 0.1
+        }
+      ]
+    },
+    "espantapajaros_del_canal": {
+      "id": "espantapajaros_del_canal",
+      "name": "Espantapájaros del cañal",
+      "family": "espantos",
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 36,
+      "speed": 4,
+      "dodge": 6,
+      "accuracy": 8,
+      "prot": 10,
+      "skills": [
+        {
+          "id": "brazos_de_palo",
+          "name": "Brazos de palo",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "description": "Dos palos cruzados que pegan como garrote."
+        },
+        {
+          "id": "paja_que_amarra",
+          "name": "Paja que amarra",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "element": "tierra",
+          "applies": {
+            "status": "amarrado",
+            "chance": 0.7,
+            "turns": 2
+          },
+          "description": "La paja se le enreda en las piernas: queda amarrado."
+        },
+        {
+          "id": "grito_del_canal",
+          "name": "Grito del cañal",
+          "type": "magical",
+          "damage": [
+            1,
+            2
+          ],
+          "accuracy": 0,
+          "stress": 7,
+          "target": "party",
+          "weight": 15,
+          "element": "viento",
+          "description": "Un grito seco que corre por todo el cañal y no se apaga."
+        }
+      ],
+      "elements": {
+        "fuego": 2.0,
+        "sagrado": 1.25,
+        "viento": 0.75
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 90,
+        "sangrado": 90,
+        "salado": 40,
+        "movimiento": 40
+      },
+      "drops": [
+        {
+          "item": "sombrero_de_lona",
+          "chance": 0.06
+        },
+        {
+          "item": "saco_de_gangoche",
+          "chance": 0.06
+        },
+        {
+          "item": "ramo_ruda",
+          "chance": 0.08
+        }
+      ]
+    },
+    "buey_de_ceniza": {
+      "id": "buey_de_ceniza",
+      "name": "Buey de ceniza",
+      "family": "bestias",
+      "size": 2,
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 80,
+      "speed": 3,
+      "dodge": 2,
+      "accuracy": 7,
+      "prot": 15,
+      "skills": [
+        {
+          "id": "cornada",
+          "name": "Cornada",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            6,
+            10
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "description": "Dos cuernos negros de hollín."
+        },
+        {
+          "id": "arrastre_de_carreta",
+          "name": "Arrastre de carreta",
+          "type": "physical",
+          "damage": [
+            5,
+            9
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 25,
+          "move_target": 3,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.5,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Arranca jalando una carreta en llamas: al que agarra lo tira hasta atrás."
+        },
+        {
+          "id": "bufido_de_ceniza",
+          "name": "Bufido de ceniza",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 15,
+          "element": "fuego",
+          "applies": {
+            "status": "salado",
+            "chance": 0.5,
+            "turns": 2,
+            "mods": {
+              "accuracy": -6
+            }
+          },
+          "description": "Resopla ceniza caliente sobre todos: lagrimean y no atinan."
+        }
+      ],
+      "elements": {
+        "agua": 1.5,
+        "rayo": 1.25,
+        "fuego": 0.25,
+        "tierra": 0.75
+      },
+      "status_resist": {
+        "aturdido": 60,
+        "veneno": 40,
+        "sangrado": 30,
+        "salado": 30,
+        "movimiento": 80
+      },
+      "drops": [
+        {
+          "item": "chicharron_de_olla",
+          "chance": 0.15
+        },
+        {
+          "item": "coraza_de_carreta",
+          "chance": 0.1
+        },
+        {
+          "item": "mazo_de_trapiche",
+          "chance": 0.1
+        }
+      ]
+    },
+    "rezadora_del_porton": {
+      "id": "rezadora_del_porton",
+      "name": "Rezadora del Portón",
+      "family": "culto",
+      "ranks": [
+        3,
+        4
+      ],
+      "hp_max": 42,
+      "speed": 5,
+      "dodge": 7,
+      "accuracy": 9,
+      "crit": 6,
+      "skills": [
+        {
+          "id": "rosarazo",
+          "name": "Rosarazo",
+          "basic": true,
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 50,
+          "element": "oscuridad",
+          "description": "Un rosario de semillas negras, como un chilillo."
+        },
+        {
+          "id": "novena_al_porton",
+          "name": "Novena al Portón",
+          "type": "magical",
+          "damage": [
+            2,
+            4
+          ],
+          "accuracy": 0,
+          "stress": 9,
+          "target": "party",
+          "weight": 25,
+          "element": "oscuridad",
+          "applies": {
+            "status": "susto",
+            "chance": 0.35,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "Reza en voz alta por las almas de la cuadrilla, y no para nada bueno."
+        },
+        {
+          "id": "bendicion_de_ceniza",
+          "name": "Bendición de ceniza",
+          "type": "magical",
+          "target": "allies",
+          "ally_ranks": [
+            1,
+            2,
+            3
+          ],
+          "weight": 25,
+          "applies": {
+            "status": "chiva",
+            "chance": 1.0,
+            "turns": 3,
+            "mods": {
+              "dmg_pct": 15,
+              "accuracy": 5
+            }
+          },
+          "description": "Les marca la frente con ceniza a los de adelante: pegan con más ganas."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.5,
+        "rayo": 1.25,
+        "oscuridad": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 50,
+        "sangrado": 40,
+        "salado": 50,
+        "movimiento": 30
+      },
+      "drops": [
+        {
+          "item": "rosario_de_semillas",
+          "chance": 0.15
+        },
+        {
+          "item": "manto_de_cofradia",
+          "chance": 0.1
+        },
+        {
+          "item": "vela_de_la_negrita",
+          "chance": 0.1
+        }
+      ]
+    },
+    "tulevieja": {
+      "id": "tulevieja",
+      "name": "La Tulevieja",
+      "family": "espantos",
+      "ranks": [
+        3,
+        4
+      ],
+      "hp_max": 44,
+      "speed": 7,
+      "dodge": 11,
+      "accuracy": 9,
+      "crit": 6,
+      "skills": [
+        {
+          "id": "garra_de_pajaro",
+          "name": "Garra de pájaro",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            3,
+            7
+          ],
+          "accuracy": 0,
+          "stress": 3,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Baja volando entre la caña con las garras por delante."
+        },
+        {
+          "id": "sombrerazo_de_palma",
+          "name": "Sombrerazo de palma",
+          "type": "physical",
+          "damage": [
+            2,
+            5
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 20,
+          "move_target": -2,
+          "description": "Pasa rozando con el sombrero enorme: el que estaba atrás termina adelante."
+        },
+        {
+          "id": "cascabeleo",
+          "name": "Cascabeleo",
+          "type": "magical",
+          "damage": [
+            1,
+            3
+          ],
+          "accuracy": 0,
+          "stress": 10,
+          "target": "party",
+          "weight": 25,
+          "element": "viento",
+          "applies": {
+            "status": "susto",
+            "chance": 0.3,
+            "turns": 3,
+            "value": 3
+          },
+          "description": "Un cascabel que suena en todo el cañal a la vez. Nadie sabe de dónde viene."
+        }
+      ],
+      "elements": {
+        "sagrado": 1.5,
+        "rayo": 1.25,
+        "viento": 0.5
+      },
+      "status_resist": {
+        "aturdido": 40,
+        "veneno": 60,
+        "sangrado": 50,
+        "salado": 40,
+        "movimiento": 60
+      },
+      "drops": [
+        {
+          "item": "medalla_de_la_romeria",
+          "chance": 0.1
+        },
+        {
+          "item": "agua_florida",
+          "chance": 0.15
+        },
+        {
+          "item": "estampita_de_san_isidro",
+          "chance": 0.1
+        }
+      ]
+    },
+    "capataz_de_ceniza": {
+      "id": "capataz_de_ceniza",
+      "name": "El Capataz de Ceniza",
+      "family": "penados",
+      "ranks": [
+        1,
+        2
+      ],
+      "hp_max": 65,
+      "speed": 6,
+      "dodge": 6,
+      "accuracy": 10,
+      "crit": 8,
+      "prot": 10,
+      "summon": {
+        "id": "quemador_de_cana",
+        "every": 4,
+        "max_alive": 1,
+        "max_total": 2,
+        "text": "chifla y sale un quemador de entre la caña"
+      },
+      "cycle": {
+        "skill": "quema_del_canal",
+        "every": 4
+      },
+      "tiers": {
+        "veterano": {
+          "text": "El Capataz no deja que nadie se le escape del surco.",
+          "phases": [
+            {
+              "at_hp_pct": 50,
+              "text": "El Capataz se sacude la ceniza: «¡Más rápido, que se quema la zafra!».",
+              "self_applies": {
+                "status": "chiva",
+                "turns": 3,
+                "mods": {
+                  "dmg_pct": 15
+                }
+              }
+            }
+          ],
+          "cycle": {
+            "every": 3
+          }
+        },
+        "campeon": {
+          "text": "Toda la zafra arde: el humo del trapiche no deja ver.",
+          "replace_skills": {
+            "arreo_de_peones": {
+              "id": "humo_de_trapiche",
+              "name": "Humo de trapiche",
+              "type": "magical",
+              "damage": [
+                2,
+                5
+              ],
+              "accuracy": 0,
+              "stress": 3,
+              "target": "party",
+              "weight": 25,
+              "element": "fuego",
+              "applies": {
+                "status": "salado",
+                "chance": 0.5,
+                "turns": 2,
+                "mods": {
+                  "accuracy": -6,
+                  "dodge": -4
+                }
+              },
+              "description": "El humo negro del trapiche se mete en el pecho de todos: no ven ni atinan."
+            }
+          }
+        }
+      },
+      "skills": [
+        {
+          "id": "rejazo_de_ceniza",
+          "name": "Rejazo de ceniza",
+          "basic": true,
+          "type": "physical",
+          "damage": [
+            7,
+            11
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2
+          ],
+          "weight": 50,
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.4,
+            "turns": 3,
+            "value": 2
+          },
+          "description": "Un rejo de cuero lleno de ceniza caliente."
+        },
+        {
+          "id": "a_la_fila",
+          "name": "¡A la fila!",
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 6,
+          "target": "single",
+          "target_ranks": [
+            2,
+            3,
+            4
+          ],
+          "weight": 25,
+          "move_target": -2,
+          "applies": {
+            "status": "fichado",
+            "chance": 0.7,
+            "turns": 2
+          },
+          "description": "Agarra al que está más atrás y lo pone a trabajar de primero."
+        },
+        {
+          "id": "arreo_de_peones",
+          "name": "Arreo de peones",
+          "type": "physical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 5,
+          "target": "single",
+          "target_ranks": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weight": 20,
+          "shuffle_target": true,
+          "description": "Arrea a la cuadrilla como peones: nadie queda donde estaba."
+        },
+        {
+          "id": "quema_del_canal",
+          "name": "Quema del cañal",
+          "type": "magical",
+          "damage": [
+            3,
+            6
+          ],
+          "accuracy": 0,
+          "stress": 4,
+          "target": "party",
+          "weight": 15,
+          "element": "fuego",
+          "applies": {
+            "status": "sangrado",
+            "chance": 0.5,
+            "turns": 2,
+            "value": 2
+          },
+          "description": "Prende el cañal alrededor de todos: fuego, humo y cortadas de la caña quemada."
+        }
+      ],
+      "elements": {
+        "agua": 1.5,
+        "sagrado": 1.25,
+        "fuego": 0.25,
+        "oscuridad": 0.75
+      },
+      "status_resist": {
+        "aturdido": 60,
+        "veneno": 40,
+        "sangrado": 40,
+        "salado": 40,
+        "movimiento": 70
+      },
+      "drops": [
+        {
+          "item": "rejo_de_cuero",
+          "chance": 0.25
+        },
+        {
+          "item": "faja_de_sabanero",
+          "chance": 0.2
+        },
+        {
+          "item": "machete_de_zafra",
+          "chance": 0.25
+        }
+      ]
     }
   }
 }

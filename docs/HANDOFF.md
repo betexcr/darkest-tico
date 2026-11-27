@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-27 (57) — P6-11a: Cañaverales content (9 enemies, El Capataz de Ceniza, hazards, 21 events)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-11 split into a (done), b (art, todo), c (balance + open, todo). P6-10c merged into main before it.
+- **Changed:** `data/enemies.json` (9 Cañaverales enemies + El Capataz de Ceniza with summon, cycle, Veterano/Campeón `tiers`); `data/curios.json` (+15, two give Reliquias), `data/traps.json` (+6); `data/regions/canaverales.json` (new: pools, elites, escort, 4 squads, 19 curios + 8 traps, 3 hazards); `data/regions.json` (Cañaverales row, `wip`, opens after the Sótanos); `tests/test_regions.gd` (Cañaverales checks); doc 05 §1.3 roster table; plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; full `tests/run_tests.gd` 28 of 28; sims (2000 each, levels 1/4/6) regular/elite 99–100%, the Capataz 98.8 / 96.5 / 74.0%; bot `--missions 8 --start-level 1 --start-ranks 2 --region …canaverales.json` seeds 1–2: 7 of 8 each, no script errors.
+- **Not verified / risks:** no art yet (new enemies fall back to the default look; the region uses the Sótanos backgrounds). Campeón boss 74% in the sim (La Segua 83.7%): P6-11c with the P6-10c method. Not played by hand.
+- **Decisions needed:** none. Still open from P6-10b: redo the beasts' attack/hurt/ailment poses?
+- **Next step:** P6-11b (Cañaverales art on CPU): recreate the scratchpad venv (`python3 -m venv sdenv`; `pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision`; `pip install diffusers transformers accelerate safetensors pillow "rembg[cpu]" controlnet_aux opencv-python-headless`; if `torchvision::nms` errors, `pip install --force-reinstall --no-deps --index-url https://download.pytorch.org/whl/cpu torchvision`), add `enemy_<id>` portrait entries and `sprites.characters` entries for the 10 ids in `tools/art_manifest.json` (copy the Bosque ones; the Buey needs `size: [768, 512]`), run `tools/sd_local.py --only …` then `tools/sd_sprites.py --only …` in the background and show the owner each picture.
+
 ## 2026-11-27 (56) — P6-10c: Bosque balance; the Bosque opens after the Mayordomo
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-10c review (owner playtest). P6-10b merged into main before it.

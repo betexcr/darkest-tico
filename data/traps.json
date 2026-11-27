@@ -158,6 +158,94 @@
           "fights": 2
         }
       }
+    },
+    {
+      "id": "brasas_ocultas",
+      "name": "Brasas ocultas",
+      "text": "La ceniza del cañal parece fría, pero debajo todavía hay brasas.",
+      "difficulty": 15,
+      "fail_text": "Pisan las brasas: se queman los pies y las botas.",
+      "effects": {
+        "damage_random": 6,
+        "debuff": {
+          "name": "Pies quemados",
+          "mods": {
+            "speed": -2
+          },
+          "fights": 2
+        }
+      }
+    },
+    {
+      "id": "cana_cortada_en_punta",
+      "name": "Caña en punta",
+      "text": "Tallos de caña cortados en diagonal, como estacas, escondidos entre la hojarasca.",
+      "difficulty": 20,
+      "fail_text": "Alguien cae encima de las puntas.",
+      "effects": {
+        "damage_random": 7,
+        "applies": {
+          "status": "sangrado",
+          "chance": 0.8,
+          "turns": 3,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "acequia_desbordada",
+      "name": "Acequia desbordada",
+      "text": "El agua de la acequia corre por encima del camino, rápida y con barro.",
+      "difficulty": 15,
+      "fail_text": "La corriente los tumba y los arrastra unos metros: nadie queda en su lugar.",
+      "effects": {
+        "shuffle_party": true,
+        "stress_party": 4,
+        "light": -8
+      }
+    },
+    {
+      "id": "trampa_del_culto",
+      "name": "Círculo de sal",
+      "text": "Un círculo de sal y ceniza en el suelo, con velas negras en los cuatro puntos.",
+      "difficulty": 25,
+      "fail_text": "Alguien pisa la sal. Las velas se prenden solas y a todos se les mete el miedo.",
+      "effects": {
+        "stress_party": 10,
+        "applies": {
+          "status": "susto",
+          "chance": 0.5,
+          "turns": 3,
+          "value": 2,
+          "party": true
+        }
+      }
+    },
+    {
+      "id": "nido_de_avispas",
+      "name": "Nido de avispas",
+      "text": "Un nido de avispas negras colgando de la caña, justo a la altura de la cara.",
+      "difficulty": 10,
+      "fail_text": "Golpean el nido. Las avispas no perdonan.",
+      "effects": {
+        "damage_party": 2,
+        "stress_party": 5
+      }
+    },
+    {
+      "id": "rueda_de_carreta",
+      "name": "Rueda suelta",
+      "text": "Una rueda de carreta pintada, apoyada en lo alto de un barranco, que se mueve con el viento.",
+      "difficulty": 20,
+      "fail_text": "La rueda baja rodando por el barranco directo hacia ellos.",
+      "effects": {
+        "damage_random": 8,
+        "applies": {
+          "status": "aturdido",
+          "chance": 0.5,
+          "turns": 1
+        }
+      }
     }
   ]
 }
