@@ -39,6 +39,7 @@ func _run() -> void:
 	_check(not RegionProgressScript.is_unlocked(count_row, {"sotanos": {"aprendiz": 3}}) and RegionProgressScript.is_unlocked(count_row, {"sotanos": {"aprendiz": 1}, "bosque": {"veterano": 1}}), "cleared_count counts regions, not clears")
 	_check(not RegionProgressScript.visible({"wip": true}, false) and RegionProgressScript.visible({"wip": true}, true) and RegionProgressScript.visible({}, false), "a region still being built shows only in debug builds")
 
+	_check(RegionProgressScript.visible(bosque_row, false), "the Bosque is open in release builds (P6-10c)")
 	print("GameState")
 	_check(gs.region_unlocked(SOTANOS) and not gs.region_unlocked(BOSQUE), "Sótanos open, Bosque closed")
 	var why: String = gs.region_lock_reason(BOSQUE)
