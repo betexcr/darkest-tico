@@ -1,0 +1,16 @@
+{
+  "id": "enemy_rata_canera",
+  "prompt": "dark fantasy painting, two cursed feral rats snarling with bared long yellow fangs, foam and blood on the jaws, mangy burnt fur with bald patches and scars, glowing ember red eyes, hunched to attack, ash and embers, sugarcane at night, dark gothic oil painting, folk horror, firelight, painterly brushstrokes, game art",
+  "negative_prompt": "cute, cartoon, mouse, big ears, kawaii, pet, signature, text, watermark, candle, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2360,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "model": "Lykon/dreamshaper-8",
+  "mode": "img2img 0.5 (seed 2360) of the owner's pick from the close-up prompt (seed 2313)",
+  "timestamp": "2026-11-27T23:06:16+00:00",
+  "post": "owner picks: seed 2313 (D of 2310-2313), then the cursed repaint; marks in the bottom corners painted out",
+  "generator": "scratch scripts (diffusers), steps in the manifest _doc"
+}

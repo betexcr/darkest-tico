@@ -1,0 +1,15 @@
+{
+  "id": "enemy_capataz_de_ceniza",
+  "prompt": "dark fantasy painting, standing ghost plantation foreman, face of cracked grey ash with glowing ember eyes and ember cracks, leather whip coiled in his hand, wide hat and riding boots, burning sugar mill behind him, boss, waist-up, dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, signature, text, watermark, horse, riding, mounted, rider, saddle, cowboy, healthy face, handsome, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2340,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": "owner pick (seed 2340; the other three seeds were not drawn)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-27T23:06:16+00:00"
+}

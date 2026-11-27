@@ -1,0 +1,17 @@
+{
+  "id": "enemy_tulevieja",
+  "prompt": "dark fantasy painting, Tulevieja, grotesque old harpy hag with a wide black hat, wrinkled goblin-like face with sharp teeth, wild grey hair, big feathered owl wings, chest and body covered in ragged feathers and a torn skirt, long bird legs with talons, holding a stick, dead trees, misty night, dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "breasts, nipples, nude, nudity, cleavage, pretty face, young woman, owl head, beak, candle, signature, text, watermark, frame, border, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2380,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "model": "Lykon/dreamshaper-8",
+  "mode": "img2img 0.85 + ControlNet canny (scale 0.8) from an owner-supplied Tulevieja reference image (outline and pose only; not in the repo)",
+  "timestamp": "2026-11-27T23:06:16+00:00",
+  "post": "owner pick (seed 2380)",
+  "generator": "scratch scripts (diffusers), steps in the manifest _doc",
+  "reference": "owner-supplied Tulevieja harpy image, 2026-11-27"
+}

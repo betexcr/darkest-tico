@@ -1,0 +1,17 @@
+{
+  "id": "enemy_zompopas_de_mayo",
+  "prompt": "dark fantasy oil painting of a leafcutter ant on a leaf, insect, two curved serrated mandibles, red-brown body, thin legs, antennae, glowing red eyes, faint embers and ash in the air, dark night, painterly, game art",
+  "negative_prompt": "wings, tail, horns, spikes, skull, demon, dragon, spider, beetle, butterfly, moth, candle, signature, text, watermark, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2402,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "model": "Lykon/dreamshaper-8",
+  "mode": "img2img 0.6 + ControlNet canny (lllyasviel/sd-controlnet-canny, scale 1.0) from an owner-supplied leafcutter ant photo (outline and pose only; not in the repo)",
+  "timestamp": "2026-11-27T23:06:16+00:00",
+  "post": "owner pick C of 4 (2400-2403)",
+  "generator": "scratch scripts (diffusers), steps in the manifest _doc",
+  "reference": "owner-supplied leafcutter ant photo, 2026-11-27"
+}

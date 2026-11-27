@@ -4913,10 +4913,11 @@
         512,
         512
       ],
-      "seed": 2310,
+      "seed": 2360,
       "subject": "close-up of two giant feral brown rats, rodents, long naked tails, whiskers, small round ears, red eyes, yellow buck teeth gnawing a sugarcane stalk, ground level, dark background",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, wolf, dog, hyena, boar, horse, person, woman, man, people, moon, landscape, wide shot, cartoon"
+      "negative_extra": "candle, candles, signature, text, watermark, wolf, dog, hyena, boar, horse, person, woman, man, people, moon, landscape, wide shot, cartoon",
+      "_doc": "owner pick 2026-11-27: seed 2313 from this entry, then a cursed img2img 0.5 repaint (seed 2360)"
     },
     {
       "id": "enemy_zompopas_de_mayo",
@@ -4925,10 +4926,11 @@
         512,
         512
       ],
-      "seed": 2320,
+      "seed": 2402,
       "subject": "macro close-up of giant leafcutter ants, insects, huge red-brown heads with sharp mandibles, six legs, segmented bodies, antennae, carrying green leaf pieces, crawling toward the viewer, dark background",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, frame, border, spider, scorpion, beetle, wasp, moon, forest, trees, path, landscape, wide shot, person"
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, spider, scorpion, beetle, wasp, moon, forest, trees, path, landscape, wide shot, person",
+      "_doc": "owner pick 2026-11-27: img2img 0.6 + canny from an owner-supplied ant photo (not in the repo); not reproducible from this entry alone"
     },
     {
       "id": "enemy_boyero_maldito",
@@ -4961,10 +4963,11 @@
         512,
         512
       ],
-      "seed": 2306,
+      "seed": 2372,
       "subject": "huge zebu ox with a hump and long curved horns, covered in grey ash and glowing embers, burning yoke, side view, sugarcane field on fire at night, beast",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, candlestick, signature, text, watermark, bison, buffalo, bull with no hump, horse, cow"
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, bison, buffalo, bull with no hump, horse, cow",
+      "_doc": "owner pick 2026-11-27: img2img 0.95 + canny from CSIRO ScienceImage 2643 (zebu, CC BY 3.0, Wikimedia Commons); not reproducible from this entry alone"
     },
     {
       "id": "enemy_rezadora_del_porton",
@@ -4985,10 +4988,11 @@
         512,
         512
       ],
-      "seed": 2330,
+      "seed": 2380,
       "subject": "wrinkled old crone with a human face and long grey hair, wearing a huge round palm-leaf hat, black feathered wings instead of arms, bird legs with talons, crouching on a fence post, sugarcane field at night, folk witch",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, owl, owl face, beak, bird head, nude, nudity, cleavage, young woman, pretty face"
+      "negative_extra": "candle, candles, signature, text, watermark, owl, owl face, beak, bird head, nude, nudity, cleavage, young woman, pretty face",
+      "_doc": "owner pick 2026-11-27: img2img 0.85 + canny from an owner-supplied harpy reference (not in the repo); not reproducible from this entry alone"
     },
     {
       "id": "enemy_capataz_de_ceniza",
@@ -5000,7 +5004,8 @@
       "seed": 2340,
       "subject": "standing ghost plantation foreman, face of cracked grey ash with glowing ember eyes and ember cracks, leather whip coiled in his hand, wide hat and riding boots, burning sugar mill behind him, boss, waist-up",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, horse, riding, mounted, rider, saddle, cowboy, healthy face, handsome"
+      "negative_extra": "candle, candles, signature, text, watermark, horse, riding, mounted, rider, saddle, cowboy, healthy face, handsome",
+      "_doc": "owner pick 2026-11-27 (seed 2340)"
     },
     {
       "id": "bg_canaverales_explore",

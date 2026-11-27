@@ -1,0 +1,17 @@
+{
+  "id": "enemy_buey_de_ceniza",
+  "prompt": "dark fantasy painting, cursed zebu ox made of grey ash and glowing embers, big hump and long horns, cracks of fire in its hide, burning yoke, side view, burnt sugarcane field on fire at night, dark gothic oil painting, folk horror, firelight, deep black shadows, painterly brushstrokes, game art",
+  "negative_prompt": "antelope, goat, bison, yak, horse, deer, candle, signature, text, watermark, frame, border, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2372,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "model": "Lykon/dreamshaper-8",
+  "mode": "img2img 0.95 + ControlNet canny (scale 0.8) from a zebu photo",
+  "timestamp": "2026-11-27T23:06:16+00:00",
+  "post": "owner pick C of 4 (2370-2373)",
+  "generator": "scratch scripts (diffusers), steps in the manifest _doc",
+  "reference": "CSIRO ScienceImage 2643 'A Brahman Bull', CSIRO, CC BY 3.0, https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_2643_A_Brahman_Bull.jpg (outline only)"
+}
