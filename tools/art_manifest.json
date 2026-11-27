@@ -4848,10 +4848,11 @@
         512,
         512
       ],
-      "seed": 2230,
-      "subject": "huge rusty bloody axe resting on the shoulder of a translucent ghost lumberjack, glowing pale grey skin, hollow white eyes, torn checked shirt and suspenders, noose around his neck, foggy cloud forest night",
+      "seed": 2221,
+      "subject": "old ghost lumberjack, grey hair and beard, haunted eyes, checked shirt and suspenders, rope and chains, foggy cloud forest under the full moon",
       "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, living man, healthy skin, axe cut off, no axe, empty hands, log",
-      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
+      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "_doc": "owner picks 2026-11-27: seed 2221 txt2img, then a rusty axe painted on his shoulder + img2img 0.45 (seed 2240), face and hand paled and eyes made to glow by hand, then img2img 0.35 (seed 2251). Not reproducible from this entry alone."
     },
     {
       "id": "bg_bosque_explore",
@@ -6080,7 +6081,7 @@
       },
       {
         "id": "lenador_penado",
-        "look": "old ghost lumberjack, grey hair and beard, hollow eyes, checked shirt and suspenders, coiled rope over his shoulder",
+        "look": "old ghost lumberjack, pale grey skin, glowing white eyes, grey hair and beard, dark shirt, suspenders, chains",
         "seed": 5237,
         "body": "humanoid",
         "weapon": "a huge rusty axe",
