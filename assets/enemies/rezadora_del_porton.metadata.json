@@ -1,0 +1,15 @@
+{
+  "id": "enemy_rezadora_del_porton",
+  "prompt": "dark fantasy painting, old cult prayer woman in a black lace veil praying with a black seed rosary, ash cross on her forehead, gate symbol embroidered on her shawl, glowing eyes, night, dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, signature, text, watermark, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2309,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": "owner pick C of 4 seeds (2307-2310)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-27T05:52:05+00:00"
+}
