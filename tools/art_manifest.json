@@ -6091,7 +6091,17 @@
           "length": 0.25,
           "width": 0.04,
           "hand": "right"
-        }
+        },
+        "redo_states": [
+          "ailment"
+        ],
+        "redo_modes": {
+          "ailment": "txt"
+        },
+        "redo_seeds": {
+          "ailment": 5840
+        },
+        "_doc_redo": "ailment redrawn as one figure: the sheet cell came with a stray dark cloth attached to him"
       }
     ]
   }
