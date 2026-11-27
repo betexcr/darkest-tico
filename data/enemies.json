@@ -603,9 +603,9 @@
       "phases": [
           {
             "at_hp_pct": 60,
-            "text": "La Segua se ríe y se desdobla en la niebla: ¿cuál de todas es la de verdad?",
+            "text": "La Segua se ríe y se desdobla en la niebla: ¿cuál de las dos es la de verdad?",
             "clones": {
-              "count": 2,
+              "count": 1,
               "hp_pct": 15,
               "stress_on_hit": 3
             }
