@@ -10,8 +10,8 @@
   "output_resolution": "512x512",
   "model": "Lykon/dreamshaper-8",
   "mode": "img2img 0.85 + ControlNet canny (scale 0.8) from an owner-supplied Tulevieja reference image (outline and pose only; not in the repo)",
-  "timestamp": "2026-11-27T23:06:16+00:00",
-  "post": "owner pick (seed 2380)",
+  "timestamp": "2026-11-27T23:16:28+00:00",
+  "post": "owner pick (seed 2380); owner 2026-11-27: the pointed witch hat replaced by the legend's wide frayed straw hat — painted by hand, then img2img 0.4 (seed 2410) composited back inside the hat area only",
   "generator": "scratch scripts (diffusers), steps in the manifest _doc",
   "reference": "owner-supplied Tulevieja harpy image, 2026-11-27"
 }
