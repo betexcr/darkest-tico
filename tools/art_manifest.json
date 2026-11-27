@@ -4812,7 +4812,7 @@
         512,
         512
       ],
-      "seed": 2240,
+      "seed": 2243,
       "subject": "pale ghost bride in a long flowing white gown, white dress glowing in the moonlight, kneeling in a dark river weeping, long wet black hair hiding her face, hands searching in the water, mist, cloud forest night",
       "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup, dark dress, black clothing, black gown",
       "style": "dark gothic oil painting, folk horror, cold moonlight, deep shadows, painterly brushstrokes, game art"
@@ -6042,7 +6042,7 @@
       },
       {
         "id": "llorona_del_rio",
-        "look": "weeping pale ghost woman, very long wet black hair, soaked black ruffled dress with bare shoulders, pale hands",
+        "look": "weeping pale ghost woman, long wet black hair, long white hooded gown with blood stains, pale hands",
         "seed": 5234,
         "body": "humanoid",
         "weapon": "icy clawed hands",
