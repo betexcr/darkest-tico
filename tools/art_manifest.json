@@ -4812,10 +4812,10 @@
         512,
         512
       ],
-      "seed": 2213,
-      "subject": "weeping ghost woman knee-deep in a dark river, face completely hidden behind long wet black hair, ghostly pale bluish skin, long torn white dress, thin clawed hands reaching out, mist on the water, cloud forest night",
-      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup",
-      "style": "dark gothic oil painting, folk horror, moonlight, deep black shadows, muted earthy colors, painterly brushstrokes, game art"
+      "seed": 2240,
+      "subject": "pale ghost bride in a long flowing white gown, white dress glowing in the moonlight, kneeling in a dark river weeping, long wet black hair hiding her face, hands searching in the water, mist, cloud forest night",
+      "negative_extra": "candle, candles, candlestick, lantern, mask, signature, text, second animal, two animals, visible face, black dress, living woman, makeup, dark dress, black clothing, black gown",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep shadows, painterly brushstrokes, game art"
     },
     {
       "id": "enemy_viejo_del_monte",
