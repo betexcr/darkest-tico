@@ -963,7 +963,7 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Sim, 2000 fights each, party at the region's level (1/4/6, ranks 2/3/4, gear above Aprendiz): regular and elite fights 99–100% on every tier; the Capataz 98.8% / 96.5% / 74.0% (first draft 98.2 / 95.1 / 54.1: the Campeón block no longer brings more Quemadores, Humo de trapiche stress 6→3, Quema del cañal 6→4, PV 75→65). Bot `--missions 8 --start-level 1 --start-ranks 2`, seeds 1–2: 7 of 8 each, no script errors.
 
 ### P6-11b · M · Cañaverales art (CPU)
-- Status: `todo` · Depends: P6-11a
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-27)` · Depends: P6-11a
 - Portraits and 6 battle poses for the 9 new enemies (`machetero_de_zafra`, `quemador_de_cana`, `rata_canera`, `zompopas_de_mayo`, `boyero_maldito`, `espantapajaros_del_canal`, `buey_de_ceniza` (large: wide canvas, `size` in the manifest), `rezadora_del_porton`, `tulevieja`) and the boss `capataz_de_ceniza`; exploration and combat backgrounds set in `canaverales.json`. Same pipeline as P6-10b (scratchpad venv: CPU torch, diffusers, rembg, controlnet_aux, opencv); show the owner every picture.
 - Done when: [ ] portraits + sprites; [ ] backgrounds; [ ] owner look
 

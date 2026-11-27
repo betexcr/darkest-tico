@@ -4881,6 +4881,158 @@
       ],
       "seed": 4111,
       "subject": "wide view of a misty clearing in a cloud forest at night, empty muddy ground, moss-covered roots, giant ferns, fog, faint moonlight, environment, no people"
+    },
+    {
+      "id": "enemy_machetero_de_zafra",
+      "out": "assets/enemies/machetero_de_zafra.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2300,
+      "subject": "gaunt undead sugarcane cutter with a long rusty machete, sweat-stained torn shirt, straw hat, hollow eyes, rows of burnt sugarcane at night, embers in the air",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "enemy_quemador_de_cana",
+      "out": "assets/enemies/quemador_de_cana.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2301,
+      "subject": "hooded cultist with a burning torch setting dry sugarcane on fire, soot-black robe with a gate symbol, face lit by flames, smoke and sparks, night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "enemy_rata_canera",
+      "out": "assets/enemies/rata_canera.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2302,
+      "subject": "two feral brown rats on all fours, animals, no clothes, bared teeth, gnawing sugarcane stalks, red eyes, cane field at night, beasts",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, one rat, mouse, cartoon"
+    },
+    {
+      "id": "enemy_zompopas_de_mayo",
+      "out": "assets/enemies/zompopas_de_mayo.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2303,
+      "subject": "swarm of giant leafcutter ants carrying leaf pieces, insects, huge mandibles, a crawling column over the ground of a sugarcane field at night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, spider, scorpion, beetle, wasp"
+    },
+    {
+      "id": "enemy_boyero_maldito",
+      "out": "assets/enemies/boyero_maldito.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2304,
+      "subject": "ghost of an old Costa Rican oxcart driver holding a long goad stick, poncho and straw hat, pale glowing eyes, painted oxcart wheel behind him, night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, ox, cart driver smiling"
+    },
+    {
+      "id": "enemy_espantapajaros_del_canal",
+      "out": "assets/enemies/espantapajaros_del_canal.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2305,
+      "subject": "scarecrow standing in a burnt sugarcane field, body of crossed sticks and dry straw, sack-cloth face with stitched mouth, glowing eyes, crows, night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "enemy_buey_de_ceniza",
+      "out": "assets/enemies/buey_de_ceniza.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2306,
+      "subject": "huge zebu ox with a hump and long curved horns, covered in grey ash and glowing embers, burning yoke, side view, sugarcane field on fire at night, beast",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, bison, buffalo, bull with no hump, horse, cow"
+    },
+    {
+      "id": "enemy_rezadora_del_porton",
+      "out": "assets/enemies/rezadora_del_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2307,
+      "subject": "old cult prayer woman in a black lace veil praying with a black seed rosary, ash cross on her forehead, gate symbol embroidered on her shawl, glowing eyes, night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "enemy_tulevieja",
+      "out": "assets/enemies/tulevieja.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2308,
+      "subject": "Tulevieja legend, old bird woman with a huge round palm-leaf hat, owl-like wings and bird legs with talons, wrinkled face, perched on a fence post above a sugarcane field at night",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark, nude, nudity, cleavage, young woman, pretty face"
+    },
+    {
+      "id": "enemy_capataz_de_ceniza",
+      "out": "assets/enemies/capataz_de_ceniza.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2309,
+      "subject": "leather whip in hand, menacing ghost plantation foreman in an ash-covered hat and riding boots, face of grey ash with ember eyes, burning sugarcane mill behind him, boss",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "bg_canaverales_explore",
+      "out": "assets/ui_bg/canaverales_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4120,
+      "subject": "wide view of a path between rows of burnt sugarcane at night, smoke, a distant sugar mill chimney, a cult totem of cane and bones, moonlight, environment, no people",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "bg_canaverales_combat",
+      "out": "assets/ui_bg/canaverales_combat_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4121,
+      "subject": "wide view of an empty clearing in a sugarcane field at night, ash and embers on the ground, burnt cane stalks around, faint firelight, environment, no people",
+      "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, candlestick, signature, text, watermark"
     }
   ],
   "sprites": {
