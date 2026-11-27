@@ -2,6 +2,8 @@
   "region_id": "canaverales",
   "name": "Cañaverales Profanados",
   "boss_name": "El Capataz de Ceniza",
+  "background": "res://assets/ui_bg/canaverales_bg.png",
+  "combat_background": "res://assets/ui_bg/canaverales_combat_bg.png",
   "initial_light": 95,
   "provisions": {
     "short": {

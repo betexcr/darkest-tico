@@ -1,0 +1,15 @@
+{
+  "id": "bg_canaverales_combat",
+  "prompt": "dark fantasy painting, wide view of an empty clearing in a sugarcane field at night, ash and embers on the ground, burnt cane stalks around, faint firelight, environment, no people, dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, candlestick, signature, text, watermark, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 4121,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "904x512",
+  "output_resolution": "1280x720",
+  "post": null,
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-27T05:34:24+00:00"
+}
