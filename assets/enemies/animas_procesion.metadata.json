@@ -1,0 +1,15 @@
+{
+  "id": "enemy_animas_procesion",
+  "prompt": "dark fantasy painting, two translucent ghost souls in white hooded robes walking in a night procession, glowing faces, holding unlit candles, ruined colonial church street, fog, dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, signature, text, watermark, frame, border, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2500,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": "owner pick A of 4 (2500-2503)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-28T04:26:24+00:00"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "enemy_escribano_del_cabildo",
+  "prompt": "dark fantasy painting, ghost of a colonial town clerk in an old frock coat, holding an iron quill and a death certificate scroll, ink-stained hands, hollow eyes, dusty archive, dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, signature, text, watermark, frame, border, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2505,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": "owner pick A of 4 (2505-2508)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-28T05:05:30+00:00"
+}

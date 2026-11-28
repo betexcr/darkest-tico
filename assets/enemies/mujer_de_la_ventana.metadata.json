@@ -1,0 +1,15 @@
+{
+  "id": "enemy_mujer_de_la_ventana",
+  "prompt": "dark fantasy painting, pale ghost woman behind a broken colonial window with iron bars, long dark hair, staring eyes, long glass-sharp nails, night, dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+  "negative_prompt": "candle, candles, signature, text, watermark, frame, border, photograph, portrait photography, white background, sketch, pen drawing, lineart, signature, watermark, text, logo, photo, photorealistic, 3d render, anime, cartoon, blurry, lowres, deformed face, extra limbs, extra fingers, frame, border",
+  "seed": 2505,
+  "steps": 25,
+  "cfg_scale": 7.0,
+  "sampler": "DPM++ 2M Karras",
+  "resolution": "512x512",
+  "output_resolution": "512x512",
+  "post": "owner pick D of 4 (2502-2505)",
+  "model": "Lykon/dreamshaper-8",
+  "generator": "tools/sd_local.py (diffusers)",
+  "timestamp": "2026-11-28T04:47:39+00:00"
+}
