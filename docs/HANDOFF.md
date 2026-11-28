@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-28 (59) — P6-11c: Cañaverales balance; the Cañaverales open after the Mayordomo
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-11c review (owner playtest). P6-11b and the enemy-portrait change merged into main before it.
+- **Changed:** `data/enemies.json` (`capataz_de_ceniza`: one Quemador on every tier, no faster Veterano burn, Quema del cañal stress 3, Campeón Humo de trapiche stress 6; Rezadora's Novena 7, Tulevieja's Cascabeleo 8); `data/regions/canaverales.json` (fire hazard 5% / 1 stress); `data/regions.json` (Cañaverales no longer `wip`); `tests/test_regions.gd` (open in release builds); `docs/playtests/2026-11-28-p6-11c.md` (new); doc 09; plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; full `tests/run_tests.gd` 28 of 28; boss sims and 56 bot runs (four rounds; one region at a time), no script errors — numbers in the report.
+- **Not verified / risks:** bot results swing ±8 points between runs; Campeón is ~6 points easier than the Sótanos (like the Bosque); fresh level-0 parties clear only ~66% (they can't reach the region). Not played by hand.
+- **Decisions needed:** should the Capataz's Campeón variant be harder (Campeón 78% vs the Sótanos' 72%)? Still open: delete the unused enemy pose sprites in `assets/sprites/`?
+- **Next step:** with Bosque and Cañaverales open, the next region is P6-12 (Pueblo Fantasma de Cartago Viejo, region level 2): claim it, read doc 05 §1.5 and §3.1, and copy P6-11a's shape (enemies in `data/enemies.json` via a scratch script like the P6-11a one, a region file with `wip: true`, curios/traps, `test_regions` checks); art per P6-11b with portraits only (no battle sprites for enemies).
+
 ## 2026-11-28 (58) — P6-11b: Cañaverales art; enemies show their portrait only
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-11b review (owner look). P6-11a merged into main before it.

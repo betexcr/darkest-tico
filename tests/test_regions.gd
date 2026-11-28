@@ -90,6 +90,7 @@ func _run() -> void:
 	print("Cañaverales on the generator (P6-11a)")
 	var cana_row: Dictionary = RegionProgressScript.entry_by_id("canaverales")
 	_check(not cana_row.is_empty() and RegionProgressScript.is_unlocked(cana_row, {"sotanos": {"aprendiz": 1}}), "the Cañaverales open once the Sótanos boss is beaten")
+	_check(RegionProgressScript.visible(cana_row, false), "the Cañaverales are open in release builds (P6-11c)")
 	var cgen: Dictionary = gs.ExpeditionLoaderScript.load_region(CANAVERALES)["generator"]
 	var callowed: Array = cgen["enemy_pool"] + cgen["elite_pool"] + [cgen["boss_enemy_id"]] + cgen.get("boss_escort", [])
 	for sq in cgen["squads"]:
