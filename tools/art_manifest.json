@@ -4992,7 +4992,7 @@
       "subject": "wrinkled old crone with a human face and long grey hair, wearing a huge round palm-leaf hat, black feathered wings instead of arms, bird legs with talons, crouching on a fence post, sugarcane field at night, folk witch",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
       "negative_extra": "candle, candles, signature, text, watermark, owl, owl face, beak, bird head, nude, nudity, cleavage, young woman, pretty face",
-      "_doc": "owner pick 2026-11-27: img2img 0.85 + canny from an owner-supplied harpy reference (not in the repo); not reproducible from this entry alone; then the hat repainted as the Tule's wide straw hat (hand-drawn + img2img 0.4, seed 2410)"
+      "_doc": "owner pick 2026-11-27: img2img 0.85 + canny from an owner-supplied harpy reference (not in the repo); 2026-11-28 the witch hat replaced by a hand-drawn straw Tule hat blended with img2img 0.35 (seed 2421); not reproducible from this entry alone"
     },
     {
       "id": "enemy_capataz_de_ceniza",
