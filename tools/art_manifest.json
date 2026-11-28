@@ -5038,6 +5038,170 @@
       "subject": "wide view of an empty clearing in a sugarcane field at night, ash and embers on the ground, burnt cane stalks around, faint firelight, environment, no people",
       "style": "dark gothic oil painting, folk horror, moonlight and firelight, deep black shadows, muted earthy colors, painterly brushstrokes, game art",
       "negative_extra": "candle, candles, candlestick, signature, text, watermark"
+    },
+    {
+      "id": "enemy_animas_procesion",
+      "out": "assets/enemies/animas_procesion.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2500,
+      "subject": "two translucent ghost souls in white hooded robes walking in a night procession, glowing faces, holding unlit candles, ruined colonial church street, fog",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_sacristan_del_terremoto",
+      "out": "assets/enemies/sacristan_del_terremoto.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2501,
+      "subject": "ghost of an old church sacristan covered in dust and rubble, huge iron church key, torn black cassock, cracked grey skin, ruined colonial church",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_mujer_de_la_ventana",
+      "out": "assets/enemies/mujer_de_la_ventana.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2502,
+      "subject": "pale ghost woman behind a broken colonial window with iron bars, long dark hair, staring eyes, long glass-sharp nails, night",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_murcielagos_campanario",
+      "out": "assets/enemies/murcielagos_campanario.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2503,
+      "subject": "two bats flying out of a ruined bell tower at night, bats, wings spread, sharp teeth, red eyes, moonlight",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, person, woman"
+    },
+    {
+      "id": "enemy_perro_de_la_ruina",
+      "out": "assets/enemies/perro_de_la_ruina.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2504,
+      "subject": "gaunt stray dog with glowing eyes among colonial ruins at night, beast, mangy fur, bared teeth, howling, rubble",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, person, wolf, cute"
+    },
+    {
+      "id": "enemy_escribano_del_cabildo",
+      "out": "assets/enemies/escribano_del_cabildo.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2505,
+      "subject": "ghost of a colonial town clerk in an old frock coat, holding an iron quill and a death certificate scroll, ink-stained hands, hollow eyes, dusty archive",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_cofrade_del_porton",
+      "out": "assets/enemies/cofrade_del_porton.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2506,
+      "subject": "hooded brotherhood cultist in a purple procession robe and pointed hood, holding a tall lit church taper, gate symbol on the chest, ruined street at night",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_carreta_sin_bueyes",
+      "out": "assets/enemies/carreta_sin_bueyes.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2507,
+      "subject": "ghostly painted Costa Rican oxcart rolling by itself with no oxen, glowing spectral wheels, chains, empty foggy colonial street at night, side view",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, oxen, ox, horse, cow, driver"
+    },
+    {
+      "id": "enemy_padre_sin_cabeza",
+      "out": "assets/enemies/padre_sin_cabeza.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2508,
+      "subject": "headless ghost priest in black cassock and stole, holding a silver aspergillum, no head above the collar, ruined colonial church at night",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, head, face"
+    },
+    {
+      "id": "enemy_santo_poseido",
+      "out": "assets/enemies/santo_poseido.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2509,
+      "subject": "possessed wooden saint statue on procession litters, cracked painted wood, glowing eyes, wax tears dripping, ruined church at night",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "enemy_campanera_sin_rostro",
+      "out": "assets/enemies/campanera_sin_rostro.png",
+      "size": [
+        512,
+        512
+      ],
+      "seed": 2510,
+      "subject": "faceless bell ringer woman in a tattered black dress pulling a bell rope, smooth blank face with no features, huge bronze church bell above, ruined bell tower, boss",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border, eyes, mouth, nose, face features, nude"
+    },
+    {
+      "id": "bg_pueblo_explore",
+      "out": "assets/ui_bg/pueblo_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4130,
+      "subject": "wide view of an empty ruined colonial town street at night, cracked adobe houses with tile roofs, a broken church facade in the distance, fog, moonlight, environment, no people",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+    },
+    {
+      "id": "bg_pueblo_combat",
+      "out": "assets/ui_bg/pueblo_combat_bg.png",
+      "size": [
+        904,
+        512
+      ],
+      "out_size": [
+        1280,
+        720
+      ],
+      "seed": 4131,
+      "subject": "wide view of an empty ruined colonial church plaza at night, fallen bell, cracked stone floor, broken arches, fog, moonlight, environment, no people",
+      "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
+      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
     }
   ],
   "sprites": {

@@ -986,7 +986,7 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Result: 10 new enemies + La Campanera (doc 05 §1.5 table), 21 new events (19 curios + 7 traps listed), hazards (false exit, party split, night bells). Sim (levels 2/4/6): boss 100 / 96.0 / 81.0% (first draft with an ánimas escort: Campeón 1.6%). Bot `--missions 8 --start-level 2 --start-ranks 2`, seeds 1–2: 7 and 8 of 8, no script errors.
 
 ### P6-12b · M · Pueblo Fantasma art (CPU)
-- Status: `todo` · Depends: P6-12a
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-28)` · Depends: P6-12a
 - Portraits for the new enemies and La Campanera (owner picks of 4; enemies show only their portrait), exploration and combat backgrounds set in the region file. One SD job at a time.
 - Done when: [ ] portraits; [ ] backgrounds; [ ] owner look
 
