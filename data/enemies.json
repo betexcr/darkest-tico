@@ -3417,6 +3417,9 @@
         },
         "campeon": {
           "text": "Toda la zafra arde: el humo del trapiche no deja ver.",
+          "summon": {
+            "max_total": 1
+          },
           "replace_skills": {
             "arreo_de_peones": {
               "id": "humo_de_trapiche",
