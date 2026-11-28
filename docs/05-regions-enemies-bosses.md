@@ -102,6 +102,25 @@ Squads: the zafra crew (Machetero, Boyero, Quemador), the swarm (Zompopas + Rata
 
 **Built (P6-02, 2026-11-26): region hazards.** A region file lists `hazards`, each `{id, name, text, trigger, chance_pct, min_light?, max_light?, …}`: `trigger: "move"` rolls on every room move and applies an event `outcome` (poison flora, heat pulses, falling rocks, eruptions, fire…); `"fight_start"` rolls when a fight starts, with an `outcome` on the party and/or `enemy_applies` on every enemy (cult totems, shifting ground); `"camp"` adds `ambush_pct` to the night ambush. New outcomes: `shuffle_party` (forced-movement terrain) and `send_back` (a false exit returns the party to the room before). The hub's region tooltip and the start of an expedition list the region's dangers; a hit shows as a result card. Rules `scripts/domain/region_hazards.gd`. The Sótanos have none (their dangers are traps and curios); the Bosque has placeholder poison flora (8% per move) and *Niebla cerrada* (+15% night ambush below Luz 50) until P6-10. Party split (Pueblo Fantasma) still needs its own design (P6-12).
 
+**Built (P6-12a, 2026-11-28): the Pueblo Fantasma roster** (`data/enemies.json`, `data/regions/pueblo_fantasma.json`; region level 2, still `wip`; art in P6-12b, balance in P6-12c). New mechanics: **stress-to-damage** (skill key `vs_stress_pct`: +N% damage per 50 stress the target carries) and the owner's **party split** (owner 2026-11-28: hazard outcome `lose_hero` — the fog takes one random living hero, who misses the next fight and rejoins after it at the back of the formation with the outcome's stress; never the last one standing, never two at once).
+
+| id | Name | Family | Ranks | Role and gimmick |
+|---|---|---|---|---|
+| `animas_procesion` | Ánimas de la procesión | Espantos | 2–3 | Pair; litany that stresses the party and stacks Susto |
+| `sacristan_del_terremoto` | Sacristán del terremoto | Penados | 1–2 | Tank (prot 10); falling rubble stuns |
+| `mujer_de_la_ventana` | La de la ventana | Espantos | 3–4 | Glass claws anywhere; marks (Fichado) through the bars |
+| `murcielagos_campanario` | Murciélagos del campanario | Bestias | 3–4 | Pair; bleed; party −precisión |
+| `perro_de_la_ruina` | Perro de la ruina | Bestias | 1–2 | Bleed bite; howl that stresses the party |
+| `escribano_del_cabildo` | Escribano del cabildo | Penados | 3–4 | *Acta de defunción* (stress-to-damage); seal that roots |
+| `cofrade_del_porton` | Cofrade del Portón | Culto | 2–3 | Hits the most scared harder; buffs the front two |
+| `carreta_sin_bueyes` | La Carreta sin Bueyes | Espantos | 1–2, **large** | Tank (prot 15); creaking wheels: party stress + Susto; drags the front hero to the back (elite) |
+| `padre_sin_cabeza` | El Padre sin Cabeza | Espantos | 2–3 | *Responso al revés* (stress-to-damage); midnight mass: party stress + Susto (elite) |
+| `santo_poseido` | Santo de madera poseído | Culto | 1–2 | Tank (prot 20); hot wax tears: party stress + Susto (elite) |
+| `espanto` | (Sótanos) | Espantos | 1–2 | — |
+| `campanera_sin_rostro` | **La Campanera Sin Rostro** | Espantos | 1–2 | Apex boss (72 PV): *Repique de difuntos* every 4th round (party stress, stacking Susto), *Campanada en la nuca* (stress-to-damage), at 50% one mirror image that stresses whoever hits it (illusion punish). Veterano: one more image at 25%. Campeón: *Toque a muerto* replaces the Campanada. No escort (an ánimas pair made Campeón unwinnable: 1.6% in the sim) |
+
+Hazards: *Salida falsa* (6%/move, back to the room before), *Niebla que separa* (5%/move, party split, +8 stress on return), *Campanas de noche* (+15% night ambush below Luz 50). Events: 15 new curios (cracked bell, possessed reliquary, town archive, saint's niche, confessional, font, wax procession, tower clock, police lieutenant's house, pilgrimage oxcart, plaza well, empty school, cult altar, mourning wardrobe, town photograph; three give Reliquias as archive fragments) + 4 Sótanos ones; 6 new traps + 1 Sótanos one. Sim (2000 fights, levels 2/4/6): regular 99.8–100%, elite 98–100%, boss 100 / 96.0 / 81.0%.
+
 ## 2) Enemy Family Framework
 
 ## 2.1 Espantos Folcloricos

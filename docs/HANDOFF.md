@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-28 (60) — P6-12a: Pueblo Fantasma content (stress-to-damage, party split, 11 enemies, 21 events)
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-12a done; P6-12 split into a/b/c. P6-11c merged into main before it.
+- **Changed:** `combat_controller.gd` (`vs_stress_pct` in `_scaled_damage`); `game_state.gd` (`lose_hero` outcome, `fight_party`, `rejoin_lost_heroes`, lost flags cleared at expedition start); `expedition_screen.gd` (lost hero off the stage and out of the fight, rejoins after); validator (`vs_stress_pct`, `lose_hero`); `data/enemies.json` (+11), `data/curios.json` (+15), `data/traps.json` (+6), `data/regions/pueblo_fantasma.json` (new), `data/regions.json` (`wip` row, opens after Bosque or Cañaverales); tests (`test_region_hazards` party split, `test_enemy_engine` stress-to-damage, `test_regions` Pueblo Fantasma); doc 05 §1.5; plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; full `tests/run_tests.gd` 28 of 28; sims and two bot runs, no script errors.
+- **Not verified / risks:** party split not seen on screen (headless only; the off-stage hero and the rejoin log line). New enemies have no portraits yet (P6-12b). Balance only first-pass (P6-12c). Not played by hand.
+- **Decisions needed:** none.
+- **Next step:** P6-12b (Pueblo Fantasma art, portraits only): add `enemy_<id>` portrait entries for the 11 ids and two backgrounds (`bg_pueblo_explore`, `bg_pueblo_combat`) to `tools/art_manifest.json` (copy the Cañaverales ones' style: moonlight, no candles), run `tools/sd_local.py --only … --try-seeds 4 --preview-dir <scratchpad>` ONE job at a time (each under the 2-hour background cap), show the owner 2×2 grids (`scratchpad/grid4.py`), install the picks with metadata, set `background` / `combat_background` in `pueblo_fantasma.json`.
+
 ## 2026-11-28 (59) — P6-11c: Cañaverales balance; the Cañaverales open after the Mayordomo
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-11c review (owner playtest). P6-11b and the enemy-portrait change merged into main before it.

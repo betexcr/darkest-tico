@@ -4510,7 +4510,7 @@
       "prot": 5,
       "cycle": {
         "skill": "repique_de_difuntos",
-        "every": 3
+        "every": 4
       },
       "phases": [
         {
@@ -4550,7 +4550,7 @@
                 8
               ],
               "accuracy": 0,
-              "stress": 6,
+              "stress": 3,
               "target": "single",
               "target_ranks": [
                 1,
@@ -4560,12 +4560,12 @@
               ],
               "weight": 25,
               "element": "oscuridad",
-              "vs_stress_pct": 25,
+              "vs_stress_pct": 10,
               "applies": {
                 "status": "susto",
-                "chance": 0.4,
+                "chance": 0.2,
                 "turns": 3,
-                "value": 3
+                "value": 2
               },
               "description": "Toca a muerto por uno solo de la cuadrilla: cuanto más miedo, más le pesa."
             }
@@ -4601,15 +4601,15 @@
             4
           ],
           "accuracy": 0,
-          "stress": 7,
+          "stress": 5,
           "target": "party",
           "weight": 15,
           "element": "viento",
           "applies": {
             "status": "susto",
-            "chance": 0.5,
+            "chance": 0.3,
             "turns": 3,
-            "value": 3
+            "value": 2
           },
           "description": "Repica por los muertos del pueblo: el miedo se acumula campanada tras campanada."
         },
@@ -4632,7 +4632,7 @@
           ],
           "weight": 25,
           "element": "viento",
-          "vs_stress_pct": 20,
+          "vs_stress_pct": 10,
           "description": "Una campanada que suena solo dentro de una cabeza: pega más fuerte al que más miedo tiene."
         }
       ],

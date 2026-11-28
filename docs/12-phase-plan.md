@@ -980,9 +980,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Owner 2026-11-28: party split = one hero lost a while (a move hazard takes one random living hero out of the next fight; they rejoin after it with some stress).
 
 ### P6-12a · L · Pueblo Fantasma content
-- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-28)` · Depends: P6-11
+- Status: `done` (Claude Code, `betomm/blissful-dijkstra-f06pdx`, 2026-11-28) · Depends: P6-11
 - Two engine pieces (stress-to-damage `vs_stress_pct`; party split outcome `lose_hero`), 9 enemies + elites, La Campanera with Veterano/Campeón tiers, ≥ 20 events, region file (`wip`).
-- Done when: [ ] `vs_stress_pct` + test; [ ] `lose_hero` + test; [ ] roster (doc 05 table); [ ] La Campanera + tiers; [ ] region file, hazards, ≥ 20 events; [ ] sims and bot clean; [ ] tests
+- Done when: [x] `vs_stress_pct` + test; [x] `lose_hero` + test; [x] roster (doc 05 table); [x] La Campanera + tiers; [x] region file, hazards, ≥ 20 events; [x] sims and bot clean; [x] tests
+- Result: 10 new enemies + La Campanera (doc 05 §1.5 table), 21 new events (19 curios + 7 traps listed), hazards (false exit, party split, night bells). Sim (levels 2/4/6): boss 100 / 96.0 / 81.0% (first draft with an ánimas escort: Campeón 1.6%). Bot `--missions 8 --start-level 2 --start-ranks 2`, seeds 1–2: 7 and 8 of 8, no script errors.
 
 ### P6-12b · M · Pueblo Fantasma art (CPU)
 - Status: `todo` · Depends: P6-12a
