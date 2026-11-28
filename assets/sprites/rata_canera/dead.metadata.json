@@ -1,0 +1,7 @@
+{
+  "id": "rata_canera_dead",
+  "derived_from": "tools/.sprite_cache/rata_canera/idle_raw.png (seed 5307)",
+  "mode": "idle picture rotated 90 degrees (dead_tipped), background removed",
+  "generator": "tools/sd_sprites.py",
+  "timestamp": "2026-11-28T00:48:54+00:00"
+}
