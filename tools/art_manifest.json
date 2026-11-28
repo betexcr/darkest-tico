@@ -6362,12 +6362,17 @@
       },
       {
         "id": "zompopas_de_mayo",
-        "look": "two giant leafcutter ants, insects, black heads with glowing red eyes, red-brown bodies, six thin legs, antennae, mandibles",
+        "look": "two giant leafcutter ants walking on the ground side by side, side view, insects, black heads with glowing red eyes, red-brown bodies, six thin legs each, antennae, mandibles",
         "seed": 5308,
         "body": "beast",
         "weapon": "mandibles",
         "dead_tipped": true,
-        "negative_extra": "wings, tail, horns, spider, scorpion"
+        "negative_extra": "wings, tail, horns, spider, scorpion, standing upright, merged, one ant on another",
+        "size": [
+          768,
+          512
+        ],
+        "_doc_size": "wide canvas so the ants walk on the ground (the tall canvas stood them up and merged them)"
       },
       {
         "id": "buey_de_ceniza",
