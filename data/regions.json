@@ -23,6 +23,17 @@
           "sotanos"
         ]
       }
+    },
+    {
+      "id": "pueblo_fantasma",
+      "path": "res://data/regions/pueblo_fantasma.json",
+      "unlock": {
+        "cleared_any": [
+          "bosque",
+          "canaverales"
+        ]
+      },
+      "wip": true
     }
   ]
 }

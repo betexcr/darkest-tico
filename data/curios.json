@@ -1620,6 +1620,607 @@
           ]
         }
       ]
+    },
+    {
+      "id": "campana_rajada",
+      "name": "Campana rajada",
+      "text": "Una campana de bronce partida en el suelo de la plaza. Cuando sopla el viento, todavía suena.",
+      "choices": [
+        {
+          "label": "Tocarla una vez",
+          "outcomes": [
+            {
+              "weight": 40,
+              "text": "El tañido se pierde calle abajo y el pueblo se queda callado. Algo se calmó.",
+              "stress_party": -8
+            },
+            {
+              "weight": 60,
+              "text": "Le contestan todas las campanas del pueblo a la vez.",
+              "stress_party": 8,
+              "applies": {
+                "status": "susto",
+                "chance": 0.5,
+                "turns": 3,
+                "value": 2,
+                "party": true
+              }
+            }
+          ]
+        },
+        {
+          "label": "Envolverla con un trapo",
+          "outcomes": [
+            {
+              "weight": 75,
+              "text": "El sonido se apaga. Por fin se oyen los propios pasos.",
+              "stress_party": -4,
+              "light": 10
+            },
+            {
+              "weight": 25,
+              "text": "Debajo de la campana hay un nido de alacranes.",
+              "damage_random": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "relicario_poseido",
+      "name": "Relicario poseído",
+      "text": "Un relicario de plata con un hueso diminuto adentro. Late, como si estuviera vivo.",
+      "key_item": "agua_bendita",
+      "key_text": "Rocían el relicario con agua bendita.",
+      "key_outcomes": [
+        {
+          "weight": 80,
+          "text": "El latido se detiene. El relicario es solo plata vieja, y vale buena plata.",
+          "colones": [
+            150,
+            260
+          ],
+          "reliquias": 1
+        },
+        {
+          "weight": 20,
+          "text": "El agua hierve al tocarlo. Algo se enojó.",
+          "stress_party": 7
+        }
+      ],
+      "blind": [
+        {
+          "weight": 35,
+          "text": "Lo guardan. Esa noche nadie duerme bien.",
+          "colones": [
+            120,
+            220
+          ],
+          "stress_party": 10
+        },
+        {
+          "weight": 40,
+          "text": "Al tocarlo, alguien siente que lo miran desde adentro.",
+          "stress_random": 12
+        },
+        {
+          "weight": 25,
+          "text": "El relicario se abre solo y sale lo que lo cuidaba.",
+          "ambush": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "archivo_del_cabildo",
+      "name": "Archivo del cabildo",
+      "text": "Estantes de actas mojadas y amarillas. Algunas tienen fechas de después del terremoto… y de mañana.",
+      "choices": [
+        {
+          "label": "Leer las actas",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "Entre los papeles hay un plano del pueblo viejo.",
+              "reveal_map": true
+            },
+            {
+              "weight": 30,
+              "text": "Un acta tiene el nombre de alguien de la cuadrilla. Fecha: mañana.",
+              "stress_random": 14
+            },
+            {
+              "weight": 20,
+              "text": "Un legajo bien guardado: fragmentos del archivo que alguien en la hacienda querrá ver.",
+              "reliquias": 1
+            }
+          ]
+        },
+        {
+          "label": "Buscar algo de valor",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "Un tintero de plata y unas monedas de la colonia.",
+              "colones": [
+                90,
+                180
+              ]
+            },
+            {
+              "weight": 40,
+              "text": "Las actas se deshacen y levantan un polvo que pica.",
+              "applies": {
+                "status": "salado",
+                "chance": 1.0,
+                "turns": 2,
+                "mods": {
+                  "accuracy": -5
+                },
+                "party": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nicho_del_santo",
+      "name": "Nicho del santo",
+      "text": "Un santo de madera en un nicho de la pared. Le han crecido las uñas.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Al pie del santo hay ofrendas viejas: monedas y velas.",
+          "colones": [
+            60,
+            140
+          ],
+          "add_item": {
+            "id": "candela_sebo",
+            "qty": 1
+          }
+        },
+        {
+          "weight": 35,
+          "text": "El santo voltea la cabeza para verlos pasar.",
+          "stress_party": 9
+        },
+        {
+          "weight": 25,
+          "text": "El santo baja del nicho.",
+          "ambush": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "confesionario",
+      "name": "Confesionario",
+      "text": "Un confesionario de cedro, intacto entre las ruinas. Detrás de la rejilla alguien respira.",
+      "choices": [
+        {
+          "label": "Confesar algo",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "La voz del otro lado perdona. Sale con el pecho más liviano.",
+              "stress_random": -15
+            },
+            {
+              "weight": 40,
+              "text": "La voz del otro lado se ríe. Y sabe cosas que no le dijeron.",
+              "stress_random": 15
+            }
+          ]
+        },
+        {
+          "label": "Abrir la puerta del cura",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "No hay nadie. En el asiento quedó un rosario bueno.",
+              "add_item": {
+                "id": "rosario_de_semillas",
+                "qty": 1
+              }
+            },
+            {
+              "weight": 50,
+              "text": "Sí había alguien.",
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pila_bautismal",
+      "name": "Pila bautismal",
+      "text": "La pila de piedra sigue llena de agua quieta, aunque el techo se cayó hace un siglo.",
+      "choices": [
+        {
+          "label": "Llenar las botellas",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Agua clara y fría: agua bendita de verdad.",
+              "add_item": {
+                "id": "agua_bendita",
+                "qty": 2
+              }
+            },
+            {
+              "weight": 30,
+              "text": "En el reflejo hay una cuadrilla que no son ellos.",
+              "stress_party": 8
+            }
+          ]
+        },
+        {
+          "label": "Lavarse la cara",
+          "outcomes": [
+            {
+              "weight": 65,
+              "text": "Se les quita el polvo y el miedo.",
+              "stress_party": -8,
+              "heal_party": 3
+            },
+            {
+              "weight": 35,
+              "text": "El agua sabe a hierro.",
+              "applies": {
+                "status": "veneno",
+                "chance": 1.0,
+                "turns": 3,
+                "value": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "procesion_de_cera",
+      "name": "Procesión de cera",
+      "text": "Figuras de cera en fila, como una procesión detenida en la calle. Todas miran hacia el mismo lado.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Siguen la mirada de las figuras: señalan una salida.",
+          "reveal_neighbors": true
+        },
+        {
+          "weight": 35,
+          "text": "Una de las figuras tiene la cara de alguien de la cuadrilla.",
+          "stress_random": 12
+        },
+        {
+          "weight": 25,
+          "text": "Las figuras dan un paso al mismo tiempo.",
+          "ambush": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reloj_de_la_torre",
+      "name": "Reloj de la torre",
+      "text": "El reloj de la torre marca las 8:50 de la mañana. Las agujas tiemblan, como si quisieran seguir.",
+      "choices": [
+        {
+          "label": "Darle cuerda",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "El reloj avanza un minuto. Todo el pueblo suspira.",
+              "stress_party": -10,
+              "reliquias": 1
+            },
+            {
+              "weight": 50,
+              "text": "El reloj da la hora del terremoto. El piso tiembla.",
+              "damage_party": 2,
+              "stress_party": 6
+            }
+          ]
+        },
+        {
+          "label": "Dejarlo como está",
+          "outcomes": [
+            {
+              "weight": 80,
+              "text": "Mejor no tocar la hora de los muertos.",
+              "stress_party": -2
+            },
+            {
+              "weight": 20,
+              "text": "Detrás de la esfera, una cajita olvidada.",
+              "random_equipment": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "casa_del_teniente",
+      "name": "Casa del teniente de policía",
+      "text": "Una casa de bahareque con el escudo del cuartel en la puerta. Adentro, un escritorio y un mapa clavado en la pared.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "El mapa marca las calles que no se cayeron.",
+          "reveal_map": true
+        },
+        {
+          "weight": 35,
+          "text": "En la gaveta: vendas, alcohol y un revólver sin balas.",
+          "add_item": {
+            "id": "venda_manta",
+            "qty": 2
+          }
+        },
+        {
+          "weight": 25,
+          "text": "El teniente sigue de turno.",
+          "ambush": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "carreta_de_la_romeria",
+      "name": "Carreta de la romería",
+      "text": "Una carreta pintada, cargada de ofrendas que nunca llegaron a la Basílica.",
+      "choices": [
+        {
+          "label": "Llevar las ofrendas a su lugar",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Las dejan en las gradas de la iglesia en ruinas. Se siente como cumplir una promesa ajena.",
+              "stress_party": -12,
+              "buff": {
+                "name": "Promesa cumplida",
+                "mods": {
+                  "stress_pct": -10
+                },
+                "fights": 3,
+                "party": true
+              }
+            },
+            {
+              "weight": 30,
+              "text": "Pesa más de lo que parece. Llegan cansados.",
+              "light": -10
+            }
+          ]
+        },
+        {
+          "label": "Tomar algo de la carreta",
+          "outcomes": [
+            {
+              "weight": 45,
+              "text": "Monedas y una medalla de plata.",
+              "colones": [
+                100,
+                200
+              ]
+            },
+            {
+              "weight": 55,
+              "text": "Una carreta sin bueyes empieza a rodar calle arriba, sola.",
+              "stress_party": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pozo_de_los_deseos",
+      "name": "Pozo de la plaza",
+      "text": "El pozo de la plaza, con monedas de todas las épocas en el fondo. Algo brilla allá abajo.",
+      "choices": [
+        {
+          "label": "Bajar a buscar",
+          "item": "mecate",
+          "outcomes": [
+            {
+              "weight": 70,
+              "text": "Con el mecate llegan al fondo: monedas de plata de la colonia.",
+              "colones": [
+                160,
+                280
+              ]
+            },
+            {
+              "weight": 30,
+              "text": "Algo jala el mecate desde el fondo.",
+              "damage_random": 5,
+              "stress_random": 8
+            }
+          ]
+        },
+        {
+          "label": "Tirar una moneda y pedir",
+          "outcomes": [
+            {
+              "weight": 55,
+              "text": "Se oye la moneda caer un rato largo. Alguien se siente con suerte.",
+              "buff": {
+                "name": "Deseo del pozo",
+                "mods": {
+                  "crit": 5
+                },
+                "fights": 2,
+                "party": true
+              }
+            },
+            {
+              "weight": 45,
+              "text": "La moneda nunca toca fondo. Nadie dice nada.",
+              "stress_party": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "escuela_vacia",
+      "name": "Escuela vacía",
+      "text": "Pupitres de madera y una pizarra con la tabla del 9 a medio copiar.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "En la gaveta de la maestra: un termo y unas galletas viejas.",
+          "add_item": {
+            "id": "cafe_chorreado",
+            "qty": 1
+          },
+          "stress_party": -4
+        },
+        {
+          "weight": 35,
+          "text": "Alguien terminó de copiar la tabla mientras no veían.",
+          "stress_party": 9
+        },
+        {
+          "weight": 25,
+          "text": "Se oye a un grupo de niños recitar desde el patio vacío.",
+          "stress_party": 6,
+          "applies": {
+            "status": "susto",
+            "chance": 0.5,
+            "turns": 2,
+            "value": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "altar_del_porton",
+      "name": "Altar del Portón",
+      "text": "En la sacristía alguien armó un altar con velas negras y un portón dibujado con carbón.",
+      "choices": [
+        {
+          "label": "Desarmar el altar",
+          "outcomes": [
+            {
+              "weight": 65,
+              "text": "Apagan las velas una por una. El aire se aligera.",
+              "stress_party": -8,
+              "reliquias": 1
+            },
+            {
+              "weight": 35,
+              "text": "La última vela no se apaga. Algo los vio.",
+              "ambush": [
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Leer lo que dice el carbón",
+          "outcomes": [
+            {
+              "weight": 40,
+              "text": "Son los nombres de los que el culto está buscando. Saber es poder.",
+              "buff": {
+                "name": "Nombres del culto",
+                "mods": {
+                  "accuracy": 5
+                },
+                "fights": 2,
+                "party": true
+              }
+            },
+            {
+              "weight": 60,
+              "text": "Uno de los nombres es de la cuadrilla.",
+              "stress_random": 14
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ropero_del_luto",
+      "name": "Ropero del luto",
+      "text": "Un ropero lleno de ropa negra de luto, planchada y perfumada como si alguien la usara todavía.",
+      "blind": [
+        {
+          "weight": 40,
+          "text": "Una mantilla buena y una corbata de luto.",
+          "random_equipment": true
+        },
+        {
+          "weight": 35,
+          "text": "El perfume es el de alguien que conocieron.",
+          "stress_random": 10
+        },
+        {
+          "weight": 25,
+          "text": "Uno de los trajes sigue ocupado.",
+          "ambush": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fotografia_del_pueblo",
+      "name": "Fotografía del pueblo",
+      "text": "Una fotografía enmarcada de la plaza llena de gente, del día antes del terremoto.",
+      "choices": [
+        {
+          "label": "Mirarla con calma",
+          "outcomes": [
+            {
+              "weight": 60,
+              "text": "Reconocen calles y esquinas: saben por dónde ir.",
+              "reveal_neighbors": true,
+              "stress_party": -3
+            },
+            {
+              "weight": 40,
+              "text": "En la foto, alguien de la cuadrilla aparece en la multitud.",
+              "stress_party": 8
+            }
+          ]
+        },
+        {
+          "label": "Llevársela",
+          "outcomes": [
+            {
+              "weight": 50,
+              "text": "En la hacienda pagarán por un recuerdo así.",
+              "colones": [
+                80,
+                150
+              ]
+            },
+            {
+              "weight": 50,
+              "text": "La gente de la foto voltea a verlos irse.",
+              "stress_party": 7
+            }
+          ]
+        }
+      ]
     }
   ]
 }

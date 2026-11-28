@@ -246,6 +246,94 @@
           "turns": 1
         }
       }
+    },
+    {
+      "id": "piso_de_la_nave",
+      "name": "Piso de la nave",
+      "text": "Las baldosas de la nave de la iglesia están sueltas sobre un hueco.",
+      "difficulty": 20,
+      "fail_text": "El piso se hunde: caen a la cripta de abajo.",
+      "effects": {
+        "damage_random": 7,
+        "stress_party": 4
+      }
+    },
+    {
+      "id": "campanario_inestable",
+      "name": "Campanario inestable",
+      "text": "La torre se inclina sobre la calle. Arriba, algo se balancea.",
+      "difficulty": 25,
+      "fail_text": "Una campana cae a media calle.",
+      "effects": {
+        "damage_random": 8,
+        "applies": {
+          "status": "aturdido",
+          "chance": 0.5,
+          "turns": 1
+        }
+      }
+    },
+    {
+      "id": "reja_que_se_cierra",
+      "name": "Reja que se cierra",
+      "text": "Una reja de hierro forjado, abierta de par en par. Demasiado abierta.",
+      "difficulty": 15,
+      "fail_text": "La reja se cierra de golpe sobre un brazo.",
+      "effects": {
+        "damage_random": 5,
+        "applies": {
+          "status": "sangrado",
+          "chance": 0.6,
+          "turns": 3,
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": "calle_que_se_repite",
+      "name": "Calle que se repite",
+      "text": "Esta esquina ya la pasaron. Y la anterior también.",
+      "difficulty": 20,
+      "fail_text": "Caminan en círculos hasta que la vela se gasta.",
+      "effects": {
+        "light": -15,
+        "stress_party": 5
+      }
+    },
+    {
+      "id": "susurros_del_atrio",
+      "name": "Susurros del atrio",
+      "text": "En el atrio se oyen susurros que repiten los nombres de la cuadrilla.",
+      "difficulty": 15,
+      "fail_text": "Los nombres se meten en la cabeza.",
+      "effects": {
+        "stress_party": 8,
+        "applies": {
+          "status": "susto",
+          "chance": 0.5,
+          "turns": 3,
+          "value": 2,
+          "party": true
+        }
+      }
+    },
+    {
+      "id": "escalera_del_coro",
+      "name": "Escalera del coro",
+      "text": "La escalera al coro de la iglesia tiene los peldaños podridos.",
+      "difficulty": 10,
+      "fail_text": "Un peldaño se quiebra a mitad de la subida.",
+      "effects": {
+        "damage_random": 5,
+        "debuff": {
+          "name": "Tobillo torcido",
+          "mods": {
+            "speed": -2,
+            "dodge": -4
+          },
+          "fights": 2
+        }
+      }
     }
   ]
 }

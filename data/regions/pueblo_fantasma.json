@@ -1,0 +1,196 @@
+{
+  "region_id": "pueblo_fantasma",
+  "name": "Pueblo Fantasma de Cartago Viejo",
+  "boss_name": "La Campanera Sin Rostro",
+  "initial_light": 90,
+  "provisions": {
+    "short": {
+      "gallo_pinto": 12,
+      "candela_sebo": 4
+    },
+    "full": {
+      "gallo_pinto": 18,
+      "candela_sebo": 6
+    }
+  },
+  "light_decay_per_move": 10,
+  "objective_reward_colones": 1500,
+  "region_level": 2,
+  "hazards": [
+    {
+      "id": "salida_falsa",
+      "name": "Salida falsa",
+      "text": "La calle da la vuelta sin que nadie se dé cuenta: terminan donde estaban.",
+      "trigger": "move",
+      "chance_pct": 6,
+      "outcome": {
+        "send_back": true,
+        "stress_party": 2
+      }
+    },
+    {
+      "id": "niebla_que_separa",
+      "name": "Niebla que separa",
+      "text": "Una niebla espesa baja del campanario y se lleva a uno de la cuadrilla por un rato.",
+      "trigger": "move",
+      "chance_pct": 5,
+      "outcome": {
+        "lose_hero": {
+          "stress": 8
+        }
+      }
+    },
+    {
+      "id": "campanas_de_noche",
+      "name": "Campanas de noche",
+      "text": "Con poca luz, las campanas del pueblo tocan solas: a la fogata le llegan visitas.",
+      "trigger": "camp",
+      "chance_pct": 100,
+      "max_light": 50,
+      "ambush_pct": 15
+    }
+  ],
+  "generator": {
+    "_doc": "Pueblo Fantasma de Cartago Viejo (P6-12a, doc 05 §1.5): the colonial town left as it was the day of the earthquake. Fear (Susto stacks), mirror images, stress-to-damage (vs_stress_pct); false exits and a fog that takes one hero out of the next fight (lose_hero, owner 2026-11-28). Same generator as the Sótanos. The Carreta sin Bueyes is large (two positions).",
+    "rooms": [
+      10,
+      13
+    ],
+    "min_boss_distance": 5,
+    "extra_links": 1,
+    "branch_newest_chance": 0.6,
+    "max_exits": 3,
+    "camps": 1,
+    "elites": 1,
+    "min_combat": 3,
+    "weights": {
+      "combat": 40,
+      "trap": 15,
+      "curio": 25,
+      "empty": 20
+    },
+    "enemy_pool": [
+      "animas_procesion",
+      "sacristan_del_terremoto",
+      "mujer_de_la_ventana",
+      "murcielagos_campanario",
+      "perro_de_la_ruina",
+      "escribano_del_cabildo",
+      "cofrade_del_porton",
+      "espanto"
+    ],
+    "elite_pool": [
+      "carreta_sin_bueyes",
+      "padre_sin_cabeza",
+      "santo_poseido"
+    ],
+    "boss_enemy_id": "campanera_sin_rostro",
+    "reward_colones": [
+      520,
+      700
+    ],
+    "elite_reward_colones": [
+      800,
+      980
+    ],
+    "boss_reward_colones": 1500,
+    "labels": {
+      "safe": [
+        "Calle de la Amargura"
+      ],
+      "combat": [
+        "Plaza mayor",
+        "Calle de la parroquia",
+        "Atrio en ruinas",
+        "Esquina del cabildo",
+        "Callejón de los cirios",
+        "Patio de la cárcel vieja"
+      ],
+      "elite": [
+        "Nave de la iglesia",
+        "Calle de las procesiones"
+      ],
+      "trap": [
+        "Baldosas sueltas",
+        "Torre inclinada",
+        "Reja forjada",
+        "Esquina repetida"
+      ],
+      "curio": [
+        "Sacristía",
+        "Archivo",
+        "Casa de bahareque",
+        "Nicho",
+        "Pozo de la plaza"
+      ],
+      "camp": [
+        "Fogata en el portal"
+      ],
+      "empty": [
+        "Calle vacía",
+        "Eco de campanas",
+        "Portal derrumbado"
+      ],
+      "boss": [
+        "Campanario de la parroquia"
+      ]
+    },
+    "curios": [
+      "campana_rajada",
+      "relicario_poseido",
+      "archivo_del_cabildo",
+      "nicho_del_santo",
+      "confesionario",
+      "pila_bautismal",
+      "procesion_de_cera",
+      "reloj_de_la_torre",
+      "casa_del_teniente",
+      "carreta_de_la_romeria",
+      "pozo_de_los_deseos",
+      "escuela_vacia",
+      "altar_del_porton",
+      "ropero_del_luto",
+      "fotografia_del_pueblo",
+      "nicho_de_santos",
+      "procesion_de_animas",
+      "campana_de_capilla",
+      "retrato_del_abuelo"
+    ],
+    "traps": [
+      "piso_de_la_nave",
+      "campanario_inestable",
+      "reja_que_se_cierra",
+      "calle_que_se_repite",
+      "susurros_del_atrio",
+      "escalera_del_coro",
+      "vigas_inestables"
+    ],
+    "squad_template_pct": 50,
+    "squads": [
+      [
+        "animas_procesion",
+        "mujer_de_la_ventana"
+      ],
+      [
+        "sacristan_del_terremoto",
+        "cofrade_del_porton",
+        "escribano_del_cabildo"
+      ],
+      [
+        "perro_de_la_ruina",
+        "murcielagos_campanario"
+      ],
+      [
+        "carreta_sin_bueyes",
+        "animas_procesion"
+      ]
+    ],
+    "squad_size": [
+      1,
+      3
+    ],
+    "boss_escort": [
+      "animas_procesion"
+    ]
+  }
+}

@@ -8,6 +8,7 @@ const RegionProgressScript := preload("res://scripts/domain/region_progress.gd")
 const SOTANOS := "res://data/regions/sotanos.json"
 const BOSQUE := "res://data/regions/bosque.json"
 const CANAVERALES := "res://data/regions/canaverales.json"
+const PUEBLO := "res://data/regions/pueblo_fantasma.json"
 
 var _fail: int = 0
 
@@ -112,6 +113,33 @@ func _run() -> void:
 	_check((cgen["curios"] as Array).size() + (cgen["traps"] as Array).size() >= 20 and (cgen["enemy_pool"] as Array).size() >= 8, "the Cañaverales have >= 20 events and >= 8 regular enemies")
 	_check(gs.expand_packs(["zompopas_de_mayo", "rata_canera"]).size() == 4, "a swarm squad (two packs) fills the four positions")
 	_check(gs.start_mission(CANAVERALES) and int(gs.mission_difficulty.get("level", 0)) == 2, "a Cañaverales expedition starts at region level 1")
+	gs.end_mission_abandon()
+
+	print("Pueblo Fantasma on the generator (P6-12a)")
+	var pf_row: Dictionary = RegionProgressScript.entry_by_id("pueblo_fantasma")
+	_check(not pf_row.is_empty() and not RegionProgressScript.is_unlocked(pf_row, {"sotanos": {"aprendiz": 1}})
+		and RegionProgressScript.is_unlocked(pf_row, {"bosque": {"aprendiz": 1}}) and RegionProgressScript.is_unlocked(pf_row, {"canaverales": {"veterano": 1}}),
+		"the Pueblo Fantasma opens once the Bosque or the Cañaverales is beaten")
+	var pgen: Dictionary = gs.ExpeditionLoaderScript.load_region(PUEBLO)["generator"]
+	var pallowed: Array = pgen["enemy_pool"] + pgen["elite_pool"] + [pgen["boss_enemy_id"]] + pgen.get("boss_escort", [])
+	for sq in pgen["squads"]:
+		pallowed += sq
+	var only_pf: bool = true
+	var boss_pf: bool = true
+	for seed in 20:
+		var m: Dictionary = gs.MapGeneratorScript.generate(gs.ExpeditionLoaderScript.load_region(PUEBLO), seed)
+		for nd in m["nodes"]:
+			for id in nd.get("enemy_ids", [nd.get("enemy_id", "")] if nd.has("enemy_id") else []):
+				only_pf = only_pf and pallowed.has(id)
+			if bool(nd.get("is_boss", false)):
+				boss_pf = boss_pf and str(nd.get("enemy_id", "")) == "campanera_sin_rostro"
+			if nd.has("curio_id"):
+				only_pf = only_pf and (pgen["curios"] as Array).has(nd["curio_id"])
+			if nd.has("trap_id"):
+				only_pf = only_pf and (pgen["traps"] as Array).has(nd["trap_id"])
+	_check(only_pf and boss_pf, "20 Pueblo Fantasma maps hold only its enemies and events, with La Campanera in the boss room")
+	_check((pgen["curios"] as Array).size() + (pgen["traps"] as Array).size() >= 20 and (pgen["enemy_pool"] as Array).size() >= 8, "the Pueblo Fantasma has >= 20 events and >= 8 regular enemies")
+	_check(gs.start_mission(PUEBLO) and int(gs.mission_difficulty.get("level", 0)) == 3, "a Pueblo Fantasma expedition starts at region level 2")
 	gs.end_mission_abandon()
 
 	print("Saves")
