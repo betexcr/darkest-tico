@@ -3197,7 +3197,7 @@
             4
           ],
           "accuracy": 0,
-          "stress": 9,
+          "stress": 7,
           "target": "party",
           "weight": 25,
           "element": "oscuridad",
@@ -3330,7 +3330,7 @@
             3
           ],
           "accuracy": 0,
-          "stress": 10,
+          "stress": 8,
           "target": "party",
           "weight": 25,
           "element": "viento",
@@ -3388,7 +3388,7 @@
         "id": "quemador_de_cana",
         "every": 4,
         "max_alive": 1,
-        "max_total": 2,
+        "max_total": 1,
         "text": "chifla y sale un quemador de entre la caña"
       },
       "cycle": {
@@ -3410,16 +3410,10 @@
                 }
               }
             }
-          ],
-          "cycle": {
-            "every": 3
-          }
+          ]
         },
         "campeon": {
           "text": "Toda la zafra arde: el humo del trapiche no deja ver.",
-          "summon": {
-            "max_total": 1
-          },
           "replace_skills": {
             "arreo_de_peones": {
               "id": "humo_de_trapiche",
@@ -3529,7 +3523,7 @@
             6
           ],
           "accuracy": 0,
-          "stress": 4,
+          "stress": 3,
           "target": "party",
           "weight": 15,
           "element": "fuego",
