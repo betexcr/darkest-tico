@@ -1,8 +1,9 @@
 extends VBoxContainer
 
 ## One fighter on the battle stage: sprite + HP bar (+ stress bar for heroes) + name.
-## Sprites: res://assets/sprites/<id>/<state>.png for STATES; missing states fall back
-## to idle, and a missing idle falls back to the portrait/enemy art passed to setup().
+## Sprites: heroes use res://assets/sprites/<id>/<state>.png for STATES; missing states fall back
+## to idle, and a missing idle falls back to the portrait passed to setup(). Enemies show only
+## their portrait (assets/enemies/<id>.png) in a frame (owner 2026-11-28; ENEMY_POSE_SPRITES).
 ## "Animations" are pose swaps plus tweens (lunge, glow, shake, collapse, breathing).
 ## Feedback: floating numbers on hits/heals/stress/misses, and status icons above the
 ## fighter (res://assets/status/<id>.png; a coloured badge if the icon is missing).
@@ -24,6 +25,8 @@ const ENEMY_COMPACT := Vector2(118, 118)  # 4 per line fit the half-stage, a 5th
 ## Enemies with battle sprites (P4-08) stand as cut-outs the same size as the heroes (owner
 ## 2026-11-22); compact, two lines of them still fit the stage's height.
 const ENEMY_SPRITE_SIZE := HERO_SIZE
+## Owner 2026-11-28: enemies use their portrait only, no pose sprites (true restores them).
+const ENEMY_POSE_SPRITES := false
 const ENEMY_SPRITE_COMPACT := Vector2(104, 170)
 ## Highlight colours (P4-21: a glow around the fighter instead of a line under it).
 const GLOW_ACTIVE := Color(1.0, 0.82, 0.38)
@@ -96,10 +99,14 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	is_hero = hero
 	# Party on the right facing left, enemies on the left facing right: lunges go toward the middle.
 	_dir = -1.0 if hero else 1.0
-	# Check the file too: *.import is git-ignored, so a fresh checkout has the PNG before Godot
-	# imports it (load_texture reads it straight from disk then) and the enemy must still be a cut-out.
-	var idle_path := "res://assets/sprites/%s/idle.png" % str(unit_data.get("id", ""))
-	_cutout = hero or ResourceLoader.exists(idle_path) or FileAccess.file_exists(idle_path)
+	# Owner 2026-11-28: enemies show one picture, their portrait in its frame, with no pose
+	# sprites (ENEMY_POSE_SPRITES re-enables assets/sprites/<id>/ for enemies).
+	_cutout = hero
+	if not hero and ENEMY_POSE_SPRITES:
+		# Check the file too: *.import is git-ignored, so a fresh checkout has the PNG before Godot
+		# imports it (load_texture reads it straight from disk then) and the enemy must still be a cut-out.
+		var idle_path := "res://assets/sprites/%s/idle.png" % str(unit_data.get("id", ""))
+		_cutout = ResourceLoader.exists(idle_path) or FileAccess.file_exists(idle_path)
 	_size = HERO_SIZE if hero else _large((ENEMY_SPRITE_SIZE if _cutout else ENEMY_SIZE))
 	alignment = BoxContainer.ALIGNMENT_END
 	custom_minimum_size = Vector2(_size.x, 0)
@@ -142,7 +149,7 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_sprite.pivot_offset = Vector2(_size.x / 2.0, _size.y)
 	# Sprites are generated facing LEFT (hero attack poses: weapon in the right arm toward the
 	# enemy); enemies are mirrored so they face the party on the right.
-	_sprite.flip_h = not hero
+	_sprite.flip_h = not hero and _cutout  # portraits are shown as painted
 	_sprite.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if _cutout:
 		if _outline == null:
@@ -219,7 +226,7 @@ func _make_bar(fill: Color) -> ProgressBar:
 func _load_textures(fallback_path: String) -> void:
 	# Heroes: the art set for their sex (GameState.sprite_id, owner 2026-11-19).
 	var id: String = GameState.sprite_id(data) if is_hero else str(data.get("id", ""))
-	for st in STATES:
+	for st in (STATES if is_hero or ENEMY_POSE_SPRITES else []):
 		var p: String = "res://assets/sprites/%s/%s.png" % [id, st]
 		var t: Texture2D = GameState.load_texture(p)
 		if t != null:

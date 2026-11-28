@@ -17,6 +17,15 @@ Newest entry first. Every agent session ends by adding an entry here (rules: [..
 
 ---
 
+## 2026-11-28 (58) — P6-11b: Cañaverales art; enemies show their portrait only
+- **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
+- **Status after session:** P6-11b review (owner look). P6-11a merged into main before it.
+- **Changed:** `assets/enemies/` (10 Cañaverales portraits, owner picks), `assets/ui_bg/canaverales_bg.png` + `canaverales_combat_bg.png`, `data/regions/canaverales.json` (backgrounds); `tools/art_manifest.json` (portrait, background and sprite entries; `_doc` notes for the three reference-based portraits); `scripts/combat/battle_unit.gd` (owner 2026-11-28: enemies show only their framed portrait, `ENEMY_POSE_SPRITES = false`); `tools/screens/canaverales_screenshot.gd` (new); AGENTS.md §4 battle sprites; plan.
+- **Verified:** `validate_data.py` 0 errors 0 warnings; `godot --import`; full `tests/run_tests.gd` 28 of 28; screenshots of the Cañaverales map and four fights (every new enemy as a framed portrait, the Buey two positions wide).
+- **Not verified / risks:** three portraits can't be regenerated from the manifest alone (Zompopas, Buey, Tulevieja; steps and reference credits in their metadata). Enemy pose sprites already made (Sótanos, Bosque, the rats) stay in `assets/sprites/` but are unused; heroes still use pose sprites. Not played by hand.
+- **Decisions needed:** delete the unused enemy sprite folders, or keep them for later?
+- **Next step:** P6-11c (Cañaverales balance + opening), same method as P6-10c (`docs/playtests/2026-11-27-p6-10c.md`): boss sims (`tools/sim_combat.gd -- --runs 2000 --node boss --region res://data/regions/canaverales.json --difficulty campeon --level 6 --ranks 4 --gear`; the Capataz at 74.0% on Campeón), then the same bot runs on both regions (`--campaigns 3 --weeks 8`, seeds 1–4, ONE job at a time; each job well under the 2-hour background cap), then remove `wip` from `data/regions.json`.
+
 ## 2026-11-27 (57) — P6-11a: Cañaverales content (9 enemies, El Capataz de Ceniza, hazards, 21 events)
 - **Agent / branch:** Claude Code (cloud) / `betomm/blissful-dijkstra-f06pdx`
 - **Status after session:** P6-11 split into a (done), b (art, todo), c (balance + open, todo). P6-10c merged into main before it.

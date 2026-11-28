@@ -963,9 +963,10 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Sim, 2000 fights each, party at the region's level (1/4/6, ranks 2/3/4, gear above Aprendiz): regular and elite fights 99–100% on every tier; the Capataz 98.8% / 96.5% / 74.0% (first draft 98.2 / 95.1 / 54.1: the Campeón block no longer brings more Quemadores, Humo de trapiche stress 6→3, Quema del cañal 6→4, PV 75→65). Bot `--missions 8 --start-level 1 --start-ranks 2`, seeds 1–2: 7 of 8 each, no script errors.
 
 ### P6-11b · M · Cañaverales art (CPU)
-- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-27)` · Depends: P6-11a
+- Status: `review` (owner look in game) · Depends: P6-11a
 - Portraits and 6 battle poses for the 9 new enemies (`machetero_de_zafra`, `quemador_de_cana`, `rata_canera`, `zompopas_de_mayo`, `boyero_maldito`, `espantapajaros_del_canal`, `buey_de_ceniza` (large: wide canvas, `size` in the manifest), `rezadora_del_porton`, `tulevieja`) and the boss `capataz_de_ceniza`; exploration and combat backgrounds set in `canaverales.json`. Same pipeline as P6-10b (scratchpad venv: CPU torch, diffusers, rembg, controlnet_aux, opencv); show the owner every picture.
-- Done when: [ ] portraits + sprites; [ ] backgrounds; [ ] owner look
+- Done when: [x] portraits (sprites dropped: owner 2026-11-28, enemies show their portrait only); [x] backgrounds; [ ] owner look
+- Result (2026-11-28): 10 portraits, each the owner's pick (Zompopas, Buey and Tulevieja built on reference images with a canny outline guide: an owner-supplied ant photo, CSIRO's CC BY 3.0 zebu photo, an owner-supplied harpy image; the Tulevieja's straw hat drawn by hand and blended), exploration and combat backgrounds set in `canaverales.json`. Owner 2026-11-28: enemies use one picture, their framed portrait, no pose sprites (`ENEMY_POSE_SPRITES = false` in `battle_unit.gd`; the existing enemy sprites stay in `assets/sprites/` unused). `tools/screens/canaverales_screenshot.gd` shows the map and four fights.
 
 ### P6-11c · M · Cañaverales balance and opening
 - Status: `todo` · Depends: P6-11a, P6-11b
