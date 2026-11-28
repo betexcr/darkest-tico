@@ -1003,6 +1003,9 @@ func _scaled_damage(dmg: int, attacker: Dictionary, target: Dictionary, skill: D
 	var vf = skill.get("vs_family", null)
 	if vf is Dictionary:
 		pct += int(vf.get(str(target.get("family", "")), 0))
+	# Stress-to-damage (P6-12, doc 05 §1.5): +N% per 50 stress the target carries (fear feeds it).
+	if int(skill.get("vs_stress_pct", 0)) > 0:
+		pct += int(skill["vs_stress_pct"]) * int(int(target.get("stress", 0)) / 50)  # structural: per 50 stress
 	# Anti-guard (P2-05): extra damage against a hero who is guarding.
 	if bool(target.get("guarding", false)):
 		pct += int(skill.get("vs_guard_pct", 0))

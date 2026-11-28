@@ -712,6 +712,8 @@ def main() -> int:
         for x in en.get("skills", []):
             if "vs_guard_pct" in x and not (isinstance(x["vs_guard_pct"], int) and x["vs_guard_pct"] > 0):
                 errors.append(f"{where}.{x.get('id')} vs_guard_pct must be a whole number > 0")
+            if "vs_stress_pct" in x and not (isinstance(x["vs_stress_pct"], int) and x["vs_stress_pct"] > 0):
+                errors.append(f"{where}.{x.get('id')} vs_stress_pct must be a whole number > 0 (P6-12: +% damage per 50 target stress)")
         rf = en.get("reinforce")
         if rf is not None:
             if not (isinstance(rf.get("after_round"), int) and rf["after_round"] >= 1 and isinstance(rf.get("count"), int) and 1 <= rf["count"] <= 3):
@@ -882,7 +884,7 @@ def main() -> int:
     outcome_keys = {"heal_party", "stress_party", "colones", "damage_random", "damage_party", "add_item",
                     "reveal_neighbors", "reveal_map", "random_equipment", "applies", "buff", "debuff",
                     "ambush", "weight", "text", "light", "stress_random", "reliquias",
-                    "shuffle_party", "send_back"}
+                    "shuffle_party", "send_back", "lose_hero"}
 
     def check_outcome(where: str, o) -> None:
         if not isinstance(o, dict):

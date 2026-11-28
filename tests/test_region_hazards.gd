@@ -106,6 +106,28 @@ func _run() -> void:
 	_check(shuffled and gs.party.size() == 4, "shuffle_party changes the formation")
 	gs.end_mission_abandon()
 
+	print("Party split (P6-12)")
+	gs.start_mission()
+	var split_log: PackedStringArray = gs.apply_event_outcome({"lose_hero": {"stress": 6}})
+	var lost: Array = gs.party.filter(func(h): return gs.is_lost(h))
+	_check(lost.size() == 1 and gs.fight_party().size() == gs.party.size() - 1 and split_log.size() > 0, "the fog takes one hero out of the next fight")
+	gs.apply_event_outcome({"lose_hero": true})
+	_check(gs.party.filter(func(h): return gs.is_lost(h)).size() == 1, "never two lost at once")
+	var lost_h: Dictionary = lost[0]
+	var st0: int = int(lost_h.get("stress", 0))
+	var fought: Array = gs.fight_party()
+	fought.reverse()
+	gs.rejoin_lost_heroes(fought)
+	_check(not gs.is_lost(lost_h) and gs.party.size() == 4 and is_same(gs.party[3], lost_h) and int(lost_h["stress"]) >= st0 + 6, "after the fight they come back at the back of the formation, with the stress")
+	_check(is_same(gs.party[0], fought[0]), "the fight's formation is kept for the others")
+	for h in gs.party.slice(1):
+		h["dead"] = true
+	gs.apply_event_outcome({"lose_hero": true})
+	_check(gs.fight_party().size() == gs.party.size(), "the last one standing is never lost")
+	for h in gs.party:
+		h.erase("dead")
+	gs.end_mission_abandon()
+
 	print("Fight start")
 	gs.start_mission()
 	gs.mission_region_data["hazards"] = [{"id": "t", "name": "Tótem del culto", "text": "Los enemigos se crecen.", "trigger": "fight_start", "chance_pct": 100,

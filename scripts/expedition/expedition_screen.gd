@@ -93,6 +93,8 @@ var _camp_watch: bool = false
 ## Camp skills each hero got at this fogata (uid -> ids): shared + a random draw of class skills.
 var _camp_hands: Dictionary = {}
 var _combat_is_ambush: bool = false
+## P6-12: the heroes in the current fight (lost heroes left out); empty outside fights.
+var _fight_party: Array = []
 ## Enemy the player clicked during a fight: single-target attacks/items go straight to it.
 var _selected_enemy: Dictionary = {}
 ## Active hero's equipment when their turn began; a change spends the turn.
@@ -1353,7 +1355,18 @@ func _start_combat_from_context(node_id: String) -> void:
 	elif surprise == "enemies":
 		note = "¡La cuadrilla los agarra desprevenidos!"
 	_combat.enemy_spawner = _spawn_enemy_unit
-	_combat.start(GameState.party, squad, _hero_units, _enemy_units,
+	# P6-12 party split: a hero lost in the fog sits this fight out (off the stage).
+	_fight_party = GameState.fight_party()
+	var fight_units: Array = []
+	for u in _hero_units:
+		var lost: bool = GameState.is_lost(u.data)
+		u.visible = not lost
+		if not lost:
+			fight_units.append(u)
+	for h in GameState.party:
+		if GameState.is_lost(h):
+			note = ("%s " % note if note != "" else "") + "%s no está: se perdió en la niebla." % h.get("name", "?")
+	_combat.start(_fight_party, squad, fight_units, _enemy_units,
 		bool(ctx.get("is_elite", false)), bool(ctx.get("is_boss", false)), _combat_is_ambush or surprise == "party",
 		surprise == "enemies", note)
 
@@ -1608,7 +1621,28 @@ func _clear_skills() -> void:
 
 ## The party left the fight (P5-04): back to the room they came from. The room they fled
 ## stays as it was, so walking in again starts the fight over.
+## P6-12: after any fight, lost heroes rejoin (back of the formation) once their fight is over.
+func _rejoin_lost() -> void:
+	if _fight_party.is_empty():
+		return
+	for l in GameState.rejoin_lost_heroes(_fight_party):
+		_log_line(l, "9fb4d0")
+	_fight_party = []
+	var by_uid: Dictionary = {}
+	for u in _hero_units:
+		by_uid[int(u.data.get("uid", 0))] = u
+	var k: int = 0
+	for h in GameState.party:
+		var u = by_uid.get(int(h.get("uid", 0)), null)
+		if u != null:
+			u.visible = not GameState.is_lost(h)
+			if u.get_parent() != null:
+				u.get_parent().move_child(u, k)
+			k += 1
+
+
 func _on_combat_fled() -> void:
+	_rejoin_lost()
 	GameState.equip_locked = false
 	GameState.equip_turn_hero = {}
 	_selected_enemy = {}
@@ -1631,6 +1665,7 @@ func _on_combat_fled() -> void:
 
 
 func _on_combat_over(victory: bool) -> void:
+	_rejoin_lost()
 	GameState.equip_locked = false
 	GameState.equip_turn_hero = {}
 	_selected_enemy = {}

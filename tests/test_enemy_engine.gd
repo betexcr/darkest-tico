@@ -158,5 +158,14 @@ func _run() -> void:
 	cc._dispel_lone_illusions()
 	_check(cc.enemies.all(func(e): return bool(e.get("dead", false))), "with the real one gone, the images fade")
 
+	print("Stress-to-damage (P6-12)")
+	var cc2 = load("res://scripts/combat/combat_controller.gd").new()
+	var s_atk := {"name": "x"}
+	var calm := {"stress": 20}
+	var scared := {"stress": 120}
+	var sk := {"vs_stress_pct": 10}
+	_check(cc2._scaled_damage(10, s_atk, calm, sk) == 10 and cc2._scaled_damage(10, s_atk, scared, sk) == 12, "+10% per 50 stress the target carries")
+	cc2.free()
+
 	print("%d failure(s)" % _fail)
 	quit(1 if _fail > 0 else 0)

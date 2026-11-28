@@ -502,11 +502,62 @@ func apply_event_outcome(outcome: Dictionary) -> PackedStringArray:
 		previous_node_id = current_node_id
 		current_node_id = back
 		logs.append("Era una salida falsa: vuelven al cuarto de antes.")
+	# P6-12 party split (owner 2026-11-28): the fog takes one living hero for the next fight.
+	if outcome.get("lose_hero", null) != null:
+		logs.append_array(_lose_a_hero(outcome["lose_hero"]))
 	if bool(outcome.get("reveal_map", false)):
 		for nid in mission_nodes_index.keys():
 			if not scouted_node_ids.has(str(nid)):
 				scouted_node_ids.append(str(nid))
 		logs.append("Se revela todo el mapa.")
+	return logs
+
+
+# --- Party split (P6-12) -----------------------------------------------------------
+## Outcome `lose_hero`: true, or {stress: N} (stress gained while lost, paid on return). One
+## random living hero misses the next fight; never the last one standing, never two at once.
+
+func _lose_a_hero(spec) -> PackedStringArray:
+	var logs := PackedStringArray()
+	var living: Array = party.filter(func(h): return not bool(h.get("dead", false)) and int(h.get("lost_fights", 0)) == 0)
+	if living.size() < 2 or party.any(func(h): return int(h.get("lost_fights", 0)) > 0):  # structural: keep one
+		return logs
+	var h: Dictionary = living[randi() % living.size()]
+	h["lost_fights"] = 1
+	h["lost_stress"] = int(spec.get("stress", 0)) if spec is Dictionary else 0
+	logs.append("La niebla se lleva a %s: se pierde de la cuadrilla y no estará en la próxima pelea." % h.get("name", "?"))
+	return logs
+
+
+func is_lost(h: Dictionary) -> bool:
+	return int(h.get("lost_fights", 0)) > 0
+
+
+## The heroes who fight now (party order; lost heroes left out).
+func fight_party() -> Array:
+	return party.filter(func(h): return not is_lost(h))
+
+
+## After a fight: `fought` is the array the fight used (its order is the new formation); lost
+## heroes take the back positions and come back once their fight has passed.
+func rejoin_lost_heroes(fought: Array) -> PackedStringArray:
+	var logs := PackedStringArray()
+	var lost: Array = party.filter(func(h): return is_lost(h))
+	if lost.is_empty():
+		return logs
+	var order: Array = fought.duplicate()
+	for h in lost:
+		order.append(h)
+	party = order
+	for h in lost:
+		h["lost_fights"] = int(h["lost_fights"]) - 1
+		if int(h["lost_fights"]) <= 0:
+			h.erase("lost_fights")
+			var st: int = int(h.get("lost_stress", 0))
+			h.erase("lost_stress")
+			logs.append("%s encuentra el camino de vuelta a la cuadrilla." % h.get("name", "?"))
+			if st > 0:
+				logs.append_array(StressSystemScript.add_stress(h, st))
 	return logs
 
 
@@ -2050,6 +2101,9 @@ func _apply_activity_side_effect(h: Dictionary, building_id: String, side: Dicti
 
 
 func start_mission(region_path: String = "") -> bool:
+	for h in party:  # P6-12: nobody starts an expedition lost in last week's fog
+		h.erase("lost_fights")
+		h.erase("lost_stress")
 	var path: String = region_path if region_path != "" else selected_mission_region_path
 	if living_party_count() <= 0:
 		return false
