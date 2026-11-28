@@ -975,9 +975,24 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Result (2026-11-28): the Capataz's fights shortened (one Quemador on every tier, no faster burn at Veterano, burn stress 3; Campeón's Humo de trapiche stress 6), elite party stress lowered (Rezadora 9→7, Tulevieja 10→8), fire hazard 5% / 1 stress. Bot vs Sótanos: Veterano 96.9% (100%), Campeón 78.1% (71.9%), arrival Aprendiz ≈88% over two runs (95.8%); boss sim 99.5 / 98.5 / 83.5%. Opened. Report: `docs/playtests/2026-11-28-p6-11c.md`.
 
 ### P6-12 · L · Pueblo Fantasma de Cartago Viejo
-- Status: `todo` · Depends: P6-11 · Spec: `05` §1.5, §3.1
+- Status: split into P6-12a (content), P6-12b (portraits + backgrounds), P6-12c (balance + open) · Depends: P6-11 · Spec: `05` §1.5, §3.1
 - Region level 2. Boss *La Campanera Sin Rostro* (sound-based fear stacks, illusion punish). Fear, illusion clones, stress-to-damage; false exits, possessed relics, party split. Rewards: rare trinkets, archive fragments.
-- Done when: [ ] the region checklist
+- Owner 2026-11-28: party split = one hero lost a while (a move hazard takes one random living hero out of the next fight; they rejoin after it with some stress).
+
+### P6-12a · L · Pueblo Fantasma content
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-28)` · Depends: P6-11
+- Two engine pieces (stress-to-damage `vs_stress_pct`; party split outcome `lose_hero`), 9 enemies + elites, La Campanera with Veterano/Campeón tiers, ≥ 20 events, region file (`wip`).
+- Done when: [ ] `vs_stress_pct` + test; [ ] `lose_hero` + test; [ ] roster (doc 05 table); [ ] La Campanera + tiers; [ ] region file, hazards, ≥ 20 events; [ ] sims and bot clean; [ ] tests
+
+### P6-12b · M · Pueblo Fantasma art (CPU)
+- Status: `todo` · Depends: P6-12a
+- Portraits for the new enemies and La Campanera (owner picks of 4; enemies show only their portrait), exploration and combat backgrounds set in the region file. One SD job at a time.
+- Done when: [ ] portraits; [ ] backgrounds; [ ] owner look
+
+### P6-12c · M · Pueblo Fantasma balance and opening
+- Status: `todo` · Depends: P6-12a, P6-12b
+- Same method as P6-10c / P6-11c (same bot runs as the Sótanos, each tier within about ±5 points), then remove `wip`.
+- Done when: [ ] bands met (report); [ ] `wip` removed; [ ] owner playtest
 
 ### P6-13 · L · Ruinas Volcánicas
 - Status: `todo` · Depends: P6-12, P6-05 · Spec: `05` §1.4, §3.1
