@@ -24,10 +24,10 @@
       "name": "Fuego en el cañal",
       "text": "El viento cambia y el fuego de una quema salta al surco: pasan entre las llamas.",
       "trigger": "move",
-      "chance_pct": 8,
+      "chance_pct": 5,
       "outcome": {
         "damage_party": 2,
-        "stress_party": 2
+        "stress_party": 1
       }
     },
     {
