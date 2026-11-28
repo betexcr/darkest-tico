@@ -5130,10 +5130,10 @@
         512,
         512
       ],
-      "seed": 2507,
-      "subject": "ghostly painted Costa Rican oxcart rolling by itself with no oxen, glowing spectral wheels, chains, empty foggy colonial street at night, side view",
+      "seed": 2540,
+      "subject": "haunted empty two-wheeled wooden cart, big ornate painted spoked wheels glowing pale, no animals, rolling alone down a foggy cobbled street, side view",
       "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, frame, border, oxen, ox, horse, cow, driver"
+      "negative_extra": "horse, horses, ox, oxen, cow, bull, animal, driver, person, carriage, candle, signature, text, frame"
     },
     {
       "id": "enemy_padre_sin_cabeza",
