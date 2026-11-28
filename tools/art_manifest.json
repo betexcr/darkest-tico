@@ -5154,10 +5154,10 @@
         512,
         512
       ],
-      "seed": 2509,
-      "subject": "possessed wooden saint statue on procession litters, cracked painted wood, glowing eyes, wax tears dripping, ruined church at night",
+      "seed": 2560,
+      "subject": "close-up of a possessed carved wooden saint statue, cracked painted polychrome wood face, robed figure, glowing red eyes, dark tears running down, halo",
       "style": "dark gothic oil painting, folk horror, cold moonlight, deep black shadows, muted colors, painterly brushstrokes, game art",
-      "negative_extra": "candle, candles, signature, text, watermark, frame, border"
+      "negative_extra": "church, cathedral, building, tower, architecture, candle, candles, signature, text, watermark, frame, border"
     },
     {
       "id": "enemy_campanera_sin_rostro",
