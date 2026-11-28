@@ -1344,10 +1344,28 @@ static func layout_enemy_row(units: Array) -> void:
 	var front: int = mini(n, 4)  # structural: one line holds four
 	# Up to four hero-sized cut-outs overlap a little to fit the half-stage (P4-32); two compact
 	# lines keep a gap, so a fifth enemy always wraps to the upper line.
-	for u in units:
-		if u != null and u.get_parent() is HFlowContainer:
-			u.get_parent().add_theme_constant_override("h_separation", -14 if n <= front else 10)  # structural
-			break
+	# Enemy portraits (owner 2026-11-28) never overlap: a fixed gap, and each frame as wide as
+	# the front line's positions allow (a large enemy counts twice), up to PORTRAIT_MAX_W.
+	var portraits: bool = false
+	var row: Control = null
+	var positions: int = 0
+	for k in n:
+		var u = units[k]
+		if u == null:
+			continue
+		if row == null and u.get_parent() is HFlowContainer:
+			row = u.get_parent()
+		if "_cutout" in u and not u._cutout:
+			portraits = true
+		if k < front:
+			positions += 2 if int(u.data.get("size", 1)) == 2 else 1  # structural: a large enemy takes two
+	var bu = load("res://scripts/combat/battle_unit.gd")
+	if row != null:
+		row.add_theme_constant_override("h_separation", int(bu.PORTRAIT_GAP) if portraits else (-14 if n <= front else 10))  # structural
+	var avail: float = row.size.x if row != null and row.size.x > 0.0 else 600.0  # structural: half the 1280 stage
+	var w: float = minf(bu.PORTRAIT_MAX_W, floorf((avail - bu.PORTRAIT_GAP * (maxi(positions, 1) - 1)) / maxi(positions, 1)))
+	if n > front:
+		w = minf(w, bu.ENEMY_COMPACT.x)
 	for k in n:
 		var u = units[k]
 		if u == null or u.get_parent() == null:
@@ -1355,6 +1373,8 @@ static func layout_enemy_row(units: Array) -> void:
 		u.get_parent().move_child(u, (front - 1 - k) if k < front else (front + n - 1 - k))
 		if u.has_method("set_compact"):
 			u.set_compact(n > front)
+		if u.has_method("set_portrait_width"):
+			u.set_portrait_width(w)
 
 
 # --- Stage helpers ----------------------------------------------------------------

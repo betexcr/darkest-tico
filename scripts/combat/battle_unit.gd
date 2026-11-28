@@ -19,9 +19,14 @@ const STATES := ["idle", "attack", "cast", "hurt", "ailment", "dead"]
 ## may overlap a little (the row uses negative separation); enemies without sprites keep square
 ## portraits, drawn as framed squares standing on the same line.
 const HERO_SIZE := Vector2(160, 262)
-const ENEMY_SIZE := Vector2(140, 140)
+const ENEMY_SIZE := Vector2(142, 192)
 ## With more than 4 enemies on the stage they stack in two lines, smaller (owner 2026-11-19).
-const ENEMY_COMPACT := Vector2(118, 118)  # 4 per line fit the half-stage, a 5th never does
+const ENEMY_COMPACT := Vector2(118, 160)  # 4 per line fit the half-stage, a 5th never does
+## Owner 2026-11-28: enemy portraits are tall frames (the square picture cropped to fill them),
+## sized by the controller to the room on the stage (set_portrait_width), never overlapping.
+const PORTRAIT_ASPECT := 1.35  # structural: height / width of an enemy frame
+const PORTRAIT_GAP := 18.0  # structural: px between enemy pictures, room for both frames and glows
+const PORTRAIT_MAX_W := 180.0  # structural: with few enemies a frame grows up to this
 ## Enemies with battle sprites (P4-08) stand as cut-outs the same size as the heroes (owner
 ## 2026-11-22); compact, two lines of them still fit the stage's height.
 const ENEMY_SPRITE_SIZE := HERO_SIZE
@@ -135,17 +140,11 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 	_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_holder)
 
-	if not _cutout:
-		_frame = Panel.new()
-		_frame.position = Vector2(-3, -3)
-		_frame.size = _size + Vector2(6, 6)
-		_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_holder.add_child(_frame)
-
 	_sprite = TextureRect.new()
 	_sprite.size = _size
 	_sprite.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Portraits fill their frame (cropped), so the frame and its glow hug the picture.
+	_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED if _cutout else TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	_sprite.pivot_offset = Vector2(_size.x / 2.0, _size.y)
 	# Sprites are generated facing LEFT (hero attack poses: weapon in the right arm toward the
 	# enemy); enemies are mirrored so they face the party on the right.
@@ -158,6 +157,14 @@ func setup(unit_data: Dictionary, hero: bool, fallback_path: String) -> void:
 		_glow_mat = ShaderMaterial.new()
 		_glow_mat.shader = _outline
 	_holder.add_child(_sprite)
+	if not _cutout:
+		# The frame is the picture's child: it lunges, shakes and fades with it.
+		_frame = Panel.new()
+		_frame.position = Vector2(-3, -3)
+		_frame.size = _size + Vector2(6, 6)
+		_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_frame.show_behind_parent = true  # the glow surrounds the picture, never tints it
+		_sprite.add_child(_frame)
 	_update_glow()
 
 	_hp_bar = _make_bar(Color(0.72, 0.13, 0.13))
@@ -454,13 +461,21 @@ func _stop_idle() -> void:
 ## Enemy portraits shrink while more than 4 share the stage (they stack in two lines).
 ## A large enemy (size 2, P6-03) stands on two positions: a wider, somewhat taller box.
 func _large(box: Vector2) -> Vector2:
-	return Vector2(box.x * 1.7, box.y * 1.15) if not is_hero and int(data.get("size", 1)) == 2 else box
+	if is_hero or int(data.get("size", 1)) != 2:
+		return box
+	if not _cutout:
+		return Vector2(box.x * 2.0 + PORTRAIT_GAP, box.y)  # two positions wide, same height
+	return Vector2(box.x * 1.7, box.y * 1.15)
 
 
-func set_compact(on: bool) -> void:
-	if is_hero:
+## Enemy portraits: a frame `w` px wide per position (CombatController.layout_enemy_row).
+func set_portrait_width(w: float) -> void:
+	if is_hero or _cutout:
 		return
-	var want: Vector2 = _large((ENEMY_SPRITE_COMPACT if on else ENEMY_SPRITE_SIZE) if _cutout else (ENEMY_COMPACT if on else ENEMY_SIZE))
+	_set_box(_large(Vector2(roundf(w), roundf(w * PORTRAIT_ASPECT))))
+
+
+func _set_box(want: Vector2) -> void:
 	if want == _size:
 		return
 	_size = want
@@ -473,6 +488,12 @@ func set_compact(on: bool) -> void:
 	for bar in [_hp_bar, _stress_bar]:
 		if bar != null:
 			bar.custom_minimum_size.x = _size.x - 20
+
+
+func set_compact(on: bool) -> void:
+	if is_hero:
+		return
+	_set_box(_large((ENEMY_SPRITE_COMPACT if on else ENEMY_SPRITE_SIZE) if _cutout else (ENEMY_COMPACT if on else ENEMY_SIZE)))
 
 
 func set_active(on: bool) -> void:

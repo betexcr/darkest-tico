@@ -446,7 +446,14 @@ func _event_result(gs) -> void:
 		await process_frame
 	var units: Array = screen._enemy_units
 	var bl = load("res://scripts/combat/battle_unit.gd")
-	_check(units.all(func(u): return u._size == (bl.ENEMY_SPRITE_COMPACT if u._cutout else bl.ENEMY_COMPACT)), "with 6 enemies every one is compact (sprite or portrait size)")
+	_check(units.all(func(u): return u._size == bl.ENEMY_SPRITE_COMPACT if u._cutout else u._size.x <= bl.ENEMY_COMPACT.x), "with 6 enemies every one is compact (sprite or portrait size)")
+	var rects: Array = units.slice(0, 4).map(func(u): return u._sprite.get_global_rect())
+	var apart: bool = true
+	for a in rects.size():
+		for b in range(a + 1, rects.size()):
+			apart = apart and not rects[a].intersects(rects[b])
+	_check(apart, "enemy portraits on a line never overlap")
+	_check(units.all(func(u): return u._cutout or u._frame.get_global_rect().grow(-3).is_equal_approx(u._sprite.get_global_rect())), "each portrait's frame (the highlight) hugs its picture")
 	var front_y: float = units[0].global_position.y
 	_check(units.slice(0, 4).all(func(u): return is_equal_approx(u.global_position.y, front_y)) and units[4].global_position.y < front_y - 40.0,
 		"positions 1-4 on the lower line, the rest stacked above")
