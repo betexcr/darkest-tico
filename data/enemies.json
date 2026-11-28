@@ -3424,7 +3424,7 @@
                 5
               ],
               "accuracy": 0,
-              "stress": 3,
+              "stress": 6,
               "target": "party",
               "weight": 25,
               "element": "fuego",
