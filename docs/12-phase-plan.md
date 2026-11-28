@@ -969,7 +969,7 @@ Every region task includes: the generator and pools; 8–10 enemies following do
 - Result (2026-11-28): 10 portraits, each the owner's pick (Zompopas, Buey and Tulevieja built on reference images with a canny outline guide: an owner-supplied ant photo, CSIRO's CC BY 3.0 zebu photo, an owner-supplied harpy image; the Tulevieja's straw hat drawn by hand and blended), exploration and combat backgrounds set in `canaverales.json`. Owner 2026-11-28: enemies use one picture, their framed portrait, no pose sprites (`ENEMY_POSE_SPRITES = false` in `battle_unit.gd`; the existing enemy sprites stay in `assets/sprites/` unused). `tools/screens/canaverales_screenshot.gd` shows the map and four fights.
 
 ### P6-11c · M · Cañaverales balance and opening
-- Status: `todo` · Depends: P6-11a, P6-11b
+- Status: `in-progress (claude, betomm/blissful-dijkstra-f06pdx, 2026-11-28)` · Depends: P6-11a, P6-11b
 - Same method as P6-10c (`docs/playtests/2026-11-27-p6-10c.md`): the same bot runs on the Sótanos and the Cañaverales, each tier within ±5 points; then remove `wip`. Start point: the Capataz's Campeón variant 74% in the boss sim (La Segua's 83.7%).
 - Done when: [ ] bands met (report); [ ] `wip` removed; [ ] owner playtest
 
